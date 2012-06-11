@@ -63,7 +63,7 @@ def boot_session(bootinfo):
 	bootinfo['website_settings'] = webnotes.model.doc.getsingle('Website Settings')
 
 	if webnotes.session['user']=='Guest':
-		bootinfo['website_menus'] = webnotes.conn.sql("""select label, url, custom_page, 
+		bootinfo['website_menus'] = webnotes.conn.sql("""select label, url, 
 			parent_label, parentfield
 			from `tabTop Bar Item` where parent='Website Settings' order by idx asc""", as_dict=1)
 		bootinfo['startup_code'] = \
