@@ -206,10 +206,3 @@ class DocType:
 			d = addchild(pr, 'userroles', 'UserRole', 1)
 			d.role = r
 			d.save(1)
-
-		# Add roles to Administrator profile
-		pr = Document('Profile','Administrator')
-		for r in roles_list:
-			d = addchild(pr,'userroles', 'UserRole', 1)
-			d.role = r
-			d.save(1)
