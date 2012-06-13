@@ -102,6 +102,11 @@ inst.import_from_db(new_dbname, verbose = 1)
 
 # apply patches
 os.chdir(erpnext_path)
+
+# create default records
+import create_default_records
+create_default_records.execute()
+
 #os.system("lib/wnf.py -l")
 
 # force sync all
