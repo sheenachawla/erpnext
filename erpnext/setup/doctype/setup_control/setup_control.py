@@ -63,6 +63,7 @@ class DocType:
 		
 		def_args = {'current_fiscal_year':curr_fiscal_year,
 								'default_currency': args.get('currency'),
+								'default_currency_format': (args.get('currency') == 'INR') and 'Paise' or '',
 								'default_company':args.get('company_name'),
 								'default_valuation_method':'FIFO',
 								'default_stock_uom':'Nos',
@@ -75,8 +76,15 @@ class DocType:
 								'emp_created_by':'Naming Series',
 								'cust_master_name':'Customer Name', 
 								'supp_master_name':'Supplier Name',
-								'default_currency_format': \
-										(args.get('currency')=='INR') and 'Lacs' or 'Millions'
+								'default_currency_format': (args.get('currency')=='INR') and 'Lacs' or 'Millions',
+								'default_territory': 'Default',
+								'default_customer_group': 'Default Customer Group',
+								'default_warehouse_type': 'Default Warehouse Type',
+								'default_price_list': 'Standard',
+								'default_supplier_type': 'Default Supplier Type',
+								'default_item_group': 'Default',
+								'maintain_same_rate': 1
+								
 					}
 
 		# Set 

@@ -97,20 +97,10 @@ sys.path.append(conf.modules_path)
 
 from webnotes.install_lib.install import Installer
 inst = Installer('root', root_pwd)
-#inst.import_from_db(new_dbname, source_path=os.path.join(erpnext_path, 'data', 'master.sql'), verbose = 1)
 inst.import_from_db(new_dbname, verbose = 1)
 
 # apply patches
 os.chdir(erpnext_path)
-
-# create default records
-import create_default_records
-create_default_records.execute()
-
-#os.system("lib/wnf.py -l")
-
-# force sync all
-#os.system("lib/wnf.py --sync_all -f")
 
 os.system("lib/wnf.py --cms")
 
