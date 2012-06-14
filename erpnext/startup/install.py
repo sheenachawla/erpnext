@@ -59,12 +59,12 @@ def update_patch_log():
 	from webnotes.modules import patch_handler
 	from patches import patch_list
 	
-	path = conf.modules_path + 'patches'
+	path = conf.modules_path + '/patches'
 	version = max([d for d in os.listdir(path) if os.path.isdir(os.path.join(path, d))])
 	set_default('patch_version', version)
 	
 	patch_handler.setup()
-	for d in patch_list[version]:
+	for d in patch_list.patch_list[version]:
 		pm = 'patches.' + version + '.' + d
 		patch_handler.update_patch_log(pm)
 
