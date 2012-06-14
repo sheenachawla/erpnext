@@ -22,17 +22,27 @@ def execute():
 	create_default_roles()
 	set_all_roles_to_admin()
 	create_default_master_records()
-	set_cp_defaults()
+	save_features_setup()
+	update_patch_log()
 	
 
 def set_home_page():
 	"""Set default home page"""
 	webnotes.conn.set_value('Control Panel', 'Control Panel', 'home_page', 'desktop')
 	
-def set_cp_defaults():
+def save_features_setup():
 	""" save global defaults and features setup"""
 	from webnotes.model.code import get_obj
-	get_obj('Features Setup').validate()
+	flds = ['fs_item_serial_nos', 'fs_item_batch_nos', 'fs_brands', 'fs_item_barcode', 'fs_item_advanced', \
+		'fs_packing_details', 'fs_item_group_in_details', 'fs_exports', 'fs_imports', 'fs_discounts', \
+		'fs_purchase_discounts', 'fs_after_sales_installations', 'fs_projects', 'fs_sales_extras', \
+		'fs_recurring_invoice', 'fs_pos', 'fs_manufacturing', 'fs_quality', 'fs_page_break', 'fs_more_info'
+	]
+	fs = get_obj('Features Setup', 'Features Setup')
+	for f in flds:
+		fs.doc.fields[f] = 1
+	fs.doc.save()
+	fs.validate()
 
 	
 def set_all_roles_to_admin():
@@ -41,6 +51,23 @@ def set_all_roles_to_admin():
 	prof = get_obj('Profile', 'Administrator')
 	get_obj('Setup Control').add_roles(prof.doc)
 	
+def update_patch_log():
+	"""Update patch version and patch log"""
+	import os
+	import conf
+	from webnotes.utils import set_default
+	from webnotes.modules import patch_handler
+	from patches import patch_list
+	
+	path = conf.modules_path + 'patches'
+	version = max([d for d in os.listdir(path) if os.path.isdir(os.path.join(path, d))])
+	set_default('patch_version', version)
+	
+	patch_handler.setup()
+	for d in patch_list[version]:
+		pm = 'patches.' + version + '.' + d
+		patch_handler.update_patch_log(pm)
+
 
 def create_doc(records):
 	webnotes.conn.begin()
