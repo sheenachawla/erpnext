@@ -6,7 +6,7 @@ def execute():
 	import webnotes
 	
 	from webnotes.utils import set_default
-	set_default('patch_module', '12_03')
+	set_default('patch_version', '00_00')
 	
 	repl = [
 		['before_jan_2012', '00_00'], 

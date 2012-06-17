@@ -64,7 +64,7 @@ def update_patch_log():
 	set_default('patch_version', version)
 	
 	patch_handler.setup()
-	for d in patch_list.patch_list[version]:
+	for d in patch_list.patch_dict[version]:
 		pm = 'patches.' + version + '.' + d
 		patch_handler.update_patch_log(pm)
 

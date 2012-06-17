@@ -15,7 +15,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-patch_list = {
+patch_dict = {
+	'00_00' : [
+		'update_patch_log',
+	],
+	
 	'12_03'	:	[
 		'stable_branch_shift_09_01_12',
 		'print_hide_totals',
