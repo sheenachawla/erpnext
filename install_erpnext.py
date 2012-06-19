@@ -1,6 +1,5 @@
 #!/usr/bin/python
 import os, commands
-
 # ask for root mysql password
 import getpass
 
