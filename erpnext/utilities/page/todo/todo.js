@@ -20,13 +20,31 @@ erpnext.todo.refresh = function() {
 	wn.call({
 		method: 'utilities.page.todo.todo.get',
 		callback: function(r,rt) {
-			$('#todo-list').empty();
+			var todo_list = $('#todo-list div.todo-content');
+			var assigned_todo_list = $('#assigned-todo-list div.todo-content');
+			todo_list.empty();
+			assigned_todo_list.empty();
+			
+			var nothing_to_do = function() {
+				$('#todo-list div.todo-content')
+					.html('<div class="help-box">Nothing to do :)</div>');
+			}
+			
+			var nothing_delegated = function() {
+				$('#assigned-todo-list div.todo-content')
+					.html('<div class="help-box">Nothing assigned to other users. \
+							Use "Assign To" in a form to delegate work.</div>');
+			}
+			
 			if(r.message) {
 				for(var i in r.message) {
 					new erpnext.todo.ToDoItem(r.message[i]);
 				}
+				if (!todo_list.html()) { nothing_to_do(); }
+				if (!assigned_todo_list.html()) { nothing_delegated(); }
 			} else {
-				$('#todo-list').html('<div class="help-box">Nothing to do :)</div>');
+				nothing_to_do();
+				nothing_delegated();				
 			}
 		}
 	});
@@ -46,11 +64,25 @@ erpnext.todo.ToDoItem = Class.extend({
 		}
 		todo.labelclass = label_map[todo.priority];
 		todo.userdate = dateutil.str_to_user(todo.date) || '';
+		
+		todo.fullname = '';
 		if(todo.assigned_by) {
-			todo.fullname = repl("[By %(fullname)s] ", {
-				fullname: wn.boot.user_info[todo.assigned_by].fullname
-			})
-		} else { todo.fullname = ''; }
+			var assigned_by = wn.boot.user_info[todo.assigned_by]
+			todo.fullname = repl("[By %(fullname)s] &nbsp;", {
+				fullname: (assigned_by ? assigned_by.fullname : todo.assigned_by),
+			});
+		}
+		
+		var parent_list = "#todo-list";
+		if(todo.owner !== user) {
+			parent_list = "#assigned-todo-list";
+			var owner = wn.boot.user_info[todo.owner];
+			todo.fullname = repl("[To %(fullname)s] &nbsp;", {
+				fullname: (owner ? owner.fullname : todo.owner),
+			});
+		}
+		parent_list += " div.todo-content";
+		
 		if(todo.reference_name && todo.reference_type) {
 			todo.link = repl('<a href="#!Form/%(reference_type)s/%(reference_name)s">\
 						%(reference_type)s: %(reference_name)s</a>', todo);
@@ -61,16 +93,24 @@ erpnext.todo.ToDoItem = Class.extend({
 			todo.link = '';
 		}
 		if(!todo.description) todo.description = '';
-		$('#todo-list').append(repl('<div class="todoitem">\
+		
+		todo.desc = todo.description.replace(/\n/g, "<br>");
+		
+		$(parent_list).append(repl('\
+			<div class="todoitem">\
+				<span class="label %(labelclass)s">%(priority)s</span>\
 				<span class="description">\
-					<span class="label %(labelclass)s">%(priority)s</span>\
+					<span class="popup-on-click">\
 					<span class="help" style="margin-right: 7px">%(userdate)s</span>\
-					%(fullname)s%(description)s</span>\
-					<span class="ref_link">&rarr; &nbsp;\
+					%(fullname)s%(desc)s\
+					</span>\
+					<span class="ref_link"><br>\
 					%(link)s</span>\
-					<a href="#" class="close">&times;</a>\
-		</div>', todo));
-		$todo = $('div.todoitem:last');
+				</span>\
+				<span class="close-span"><a href="#" class="close">&times;</a></span>\
+			</div>\
+			<div class="todo-separator"></div>', todo));
+		$todo = $(parent_list + ' div.todoitem:last');
 		
 		if(todo.checked) {
 			$todo.find('.description').css('text-decoration', 'line-through');
@@ -79,7 +119,7 @@ erpnext.todo.ToDoItem = Class.extend({
 		if(!todo.reference_type)
 			$todo.find('.ref_link').toggle(false);
 		
-		$todo.find('.description')
+		$todo.find('.popup-on-click')
 			.data('todo', todo)
 			.click(function() {
 				erpnext.todo.make_dialog($(this).data('todo'));

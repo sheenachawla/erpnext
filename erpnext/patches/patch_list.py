@@ -111,7 +111,11 @@ patch_dict = {
 	'12_06'	: [
 		'fetch_organization_from_lead',
 		'copy_uom_for_pur_inv_item',
-		'barcode_in_feature_setup',		
+		'barcode_in_feature_setup',	
+		'reports_list_permission',
+		'support_ticket_autoreply',	
+		'series_unique_patch', 
+		'set_recurring_type',
 	],
 
 }
