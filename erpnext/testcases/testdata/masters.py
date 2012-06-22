@@ -21,278 +21,61 @@
 
 import webnotes
 from webnotes.model.doc import Document
+from webnotes.model.code import get_obj
 
 
-master_groups = {
-	# Company
-	#----------------------------------
-	'company': Document(
-		fielddata={
-			'doctype':'Company',
-			'abbr': 'co',
-			'company_name' : 'comp',
-			'name': 'comp'
-		}
-	),
-	
+masters = [
 	# Customer Group
-	#----------------------------------
-	'customer_group':  Document(
-		fielddata={
-			'doctype':'Customer Group',
-			'customer_group_name' : 'cg',
-			'name': 'cg',
-			'is_group': 'No',
-			'parent_customer_group':'', 
-			'lft' : 1,
-			'rgt': 2
-		}
-	),
-	
-	# Item Group
-	#----------------------------------
-	'item_group': Document(
-		fielddata = {
-			'doctype': 'Item Group',
-			'item_group_name': 'ig',
-			'lft': 1,
-			'rgt': 2,
-			'parent_item_group' : '',
-			'is_group': 'No',
-			'name': 'ig'
-		}
-	),
-	
-	# Warehouse Type
-	#-----------------------------
-	'warehouse_type' : Document(
-		fielddata = {
-			'doctype' : 'Warehouse Type',
-			'name': 'normal',
-			'warehouse_type' : 'normal'
-		}
-	),
-	
-	# Supplier Type
-	#-----------------------------
-	'supplier_type' : Document(
-		fielddata = {
-			'doctype': 'Supplier Type',
-			'supplier_type': 'stype'
-		}
-	)
+	{'doctype':'Customer Group', 'customer_group_name' : 'test_cust_group', 'name': 'test_cust_group', 'is_group': 'No', 'parent_customer_group':'All Customer Groups'}, 
 
-}
+	# item group
+	{'doctype': 'Item Group', 'item_group_name': 'test_item_group', 'parent_item_group' : 'All Item Groups', 'is_group': 'No', 'name': 'test_item_group'},
 
+	# territory
+	{'doctype': 'Territory', 'territory_name': 'test_terr', 'is_group': 'No', 'name': 'test_terr', 'parent_territory': 'All Territories'},
+		
+	# supplier type
+	{'doctype': 'Supplier Type', 'name': 'test_st', 'supplier_type': 'test_st'},
+			
+	# Sales Person
+	{'doctype': 'Sales Person', 'name': 'test_sales_person', 'sales_person_name': 'test_sales_person'},
 
-main_masters = {
 	# Customer
-	#----------------------------------
-	'customer': Document(
-		fielddata={
-			'doctype':'Customer',
-			'docstatus':0,
-			'customer_name' : 'cust',
-			'company' : 'comp',
-			'customer_group' : '',
-			'name': 'cust'
-		}
-	),
-
+	{'doctype':'Customer', 'docstatus':0, 'customer_name' : 'test_customer', 'company' : 'Test Company', 'customer_group' : 'Default Customer Group', 'name': 'test_customer', 'credit_days': 30, 'credit_limit': 100000},
 
 	# Supplier
-	#----------------------------------
-	'supplier': Document(
-		fielddata = {
-			'doctype': 'Supplier',
-			'supplier_name': 'supp',
-			'name': 'supp',	
-			'supplier_type' : 'stype'
-		}
-	),
-	
-	# Customer Account
-	#----------------------------------
-	'customer_acc': Document(
-		fielddata={
-			'doctype':'Account',
-			'docstatus':0,
-			'account_name' : 'cust',
-			'debit_or_credit': 'Debit',
-			'company' : 'comp',
-			'lft': 1,
-			'rgt': 2,
-			'group_or_ledger' : 'Ledger',
-			'is_pl_account': 'No',
-			'name' : 'cust - co'
-		}
-	),
-	
-	# Customer Account
-	#----------------------------------
-	'supplier_acc': Document(
-		fielddata={
-			'doctype':'Account',
-			'docstatus':0,
-			'account_name' : 'supp',
-			'debit_or_credit': 'Credit',
-			'company' : 'comp',
-			'lft': 5,
-			'rgt': 6,
-			'group_or_ledger' : 'Ledger',
-			'is_pl_account': 'No',
-			'name' : 'supp - co'
-		}
-	),	
+	{'doctype': 'Supplier', 'supplier_name': 'test_supplier', 'name': 'test_supplier', 'supplier_type' : 'Default Supplier Type', 'company' : 'Test Company'},
 
 	# Bank Account
-	#----------------------------------
-	'bank_acc': Document(
-		fielddata={
-			'doctype':'Account',
-			'docstatus':0,
-			'account_name' : 'icici',
-			'parent_account': '',
-			'debit_or_credit': 'Debit',
-			'company' : 'comp',
-			'lft': 3,
-			'rgt': 4,
-			'group_or_ledger' : 'Ledger',
-			'is_pl_account': 'No',
-			'name' : 'icici - co'
-		}
-	),
+	{'doctype':'Account', 'docstatus':0, 'account_name' : 'bank_acc', 'parent_account': 'Bank Accounts - TC', 'debit_or_credit': 'Debit', 'company' : 'Test Company', 'group_or_ledger' : 'Ledger', 'is_pl_account': 'No', 'name' : 'bank_acc - TC'},
 
 	# Income Account
-	#----------------------------------
-	'income_acc': Document(
-		fielddata={
-			'doctype':'Account',
-			'docstatus':0,
-			'account_name' : 'income',
-			'debit_or_credit': 'Credit',
-			'company' : 'comp',
-			'lft': 7,
-			'rgt': 8,
-			'group_or_ledger' : 'Ledger',
-			'is_pl_account': 'Yes',
-			'name' : 'income - co'
-		}
-	),
+	{'doctype':'Account', 'docstatus':0, 'account_name' : 'income_acc', 'debit_or_credit': 'Credit', 'company' : 'Test Company', 'group_or_ledger' : 'Ledger', 'is_pl_account': 'Yes', 'name' : 'income_acc - TC', 'parent_account': 'Direct Income - TC'},
 	
 	# Expense Account
-	#----------------------------------
-	'expense_acc': Document(
-		fielddata={
-			'doctype':'Account',
-			'docstatus':0,
-			'account_name' : 'expense',
-			'debit_or_credit': 'Debit',
-			'company' : 'comp',
-			'lft': 9,
-			'rgt': 10,
-			'group_or_ledger' : 'Ledger',
-			'is_pl_account': 'Yes',
-			'name' : 'expense - co'
-		}
-	),
+	{'doctype':'Account', 'docstatus':0, 'account_name' : 'expense_acc', 'debit_or_credit': 'Debit', 'company' : 'Test Company', 'group_or_ledger' : 'Ledger', 'is_pl_account': 'Yes', 'name' : 'expense_acc - TC', 'parent_account': 'Direct Expenses - TC'},
+
+	# Tax Account
+	{'doctype':'Account', 'docstatus':0, 'account_name' : 'tax_acc', 'debit_or_credit': 'Credit', 'company' : 'Test Company', 'group_or_ledger' : 'Ledger', 'is_pl_account': 'No', 'name' : 'tax_acc - TC', 'parent_account': 'Duties and Taxes - TC'},
 
 	# Cost Center
-	#----------------------------------
-	'cost_center': Document(
-		fielddata={
-			'doctype':'Cost Center',
-			'docstatus':0,
-			'cost_center_name' : 'cc',
-			'lft': 1,
-			'rgt': 2,
-			'group_or_ledger' : 'Ledger',
-			'name' : 'cc'
-		}
-	),
-
-	# Item
-	#----------------------------------
-	# Stock item / non-serialized
-
-	'item': [
-		Document(
-			fielddata = {
-				'doctype': 'Item',
-				'docstatus': 0,
-				'name': 'it',
-				'item_name': 'it',
-				'item_code': 'it',
-				'item_group': 'ig',
-				'is_stock_item': 'Yes',
-				'has_serial_no': 'Yes',
-				'stock_uom': 'Nos',
-				'is_sales_item': 'Yes',
-				'is_purchase_item': 'Yes',
-				'is_service_item': 'No',
-				'is_sub_contracted_item': 'No',
-				'is_pro_applicable': 'Yes',
-				'is_manufactured_item': 'Yes'		
-			}
-		),
-		Document(
-			fielddata = {
-				'doctype': 'Item Price',
-				'parentfield': 'ref_rate_details',
-				'parenttype': 'Item',
-				'parent' : 'it',
-				'price_list_name': 'pl',
-				'ref_currency': 'INR',
-				'ref_rate': 100
-			}
-		),
-		Document(
-			fielddata = {
-				'doctype': 'Item Tax',
-				'parentfield': 'item_tax',
-				'parenttype': 'Item',
-				'parent' : 'it',
-				'tax_type' : 'Tax1',
-				'tax_rate': 10
-			}
-		)
-	],
+	{'doctype':'Cost Center', 'docstatus':0, 'cost_center_name' : 'cc', 'group_or_ledger' : 'Ledger', 'name' : 'cc', 'company_name' : 'Test Company', 'company_abbr': 'TC'},
 	
+	#customer contact
+	{'doctype': 'Contact', 'customer': 'test_customer', 'first_name': 'test_contact1', 'email_id': 'nabin@erpnext.com', 'is_primary_contact': '1'},
+	
+	#supplier contact
+	{'doctype': 'Contact', 'supplier': 'test_supplier', 'first_name': 'test_contact2', 'email_id': 'nabin@erpnext.com', 'is_primary_contact': '1'},
+
+	#address
+	# Item
+	# Stock item / non-serialized
+	{'doctype': 'Item', 'docstatus': 0, 'name': 'test_item', 'item_name': 'test_item', 'item_code': 'test_item', 'item_group': 'Default Item Group', 'is_stock_item': 'Yes', 'has_serial_no': 'Yes', 'stock_uom': 'Nos', 'is_sales_item': 'Yes', 'is_purchase_item': 'Yes', 'is_service_item': 'No', 'is_sub_contracted_item': 'No', 'is_pro_applicable': 'Yes', 'is_manufactured_item': 'Yes'},
+	{'doctype': 'Item Price', 'parentfield': 'ref_rate_details', 'parenttype': 'Item', 'parent' : 'test_item', 'price_list_name': 'test_pric_list', 'ref_currency': 'INR', 'ref_rate': 100},
+	{'doctype': 'Item Tax', 'parentfield': 'item_tax', 'parenttype': 'Item', 'parent' : 'test_item', 'tax_type' : 'tax_acc - TC', 'tax_rate': 10},
+
 	# Warehouse
-	#-----------------------------
-	'warehouse': [
-		Document(
-			fielddata = {
-				'doctype': 'Warehouse',
-				'name' : 'wh1',
-				'warehouse_name' : 'wh1',
-				'warehouse_type': 'normal',
-				'company': 'comp'
-			}
-		),
-		Document(
-			fielddata = {
-				'doctype': 'Warehouse',
-				'name' : 'wh2',
-				'warehouse_name' : 'wh2',
-				'warehouse_type': 'normal',
-				'company': 'comp'
-			}
-		)
-	]
-}
+	{'doctype': 'Warehouse', 'warehouse_name': 'test_wh1', 'name': 'test_wh1', 'warehouse_type': 'Stores'},
+	{'doctype': 'Warehouse', 'warehouse_name': 'test_wh2', 'name': 'test_wh2', 'warehouse_type': 'Stores'},	
 
-
-
-# Save all master records
-#----------------------------------
-def create_master_records():
-	for m in master_groups.keys():
-		master_groups[m].save(1)
-
-	for m in main_masters.keys():
-		if type(main_masters[m]) == list:
-			for each in main_masters[m]:
-				each.save(1)
-		else:
-			main_masters[m].save(1)
+]

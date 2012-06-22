@@ -24,11 +24,6 @@ from webnotes.model.doclist import getlist, copy_doclist
 from webnotes.model.code import get_obj, get_server_obj, run_server_obj, updatedb, check_syntax
 from webnotes import session, form, is_testing, msgprint, errprint
 
-set = webnotes.conn.set
-sql = webnotes.conn.sql
-get_value = webnotes.conn.get_value
-in_transaction = webnotes.conn.in_transaction
-convert_to_lists = webnotes.conn.convert_to_lists
 
 # -----------------------------------------------------------------------------------------
 
@@ -39,14 +34,14 @@ class DocType:
 		self.doclist = doclist
 
 	def get_tax_rate(self, tax_type):
-		rate = sql("select tax_rate from tabAccount where name = %s", tax_type)
+		rate = webnotes.conn.sql("select tax_rate from tabAccount where name = %s", tax_type)
 		ret = {
 			'tax_rate'	:	rate and flt(rate[0][0]) or 0
 		}
 		return ret
 
 	def on_update(self):
-		bin = sql("select stock_uom from `tabBin` where item_code = '%s' " % self.doc.item_code)
+		bin = webnotes.conn.sql("select stock_uom from `tabBin` where item_code = '%s' " % self.doc.item_code)
 		if bin and cstr(bin[0][0]) != cstr(self.doc.stock_uom):
 			msgprint("Please Update Stock UOM with the help of Stock UOM Replace Utility.")
 			raise Exception
@@ -81,7 +76,7 @@ class DocType:
 
 	# On delete 1. Delete BIN (if none of the corrosponding transactions present, it gets deleted. if present, rolled back due to exception)
 	def on_trash(self):
-		sql("delete from tabBin where item_code='%s'"%(self.doc.item_code))
+		webnotes.conn.sql("delete from tabBin where item_code='%s'"%(self.doc.item_code))
 
 	# Check whether Ref Rate is not entered twice for same Price List and Currency
 	def check_ref_rate_detail(self):
@@ -104,7 +99,7 @@ class DocType:
 	def check_item_tax(self):
 		check_list=[]
 		for d in getlist(self.doclist,'item_tax'):
-			account_type = sql("select account_type from tabAccount where name = %s",d.tax_type)
+			account_type = webnotes.conn.sql("select account_type from tabAccount where name = %s",d.tax_type)
 			account_type = account_type and account_type[0][0] or ''
 			if account_type not in ['Tax', 'Chargeable']:
 				msgprint("'%s' is not Tax / Chargeable Account"%(d.tax_type))
@@ -118,19 +113,19 @@ class DocType:
 
 	def check_for_active_boms(self, check):
 		if check in ['Is Active', 'Is Purchase Item']:
-			bom_mat = sql("select distinct t1.parent from `tabBOM Item` t1, `tabBOM` t2 where t1.item_code ='%s' and (t1.bom_no = '' or t1.bom_no is NULL) and t2.name = t1.parent and t2.is_active = 'Yes' and t2.docstatus = 1 and t1.docstatus =1 " % self.doc.name )
+			bom_mat = webnotes.conn.sql("select distinct t1.parent from `tabBOM Item` t1, `tabBOM` t2 where t1.item_code ='%s' and (t1.bom_no = '' or t1.bom_no is NULL) and t2.name = t1.parent and t2.is_active = 'Yes' and t2.docstatus = 1 and t1.docstatus =1 " % self.doc.name )
 			if bom_mat and bom_mat[0][0]:
 				msgprint("%s should be 'Yes'. As Item %s is present in one or many Active BOMs." % (cstr(check), cstr(self.doc.name)))
 				raise Exception
 		if check == 'Is Active' or ( check == 'Is Manufactured Item' and self.doc.is_sub_contracted_item != 'Yes') or (check ==	'Is Sub Contracted Item' and self.doc.is_manufactured_item != 'Yes') :
-			bom = sql("select name from `tabBOM` where item = '%s' and is_active ='Yes'" % cstr(self.doc.name))
+			bom = webnotes.conn.sql("select name from `tabBOM` where item = '%s' and is_active ='Yes'" % cstr(self.doc.name))
 			if bom and bom[0][0]:
 				msgprint("%s should be 'Yes'. As Item %s is present in one or many Active BOMs." % (cstr(check), cstr(self.doc.name)))
 				raise Exception
 				
 	def validate_barcode(self):
 		if self.doc.barcode:
-			duplicate = sql("select name from tabItem where barcode = %s and name != %s", (self.doc.barcode, self.doc.name))
+			duplicate = webnotes.conn.sql("select name from tabItem where barcode = %s and name != %s", (self.doc.barcode, self.doc.name))
 			if duplicate:
 				msgprint("Barcode: %s already used in item: %s" % (self.doc.barcode, cstr(duplicate[0][0])), raise_exception = 1)
 
@@ -168,7 +163,7 @@ class DocType:
 
 	def check_non_asset_warehouse(self):
 		if self.doc.is_asset_item == "Yes":
-			existing_qty = sql("select t1.warehouse, t1.actual_qty from tabBin t1, tabWarehouse t2 where t1.item_code=%s and (t2.warehouse_type!='Fixed Asset' or t2.warehouse_type is null) and t1.warehouse=t2.name and t1.actual_qty > 0", self.doc.name)
+			existing_qty = webnotes.conn.sql("select t1.warehouse, t1.actual_qty from tabBin t1, tabWarehouse t2 where t1.item_code=%s and (t2.warehouse_type!='Fixed Asset' or t2.warehouse_type is null) and t1.warehouse=t2.name and t1.actual_qty > 0", self.doc.name)
 			for e in existing_qty:
 				msgprint("%s Units exist in Warehouse %s, which is not an Asset Warehouse." % (e[1],e[0]))
 			if existing_qty:
@@ -178,11 +173,11 @@ class DocType:
 
 	def check_min_inventory_level(self):
 		if self.doc.minimum_inventory_level:
-			total_qty = sql("select sum(projected_qty) from tabBin where item_code = %s",self.doc.name)
+			total_qty = webnotes.conn.sql("select sum(projected_qty) from tabBin where item_code = %s",self.doc.name)
 			if flt(total_qty) < flt(self.doc.minimum_inventory_level):
 				msgprint("Your minimum inventory level is reached")
 				send_to = []
-				send = sql("select t1.email from `tabProfile` t1,`tabUserRole` t2 where t2.role IN ('Material Master Manager','Purchase Manager') and t2.parent = t1.name")
+				send = webnotes.conn.sql("select t1.email from `tabProfile` t1,`tabUserRole` t2 where t2.role IN ('Material Master Manager','Purchase Manager') and t2.parent = t1.name")
 				for d in send:
 					send_to.append(d[0])
 				msg = '''
@@ -198,7 +193,7 @@ Total Available Qty: %s
 				sendmail(send_to, sender='automail@webnotestech.com', subject='Minimum Inventory Level Reached', parts=[['text/plain', msg]])
 
 	def get_file_details(self, arg = ''):
-		file = sql("select file_group, description from tabFile where name = %s", eval(arg)['file_name'], as_dict = 1)
+		file = webnotes.conn.sql("select file_group, description from tabFile where name = %s", eval(arg)['file_name'], as_dict = 1)
 
 		ret = {
 			'file_group'	:	file and file[0]['file_group'] or '',
@@ -212,11 +207,11 @@ Total Available Qty: %s
 			checks if any stock ledger entry exists for this item
 		"""
 
-		sle = sql("select name from `tabStock Ledger Entry` where item_code = %s and ifnull(is_cancelled, 'No') = 'No'", self.doc.name)
+		sle = webnotes.conn.sql("select name from `tabStock Ledger Entry` where item_code = %s and ifnull(is_cancelled, 'No') = 'No'", self.doc.name)
 		return sle and 'exists' or 'not exists'
 
 	def on_rename(self,newdn,olddn):
-		sql("update tabItem set item_code = %s where name = %s", (newdn, olddn))
+		webnotes.conn.sql("update tabItem set item_code = %s where name = %s", (newdn, olddn))
 
 	def make_page(self):
 		if self.doc.show_in_website=='Yes':

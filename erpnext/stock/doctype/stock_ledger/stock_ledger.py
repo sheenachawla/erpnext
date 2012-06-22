@@ -24,9 +24,6 @@ from webnotes.model.doclist import getlist, copy_doclist
 from webnotes.model.code import get_obj, get_server_obj, run_server_obj, updatedb, check_syntax
 from webnotes import session, form, is_testing, msgprint, errprint
 
-set = webnotes.conn.set
-sql = webnotes.conn.sql
-get_value = webnotes.conn.get_value
 in_transaction = webnotes.conn.in_transaction
 convert_to_lists = webnotes.conn.convert_to_lists
 
@@ -71,7 +68,7 @@ class DocType:
 				serial_nos = self.get_sr_no_list(d.serial_no)
 				for s in serial_nos:
 					s = s.strip()
-					sr_war = sql("select warehouse,name from `tabSerial No` where name = '%s'" % (s))
+					sr_war = webnotes.conn.sql("select warehouse,name from `tabSerial No` where name = '%s'" % (s))
 					if not sr_war:
 						msgprint("Serial No %s does not exists"%s, raise_exception = 1)
 					elif not sr_war[0][0]:
@@ -85,8 +82,8 @@ class DocType:
 	# ------------------------------------
 	def validate_serial_no(self, obj, fname):
 		for d in getlist(obj.doclist, fname):
-			is_stock_item = get_value('Item', d.item_code, 'is_stock_item')
-			ar_required = get_value('Item', d.item_code, 'has_serial_no')
+			is_stock_item = webnotes.conn.get_value('Item', d.item_code, 'is_stock_item')
+			ar_required = webnotes.conn.get_value('Item', d.item_code, 'has_serial_no')
 			if cstr(d.serial_no).strip():
 				if is_stock_item != 'Yes':
 					msgprint("Serial No is not required for non-stock item: %s" % d.item_code, raise_exception=1)
@@ -114,7 +111,7 @@ class DocType:
 	# set serial no values
 	# ---------------------
 	def set_pur_serial_no_values(self, obj, serial_no, d, s, new_rec):
-		item_details = sql("select item_group, warranty_period from `tabItem` where name = '%s' and \
+		item_details = webnotes.conn.sql("select item_group, warranty_period from `tabItem` where name = '%s' and \
 			(ifnull(end_of_life,'')='' or end_of_life = '0000-00-00' or end_of_life > now()) " %(d.item_code), as_dict=1)
 		
 		s.purchase_document_type	=	obj.doc.doctype
@@ -147,7 +144,7 @@ class DocType:
 	# update serial no purchase details
 	# ----------------------------------
 	def update_serial_purchase_details(self, obj, d, serial_no, is_submit, purpose = ''):
-		exists = sql("select name, status, docstatus from `tabSerial No` where name = '%s'" % (serial_no))
+		exists = webnotes.conn.sql("select name, status, docstatus from `tabSerial No` where name = '%s'" % (serial_no))
 		if is_submit:
 			if exists and exists[0][2] != 2 and purpose not in ['Material Transfer', 'Sales Return']:
 				msgprint("Serial No: %s already %s" % (serial_no, exists and exists[0][1]), raise_exception = 1)
@@ -161,18 +158,18 @@ class DocType:
 			if exists and exists[0][1] == 'Delivered' and exists[0][2] != 2:
 				msgprint("Serial No: %s is already delivered, you can not cancel the document." % serial_no, raise_exception=1)
 			elif purpose == 'Material Transfer':
-				sql("update `tabSerial No` set status = 'In Store', purchase_document_type = '', purchase_document_no = '', warehouse = '%s' where name = '%s'" % (d.s_warehouse, serial_no))				
+				webnotes.conn.sql("update `tabSerial No` set status = 'In Store', purchase_document_type = '', purchase_document_no = '', warehouse = '%s' where name = '%s'" % (d.s_warehouse, serial_no))				
 			elif purpose == 'Sales Return':
-				sql("update `tabSerial No` set status = 'Delivered', purchase_document_type = '', purchase_document_no = '' where name = '%s'" % serial_no)
+				webnotes.conn.sql("update `tabSerial No` set status = 'Delivered', purchase_document_type = '', purchase_document_no = '' where name = '%s'" % serial_no)
 			else:
-				sql("update `tabSerial No` set docstatus = 2, status = 'Not in Use', purchase_document_type = '', purchase_document_no = '', purchase_date = null, purchase_rate = 0, supplier = null, supplier_name = '', supplier_address = '', warehouse = '' where name = '%s'" % serial_no)
+				webnotes.conn.sql("update `tabSerial No` set docstatus = 2, status = 'Not in Use', purchase_document_type = '', purchase_document_no = '', purchase_date = null, purchase_rate = 0, supplier = null, supplier_name = '', address_display = '', warehouse = '' where name = '%s'" % serial_no)
 
 
 	# -------------------------------
 	# check whether serial no exists
 	# -------------------------------
 	def check_serial_no_exists(self, serial_no, item_code):
-		chk = sql("select name, status, docstatus, item_code from `tabSerial No` where name = %s", (serial_no), as_dict=1)
+		chk = webnotes.conn.sql("select name, status, docstatus, item_code from `tabSerial No` where name = %s", (serial_no), as_dict=1)
 		if not chk:
 			msgprint("Serial No: %s does not exists in the system" % serial_no, raise_exception=1)
 		elif chk and chk[0]['item_code'] != item_code:
@@ -211,7 +208,7 @@ class DocType:
 			self.check_serial_no_exists(serial_no, d.item_code)
 			self.set_delivery_serial_no_values(obj, serial_no)
 		else:
-			sql("update `tabSerial No` set docstatus = 0, status = 'In Store', delivery_document_type = '', delivery_document_no = '', delivery_date = null, customer = null, customer_name = '', delivery_address = '', territory = null where name = '%s'" % (serial_no))
+			webnotes.conn.sql("update `tabSerial No` set docstatus = 0, status = 'In Store', delivery_document_type = '', delivery_document_no = '', delivery_date = null, customer = null, customer_name = '', delivery_address = '', territory = null where name = '%s'" % (serial_no))
 
 
 	# ---------------------
@@ -251,7 +248,7 @@ class DocType:
 			if v['is_cancelled'] == 'Yes':
 				v['actual_qty'] = -flt(v['actual_qty'])
 				# cancel matching entry
-				sql("update `tabStock Ledger Entry` set is_cancelled='Yes' where voucher_no=%s \
+				webnotes.conn.sql("update `tabStock Ledger Entry` set is_cancelled='Yes' where voucher_no=%s \
 					and voucher_type=%s", (v['voucher_no'], v['voucher_type']))
 
 			if v["actual_qty"]:
@@ -269,7 +266,7 @@ class DocType:
 		for k in args.keys():
 			# adds warehouse_type
 			if k == 'warehouse':
-				sle.fields['warehouse_type'] = get_value('Warehouse' , args[k], 'warehouse_type')
+				sle.fields['warehouse_type'] = webnotes.conn.get_value('Warehouse' , args[k], 'warehouse_type')
 			sle.fields[k] = args[k]
 		sle_obj = get_obj(doc=sle)
 		
@@ -282,5 +279,5 @@ class DocType:
 		"""
 		Repost everything!
 		"""
-		for wh in sql("select name from tabWarehouse"):
+		for wh in webnotes.conn.sql("select name from tabWarehouse"):
 			get_obj('Warehouse', wh[0]).repost_stock()

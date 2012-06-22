@@ -82,9 +82,7 @@ class DocType:
 						d.balance = 0
 						d.save(1)
 						cnt += 1
-				if cnt % 100 == 0:
-					sql("commit")
-					sql("start transaction")
+
 		return cnt
 				
 	# Get periods(month and year)

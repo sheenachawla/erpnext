@@ -22,11 +22,6 @@ from webnotes.model.doc import Document, make_autoname
 from webnotes.model.code import get_obj
 from webnotes import msgprint, errprint
 
-set = webnotes.conn.set
-sql = webnotes.conn.sql
-get_value = webnotes.conn.get_value
-convert_to_lists = webnotes.conn.convert_to_lists
-
 # -----------------------------------------------------------------------------------------
 
 class DocType:
@@ -38,11 +33,9 @@ class DocType:
 	def autoname(self):
 		cust_master_name = get_defaults().get('cust_master_name')
 		if cust_master_name == 'Customer Name':
-			# filter out bad characters in name
-			#cust = self.doc.customer_name.replace('&','and').replace('.','').replace("'",'').replace('"','').replace(',','').replace('`','')
 			cust = self.doc.customer_name
 
-			supp = sql("select name from `tabSupplier` where name = %s", (cust))
+			supp = webnotes.conn.sql("select name from `tabSupplier` where name = %s", (cust))
 			supp = supp and supp[0][0] or ''
 			if supp:
 				msgprint("You already have a Supplier with same name")
@@ -58,13 +51,13 @@ class DocType:
 	# get company abbr
 	# -----------------
 	def get_company_abbr(self):
-		return get_value('Company', self.doc.company, 'abbr')
+		return webnotes.conn.get_value('Company', self.doc.company, 'abbr')
 
 	# -----------------------------------------------------------------------------------------------------
 	# get parent account(i.e receivables group from company where default account head need to be created)
 	# -----------------------------------------------------------------------------------------------------
 	def get_receivables_group(self):
-		g = sql("select receivables_group from tabCompany where name=%s", self.doc.company)
+		g = webnotes.conn.sql("select receivables_group from tabCompany where name=%s", self.doc.company)
 		g = g and g[0][0] or '' 
 		if not g:
 			msgprint("Update Company master, assign a default group for Receivables")
@@ -99,10 +92,10 @@ class DocType:
 			address_line = address_line + "\n" + "Phone: " + cstr(self.doc.phone_1)
 		if self.doc.email_id:
 			address_line = address_line + "\n" + "E-mail: " + cstr(self.doc.email_id)
-		set(self.doc,'address', address_line)
+		webnotes.conn.set(self.doc,'address', address_line)
 		
 		telephone = "(O): " + cstr(self.doc.phone_1) +"\n"+ cstr(self.doc.phone_2) + "\n" + "(M): " +	"\n" + "(fax): " + cstr(self.doc.fax_1)
-		set(self.doc,'telephone',telephone)
+		webnotes.conn.set(self.doc,'telephone',telephone)
 
 
 	# ------------------------------------
@@ -130,7 +123,7 @@ class DocType:
 	# create customer contact
 	# ------------------------
 	def create_customer_contact(self):
-		contact = sql("select distinct name from `tabContact` where customer_name=%s", (self.doc.customer_name))
+		contact = webnotes.conn.sql("select distinct name from `tabContact` where customer_name=%s", (self.doc.customer_name))
 		contact = contact and contact[0][0] or ''
 		if not contact:
 			# create primary contact for individual customer 
@@ -139,7 +132,7 @@ class DocType:
 		
 			# create primary contact for lead
 			elif self.doc.lead_name:
-				c_detail = sql("select lead_name, company_name, contact_no, mobile_no, email_id, fax, address from `tabLead` where name =%s", self.doc.lead_name, as_dict=1)
+				c_detail = webnotes.conn.sql("select lead_name, company_name, contact_no, mobile_no, email_id, fax, address from `tabLead` where name =%s", self.doc.lead_name, as_dict=1)
 				self.create_p_contact(c_detail and c_detail[0]['lead_name'] or '', c_detail and c_detail[0]['contact_no'] or '', c_detail and c_detail[0]['email_id'] or '', c_detail and c_detail[0]['mobile_no'] or '', c_detail and c_detail[0]['fax'] or '', c_detail and c_detail[0]['address'] or '')
 
 
@@ -148,7 +141,7 @@ class DocType:
 	# -------------------
 	def update_lead_status(self):
 		if self.doc.lead_name:
-			sql("update `tabLead` set status='Converted' where name = %s", self.doc.lead_name)
+			webnotes.conn.sql("update `tabLead` set status='Converted' where name = %s", self.doc.lead_name)
 
 
 	# -------------------------------------------------------------------------
@@ -157,9 +150,9 @@ class DocType:
 	def create_account_head(self):
 		if self.doc.company :
 			abbr = self.get_company_abbr()
-			if not sql("select name from tabAccount where name=%s", (self.doc.name + " - " + abbr)):
+			if not webnotes.conn.sql("select name from tabAccount where name=%s", (self.doc.name + " - " + abbr)):
 				parent_account = self.get_receivables_group()
-				arg = {'account_name':self.doc.name,'parent_account': parent_account, 'group_or_ledger':'Ledger', 'company':self.doc.company,'account_type':'','tax_rate':'0','master_type':'Customer','master_name':self.doc.name,'address':self.doc.address}
+				arg = {'account_name':self.doc.name,'parent_account': parent_account, 'group_or_ledger':'Ledger', 'company':self.doc.company,'account_type':'','tax_rate':'0','master_type':'Customer','master_name':self.doc.name}
 				# create
 				ac = get_obj('GL Control').add_ac(cstr(arg))
 				msgprint("Account Head created for "+ac)
@@ -171,13 +164,13 @@ class DocType:
 	# update credit days and limit in account
 	# ----------------------------------------
 	def update_credit_days_limit(self):
-		sql("update tabAccount set credit_days = '%s', credit_limit = '%s' where name = '%s'" % (self.doc.credit_days, self.doc.credit_limit, self.doc.name + " - " + self.get_company_abbr()))
+		webnotes.conn.sql("update tabAccount set credit_days = '%s', credit_limit = '%s' where name = '%s'" % (self.doc.credit_days, self.doc.credit_limit, self.doc.name + " - " + self.get_company_abbr()))
 
 
 	#create address and contact from lead
 	def create_lead_address_contact(self):
 		if self.doc.lead_name:
-			details = sql("select name, lead_name, address_line1, address_line2, city, country, state, pincode, phone, mobile_no, fax, email_id from `tabLead` where name = '%s'" %(self.doc.lead_name), as_dict = 1)
+			details = webnotes.conn.sql("select name, lead_name, address_line1, address_line2, city, country, state, pincode, phone, mobile_no, fax, email_id from `tabLead` where name = '%s'" %(self.doc.lead_name), as_dict = 1)
 			d = Document('Address') 
 			d.address_line1 = details[0]['address_line1'] 
 			d.address_line2 = details[0]['address_line2']
@@ -228,15 +221,15 @@ class DocType:
 		self.create_lead_address_contact()
 
 	def delete_customer_address(self):
-		for rec in sql("select * from `tabAddress` where customer='%s'" %(self.doc.name), as_dict=1):
-			sql("delete from `tabAddress` where name=%s",(rec['name']))
+		for rec in webnotes.conn.sql("select * from `tabAddress` where customer='%s'" %(self.doc.name), as_dict=1):
+			webnotes.conn.sql("delete from `tabAddress` where name=%s",(rec['name']))
 	
 	def delete_customer_contact(self):
-		for rec in sql("select * from `tabContact` where customer='%s'" %(self.doc.name), as_dict=1):
-			sql("delete from `tabContact` where name=%s",(rec['name']))
+		for rec in webnotes.conn.sql("select * from `tabContact` where customer='%s'" %(self.doc.name), as_dict=1):
+			webnotes.conn.sql("delete from `tabContact` where name=%s",(rec['name']))
 	
 	def delete_customer_communication(self):
-		webnotes.conn.sql("""\
+		webnotes.conn.webnotes.conn.sql("""\
 			delete from `tabCommunication`
 			where customer = %s and supplier is null""", self.doc.name)
 	
@@ -246,7 +239,7 @@ class DocType:
 		self.delete_customer_contact()
 		self.delete_customer_communication()
 		if self.doc.lead_name:
-			sql("update `tabLead` set status='Interested' where name=%s",self.doc.lead_name)
+			webnotes.conn.sql("update `tabLead` set status='Interested' where name=%s",self.doc.lead_name)
 			
 	# on rename
 	# ---------
@@ -273,7 +266,7 @@ class DocType:
 			('Support Ticket', 'customer'),
 			('Task', 'customer')]
 			for rec in update_fields:
-				sql("update `tab%s` set customer_name = '%s' where %s = '%s'" %(rec[0],newdn,rec[1],olddn))
+				webnotes.conn.sql("update `tab%s` set customer_name = '%s' where %s = '%s'" %(rec[0],newdn,rec[1],olddn))
 				
 		#update master_name in doctype account
-		sql("update `tabAccount` set master_name = '%s', master_type = 'Customer' where master_name = '%s'" %(newdn,olddn))
+		webnotes.conn.sql("update `tabAccount` set master_name = '%s', master_type = 'Customer' where master_name = '%s'" %(newdn,olddn))

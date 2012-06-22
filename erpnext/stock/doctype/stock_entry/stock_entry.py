@@ -24,9 +24,6 @@ from webnotes.model.doclist import getlist, copy_doclist
 from webnotes.model.code import get_obj, get_server_obj, run_server_obj, updatedb, check_syntax
 from webnotes import session, form, is_testing, msgprint, errprint
 
-set = webnotes.conn.set
-sql = webnotes.conn.sql
-get_value = webnotes.conn.get_value
 in_transaction = webnotes.conn.in_transaction
 convert_to_lists = webnotes.conn.convert_to_lists
 	
@@ -52,7 +49,7 @@ class DocType(TransactionBase):
 		import json
 		arg, actual_qty, in_rate = json.loads(arg), 0, 0
 
-		item = sql("select stock_uom, description, item_name from `tabItem` where name = %s and (ifnull(end_of_life,'')='' or end_of_life ='0000-00-00' or end_of_life >	now())", (arg.get('item_code')), as_dict = 1)
+		item = webnotes.conn.sql("select stock_uom, description, item_name from `tabItem` where name = %s and (ifnull(end_of_life,'')='' or end_of_life ='0000-00-00' or end_of_life >	now())", (arg.get('item_code')), as_dict = 1)
 		if not item: 
 			msgprint("Item is not active", raise_exception=1)
 			
@@ -79,7 +76,7 @@ class DocType(TransactionBase):
 	# ----------------
 	def get_uom_details(self, arg = ''):
 		arg, ret = eval(arg), {}
-		uom = sql("select conversion_factor from `tabUOM Conversion Detail` where parent = %s and uom = %s", (arg['item_code'],arg['uom']), as_dict = 1)
+		uom = webnotes.conn.sql("select conversion_factor from `tabUOM Conversion Detail` where parent = %s and uom = %s", (arg['item_code'],arg['uom']), as_dict = 1)
 		if not uom:
 			msgprint("There is no Conversion Factor for UOM '%s' in Item '%s'" % (arg['uom'], arg['item_code']))
 			ret = {'uom' : ''}
@@ -111,7 +108,7 @@ class DocType(TransactionBase):
 	# Get stock qty on any date
 	# ---------------------------
 	def get_as_on_stock(self, item, wh, dt, tm):
-		bin = sql("select name from tabBin where item_code = %s and warehouse = %s", (item, wh))
+		bin = webnotes.conn.sql("select name from tabBin where item_code = %s and warehouse = %s", (item, wh))
 		bin_id = bin and bin[0][0] or ''
 		prev_sle = bin_id and get_obj('Bin', bin_id).get_prev_sle(dt, tm) or {}		
 		qty = flt(prev_sle.get('bin_aqat', 0))
@@ -147,7 +144,7 @@ class DocType(TransactionBase):
 	def update_only_remaining_qty(self):
 		""" Only pending raw material to be issued to shop floor """
 		already_issued_item = {}
-		for t in sql("""select t1.item_code, sum(t1.qty) from `tabStock Entry Detail` t1, `tabStock Entry` t2
+		for t in webnotes.conn.sql("""select t1.item_code, sum(t1.qty) from `tabStock Entry Detail` t1, `tabStock Entry` t2
 				where t1.parent = t2.name and t2.production_order = %s and t2.process = 'Material Transfer' 
 				and t2.docstatus = 1 group by t1.item_code""", self.doc.production_order):
 			already_issued_item[t[0]] = flt(t[1])
@@ -168,7 +165,7 @@ class DocType(TransactionBase):
 		if consider_sa_items_as_rm == 'Yes':
 			# Get all raw materials considering SA items as raw materials, 
 			# so no childs of SA items
-			fl_bom_sa_items = sql("""
+			fl_bom_sa_items = webnotes.conn.sql("""
 				select item_code, ifnull(sum(qty_consumed_per_unit), 0) * '%s', description, stock_uom 
 				from `tabBOM Item` 
 				where parent = '%s' and docstatus < 2 
@@ -179,7 +176,7 @@ class DocType(TransactionBase):
 
 		else:
 			# get all raw materials with sub assembly childs					
-			fl_bom_sa_child_item = sql("""
+			fl_bom_sa_child_item = webnotes.conn.sql("""
 				select 
 					item_code,ifnull(sum(qty_consumed_per_unit),0)*%s as qty,description,stock_uom 
 				from 
@@ -253,7 +250,7 @@ class DocType(TransactionBase):
 			fg_item_dict = {cstr(pro_obj.doc.production_item) : [self.doc.fg_completed_qty, pro_obj.doc.description, pro_obj.doc.stock_uom]}
 		elif self.doc.purpose == 'Other' and self.doc.bom_no:
 			sw, tw = '', ''
-			item = sql("select item, description, uom from `tabBOM` where name = %s", self.doc.bom_no, as_dict=1)
+			item = webnotes.conn.sql("select item, description, uom from `tabBOM` where name = %s", self.doc.bom_no, as_dict=1)
 			fg_item_dict = {item[0]['item'] : [self.doc.fg_completed_qty, item[0]['description'], item[0]['uom']]}
 
 		if fg_item_dict:
@@ -374,10 +371,10 @@ class DocType(TransactionBase):
 			if not (d.s_warehouse or d.t_warehouse):
 				msgprint("Atleast one warehouse is mandatory for Stock Entry ")
 				raise Exception
-			if d.s_warehouse and not sql("select name from tabWarehouse where name = '%s'" % d.s_warehouse):
+			if d.s_warehouse and not webnotes.conn.sql("select name from tabWarehouse where name = '%s'" % d.s_warehouse):
 				msgprint("Invalid Warehouse: %s" % self.doc.s_warehouse)
 				raise Exception
-			if d.t_warehouse and not sql("select name from tabWarehouse where name = '%s'" % d.t_warehouse):
+			if d.t_warehouse and not webnotes.conn.sql("select name from tabWarehouse where name = '%s'" % d.t_warehouse):
 				msgprint("Invalid Warehouse: %s" % self.doc.t_warehouse)
 				raise Exception
 			if d.s_warehouse == d.t_warehouse:
@@ -499,7 +496,7 @@ class DocType(TransactionBase):
 	def get_cust_values(self):
 		tbl = self.doc.delivery_note_no and 'Delivery Note' or 'Sales Invoice'
 		record_name = self.doc.delivery_note_no or self.doc.sales_invoice_no
-		res = sql("select customer,customer_name, customer_address from `tab%s` where name = '%s'" % (tbl, record_name))
+		res = webnotes.conn.sql("select customer,customer_name, customer_address from `tab%s` where name = '%s'" % (tbl, record_name))
 		ret = {
 			'customer'				 : res and res[0][0] or '',
 			'customer_name'		: res and res[0][1] or '',
@@ -509,7 +506,7 @@ class DocType(TransactionBase):
 
 
 	def get_cust_addr(self):
-		res = sql("select customer_name from `tabCustomer` where name = '%s'"%self.doc.customer)
+		res = webnotes.conn.sql("select customer_name from `tabCustomer` where name = '%s'"%self.doc.customer)
 		addr = self.get_address_text(customer = self.doc.customer)
 		ret = { 
 			'customer_name'		: res and res[0][0] or '',
@@ -520,7 +517,7 @@ class DocType(TransactionBase):
 
 		
 	def get_supp_values(self):
-		res = sql("select supplier,supplier_name,supplier_address from `tabPurchase Receipt` where name = '%s'"%self.doc.purchase_receipt_no)
+		res = webnotes.conn.sql("select supplier,supplier_name,supplier_address from `tabPurchase Receipt` where name = '%s'"%self.doc.purchase_receipt_no)
 		ret = {
 			'supplier' : res and res[0][0] or '',
 			'supplier_name' :res and res[0][1] or '',
@@ -529,7 +526,7 @@ class DocType(TransactionBase):
 		
 
 	def get_supp_addr(self):
-		res = sql("select supplier_name,address from `tabSupplier` where name = '%s'"%self.doc.supplier)
+		res = webnotes.conn.sql("select supplier_name,address from `tabSupplier` where name = '%s'"%self.doc.supplier)
 		addr = self.get_address_text(supplier = self.doc.supplier)
 		ret = {
 			'supplier_name' : res and res[0][0] or '',

@@ -1,4 +1,3 @@
-
 import unittest, sys
 import os
 sys.path.append('lib/py')
@@ -10,6 +9,7 @@ def install_erpnext(rootpwd, dbname, pwd):
 	os.system('python install_erpnext.py %s %s %s' % (rootpwd, dbname, pwd))
 	#setup
 	webnotes.connect()
+	print "Setting up account..."
 	setup_account()
 	webnotes.conn.close()
 	
@@ -31,8 +31,13 @@ def setup_account():
 	get_obj('Setup Control').setup_account(json.dumps(args))
 
 #---------------------------------------------------------------
+# Import all test files here
 
-from test_account_setup import *
+#from test_account_setup import *
+#from test_stock_entry import *
+#from webnotes.utils.nestedset import *
+from test_masters import *
+
 
 def setup_options():
 	from optparse import OptionParser
@@ -43,13 +48,19 @@ def setup_options():
 		
 	return parser.parse_args()
 
+
 def run():
-	(options, args) = setup_options()
+	options, args = setup_options()
 	
 	if options.install:
 		install_erpnext(options.install[0], options.install[1], options.install[2])
-		
+	
+	# delete all command line arguments before run testcases
+	del sys.argv[1:]
+	
+	webnotes.connect()
 	unittest.main()
+	webnotes.conn.close()
 
 if __name__ == '__main__':
 	run()

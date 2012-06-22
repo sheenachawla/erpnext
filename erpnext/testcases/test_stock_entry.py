@@ -15,52 +15,25 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import unittest
+import sys
+sys.path.append('lib/py')
+sys.path.append('erpnext')
 
 import webnotes
-import webnotes.profile
-webnotes.user = webnotes.profile.Profile()
-
 
 from webnotes.model.doc import Document
 from webnotes.model.code import get_obj
 from webnotes.utils import cstr, flt
 from webnotes.model.doclist import getlist
-sql = webnotes.conn.sql
 
-from sandbox.testdata.masters import *
-from sandbox.testdata import stock_entry
+from testdata.masters import *
+from testdata import stock_entry
 #----------------------------------------------------------
+from utils import TestBase
 
-
-class TestStockEntry(unittest.TestCase):
-	#===========================================================================
-	def assertDoc(self, lst):
-		"""assert all values"""
-		for d in lst:
-			cl, vl = [], []
-			for k in d.keys():
-				if k!='doctype':
-					cl.append('%s=%s' % (k, '%s'))
-					vl.append(d[k])
-
-			self.assertTrue(sql("select name from `tab%s` where %s limit 1" % (d['doctype'], ' and '.join(cl)), vl))
-			
-	#===========================================================================
-	def assertCount(self, lst):
-		"""assert all values"""
-		for d in lst:
-			cl, vl = [], []
-			for k in d[0].keys():
-				if k!='doctype':
-					cl.append('%s=%s' % (k, '%s'))
-					vl.append(d[0][k])
-
-			self.assertTrue(sql("select count(name) from `tab%s` where %s limit 1" % (d[0]['doctype'], ' and '.join(cl)), vl)[0][0] == d[1])
-		
-	#===========================================================================
+class TestStockEntry(TestBase):
 	def setUp(self):
-		print "====================================="
-		webnotes.conn.begin()		
+		TestBase.setUp(self)
 		create_master_records()
 		print 'Master Data Created'
 		
@@ -226,16 +199,15 @@ class TestStockEntry(unittest.TestCase):
 		self.save_stock_entry('Material Receipt')
 		mr = get_obj('Stock Entry', stock_entry.mr[0].name, with_children=1)
 		mr = self.submit_stock_entry(mr)
-		
+				
 		# submitted 2nd MR
 		for each in stock_entry.mr1:
 			each.save(1)
 		for t in stock_entry.mr1[1:]:
-			sql("update `tabStock Entry Detail` set parent = '%s' where name = '%s'" % (stock_entry.mr1[0].name, t.name))
+			webnotes.conn.sql("update `tabStock Entry Detail` set parent = '%s' where name = '%s'" % (stock_entry.mr1[0].name, t.name))
 		
 		mr1 = get_obj('Stock Entry', stock_entry.mr1[0].name, with_children=1)
 		mr1 = self.submit_stock_entry(mr1)
-
 		
 		# submitted MTN
 		self.save_stock_entry('Material Transfer')
@@ -259,11 +231,10 @@ class TestStockEntry(unittest.TestCase):
 			{'doctype':'Bin', 'actual_qty':0, 'item_code':'it', 'warehouse':'wh1'},
 			{'doctype':'Bin', 'actual_qty':5, 'item_code':'it', 'warehouse':'wh2'}
 		])
-		
 		# serial no		
 		self.assertCount([
-			[{'doctype': 'Serial No', 'item_code': 'it', 'warehouse': 'wh1', 'status': 'In Store', 'docstatus': 0}, 0], 
-			[{'doctype': 'Serial No', 'item_code': 'it', 'warehouse': 'wh2', 'status': 'In Store', 'docstatus': 0}, 5]
+			[{'doctype': 'Serial No', 'item_code': 'it', 'warehouse': 'wh1', 'status': 'In Store', 'docstatus': 0}, 5], 
+			[{'doctype': 'Serial No', 'item_code': 'it', 'warehouse': 'wh2', 'status': 'In Store', 'docstatus': 0}, 0]
 		])
 		
 	#===========================================================================
@@ -279,7 +250,7 @@ class TestStockEntry(unittest.TestCase):
 			each.save(1)
 
 		for t in data[1:]:
-			sql("update `tabStock Entry Detail` set parent = '%s' where name = '%s'" % (data[0].name, t.name))
+			webnotes.conn.sql("update `tabStock Entry Detail` set parent = '%s' where name = '%s'" % (data[0].name, t.name))
 		print "Stock Entry Created"
 		
 		
@@ -306,10 +277,6 @@ class TestStockEntry(unittest.TestCase):
 		
 		print "Stock Entry Cancelled"
 		return ste
-		
-	#===========================================================================
-	def tearDown(self):
-		webnotes.conn.rollback()
 
 
 	# Expected Result Set
@@ -490,3 +457,7 @@ class TestStockEntry(unittest.TestCase):
 		}
 		
 		return expected_sle[action]
+
+
+if __name__ == '__main__':
+	unittest.main()

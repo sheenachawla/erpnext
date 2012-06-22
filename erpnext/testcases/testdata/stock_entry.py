@@ -23,11 +23,11 @@ mr = [
 	Document(
 		fielddata = {
 			'doctype': 'Stock Entry',
-			'posting_date': '2011-09-01',
-			'transfer_date': '2011-09-01',
+			'posting_date': '2012-09-01',
+			'transfer_date': '2012-09-01',
 			'posting_time': '12:00',
-			'company': 'comp',
-			'fiscal_year' : '2011-2012',
+			'company': 'Test Company',
+			'fiscal_year' : '2012-2013',
 			'purpose': 'Material Receipt',
 			'name': 'mr'
 		}
@@ -54,11 +54,11 @@ mr1 = [
 	Document(
 		fielddata = {
 			'doctype': 'Stock Entry',
-			'posting_date': '2011-09-01',
-			'transfer_date': '2011-09-01',
+			'posting_date': '2012-09-01',
+			'transfer_date': '2012-09-01',
 			'posting_time': '12:00',
-			'company': 'comp',
-			'fiscal_year' : '2011-2012',
+			'company': 'Test Company',
+			'fiscal_year' : '2012-2013',
 			'purpose': 'Material Receipt',
 			'name': 'mr1'
 		}
@@ -89,11 +89,11 @@ mtn = [
 	Document(
 		fielddata = {
 			'doctype': 'Stock Entry',
-			'posting_date': '2011-09-01',
-			'transfer_date': '2011-09-01',
+			'posting_date': '2012-09-01',
+			'transfer_date': '2012-09-01',
 			'posting_time': '12:00',
-			'company': 'comp',
-			'fiscal_year' : '2011-2012',
+			'company': 'Test Company',
+			'fiscal_year' : '2012-2013',
 			'purpose': 'Material Transfer',
 			'name': 'mtn'
 		}
@@ -124,11 +124,11 @@ mi = [
 	Document(
 		fielddata = {
 			'doctype': 'Stock Entry',
-			'posting_date': '2011-09-01',
-			'transfer_date': '2011-09-01',
+			'posting_date': '2012-09-01',
+			'transfer_date': '2012-09-01',
 			'posting_time': '14:00',
-			'company': 'comp',
-			'fiscal_year' : '2011-2012',
+			'company': 'Test Company',
+			'fiscal_year' : '2012-2013',
 			'purpose': 'Material Issue',
 			'name': 'mi'
 		}

@@ -24,9 +24,6 @@ from webnotes.model.doclist import getlist, copy_doclist
 from webnotes.model.code import get_obj, get_server_obj, run_server_obj, updatedb, check_syntax
 from webnotes import session, form, is_testing, msgprint, errprint
 
-set = webnotes.conn.set
-sql = webnotes.conn.sql
-get_value = webnotes.conn.get_value
 in_transaction = webnotes.conn.in_transaction
 convert_to_lists = webnotes.conn.convert_to_lists
 	
@@ -39,13 +36,13 @@ class DocType:
 		self.nsm_parent_field = 'parent_account'
 
 	def autoname(self):
-		company_abbr = sql("select abbr from tabCompany where name=%s", self.doc.company)[0][0]
+		company_abbr = webnotes.conn.sql("select abbr from tabCompany where name=%s", self.doc.company)[0][0]
 		self.doc.name = self.doc.account_name.strip() + ' - ' + company_abbr
 
 	# Get customer/supplier address
 	# ==================================================================
 	def get_address(self):		
-		add=sql("Select address from `tab%s` where name='%s'"%(self.doc.master_type,self.doc.master_name))
+		add=webnotes.conn.sql("Select address from `tab%s` where name='%s'"%(self.doc.master_type,self.doc.master_name))
 		ret={'address':add[0][0]}
 		return ret
 
@@ -67,7 +64,7 @@ class DocType:
 	# ==================================================================
 	def validate_parent(self):
 		if self.doc.parent_account:
-			par = sql("select name, group_or_ledger, is_pl_account, debit_or_credit from tabAccount where name =%s",self.doc.parent_account)
+			par = webnotes.conn.sql("select name, group_or_ledger, is_pl_account, debit_or_credit from tabAccount where name =%s",self.doc.parent_account)
 			if not par:
 				msgprint("Parent account does not exists", raise_exception=1)
 			elif par and par[0][0] == self.doc.name:
@@ -83,7 +80,7 @@ class DocType:
 	# Account name must be unique
 	# ==================================================================
 	def validate_duplicate_account(self):
-		if (self.doc.__islocal or (not self.doc.name)) and sql("select name from tabAccount where account_name=%s and company=%s", (self.doc.account_name, self.doc.company)):
+		if (self.doc.__islocal or (not self.doc.name)) and webnotes.conn.sql("select name from tabAccount where account_name=%s and company=%s", (self.doc.account_name, self.doc.company)):
 			msgprint("Account Name already exists, please rename", raise_exception=1)
 				
 	# validate root details
@@ -130,30 +127,30 @@ class DocType:
 	# Check if any previous balance exists
 	# ==================================================================
 	def check_gle_exists(self):
-		exists = sql("select name from `tabGL Entry` where account = '%s' and ifnull(is_cancelled, 'No') = 'No'" % (self.doc.name))
+		exists = webnotes.conn.sql("select name from `tabGL Entry` where account = '%s' and ifnull(is_cancelled, 'No') = 'No'" % (self.doc.name))
 		return exists and exists[0][0] or ''
 
 	# check if child exists
 	# ==================================================================
 	def check_if_child_exists(self):
-		return sql("select name from `tabAccount` where parent_account = %s and docstatus != 2", self.doc.name)
+		return webnotes.conn.sql("select name from `tabAccount` where parent_account = %s and docstatus != 2", self.doc.name)
 	
 	# Update balance
 	# ==================================================================
 	def update_balance(self, fy, period_det, flag = 1):
 		# update in all parents
 		for p in period_det:
-			sql("update `tabAccount Balance` t1, `tabAccount` t2 set t1.balance = t1.balance + (%s), t1.opening = t1.opening + (%s), t1.debit = t1.debit + (%s), t1.credit = t1.credit + (%s) where t1.period = %s and t1.account = t2.name and t2.lft<=%s and t2.rgt>=%s", (flt(flag)*flt(p[1]), flt(flag)*flt(p[2]), flt(flag)*flt(p[3]), flt(flag)*flt(p[4]), p[0], self.doc.lft, self.doc.rgt))
+			webnotes.conn.sql("update `tabAccount Balance` t1, `tabAccount` t2 set t1.balance = t1.balance + (%s), t1.opening = t1.opening + (%s), t1.debit = t1.debit + (%s), t1.credit = t1.credit + (%s) where t1.period = %s and t1.account = t2.name and t2.lft<=%s and t2.rgt>=%s", (flt(flag)*flt(p[1]), flt(flag)*flt(p[2]), flt(flag)*flt(p[3]), flt(flag)*flt(p[4]), p[0], self.doc.lft, self.doc.rgt))
 
 
 	# change parent balance
 	# ==================================================================
 	def change_parent_bal(self):
 		period_det = []
-		fy = sql("select name from `tabFiscal Year` where if(ifnull(is_fiscal_year_closed, 'No'),ifnull(is_fiscal_year_closed, 'No'), 'No') = 'No'")
+		fy = webnotes.conn.sql("select name from `tabFiscal Year` where if(ifnull(is_fiscal_year_closed, 'No'),ifnull(is_fiscal_year_closed, 'No'), 'No') = 'No'")
 		for f in fy:
 			# get my opening, balance
-			per = sql("select period, balance, opening, debit, credit from `tabAccount Balance` where account = %s and fiscal_year = %s", (self.doc.name, f[0]))
+			per = webnotes.conn.sql("select period, balance, opening, debit, credit from `tabAccount Balance` where account = %s and fiscal_year = %s", (self.doc.name, f[0]))
 			for p in per:
 				period_det.append([p[0], p[1], p[2], p[3], p[4]])
 
@@ -189,9 +186,9 @@ class DocType:
 	# Add current fiscal year balance
 	# ==================================================================
 	def set_year_balance(self):
-		p = sql("select name, start_date, end_date, fiscal_year from `tabPeriod` where docstatus != 2 and period_type in ('Month', 'Year')")
+		p = webnotes.conn.sql("select name, start_date, end_date, fiscal_year from `tabPeriod` where docstatus != 2 and period_type in ('Month', 'Year')")
 		for d in p:
-			if not sql("select name from `tabAccount Balance` where account=%s and period=%s", (self.doc.name, d[0])):
+			if not webnotes.conn.sql("select name from `tabAccount Balance` where account=%s and period=%s", (self.doc.name, d[0])):
 				ac = Document('Account Balance')
 				ac.account = self.doc.name
 				ac.period = d[0]
@@ -223,7 +220,7 @@ class DocType:
 	# ==================================================================
 	def get_authorized_user(self):
 		# Check logged-in user is authorized
-		if get_value('Global Defaults', None, 'credit_controller') in webnotes.user.get_roles():
+		if webnotes.conn.get_value('Global Defaults', None, 'credit_controller') in webnotes.user.get_roles():
 			return 1
 			
 	# Check Credit limit for customer
@@ -232,10 +229,10 @@ class DocType:
 		# Get credit limit
 		credit_limit_from = 'Customer'
 
-		cr_limit = sql("select t1.credit_limit from tabCustomer t1, `tabAccount` t2 where t2.name='%s' and t1.name = t2.master_name" % account)
+		cr_limit = webnotes.conn.sql("select t1.credit_limit from tabCustomer t1, `tabAccount` t2 where t2.name='%s' and t1.name = t2.master_name" % account)
 		credit_limit = cr_limit and flt(cr_limit[0][0]) or 0
 		if not credit_limit:
-			credit_limit = get_value('Company', company, 'credit_limit')
+			credit_limit = webnotes.conn.get_value('Company', company, 'credit_limit')
 			credit_limit_from = 'global settings in the Company'
 		
 		# If outstanding greater than credit limit and not authorized person raise exception
@@ -255,7 +252,7 @@ class DocType:
 	# get current year balance
 	# ==================================================================
 	def get_curr_bal(self):
-		bal = sql("select balance from `tabAccount Balance` where period = '%s' and parent = '%s'" % (get_defaults()['fiscal_year'], self.doc.name),debug=0)
+		bal = webnotes.conn.sql("select balance from `tabAccount Balance` where period = '%s' and parent = '%s'" % (get_defaults()['fiscal_year'], self.doc.name),debug=0)
 		return bal and flt(bal[0][0]) or 0
 
 	# On Trash
@@ -265,14 +262,14 @@ class DocType:
 		self.check_balance_before_trash()
 		
 		# rebuild tree
-		set(self.doc,'old_parent', '')
+		webnotes.conn.set(self.doc,'old_parent', '')
 		self.update_nsm_model()
 
 		# delete all cancelled gl entry of this account
-		sql("delete from `tabGL Entry` where account = %s and ifnull(is_cancelled, 'No') = 'Yes'", self.doc.name)
+		webnotes.conn.sql("delete from `tabGL Entry` where account = %s and ifnull(is_cancelled, 'No') = 'Yes'", self.doc.name)
 
 		#delete Account Balance
-		sql("delete from `tabAccount Balance` where account = %s", self.doc.name)
+		webnotes.conn.sql("delete from `tabAccount Balance` where account = %s", self.doc.name)
 
 	# On restore
 	# ==================================================================
@@ -285,7 +282,7 @@ class DocType:
 	# on rename
 	# ---------
 	def on_rename(self,newdn,olddn):
-		company_abbr = sql("select tc.abbr from `tabAccount` ta, `tabCompany` tc where ta.company = tc.name and ta.name=%s", olddn)[0][0]
+		company_abbr = webnotes.conn.sql("select tc.abbr from `tabAccount` ta, `tabCompany` tc where ta.company = tc.name and ta.name=%s", olddn)[0][0]
 		
 		newdnchk = newdn.split(" - ")	
 
@@ -293,4 +290,4 @@ class DocType:
 			msgprint("Please add company abbreviation <b>%s</b>" %(company_abbr), raise_exception=1)
 		else:
 			account_name = " - ".join(newdnchk[:-1])
-			sql("update `tabAccount` set account_name = '%s' where name = '%s'" %(account_name,olddn))				
+			webnotes.conn.sql("update `tabAccount` set account_name = '%s' where name = '%s'" %(account_name,olddn))				

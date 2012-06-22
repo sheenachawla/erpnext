@@ -18,10 +18,7 @@
 import webnotes
 
 from webnotes.utils import cstr, cint, flt, cstr, getdate
-
-sql = webnotes.conn.sql
-get_value = webnotes.conn.get_value
-msgprint = webnotes.msgprint
+from webnotes import msgprint
 
 # -----------------------------------------------------------------------------------------
 
@@ -34,7 +31,7 @@ class DocType:
 	#check for item quantity available in stock
 	def actual_amt_check(self):
 		if self.doc.batch_no:
-			batch_bal = flt(sql("select sum(actual_qty) from `tabStock Ledger Entry` where warehouse = '%s' and item_code = '%s' and batch_no = '%s'"%(self.doc.warehouse,self.doc.item_code,self.doc.batch_no))[0][0])
+			batch_bal = flt(webnotes.conn.sql("select sum(actual_qty) from `tabStock Ledger Entry` where warehouse = '%s' and item_code = '%s' and batch_no = '%s'"%(self.doc.warehouse,self.doc.item_code,self.doc.batch_no))[0][0])
 			self.doc.fields.update({'batch_bal': batch_bal})
 
 			if (batch_bal + self.doc.actual_qty) < 0:
@@ -54,14 +51,14 @@ class DocType:
 			if self.doc.fields.get(k)==None:
 				msgprint("Stock Ledger Entry: '%s' is mandatory" % k, raise_exception = 1)
 			elif k == 'warehouse':
-				if not sql("select name from tabWarehouse where name = '%s'" % self.doc.fields.get(k)):
+				if not webnotes.conn.sql("select name from tabWarehouse where name = '%s'" % self.doc.fields.get(k)):
 					msgprint("Warehouse: '%s' does not exist in the system. Please check." % self.doc.fields.get(k), raise_exception = 1)
 
 	# validate for item
 	# -----------------
 	
 	def validate_item(self):
-		item_det = sql("select name, has_batch_no, docstatus from tabItem where name = '%s'" % self.doc.item_code)
+		item_det = webnotes.conn.sql("select name, has_batch_no, docstatus from tabItem where name = '%s'" % self.doc.item_code)
 
 		# check item exists
 		if item_det:
@@ -80,15 +77,15 @@ class DocType:
 				raise Exception
 		
 			# check if batch belongs to item
-			if not sql("select name from `tabBatch` where item='%s' and name ='%s' and docstatus != 2" % (self.doc.item_code, self.doc.batch_no)):
+			if not webnotes.conn.sql("select name from `tabBatch` where item='%s' and name ='%s' and docstatus != 2" % (self.doc.item_code, self.doc.batch_no)):
 				msgprint("'%s' is not a valid Batch Number for Item '%s'" % (self.doc.batch_no, self.doc.item_code), raise_exception = 1)
 	
 	# Nobody can do SL Entries where posting date is before freezing date except authorized person
 	#----------------------------------------------------------------------------------------------
 	def check_stock_frozen_date(self):
-		stock_frozen_upto = get_value('Global Defaults', None, 'stock_frozen_upto') or ''
+		stock_frozen_upto = webnotes.conn.get_value('Global Defaults', None, 'stock_frozen_upto') or ''
 		if stock_frozen_upto:
-			stock_auth_role = get_value('Global Defaults', None,'stock_auth_role')
+			stock_auth_role = webnotes.conn.get_value('Global Defaults', None,'stock_auth_role')
 			if getdate(self.doc.posting_date) <= getdate(stock_frozen_upto) and not stock_auth_role in webnotes.user.get_roles():
 				msgprint("You are not authorized to do / modify back dated stock entries before %s" % getdate(stock_frozen_upto).strftime('%d-%m-%Y'), raise_exception=1)
 

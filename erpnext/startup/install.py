@@ -68,21 +68,26 @@ def update_patch_log():
 
 
 def create_doc(records):
-	webnotes.conn.begin()
 	for data in records:
 		if data.get('name'):
 			if not webnotes.conn.exists(data['doctype'], data.get('name')):
 				create_single_doc(data)
 		elif not webnotes.conn.exists(data):
 			create_single_doc(data)
-	webnotes.conn.commit()
 
 			
 def	create_single_doc(data):
 	from webnotes.model.doc import Document
+	from webnotes.model.code import get_obj
+	
 	d = Document(data['doctype'])
 	d.fields.update(data)
 	d.save()
+	doc_obj = get_obj(data['doctype'], d.name, with_children=1)
+	if hasattr(doc_obj, 'validate'):
+		doc_obj.validate()
+	if hasattr(doc_obj, 'on_update'):
+		doc_obj.on_update()
 	print 'Created %(doctype)s %(name)s' % d.fields
 
 	
@@ -117,7 +122,10 @@ def create_default_roles():
 		{"doctype":"Role", "role_name":"Blogger", "name":"Blogger"},
 		{"doctype":"Role", "role_name":"Website Manager", "name":"Website Manager"}
 	]
+	webnotes.conn.begin()
 	create_doc(roles)
+	webnotes.conn.commit()
+	
 
 def create_default_master_records():
 	records = [
@@ -749,5 +757,6 @@ def create_default_master_records():
 		{'voucher_type': 'doctype', 'doctype': 'GL Mapper Detail', 'voucher_no': 'name', 'against_voucher': 'name', 'transaction_date': 'voucher_date', 'debit': 'grand_total', 'parent': 'Sales Invoice', 'company': 'company', 'aging_date': 'aging_date', 'fiscal_year': 'fiscal_year', 'remarks': 'remarks', 'account': 'debit_to', 'idx': '3', 'against_voucher_type': "value:'Sales Invoice'", 'against': 'against_income_account', 'credit': 'value:0', 'parenttype': 'GL Mapper', 'is_opening': 'is_opening', 'posting_date': 'posting_date', 'parentfield': 'fields'},
 
 	]
-	
+	webnotes.conn.begin()
 	create_doc(records)
+	webnotes.conn.commit()

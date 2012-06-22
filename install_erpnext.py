@@ -1,9 +1,14 @@
 #!/usr/bin/python
-import os, commands
-# ask for root mysql password
-import getpass
 
-root_pwd = None
+import os, commands
+import getpass, sys
+
+root_pwd, new_dbname, new_dbpassword = None, None, None
+
+if len(sys.argv) > 1:
+	root_pwd, new_dbname, new_dbpassword = sys.argv[1], sys.argv[2], sys.argv[3]
+
+# ask for root mysql password
 while not root_pwd:
 	root_pwd = getpass.getpass("MySQL Root user's Password: ")
 	
@@ -14,12 +19,10 @@ if "access denied" in op.lower():
 	raise Exception("Incorrect MySQL Root user's password")
 
 # ask for new dbname
-new_dbname = None
 while not new_dbname:
 	new_dbname = raw_input("New ERPNext Database Name: ")
 
 # ask for new dbpassword
-new_dbpassword = None
 while not new_dbpassword:
 	new_dbpassword = raw_input("New ERPNext Database's Password: ")
 
@@ -88,7 +91,6 @@ if not os.path.exists(os.path.join(erpnext_path, 'conf.py')):
 		new_conf.write(content)	
 
 # install db
-import sys
 sys.path.append(erpnext_path)
 sys.path.append(os.path.join(erpnext_path, 'lib', 'py'))
 import conf

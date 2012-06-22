@@ -25,12 +25,6 @@ from webnotes.model.code import get_obj, get_server_obj, run_server_obj, updated
 from webnotes import session, form, is_testing, msgprint, errprint
 
 
-set = webnotes.conn.set
-sql = webnotes.conn.sql
-get_value = webnotes.conn.get_value
-
-
-
 # -----------------------------------------------------------------------------------------
 
 
@@ -70,8 +64,8 @@ class DocType:
 			check actual qty with total number of serial no in store
 			Temporary validation added on: 18-07-2011
 		"""
-		if sql("select name from `tabItem` where ifnull(has_serial_no, 'No') = 'Yes' and name = '%s'" % self.doc.item_code):
-			sr_count = sql("""select count(name) from `tabSerial No` 
+		if webnotes.conn.sql("select name from `tabItem` where ifnull(has_serial_no, 'No') = 'Yes' and name = '%s'" % self.doc.item_code):
+			sr_count = webnotes.conn.sql("""select count(name) from `tabSerial No` 
 							where item_code = '%s' and warehouse = '%s' 
 							and status  ='In Store' and docstatus != 2
 							""" % (self.doc.item_code, self.doc.warehouse))[0][0]
@@ -88,7 +82,7 @@ class DocType:
 	# --------------------------------
 	
 	def get_first_sle(self):
-		sle = sql("""
+		sle = webnotes.conn.sql("""
 			select * from `tabStock Ledger Entry`
 			where item_code = %s
 			and warehouse = %s
@@ -105,7 +99,7 @@ class DocType:
 			is called from various transaction like stock entry, reco etc
 		"""
 		
-		sle = sql("""
+		sle = webnotes.conn.sql("""
 			select * from `tabStock Ledger Entry`
 			where item_code = %s
 			and warehouse = %s
@@ -126,7 +120,7 @@ class DocType:
 		# this is necessary because at the time of cancellation, there may be
 		# entries between the cancelled entries in the same time-bucket
 
-		sle = sql("""
+		sle = webnotes.conn.sql("""
 			select * from `tabStock Ledger Entry`
 			where item_code = %s
 			and warehouse = %s
@@ -165,7 +159,7 @@ class DocType:
 		if flt(in_rate) < 0: # wrong incoming rate
 			in_rate = val_rate
 		elif flt(in_rate) == 0: # In case of delivery/stock issue, get average purchase rate of serial nos of current entry
-			in_rate = flt(sql("select ifnull(avg(purchase_rate), 0) from `tabSerial No` where name in (%s)" % (serial_nos))[0][0])
+			in_rate = flt(webnotes.conn.sql("select ifnull(avg(purchase_rate), 0) from `tabSerial No` where name in (%s)" % (serial_nos))[0][0])
 
 		if in_rate and val_rate == 0: # First entry
 			val_rate = in_rate
@@ -286,7 +280,7 @@ class DocType:
 
 		# recalculate the balances for all stock ledger entries
 		# after the prev sle
-		sll = sql("""
+		sll = webnotes.conn.sql("""
 			select *
 			from `tabStock Ledger Entry` 
 			where item_code = %s 
@@ -317,13 +311,13 @@ class DocType:
 			
 			# update current sle --> will it be good to update incoming rate in sle 
 			# for outgoing stock entry?????
-			sql("""update `tabStock Ledger Entry` 
+			webnotes.conn.sql("""update `tabStock Ledger Entry` 
 			set bin_aqat=%s, valuation_rate=%s, fcfs_stack=%s, stock_value=%s 
 			where name=%s""", (cqty, flt(val_rate), cstr(self.fcfs_bal), stock_val, sle['name']))
 		
 		# update the bin
 		if sll or not prev_sle:
-			sql("update `tabBin` set valuation_rate=%s, actual_qty=%s, stock_value = %s, projected_qty = (actual_qty + indented_qty + ordered_qty + planned_qty - reserved_qty) where name=%s", \
+			webnotes.conn.sql("update `tabBin` set valuation_rate=%s, actual_qty=%s, stock_value = %s, projected_qty = (actual_qty + indented_qty + ordered_qty + planned_qty - reserved_qty) where name=%s", \
 				(flt(val_rate), cqty, flt(stock_val), self.doc.name))
 
 
@@ -331,11 +325,11 @@ class DocType:
 	def reorder_item(self,doc_type,doc_name):
 		""" Reorder item if stock reaches reorder level"""
 
-		if get_value('Global Defaults', None, 'auto_indent'):
+		if webnotes.conn.get_value('Global Defaults', None, 'auto_indent'):
 			#check if re-order is required
-			ret = sql("select re_order_level, item_name, description, brand, item_group, lead_time_days, min_order_qty, email_notify, re_order_qty from tabItem where item_code = %s", (self.doc.item_code), as_dict=1)
+			ret = webnotes.conn.sql("select re_order_level, item_name, description, brand, item_group, lead_time_days, min_order_qty, email_notify, re_order_qty from tabItem where item_code = %s", (self.doc.item_code), as_dict=1)
 			
-			current_qty = sql("""
+			current_qty = webnotes.conn.sql("""
 				select sum(t1.actual_qty) + sum(t1.indented_qty) + sum(t1.ordered_qty) -sum(t1.reserved_qty)
 				from tabBin t1, tabWarehouse t2
 				where t1.item_code = %s 
@@ -373,7 +367,7 @@ class DocType:
 		indent_details_child.save()
 		indent_obj = get_obj('Purchase Request',indent.name,with_children=1)
 		indent_obj.validate()
-		set(indent_obj.doc,'docstatus',1)
+		webnotes.conn.set(indent_obj.doc,'docstatus',1)
 		indent_obj.on_submit()
 		msgprint("Item: " + self.doc.item_code + " is to be re-ordered. Purchase Request %s raised. It was generated from %s %s"%(indent.name,doc_type, doc_name ))
 		if(i['email_notify']):
@@ -385,7 +379,7 @@ class DocType:
 		""" Notify user about auto creation of indent"""
 		
 		from webnotes.utils.email_lib import sendmail
-		email_list=[d[0] for d in sql("select parent from tabUserRole where role in ('Purchase Manager','Material Manager') and parent not in ('Administrator', 'All', 'Guest')")]
+		email_list=[d[0] for d in webnotes.conn.sql("select parent from tabUserRole where role in ('Purchase Manager','Material Manager') and parent not in ('Administrator', 'All', 'Guest')")]
 		msg='A Purchase Request has been raised for item %s: %s on %s '%(doc_type, doc_name, nowdate())
 		sendmail(email_list, subject='Auto Purchase Request Generation Notification', msg = msg)	
 

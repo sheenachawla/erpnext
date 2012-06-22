@@ -1,35 +1,20 @@
-"""
-To-do
---------
-check global defaults properly set in control panel
-check chart of accounts and cost center created
+import unittest
 
-
-"""
-
-import unittest, sys
-import os
+import sys
 sys.path.append('lib/py')
 sys.path.append('erpnext')
 
 import webnotes
 from webnotes.utils import cstr, cint, flt, get_defaults, getdate, add_days, get_first_day
 
+from utils import TestBase
 
-
-class TestAccountSetup(unittest.TestCase):
-	def setUp(self):
-		webnotes.connect()
-		webnotes.conn.begin()
-		print '_'*40
-		
-	
+class TestAccountSetup(TestBase):
 	def test_default_records(self):
 		print "Checking currency"
 		currency = webnotes.conn.sql("select name from `tabCurrency` where name = 'INR'")[0][0]
 		self.assertTrue('INR', currency)
 		print "Currency: " + currency + ' found'
-		
 		
 	def test_company_record(self):
 		print "Checking company"
@@ -62,20 +47,12 @@ class TestAccountSetup(unittest.TestCase):
 		print "Checking chart of accounts"
 		
 		#check root accounts
-		roots = webnotes.conn.sql("select account_name, lft, rgt from `tabAccount` \
-			where ifnull(parent_account, '') = '' and docstatus < 2")
-		root_acc = [d[0] for d in roots]
+		root_acc = [d[0] for d in webnotes.conn.sql("select account_name from `tabAccount` \
+			where ifnull(parent_account, '') = '' and docstatus < 2")]
 		root_orig = ['Application of Funds (Assets)', 'Expenses', 'Income', 'Source of Funds (Liabilities)']
 		self.assertEqual(root_acc, root_orig)
-		print "Root accounts: %s found" % str(root_acc)
-		
-		# check nested set model
-		for d in roots:
-			acc_count = webnotes.conn.sql("select count(name) from `tabAccount` \
-				where lft >= %s and rgt <= %s and docstatus < 2", (d[1], d[2]))[0][0]
-			self.assertEqual(cint(d[2]), cint(d[1])+(acc_count*2)-1)
-		print "Nestedset model properly built for chart of accounts"
-		
+		print "Root accounts: %s found" % cstr(root_acc)
+				
 		
 	def test_account_balance(self):
 		print "Checking Account Balance"
@@ -85,6 +62,8 @@ class TestAccountSetup(unittest.TestCase):
 		
 		self.assertEqual(acc_count*13, acc_bal)
 		print "Account Balance created sucessfully"
+		
+		self.assertNsm('Account', 'parent_account', 'group_or_ledger')
 				
 				
 	def test_cost_center(self):
@@ -93,6 +72,8 @@ class TestAccountSetup(unittest.TestCase):
 			where ifnull(parent_cost_center, '') = '' and docstatus < 2")[0][0]
 		self.assertEqual(root_cc, 'Root')
 		print "Cost Center: %s found" % root_cc
+		
+		self.assertNsm('Cost Center', 'parent_cost_center', 'group_or_ledger')
 		
 		
 	def test_global_defaults(self):
@@ -143,6 +124,11 @@ class TestAccountSetup(unittest.TestCase):
 		for d in preset_global_defaults:
 			self.assertTrue(sys_defs.has_key(d))
 			self.assertEqual(sys_defs.get(d), preset_global_defaults[d])
+			
+		#home page
+		hp = webnotes.conn.get_value('Control Panel', None, 'home_page')
+		self.assertEqual(hp, 'desktop')
+		
 		print "Global Defaults properly set"
 			
 	def test_patch_version(self):
@@ -154,14 +140,9 @@ class TestAccountSetup(unittest.TestCase):
 		print "Patch version: %s properly updated" % pv
 		
 	def test_user(self):
-		users = [cstr(d[0]) for d in webnotes.conn.sql("select name from `tabProfile` order by name")]
-		self.assertEqual(users, ['Administrator', 'All', 'Guest'])
+		users = [d[0] for d in webnotes.conn.sql("select name from `tabProfile` order by name")]
+		self.assertEqual(users, ['Administrator', 'Guest'])
 		print "Users: %s found" % users
-		
-		
-	def tearDown(self):
-		webnotes.conn.rollback()
-		webnotes.conn.close()
 		
 if __name__ == '__main__':
 	unittest.main()

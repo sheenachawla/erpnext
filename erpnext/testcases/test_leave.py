@@ -31,7 +31,7 @@ from sandbox.testdata import leaves
 #----------------------------------------------------------
 
 
-class TestStockEntry(unittest.TestCase):
+class TestLeave(unittest.TestCase):
 	#===========================================================================
 	def setUp(self):
 		webnotes.conn.begin()
