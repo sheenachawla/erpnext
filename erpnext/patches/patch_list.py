@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+<<<<<<< HEAD
 
 patch_dict = {
 	'00_00' : [
@@ -116,6 +117,7 @@ patch_dict = {
 		'support_ticket_autoreply',	
 		'series_unique_patch', 
 		'set_recurring_type',
+		'alter_tabsessions',
 	],
 
 }
