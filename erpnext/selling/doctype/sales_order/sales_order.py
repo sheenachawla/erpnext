@@ -204,8 +204,10 @@ class DocType(TransactionBase):
 	def validate_for_items(self):
 		check_list,flag = [],0
 		chk_dupl_itm = []
+		print 'hehe'
 		# Sales Order Items Validations
 		for d in getlist(self.doclist, 'sales_order_details'):
+			print "here"
 			if cstr(self.doc.quotation_no) == cstr(d.prevdoc_docname):
 				flag = 1
 			if d.prevdoc_docname:
@@ -472,30 +474,6 @@ class DocType(TransactionBase):
 	def get_item_list(self, clear):
 		return get_obj('Sales Common').get_item_list( self, clear)
 		
-	# SET MESSAGE FOR SMS
-	#======================
-	def set_sms_msg(self, is_submitted = 0):
-		if is_submitted:
-			if not self.doc.amended_from:
-				msg = 'Sales Order: '+self.doc.name+' has been made against PO no: '+cstr(self.doc.po_no)
-				set(self.doc, 'message', msg)
-			else:
-				msg = 'Sales Order has been amended. New SO no:'+self.doc.name
-				set(self.doc, 'message', msg)
-		else:
-			msg = 'Sales Order: '+self.doc.name+' has been cancelled.'
-			set(self.doc, 'message', msg)
-		
-	# SEND SMS
-	# =========
-	def send_sms(self):
-		if not self.doc.customer_mobile_no:
-			msgprint("Please enter customer mobile no")
-		elif not self.doc.message:
-			msgprint("Please enter the message you want to send")
-		else:
-			msgprint(get_obj("SMS Control", "SMS Control").send_sms([self.doc.customer_mobile_no,], self.doc.message))
-
 	# on update
 	def on_update(self):
 		pass
