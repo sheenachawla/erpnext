@@ -1,6 +1,8 @@
 import unittest
 import webnotes
 from webnotes.utils import cint
+from webnotes.model.code import get_obj
+
 
 class TestBase(unittest.TestCase):
 	def setUp(self):
@@ -13,8 +15,6 @@ class TestBase(unittest.TestCase):
 		print "_"*30
 		
 		
-		
-	#===========================================================================
 	def assertDoc(self, lst):
 		"""assert all values"""
 		for d in lst:
@@ -27,7 +27,6 @@ class TestBase(unittest.TestCase):
 			self.assertTrue(webnotes.conn.sql("select name from `tab%s` \
 				where %s limit 1" % (d['doctype'], ' and '.join(cl)), vl))
 
-	#===========================================================================
 	def assertCount(self, lst):
 		"""assert all values"""
 		for d in lst:
@@ -59,9 +58,30 @@ class TestBase(unittest.TestCase):
 		
 		print "Nestedset model properly built for %s" % dt
 		
-	def create_doc(self, records):
+	def create_docs(self, records, validate=0, on_update=0, make_autoname=1):
 		from startup.install import create_doc
-		create_doc(records)	
+		create_doc(records, validate, on_update, make_autoname)	
+		
+	def submit_doc(self, data, validate=0, on_update=0):
+		rec = self.create_docs(data, make_autoname=0)
+		rec_obj = get_obj(data[0]['doctype'], data[0]['name'], with_children=1)
+		if validate and hasattr(rec_obj, 'validate'):
+			rec_obj.validate()
+		if on_update and hasattr(rec_obj, 'on_update'):
+			rec_obj.on_update()
+
+		rec_obj.on_submit()
+		for d in data:
+			webnotes.conn.sql("update `tab%s` set docstatus=1 where name = '%s'" % (d['doctype'], d['name']))
+
+		return rec_obj
+
+	def cancel_doc(self, data, validate=0, on_update=0):
+		obj = self.submit_doc(data, validate, on_update)
+		obj.on_cancel()
+		for d in data:
+			webnotes.conn.sql("update `tab%s` set docstatus=2 where name = '%s'" % (d['doctype'], d['name']))
+		return obj
 
 	def tearDown(self):
 		webnotes.conn.rollback()

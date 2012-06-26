@@ -24,6 +24,7 @@ from webnotes.model.doclist import getlist, copy_doclist
 from webnotes.model.code import get_obj, get_server_obj, run_server_obj, updatedb, check_syntax
 from webnotes import session, form, is_testing, msgprint, errprint
 
+class NegativeStockError(webnotes.ValidationError): pass
 
 # -----------------------------------------------------------------------------------------
 
@@ -148,7 +149,7 @@ class DocType:
 				<b>%s</b> on <b>%s %s</b> in Transaction %s %s""" % \
 				(str(diff), self.doc.item_code, self.doc.warehouse, \
 					s['posting_date'], s['posting_time'], s['voucher_type'], s['voucher_no']), \
-					raise_exception=1)
+					raise_exception=NegativeStockError)
 
 
 	# ------------------------------------

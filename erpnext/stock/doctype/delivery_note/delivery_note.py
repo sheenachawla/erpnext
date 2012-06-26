@@ -16,19 +16,11 @@
 
 # Please edit this list and import only required elements
 import webnotes
-
-from webnotes.utils import add_days, add_months, add_years, cint, cstr, date_diff, default_fields, flt, fmt_money, formatdate, generate_hash, getTraceback, get_defaults, get_first_day, get_last_day, getdate, has_common, month_name, now, nowdate, replace_newlines, sendmail, set_default, str_esc_quote, user_format, validate_email_add
-from webnotes.model import db_exists
-from webnotes.model.doc import Document, addchild, getchildren, make_autoname
-from webnotes.model.doclist import getlist, copy_doclist
-from webnotes.model.code import get_obj, get_server_obj, run_server_obj, updatedb, check_syntax
-from webnotes import session, form, is_testing, msgprint, errprint
-
-set = webnotes.conn.set
-sql = webnotes.conn.sql
-get_value = webnotes.conn.get_value
-in_transaction = webnotes.conn.in_transaction
-convert_to_lists = webnotes.conn.convert_to_lists
+from webnotes.utils import cint, cstr, flt, getdate
+from webnotes.model.doc import make_autoname
+from webnotes.model.doclist import getlist
+from webnotes.model.code import get_obj
+from webnotes import msgprint
 
 # -----------------------------------------------------------------------------------------
 
@@ -86,7 +78,7 @@ class DocType(TransactionBase):
 	def set_actual_qty(self):
 		for d in getlist(self.doclist, 'delivery_note_details'):
 			if d.item_code and d.warehouse:
-				actual_qty = sql("select actual_qty from `tabBin` where item_code = '%s' and warehouse = '%s'" % (d.item_code, d.warehouse))
+				actual_qty = webnotes.conn.sql("select actual_qty from `tabBin` where item_code = '%s' and warehouse = '%s'" % (d.item_code, d.warehouse))
 				d.actual_qty = actual_qty and flt(actual_qty[0][0]) or 0
 
 
@@ -98,7 +90,7 @@ class DocType(TransactionBase):
 	#pull project customer
 	#-------------------------
 	def pull_project_customer(self):
-		res = sql("select customer from `tabProject` where name = '%s'"%self.doc.project_name)
+		res = webnotes.conn.sql("select customer from `tabProject` where name = '%s'"%self.doc.project_name)
 		if res:
 			get_obj('DocType Mapper', 'Project-Delivery Note').dt_map('Project', 'Delivery Note', self.doc.project_name, self.doc, self.doclist, "[['Project', 'Delivery Note']]")
 
@@ -134,7 +126,7 @@ class DocType(TransactionBase):
 	# ********** Get Actual Qty of item in warehouse selected *************
 	def get_actual_qty(self,args):
 		args = eval(args)
-		actual_qty = sql("select actual_qty from `tabBin` where item_code = '%s' and warehouse = '%s'" % (args['item_code'], args['warehouse']), as_dict=1)
+		actual_qty = webnotes.conn.sql("select actual_qty from `tabBin` where item_code = '%s' and warehouse = '%s'" % (args['item_code'], args['warehouse']), as_dict=1)
 		ret = {
 			 'actual_qty' : actual_qty and flt(actual_qty[0]['actual_qty']) or 0
 		}
@@ -162,7 +154,7 @@ class DocType(TransactionBase):
 	#check in manage account if sales order required or not.
 	# ====================================================================================
 	def so_required(self):
-		res = sql("select value from `tabSingles` where doctype = 'Global Defaults' and field = 'so_required'")
+		res = webnotes.conn.sql("select value from `tabSingles` where doctype = 'Global Defaults' and field = 'so_required'")
 		if res and res[0][0] == 'Yes':
 			 for d in getlist(self.doclist,'delivery_note_details'):
 				 if not d.prevdoc_docname:
@@ -212,7 +204,7 @@ class DocType(TransactionBase):
 	#-------------------------------------------------------------------------------------------------
 	def validate_proj_cust(self):
 		if self.doc.project_name and self.doc.customer:
-			res = sql("select name from `tabProject` where name = '%s' and (customer = '%s' or ifnull(customer,'')='')"%(self.doc.project_name, self.doc.customer))
+			res = webnotes.conn.sql("select name from `tabProject` where name = '%s' and (customer = '%s' or ifnull(customer,'')='')"%(self.doc.project_name, self.doc.customer))
 			if not res:
 				msgprint("Customer - %s does not belong to project - %s. \n\nIf you want to use project for multiple customers then please make customer details blank in project - %s."%(self.doc.customer,self.doc.project_name,self.doc.project_name))
 				raise Exception
@@ -232,16 +224,16 @@ class DocType(TransactionBase):
 
 			if prevdoc_docname and prevdoc:
 				# ::::::::::: Validates Transaction Date of DN and previous doc (i.e. SO , PO, PR) *********
-				trans_date = sql("select posting_date from `tab%s` where name = '%s'" %(prevdoc,prevdoc_docname))[0][0]
+				trans_date = webnotes.conn.sql("select posting_date from `tab%s` where name = '%s'" %(prevdoc,prevdoc_docname))[0][0]
 				if trans_date and getdate(self.doc.posting_date) < (trans_date):
 					msgprint("Your Posting Date cannot be before "+cstr(prevdoc)+" Date.")
 					raise Exception
 				# ::::::::: Validates DN and previous doc details ::::::::::::::::::
-				get_name = sql("select name from `tab%s` where name = '%s'" % (prevdoc, prevdoc_docname))
+				get_name = webnotes.conn.sql("select name from `tab%s` where name = '%s'" % (prevdoc, prevdoc_docname))
 				name = get_name and get_name[0][0] or ''
 				if name:	#check for incorrect docname
 					if prevdoc == 'Sales Order':
-						dt = sql("select company, docstatus, customer, currency, sales_partner from `tab%s` where name = '%s'" % (prevdoc, name))
+						dt = webnotes.conn.sql("select company, docstatus, customer, currency, sales_partner from `tab%s` where name = '%s'" % (prevdoc, name))
 						cust_name = dt and dt[0][2] or ''
 						if cust_name != self.doc.customer:
 							msgprint(cstr(prevdoc) + ": " + cstr(prevdoc_docname) + " customer :" + cstr(cust_name) + " does not match with customer : " + cstr(self.doc.customer) + " of current document.")
@@ -251,7 +243,7 @@ class DocType(TransactionBase):
 							msgprint(cstr(prevdoc) + ": " + cstr(prevdoc_docname) + " sales partner name :" + cstr(sal_partner) + " does not match with sales partner name : " + cstr(self.doc.sales_partner_name) + " of current document.")
 							raise Exception, "Validation Error. "
 					else:
-						dt = sql("select company, docstatus, supplier, currency from `tab%s` where name = '%s'" % (prevdoc, name))
+						dt = webnotes.conn.sql("select company, docstatus, supplier, currency from `tab%s` where name = '%s'" % (prevdoc, name))
 						supp_name = dt and dt[0][2] or ''
 						company_name = dt and dt[0][0] or ''
 						docstatus = dt and dt[0][1] or 0
@@ -274,7 +266,7 @@ class DocType(TransactionBase):
 	def validate_for_items(self):
 		check_list, chk_dupl_itm = [], []
 		for d in getlist(self.doclist,'delivery_note_details'):
-			ch = sql("select is_stock_item from `tabItem` where name = '%s'"%d.item_code)
+			ch = webnotes.conn.sql("select is_stock_item from `tabItem` where name = '%s'"%d.item_code)
 			if d.prevdoc_doctype and d.prevdoc_detail_docname and ch and ch[0][0]=='Yes':
 				self.validate_items_with_prevdoc(d)
 
@@ -298,7 +290,7 @@ class DocType(TransactionBase):
 	# ------------------------------------------------------------------
 	def validate_items_with_prevdoc(self, d):
 		prev_item_dt = (d.prevdoc_doctype == 'Sales Order') and 'Sales Order Item' or 'Purchase Receipt Item'
-		data = sql("select item_code from `tab%s` where parent = '%s' and name = '%s'"\
+		data = webnotes.conn.sql("select item_code from `tab%s` where parent = '%s' and name = '%s'"\
 		 	% (prev_item_dt, d.prevdoc_docname, d.prevdoc_detail_docname))
 		if not data or data[0][0] != d.item_code:
 			msgprint("Item: %s is not matching with Sales Order: %s. Sales Order might be modified after \
@@ -309,11 +301,11 @@ class DocType(TransactionBase):
 	# ********* UPDATE CURRENT STOCK *****************************
 	def update_current_stock(self):
 		for d in getlist(self.doclist, 'delivery_note_details'):
-			bin = sql("select actual_qty from `tabBin` where item_code = %s and warehouse = %s", (d.item_code, d.warehouse), as_dict = 1)
+			bin = webnotes.conn.sql("select actual_qty from `tabBin` where item_code = %s and warehouse = %s", (d.item_code, d.warehouse), as_dict = 1)
 			d.actual_qty = bin and flt(bin[0]['actual_qty']) or 0
 
 		for d in getlist(self.doclist, 'packing_details'):
-			bin = sql("select actual_qty, projected_qty from `tabBin` where item_code =	%s and warehouse = %s", (d.item_code, d.warehouse), as_dict = 1)
+			bin = webnotes.conn.sql("select actual_qty, projected_qty from `tabBin` where item_code =	%s and warehouse = %s", (d.item_code, d.warehouse), as_dict = 1)
 			d.actual_qty = bin and flt(bin[0]['actual_qty']) or 0
 			d.projected_qty = bin and flt(bin[0]['projected_qty']) or 0
 
@@ -322,7 +314,6 @@ class DocType(TransactionBase):
 # =================================================================================================
 	def on_submit(self):
 		self.validate_packed_qty()
-		set(self.doc, 'message', 'Items against your Order #%s have been delivered. Delivery #%s: ' % (self.doc.po_no, self.doc.name))
 		# Check for Approving Authority
 		get_obj('Authorization Control').validate_approving_authority(self.doc.doctype, self.doc.company, self.doc.grand_total, self)
 		sl_obj = get_obj("Stock Ledger")
@@ -336,7 +327,7 @@ class DocType(TransactionBase):
 		self.credit_limit()
 
 		# set DN status
-		set(self.doc, 'status', 'Submitted')
+		webnotes.conn.set(self.doc, 'status', 'Submitted')
 
 
 	def validate_packed_qty(self):
@@ -374,18 +365,18 @@ class DocType(TransactionBase):
 		sales_com_obj.update_prevdoc_detail(0,self)
 		self.update_stock_ledger(update_stock = -1)
 		# :::::: set DN status :::::::
-		set(self.doc, 'status', 'Cancelled')
+		webnotes.conn.set(self.doc, 'status', 'Cancelled')
 		self.cancel_packing_slips()
 
 
 	# ******************** Check Next DocStatus **************************
 	def check_next_docstatus(self):
-		submit_rv = sql("select t1.name from `tabSales Invoice` t1,`tabSales Invoice Item` t2 where t1.name = t2.parent and t2.delivery_note = '%s' and t1.docstatus = 1" % (self.doc.name))
+		submit_rv = webnotes.conn.sql("select t1.name from `tabSales Invoice` t1,`tabSales Invoice Item` t2 where t1.name = t2.parent and t2.delivery_note = '%s' and t1.docstatus = 1" % (self.doc.name))
 		if submit_rv:
 			msgprint("Sales Invoice : " + cstr(submit_rv[0][0]) + " has already been submitted !")
 			raise Exception , "Validation Error."
 
-		submit_in = sql("select t1.name from `tabInstallation Note` t1, `tabInstallation Note Item` t2 where t1.name = t2.parent and t2.prevdoc_docname = '%s' and t1.docstatus = 1" % (self.doc.name))
+		submit_in = webnotes.conn.sql("select t1.name from `tabInstallation Note` t1, `tabInstallation Note Item` t2 where t1.name = t2.parent and t2.prevdoc_docname = '%s' and t1.docstatus = 1" % (self.doc.name))
 		if submit_in:
 			msgprint("Installation Note : "+cstr(submit_in[0][0]) +" has already been submitted !")
 			raise Exception , "Validation Error."
@@ -413,7 +404,7 @@ class DocType(TransactionBase):
 	def update_stock_ledger(self, update_stock, is_stopped = 0):
 		self.values = []
 		for d in self.get_item_list(is_stopped):
-			stock_item = sql("SELECT is_stock_item, is_sample_item FROM tabItem where name = '%s'"%(d['item_code']), as_dict = 1) # stock ledger will be updated only if it is a stock item
+			stock_item = webnotes.conn.sql("SELECT is_stock_item, is_sample_item FROM tabItem where name = '%s'"%(d['item_code']), as_dict = 1) # stock ledger will be updated only if it is a stock item
 			if stock_item[0]['is_stock_item'] == "Yes":
 				if not d['warehouse']:
 					msgprint("Message: Please enter Warehouse for item %s as it is stock item."% d['item_code'])
@@ -454,17 +445,6 @@ class DocType(TransactionBase):
 			'batch_no'					: d['batch_no'],
 			'serial_no'					: d['serial_no']
 		})
-
-
-	# SEND SMS
-	# ============================================================================================
-	def send_sms(self):
-		if not self.doc.customer_mobile_no:
-			msgprint("Please enter customer mobile no")
-		elif not self.doc.message:
-			msgprint("Please enter the message you want to send")
-		else:
-			msgprint(get_obj("SMS Control", "SMS Control").send_sms([self.doc.customer_mobile_no,], self.doc.message))
 
 
 #------------ check credit limit of items in DN Detail which are not fetched from sales order----------

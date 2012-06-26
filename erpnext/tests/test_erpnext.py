@@ -31,12 +31,14 @@ def setup_account():
 	get_obj('Setup Control').setup_account(json.dumps(args))
 
 #---------------------------------------------------------------
-# Import all test files here
+# Import all test files here - implement os.walk later
 
-#from test_account_setup import *
-#from test_stock_entry import *
+from test_account_setup import *
+from test_stock_entry import *
 #from webnotes.utils.nestedset import *
 from test_masters import *
+from test_sales_order import *
+from test_delivery_note import *
 
 
 def setup_options():

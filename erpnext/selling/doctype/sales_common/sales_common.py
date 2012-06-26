@@ -23,15 +23,12 @@ from webnotes.model.doc import Document, addchild, getchildren, make_autoname
 from webnotes.model.doclist import getlist, copy_doclist
 from webnotes.model.code import get_obj, get_server_obj, run_server_obj, updatedb, check_syntax
 from webnotes import session, form, is_testing, msgprint, errprint
-
-get_value = webnotes.conn.get_value
-in_transaction = webnotes.conn.in_transaction
-convert_to_lists = webnotes.conn.convert_to_lists
 	
 # -----------------------------------------------------------------------------------------
 
 from utilities.transaction_base import TransactionBase
 
+class OverDeliveryError(webnotes.ValidationError): pass
 
 @webnotes.whitelist()
 def get_comp_base_currency(arg=None):
@@ -116,7 +113,7 @@ class DocType(TransactionBase):
 	# ====================
 	def get_invoice_details(self, obj = ''):
 		if obj.doc.company:
-			acc_head = webnotes.conn.sql("select name from `tabAccount` where name = '%s' and docstatus != 2" % (cstr(obj.doc.customer) + " - " + get_value('Company', obj.doc.company, 'abbr')))
+			acc_head = webnotes.conn.sql("select name from `tabAccount` where name = '%s' and docstatus != 2" % (cstr(obj.doc.customer) + " - " + webnotes.conn.get_value('Company', obj.doc.company, 'abbr')))
 			obj.doc.debit_to = acc_head and acc_head[0][0] or ''
 
 	
@@ -373,7 +370,6 @@ class DocType(TransactionBase):
 				# used in delivery note to reduce reserved_qty 
 				# Eg.: if SO qty is 10 and there is tolerance of 20%, then it will allow DN of 12.
 				# But in this case reserved qty should only be reduced by 10 and not 12.
-
 				tot_qty, max_qty, tot_amt, max_amt, reserved_wh = self.get_curr_and_ref_doc_details(d.doctype, 'prevdoc_detail_docname', d.prevdoc_detail_docname, obj.doc.name, obj.doc.doctype)
 				if((flt(tot_qty) + flt(qty) > flt(max_qty))):
 					reserved_qty = -(flt(max_qty)-flt(tot_qty))
@@ -672,11 +668,11 @@ class StatusUpdater:
 		if self.tolerance.get(item_code):
 			return self.tolerance[item_code]
 		
-		tolerance = flt(get_value('Item',item_code,'tolerance') or 0)
+		tolerance = flt(webnotes.conn.get_value('Item',item_code,'tolerance') or 0)
 
 		if not(tolerance):
 			if self.global_tolerance == None:
-				self.global_tolerance = flt(get_value('Global Defaults',None,'tolerance') or 0)
+				self.global_tolerance = flt(webnotes.conn.get_value('Global Defaults',None,'tolerance') or 0)
 			tolerance = self.global_tolerance
 		
 		self.tolerance[item_code] = tolerance
@@ -690,7 +686,6 @@ class StatusUpdater:
 		# check if overflow is within tolerance
 		tolerance = self.get_tolerance_for(item['item_code'])
 		overflow_percent = ((item[args['compare_field']] - item[args['compare_ref_field']]) / item[args['compare_ref_field']] * 100)
-	
 		if overflow_percent - tolerance > 0.0001:
 			item['max_allowed'] = flt(item[args['compare_ref_field']] * (100+tolerance)/100)
 			item['reduce_by'] = item[args['compare_field']] - item['max_allowed']
@@ -702,7 +697,7 @@ class StatusUpdater:
 				
 				Or, you must reduce the %(compare_ref_field)s by %(reduce_by)s
 				
-				Also, please check if the order item has already been billed in the Sales Order""" % item, raise_exception=1)
+				Also, please check if the order item has already been billed in the Sales Order""" % item, raise_exception=OverDeliveryError)
 
 	def validate_qty(self, args, no_tolerance=None):
 		"""
@@ -857,4 +852,3 @@ class StatusUpdater:
 						where
 							name="%(name)s"
 					""" % args)
-

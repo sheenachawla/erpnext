@@ -65,7 +65,5 @@ class TestLeave(unittest.TestCase):
 		print "Test case for leave balance"
 		
 		
-		
-		
 	def tearDown(self):
 		webnotes.conn.rollback()

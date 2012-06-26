@@ -15,14 +15,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 """
-	All master data in one place, can be created by 1 function call
+	All master data in one place
 
 """
-
-import webnotes
-from webnotes.model.doc import Document
-from webnotes.model.code import get_obj
-
 
 masters = [
 	# Customer Group
@@ -70,9 +65,20 @@ masters = [
 	#address
 	# Item
 	# Stock item / non-serialized
-	{'doctype': 'Item', 'docstatus': 0, 'name': 'test_item', 'item_name': 'test_item', 'item_code': 'test_item', 'item_group': 'Default Item Group', 'is_stock_item': 'Yes', 'has_serial_no': 'Yes', 'stock_uom': 'Nos', 'is_sales_item': 'Yes', 'is_purchase_item': 'Yes', 'is_service_item': 'No', 'is_sub_contracted_item': 'No', 'is_pro_applicable': 'Yes', 'is_manufactured_item': 'Yes'},
-	{'doctype': 'Item Price', 'parentfield': 'ref_rate_details', 'parenttype': 'Item', 'parent' : 'test_item', 'price_list_name': 'test_pric_list', 'ref_currency': 'INR', 'ref_rate': 100},
-	{'doctype': 'Item Tax', 'parentfield': 'item_tax', 'parenttype': 'Item', 'parent' : 'test_item', 'tax_type' : 'tax_acc - TC', 'tax_rate': 10},
+	{'doctype': 'Item', 'docstatus': 0, 'name': 'test_item', 'item_name': 'test_item', 'item_code': 'test_item', \
+	'item_group': 'Default Item Group', 'is_stock_item': 'Yes', 'has_serial_no': 'No', 'stock_uom': 'Nos', \
+	'is_sales_item': 'Yes', 'is_purchase_item': 'Yes', 'is_service_item': 'No', 'is_sub_contracted_item': 'No', \
+	'is_pro_applicable': 'Yes', 'is_manufactured_item': 'Yes'},
+	{'doctype': 'Item Price', 'parentfield': 'ref_rate_details', 'parenttype': 'Item', 'parent' : 'test_item', \
+	'price_list_name': 'test_pric_list', 'ref_currency': 'INR', 'ref_rate': 100},
+	{'doctype': 'Item Tax', 'parentfield': 'item_tax', 'parenttype': 'Item', 'parent' : 'test_item', \
+	'tax_type' : 'tax_acc - TC', 'tax_rate': 10},
+	
+	# Stock item / serialized
+	{'doctype': 'Item', 'docstatus': 0, 'name': 'test_item_serialized', 'item_name': 'test_item_serialized', 'item_code': 'test_item_serialized', \
+	'item_group': 'Default Item Group', 'is_stock_item': 'Yes', 'has_serial_no': 'Yes', 'stock_uom': 'Nos', \
+	'is_sales_item': 'Yes', 'is_purchase_item': 'Yes', 'is_service_item': 'No', 'is_sub_contracted_item': 'No', \
+	'is_pro_applicable': 'Yes', 'is_manufactured_item': 'Yes'},
 
 	# Warehouse
 	{'doctype': 'Warehouse', 'warehouse_name': 'test_wh1', 'name': 'test_wh1', 'warehouse_type': 'Stores'},

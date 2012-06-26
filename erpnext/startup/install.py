@@ -67,26 +67,26 @@ def update_patch_log():
 		patch_handler.update_patch_log(pm)
 
 
-def create_doc(records):
+def create_doc(records, validate=0, on_update=0, make_autoname=1):
 	for data in records:
 		if data.get('name'):
 			if not webnotes.conn.exists(data['doctype'], data.get('name')):
-				create_single_doc(data)
+				create_single_doc(data, validate, on_update, make_autoname)
 		elif not webnotes.conn.exists(data):
-			create_single_doc(data)
+			create_single_doc(data, validate, on_update, make_autoname)
 
 			
-def	create_single_doc(data):
+def	create_single_doc(data, validate=0, on_update=0, make_autoname=1):
 	from webnotes.model.doc import Document
 	from webnotes.model.code import get_obj
 	
 	d = Document(data['doctype'])
 	d.fields.update(data)
-	d.save()
+	d.save(1, make_autoname=make_autoname)
 	doc_obj = get_obj(data['doctype'], d.name, with_children=1)
-	if hasattr(doc_obj, 'validate'):
+	if validate and hasattr(doc_obj, 'validate'):
 		doc_obj.validate()
-	if hasattr(doc_obj, 'on_update'):
+	if on_update and hasattr(doc_obj, 'on_update'):
 		doc_obj.on_update()
 	print 'Created %(doctype)s %(name)s' % d.fields
 
@@ -123,7 +123,7 @@ def create_default_roles():
 		{"doctype":"Role", "role_name":"Website Manager", "name":"Website Manager"}
 	]
 	webnotes.conn.begin()
-	create_doc(roles)
+	create_doc(roles, validate=1, on_update=1)
 	webnotes.conn.commit()
 	
 
@@ -758,5 +758,5 @@ def create_default_master_records():
 
 	]
 	webnotes.conn.begin()
-	create_doc(records)
+	create_doc(records, validate=1, on_update=1)
 	webnotes.conn.commit()

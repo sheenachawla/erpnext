@@ -13,12 +13,12 @@ from utils import TestBase
 class TestMasters(TestBase):
 	def setUp(self):
 		TestBase.setUp(self)
-		self.create_doc(masters)
+		self.create_docs(masters, validate=1, on_update=1)
 		print 'Master Data Created'
 		
 			
 	def test_all_masters_with_tree_structure(self):
-		print "NSM model test for customer group, item group, territory"
+		print "NSM model test for account, cost center, customer group, item group and territory"
 		self.assertNsm('Customer Group', 'parent_customer_group', 'is_group')
 		self.assertNsm('Item Group', 'parent_item_group', 'is_group')
 		self.assertNsm('Territory', 'parent_territory', 'is_group')
@@ -31,7 +31,20 @@ class TestMasters(TestBase):
 		self.assertTrue(webnotes.conn.sql("select name from `tabAccount` where master_type = 'Customer' and master_name = 'test_customer'"))
 		self.assertTrue(webnotes.conn.sql("select name from `tabAccount` where master_type = 'Supplier' and master_name = 'test_supplier'"))
 		
-	
+	def test_account_change_parent(self):
+		print "checking change parent function for account"
+		
+		
+	def test_account_deletion(self):
+		print "Checking account deletion"
+		
+		
+	def test_account_group_to_ledger(self):
+		print "checking change in group to ledger functionality"
+
+	def test_customer_deletion(self):
+		print "checking customer deletion, account should also be deleted"
+			
 		
 if __name__ == '__main__':
 	unittest.main()
