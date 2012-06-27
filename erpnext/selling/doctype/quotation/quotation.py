@@ -131,6 +131,10 @@ class DocType(TransactionBase):
 		if self.doc.amended_from and not self.doc.amendment_date:
 			msgprint("Please Enter Amendment Date")
 			raise Exception
+			
+		if self.doc.quotation_to == 'Customer' and self.doc.customer and not self.doc.territory:
+			msgprint("Territory is mandatory if quotation is made for existing customer", raise_exception=1)
+			
 
 	# Fiscal Year Validation
 	# ----------------------
