@@ -57,7 +57,7 @@ class DocType(TransactionBase):
 	# *************** Pull Sales Order Items ************************
 	def pull_sales_order_details(self):
 		self.validate_prev_docname()
-		self.doc.clear_table(self.doclist,'other_charges')
+		self.doclist = self.doc.clear_table(self.doclist,'other_charges')
 
 		if self.doc.sales_order_no:
 			get_obj('DocType Mapper', 'Sales Order-Delivery Note').dt_map('Sales Order', 'Delivery Note', self.doc.sales_order_no, self.doc, self.doclist, "[['Sales Order', 'Delivery Note'],['Sales Order Item', 'Delivery Note Item'],['Sales Taxes and Charges','Sales Taxes and Charges'],['Sales Team','Sales Team']]")
@@ -125,12 +125,7 @@ class DocType(TransactionBase):
 
 	# ********** Get Actual Qty of item in warehouse selected *************
 	def get_actual_qty(self,args):
-		args = eval(args)
-		actual_qty = webnotes.conn.sql("select actual_qty from `tabBin` where item_code = '%s' and warehouse = '%s'" % (args['item_code'], args['warehouse']), as_dict=1)
-		ret = {
-			 'actual_qty' : actual_qty and flt(actual_qty[0]['actual_qty']) or 0
-		}
-		return ret
+		return get_obj('Sales Common').get_available_qty(eval(args))
 
 
 # OTHER CHARGES TRIGGER FUNCTIONS
@@ -143,12 +138,12 @@ class DocType(TransactionBase):
 	# Load Default Charges
 	# ----------------------------------------------------------
 	def load_default_taxes(self):
-		return get_obj('Sales Common').load_default_taxes(self)
+		self.doclist = get_obj('Sales Common').load_default_taxes(self)
 
 
 	# **** Pull details from other charges master (Get Sales Taxes and Charges Master) ****
 	def get_other_charges(self):
-		return get_obj('Sales Common').get_other_charges(self)
+		self.doclist = get_obj('Sales Common').get_other_charges(self)
 
 
 	#check in manage account if sales order required or not.

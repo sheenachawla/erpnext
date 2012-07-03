@@ -117,6 +117,14 @@ patch_dict = {
 		'series_unique_patch', 
 		'set_recurring_type',
 		'alter_tabsessions',
+		'delete_old_parent_entries',
+		'cache_item_table',
+	],
+	
+	'12_07' : [
+		'reload_pr_po_mapper',
+		'address_contact_perms',
+		'packing_list_cleanup_and_serial_no',
 	],
 
 }

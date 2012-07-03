@@ -69,9 +69,11 @@ class DocType(TransactionBase):
 
 	# Get Sales Person Details
 	# ==========================
+	
+	# TODO: To be deprecated if not in use
 	def get_sales_person_details(self, obj):
 		if obj.doc.doctype != 'Quotation':
-			obj.doc.clear_table(obj.doclist,'sales_team')
+			obj.doclist = obj.doc.clear_table(obj.doclist,'sales_team')
 			idx = 0
 			for d in webnotes.conn.sql("select sales_person, allocated_percentage, allocated_amount, incentives from `tabSales Team` where parent = '%s'" % obj.doc.customer):
 				ch = addchild(obj.doc, 'sales_team', 'Sales Team', 1, obj.doclist)
@@ -81,6 +83,7 @@ class DocType(TransactionBase):
 				ch.incentives = d and flt(d[3]) or 0
 				ch.idx = idx
 				idx += 1
+		return obj.doclist
 
 
 	# Get customer's contact person details
@@ -153,6 +156,10 @@ class DocType(TransactionBase):
 			ret['export_rate'] = flt(base_ref_rate)/flt(obj.doc.conversion_rate)
 			ret['base_ref_rate'] = flt(base_ref_rate)
 			ret['basic_rate'] = flt(base_ref_rate)
+			
+		if ret['warehouse'] or ret['reserved_warehouse']:
+			av_qty = self.get_available_qty({'item_code': args['item_code'], 'warehouse': ret['warehouse'] or ret['reserved_warehouse']})
+			ret.update(av_qty)
 		return ret
 
 
@@ -167,6 +174,14 @@ class DocType(TransactionBase):
 			'cost_center'			: item and item[0]['default_sales_cost_center'] or args.get('cost_center')
 		}
 
+		return ret
+
+	def get_available_qty(self,args):
+		tot_avail_qty = webnotes.conn.sql("select projected_qty, actual_qty from `tabBin` where item_code = '%s' and warehouse = '%s'" % (args['item_code'], args['warehouse']), as_dict=1)
+		ret = {
+			 'projected_qty' : tot_avail_qty and flt(tot_avail_qty[0]['projected_qty']) or 0,
+			 'actual_qty' : tot_avail_qty and flt(tot_avail_qty[0]['actual_qty']) or 0
+		}
 		return ret
 
 	
@@ -212,15 +227,15 @@ class DocType(TransactionBase):
 	# ====================
 	def load_default_taxes(self, obj):
 		if cstr(obj.doc.charge):
-			self.get_other_charges(obj)
+			return self.get_other_charges(obj)
 		else:
-			self.get_other_charges(obj, 1)
+			return self.get_other_charges(obj, 1)
 
 		
 	# Get other charges from Master
 	# =================================================================================
 	def get_other_charges(self,obj, default=0):
-		obj.doc.clear_table(obj.doclist,'other_charges')
+		obj.doclist = obj.doc.clear_table(obj.doclist, 'other_charges')
 		if not getlist(obj.doclist, 'other_charges'):
 			if default: add_cond = 'ifnull(t2.is_default,0) = 1'
 			else: add_cond = 't1.parent = "'+cstr(obj.doc.charge)+'"'
@@ -250,6 +265,7 @@ class DocType(TransactionBase):
 				d.included_in_print_rate = cint(d.included_in_print_rate)
 				d.idx = idx
 				idx += 1
+		return obj.doclist
 			
 	# Get TERMS AND CONDITIONS
 	# =======================================================================================
@@ -497,11 +513,22 @@ class DocType(TransactionBase):
 		self.cleanup_packing_list(obj, parent_items)
 		
 	def cleanup_packing_list(self, obj, parent_items):
-		"""Remove all those parent items which are no longer present in main item table"""
+		"""Remove all those child items which are no longer present in main item table"""
+		delete_list = []
 		for d in getlist(obj.doclist, 'packing_details'):
 			if [d.parent_item, d.parent_detail_docname] not in parent_items:
-				d.parent = ''
+				# mark for deletion from doclist
+				delete_list.append(d.name)
 
+		if not delete_list: return
+		
+		# delete from doclist
+		obj.doclist = filter(lambda d: d.name not in delete_list, obj.doclist)
+		
+		# delete from db
+		webnotes.conn.sql("""\
+			delete from `tabDelivery Note Packing Item`
+			where name in ("%s")""" % '", "'.join(delete_list))
 
 	# Get total in words
 	# ==================================================================	
