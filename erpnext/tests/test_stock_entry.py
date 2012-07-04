@@ -128,7 +128,6 @@ class TestStockEntry(TestBase):
 			[{'doctype': 'Serial No', 'item_code': 'test_item_serialized', 'warehouse': 'test_wh1', 'status': 'In Store', 'docstatus': 0}, 10]
 		])
 
-	#===========================================================================
 	def test_entries_on_same_datetime(self):
 		print "Test Case: Multiple entries on same datetime, cancel first one"
 		m = self.submit_doc(mr, 1, 1)
