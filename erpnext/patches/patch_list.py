@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+<<<<<<< HEAD
 
 patch_dict = {
 	'00_00' : [
@@ -84,6 +85,7 @@ patch_dict = {
 		'serial_no_fixes',
 		'repost_stock_for_posting_time',
 		'naming_series_patch',
+		'delete_about_contact',
 	],
 	
 	'12_05'	:	[
@@ -119,12 +121,14 @@ patch_dict = {
 		'alter_tabsessions',
 		'delete_old_parent_entries',
 		'cache_item_table',
+		'cms2'
 	],
 	
 	'12_07' : [
 		'reload_pr_po_mapper',
 		'address_contact_perms',
 		'packing_list_cleanup_and_serial_no',
+		'deprecate_import_data_control'
 	],
 
 }
