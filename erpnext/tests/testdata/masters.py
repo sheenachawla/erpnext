@@ -54,7 +54,7 @@ masters = [
 	{'doctype':'Account', 'docstatus':0, 'account_name' : 'tax_acc', 'debit_or_credit': 'Credit', 'company' : 'Test Company', 'group_or_ledger' : 'Ledger', 'is_pl_account': 'No', 'name' : 'tax_acc - TC', 'parent_account': 'Duties and Taxes - TC'},
 
 	# Cost Center
-	{'doctype':'Cost Center', 'docstatus':0, 'cost_center_name' : 'cc', 'group_or_ledger' : 'Ledger', 'name' : 'cc', 'company_name' : 'Test Company', 'company_abbr': 'TC'},
+	{'doctype':'Cost Center', 'docstatus':0, 'cost_center_name' : 'cc', 'parent_cost_center': 'Root - TC', 'group_or_ledger' : 'Ledger', 'name' : 'cc', 'company_name' : 'Test Company', 'company_abbr': 'TC'},
 	
 	#customer contact
 	{'doctype': 'Contact', 'customer': 'test_customer', 'first_name': 'test_contact1', 'email_id': 'nabin@erpnext.com', 'is_primary_contact': '1'},

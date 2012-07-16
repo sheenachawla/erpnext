@@ -8,12 +8,7 @@ class TestBase(unittest.TestCase):
 	def setUp(self):
 		webnotes.connect()
 		webnotes.conn.begin()
-		
-		import conf
-		print '-'*70
-		print "Connected to database %s" % conf.db_name
-		print "_"*30
-		
+				
 		
 	def assertDoc(self, lst):
 		"""assert all values"""
@@ -87,4 +82,3 @@ class TestBase(unittest.TestCase):
 		webnotes.conn.rollback()
 		webnotes.conn.close()
 		print '_'*30
-		print "All transactions rolled back and connection closed"

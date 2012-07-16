@@ -112,7 +112,7 @@ class DocType:
 		s.docstatus					=	0
 		s.status					=	'In Store'
 		s.modified					=	nowdate()
-		s.modified_by				=	session['user']
+		s.modified_by				=	webnotes.session['user']
 		s.serial_no					=	serial_no
 		s.sle_exists				=	1
 		s.fiscal_year				=	obj.doc.fiscal_year
@@ -168,7 +168,7 @@ class DocType:
 		s.docstatus						=	 1
 		s.status						=	 'Delivered'
 		s.modified						=	 nowdate()
-		s.modified_by					=	 session['user']
+		s.modified_by					=	 webnotes.session['user']
 		s.save()
 
 
@@ -201,8 +201,12 @@ class DocType:
 	def update_stock(self, values, is_amended = 'No'):
 		if values[0]['is_cancelled'] == 'Yes':
 			# cancel matching entry
-			webnotes.conn.sql("update `tabStock Ledger Entry` set is_cancelled='Yes' where voucher_no=%s \
-				and voucher_type=%s", (values[0]['voucher_no'], values[0]['voucher_type']))
+			if values[0]['voucher_type'] == 'Serial No':
+				webnotes.conn.sql("update `tabStock Ledger Entry` set is_cancelled='Yes' where voucher_no=%s \
+					and serial_no = %s", (values[0]['voucher_no'], values[0]['serial_no']))
+			else:
+				webnotes.conn.sql("update `tabStock Ledger Entry` set is_cancelled='Yes' where voucher_no=%s \
+					and voucher_type=%s", (values[0]['voucher_no'], values[0]['voucher_type']))
 		
 		for v in values:
 			sle_id, serial_nos = '', ''
@@ -212,12 +216,12 @@ class DocType:
 				for sr in serial_nos:
 					v['actual_qty'] = v['actual_qty'] > 0 and 1 or -1
 					v['serial_no'] = sr
-					self.update_stock_for_single(v)
+					self.update_stock_for_single(v, is_amended)
 			else:
-				self.update_stock_for_single(v)
+				self.update_stock_for_single(v, is_amended)
 					
 					
-	def update_stock_for_single(self, v):
+	def update_stock_for_single(self, v, is_amended):
 		# reverse quantities for cancel
 		if v['is_cancelled'] == 'Yes':
 			v['actual_qty'] = -flt(v['actual_qty'])

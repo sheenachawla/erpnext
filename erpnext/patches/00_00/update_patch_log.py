@@ -1,12 +1,11 @@
-# This patch will get executed while merging scrap_msql branch
-# Don't put it into patch_list
-# Run as a separate patch
+# This patch will get executed while merging testcases branch
 
 def execute():
 	import webnotes
 	
-	from webnotes.utils import set_default
-	set_default('patch_version', '00_00')
+	from webnotes.utils import set_default, get_defaults
+	if not get_defaults('patch_version'):
+		set_default('patch_version', '00_00')
 	
 	repl = [
 		['before_jan_2012', '00_00'], 

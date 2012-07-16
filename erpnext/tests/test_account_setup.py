@@ -131,13 +131,16 @@ class TestAccountSetup(TestBase):
 		
 		print "Global Defaults properly set"
 			
-	def test_patch_version(self):
-		print "Checking patch version"
+	def test_patches(self):
+		print "Checking all patches properly executed "
 		pv = webnotes.conn.sql("select defvalue from `tabDefaultValue` \
 			where parent = 'Control Panel' and defkey = 'patch_version'")[0][0]
 		from patches.patch_list import patch_dict
-		self.assertEqual(pv, max(patch_dict.keys()))
-		print "Patch version: %s properly updated" % pv
+		patches_in_latest_version = len(patch_dict[max(patch_dict.keys())])
+		patches_executed_from_latest_version = webnotes.conn.sql("select count(*) from `__PatchLog`\
+			where patch like '%%%s%%'" % max(patch_dict.keys()))[0][0]
+		self.assertEqual(patches_in_latest_version, patches_executed_from_latest_version)
+		print "The system is not up-to-date, please execute patches"
 		
 	def test_user(self):
 		users = [d[0] for d in webnotes.conn.sql("select name from `tabProfile` order by name")]

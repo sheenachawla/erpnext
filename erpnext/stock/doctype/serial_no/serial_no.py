@@ -39,6 +39,7 @@ class DocType(TransactionBase):
 		if (self.doc.maintenance_status == 'Out of AMC' and self.doc.amc_expiry_date and getdate(self.doc.amc_expiry_date) >= datetime.date.today()) or (self.doc.maintenance_status == 'Under AMC' and (not self.doc.amc_expiry_date or getdate(self.doc.amc_expiry_date) < datetime.date.today())):
 			msgprint("AMC expiry date and maintenance status mismatch. Please verify", raise_exception=1)
 
+
 	def validate_warranty_status(self):
 		"""
 			validate warranty status	
@@ -51,6 +52,7 @@ class DocType(TransactionBase):
 		if self.doc.status=='In Store' and not self.doc.warehouse:
 			msgprint("Warehouse is mandatory if this Serial No is <b>In Store</b>", raise_exception=1)
 
+
 	def validate_item(self):
 		"""
 			Validate whether serial no is required for this item
@@ -62,14 +64,12 @@ class DocType(TransactionBase):
 			msgprint("To proceed please select 'Yes' in 'Has Serial No' in Item master: '%s'" % self.doc.item_code, raise_exception=1)
 			
 
-	# ---------
-	# validate
-	# ---------
 	def validate(self):
 		self.validate_warranty_status()
 		self.validate_amc_status()
 		self.validate_warehouse()
 		self.validate_item()
+
 
 	def on_update(self):
 		if self.doc.warehouse and self.doc.status == 'In Store' and cint(self.doc.sle_exists) == 0 and \
@@ -94,16 +94,13 @@ class DocType(TransactionBase):
 			'incoming_rate'			: self.doc.purchase_rate,
 			'company'				: self.doc.company,
 			'fiscal_year'			: self.doc.fiscal_year,
-			'is_cancelled'			: 'No', # is_cancelled is always 'No' because while deleted it can not find creation entry if it not created directly, voucher no != serial no
+			'is_cancelled'			: qty > 0 and 'No' and 'Yes',
 			'batch_no'				: '',
 			'serial_no'				: self.doc.name
 		}]
 		get_obj('Stock Ledger', 'Stock Ledger').update_stock(values)
 
 
-	# ---------
-	# on trash
-	# ---------
 	def on_trash(self):
 		if self.doc.status == 'Delivered':
 			msgprint("Cannot trash Serial No : %s as it is already Delivered" % (self.doc.name), raise_exception = 1)
@@ -115,8 +112,6 @@ class DocType(TransactionBase):
 	def on_cancel(self):
 		self.on_trash()
 
-	# -----------
-	# on restore
-	# -----------
+
 	def on_restore(self):
 		self.make_stock_ledger_entry(1)

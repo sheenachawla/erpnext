@@ -88,7 +88,7 @@ def	create_single_doc(data, validate=0, on_update=0, make_autoname=1):
 		doc_obj.validate()
 	if on_update and hasattr(doc_obj, 'on_update'):
 		doc_obj.on_update()
-	print 'Created %(doctype)s %(name)s' % d.fields
+	#print 'Created %(doctype)s %(name)s' % d.fields
 
 	
 def create_default_roles():

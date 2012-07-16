@@ -5,6 +5,19 @@ sys.path.append('erpnext')
 
 import webnotes
 
+
+#---------------------------------------------------------------
+# Import all test files here - implement os.walk later
+
+from test_account_setup import *
+from test_stock_entry import *
+#from test_serialized_inventory import *
+#from webnotes.utils.nestedset import *
+from test_masters import *
+from test_sales_order import *
+from test_delivery_note import *
+
+
 def install_erpnext(rootpwd, dbname, pwd):
 	os.system('python install_erpnext.py %s %s %s' % (rootpwd, dbname, pwd))
 	#setup
@@ -29,16 +42,6 @@ def setup_account():
 	import json
 	from webnotes.model.code import get_obj
 	get_obj('Setup Control').setup_account(json.dumps(args))
-
-#---------------------------------------------------------------
-# Import all test files here - implement os.walk later
-
-from test_account_setup import *
-from test_stock_entry import *
-#from webnotes.utils.nestedset import *
-from test_masters import *
-from test_sales_order import *
-from test_delivery_note import *
 
 
 def setup_options():
