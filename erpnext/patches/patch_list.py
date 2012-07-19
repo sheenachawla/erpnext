@@ -126,7 +126,12 @@ patch_dict = {
 		'reload_pr_po_mapper',
 		'address_contact_perms',
 		'packing_list_cleanup_and_serial_no',
-		'deprecate_import_data_control'
+		'deprecate_import_data_control',
+		'default_freeze_account',
+		'update_purchase_tax',
+		'cms2',
+		'auth_table',
+		'remove_event_role_owner_match'
 	],
 
 }

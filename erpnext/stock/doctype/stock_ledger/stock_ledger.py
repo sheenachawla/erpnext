@@ -44,8 +44,11 @@ class DocType:
 		self.doclist = doclist
 
 
-	def scrub_serial_nos(self, obj):
-		for d in getlist(obj.doclist, obj.fname):
+	def scrub_serial_nos(self, obj, table_name = ''):
+		if not table_name:
+			table_name = obj.fname
+		
+		for d in getlist(obj.doclist, table_name):
 			if d.serial_no:
 				d.serial_no = d.serial_no.replace(',', '\n')
 				d.save()
