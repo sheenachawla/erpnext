@@ -6,8 +6,8 @@ var no_value_fields=['Section Break','Column Break','HTML','Table','FlexTable','
 Field.prototype.make_body=function(){var ischk=(this.df.fieldtype=='Check'?1:0);if(this.parent)
 this.wrapper=$a(this.parent,(this.with_label?'div':'span'));else
 this.wrapper=document.createElement((this.with_label?'div':'span'));this.label_area=$a(this.wrapper,'div','',{margin:'0px 0px 2px 0px',minHeight:'1em'});if(ischk&&!this.in_grid){this.input_area=$a(this.label_area,'span','',{marginRight:'4px'});this.disp_area=$a(this.label_area,'span','',{marginRight:'4px'});}
-if(this.with_label){this.label_span=$a(this.label_area,'span','small',{cssFloat:'left'})
-this.label_icon=$('<i class="icon icon-warning-sign">').toggle(false).appendTo(this.label_area).css('float','left').css('margin-left','7px').attr("title","This field is mandatory.");this.suggest_icon=$('<i class="icon icon-chevron-down">').toggle(false).appendTo(this.label_area).css('float','left').css('margin-left','7px').attr("title","will show suggestions as you type.");}else{this.label_span=$a(this.label_area,'span','',{marginRight:'4px'})
+if(this.with_label){this.label_span=$a(this.label_area,'span','small')
+if(!ischk)$(this.label_span).css('float','left');this.label_icon=$('<i class="icon icon-warning-sign">').toggle(false).appendTo(this.label_area).css('float','left').css('margin-left','7px').attr("title","This field is mandatory.");this.suggest_icon=$('<i class="icon icon-chevron-down">').toggle(false).appendTo(this.label_area).css('float','left').css('margin-left','7px').attr("title","will show suggestions as you type.");}else{this.label_span=$a(this.label_area,'span','',{marginRight:'4px'})
 $dh(this.label_area);}
 if(!this.input_area){this.input_area=$a(this.wrapper,(this.with_label?'div':'span'));this.disp_area=$a(this.wrapper,(this.with_label?'div':'span'));}
 if(this.in_grid){if(this.label_area)$dh(this.label_area);}else{this.input_area.className='input_area';$y(this.wrapper,{marginBottom:'9px'});this.set_description();}
@@ -62,7 +62,8 @@ this.format_input();}
 if(this.input.focus){try{this.input.focus();}catch(e){}}}
 if(this.txt){try{this.txt.focus();}catch(e){}
 this.txt.field_object=this;}}
-function DataField(){}DataField.prototype=new Field();DataField.prototype.make_input=function(){var me=this;this.input=$a_input(this.input_area,this.df.fieldtype=='Password'?'password':'text');this.get_value=function(){var v=this.input.value;if(this.validate)
+function DataField(){}DataField.prototype=new Field();DataField.prototype.make_input=function(){var me=this;this.input=$a_input(this.input_area,this.df.fieldtype=='Password'?'password':'text');$(this.input).addClass('mousetrap')
+this.get_value=function(){var v=this.input.value;if(this.validate)
 v=this.validate(v);return v;}
 this.input.name=this.df.fieldname;$(this.input).change(function(){me.set_value(me.get_value?me.get_value():$(this.input).val());});this.set_value=function(val){if(!me.last_value)me.last_value='';if(me.validate){val=me.validate(val);me.input.value=val==undefined?'':val;}
 me.set(val);if(me.format_input)
