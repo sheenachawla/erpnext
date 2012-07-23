@@ -660,8 +660,7 @@ if(cur_frm.editable&&a_o_s&&cint(cur_frm.doc.docstatus)>0&&!this.df.hidden){tmp_
 return ret;}
 Field.prototype.set_style_mandatory=function(add){if(add){$(this.txt?this.txt:this.input).addClass('input-mandatory');if(this.disp_area)$(this.disp_area).addClass('input-mandatory');}else{$(this.txt?this.txt:this.input).removeClass('input-mandatory');if(this.disp_area)$(this.disp_area).removeClass('input-mandatory');}}
 Field.prototype.refresh_mandatory=function(){if(this.in_filter)return;if(this.df.reqd){if(this.label_area)this.label_area.style.color="#d22";this.set_style_mandatory(1);}else{if(this.label_area)this.label_area.style.color="#222";this.set_style_mandatory(0);}
-this.refresh_label_icon()
-this.set_reqd=this.df.reqd;}
+this.refresh_label_icon()}
 Field.prototype.refresh_display=function(){if(!this.current_status||this.current_status!=this.disp_status){if(this.disp_status=='Write'){if(this.make_input&&(!this.input)){this.make_input();if(this.onmake_input)this.onmake_input();}
 if(this.show)this.show()
 else{$ds(this.wrapper);}
@@ -871,7 +870,8 @@ opts.parent.appframe=new wn.ui.AppFrame($(opts.parent).find('.layout-appframe'))
 wn.widgets.FieldGroup=function(){this.first_button=false;this.make_fields=function(body,fl){if(!window.make_field){wn.require('css/fields.css');wn.require('js/fields.js');}
 $y(this.body,{padding:'11px'});this.fields_dict={};for(var i=0;i<fl.length;i++){var df=fl[i];var div=$a(body,'div','',{margin:'6px 0px'})
 f=make_field(df,null,div,null);f.not_in_form=1;this.fields_dict[df.fieldname]=f
-f.refresh();if(df.fieldtype=='Button'&&!this.first_button){$(f.input).addClass('btn-info');this.first_button=true;}}}
+f.refresh();if(df["default"]){f.set_input(df["default"]);}
+if(df.fieldtype=='Button'&&!this.first_button){$(f.input).addClass('btn-info');this.first_button=true;}}}
 this.catch_enter_as_submit=function(){var me=this;$(this.body).find(':input[type="text"], :input[type="password"]').keypress(function(e){if(e.which==13){$(me.body).find('.btn-info:first').click();}})}
 this.get_values=function(){var ret={};var errors=[];for(var key in this.fields_dict){var f=this.fields_dict[key];var v=f.get_value?f.get_value():null;if(f.df.reqd&&!v)
 errors.push(f.df.label+' is mandatory');if(v)ret[f.df.fieldname]=v;}
@@ -1320,7 +1320,8 @@ wn.meta.add_field(d);if(d.localname){wn.model.new_names[d.localname]=d.name;$(do
 LocalDB.clear_locals=function(dt,dn){var doclist=make_doclist(dt,dn,1);$.each(doclist,function(i,v){v&&delete locals[v.doctype][v.name];});}
 local_name_idx={};LocalDB.get_localname=function(doctype){if(!local_name_idx[doctype])local_name_idx[doctype]=1;var n='New '+get_doctype_label(doctype)+' '+local_name_idx[doctype];local_name_idx[doctype]++;return n;}
 LocalDB.set_default_values=function(doc){var doctype=doc.doctype;var docfields=wn.meta.docfield_list[doctype];if(!docfields){return;}
-var fields_to_refresh=[];for(var fid=0;fid<docfields.length;fid++){var f=docfields[fid];if(!in_list(no_value_fields,f.fieldtype)&&doc[f.fieldname]==null){var v=LocalDB.get_default_value(f.fieldname,f.fieldtype,f['default']);if(v){doc[f.fieldname]=v;fields_to_refresh.push(f.fieldname);}}}
+var fields_to_refresh=[];for(var fid=0;fid<docfields.length;fid++){var f=docfields[fid];if(!in_list(no_value_fields,f.fieldtype)&&doc[f.fieldname]==null){var v=LocalDB.get_default_value(f.fieldname,f.fieldtype,f['default']);if(v){if(in_list(["Int","Check"],f.fieldtype)){doc[f.fieldname]=cint(v);}else if(in_list(["Currency","Float"],f.fieldtype)){doc[f.fieldname]=flt(v);}else{doc[f.fieldname]=v;}
+fields_to_refresh.push(f.fieldname);}}}
 return fields_to_refresh;}
 function check_perm_match(p,dt,dn){if(!dn)return true;var out=false;if(p.match){if(user_defaults[p.match]){for(var i=0;i<user_defaults[p.match].length;i++){if(user_defaults[p.match][i]==locals[dt][dn][p.match]){return true;}}
 return false;}else if(!locals[dt][dn][p.match]){return true;}else{return false;}}else{return true;}}
@@ -1491,8 +1492,7 @@ if(cur_frm.editable&&a_o_s&&cint(cur_frm.doc.docstatus)>0&&!this.df.hidden){tmp_
 return ret;}
 Field.prototype.set_style_mandatory=function(add){if(add){$(this.txt?this.txt:this.input).addClass('input-mandatory');if(this.disp_area)$(this.disp_area).addClass('input-mandatory');}else{$(this.txt?this.txt:this.input).removeClass('input-mandatory');if(this.disp_area)$(this.disp_area).removeClass('input-mandatory');}}
 Field.prototype.refresh_mandatory=function(){if(this.in_filter)return;if(this.df.reqd){if(this.label_area)this.label_area.style.color="#d22";this.set_style_mandatory(1);}else{if(this.label_area)this.label_area.style.color="#222";this.set_style_mandatory(0);}
-this.refresh_label_icon()
-this.set_reqd=this.df.reqd;}
+this.refresh_label_icon()}
 Field.prototype.refresh_display=function(){if(!this.current_status||this.current_status!=this.disp_status){if(this.disp_status=='Write'){if(this.make_input&&(!this.input)){this.make_input();if(this.onmake_input)this.onmake_input();}
 if(this.show)this.show()
 else{$ds(this.wrapper);}
@@ -1843,8 +1843,9 @@ newdoc.amendment_date=dateutil.obj_to_str(new Date());}
 this.copy_doc(fn,1);}
 _f.get_value=function(dt,dn,fn){if(locals[dt]&&locals[dt][dn])
 return locals[dt][dn][fn];}
-_f.Frm.prototype.set_value_in_locals=function(dt,dn,fn,v){var d=locals[dt][dn];var changed=d[fn]!=v;if(changed&&(d[fn]==null||v==null)&&(cstr(d[fn])==cstr(v)))
-changed=false;if(changed){d[fn]=v;if(d.parenttype)
+_f.Frm.prototype.set_value_in_locals=function(dt,dn,fn,v){var d=locals[dt][dn];if(!d){console.log("No "+dt+": "+dn);return;}
+var changed=d[fn]!=v;if(changed&&((d[fn]==null&&v=='')||(d[fn]==''&&v==null)))
+changed=false;if(changed){console.log(fn+' changed from '+d[fn]+' to '+v);d[fn]=v;if(d.parenttype)
 d.__unsaved=1;this.set_unsaved();}}
 _f.Frm.prototype.set_unsaved=function(){if(cur_frm.doc.__unsaved)return;cur_frm.doc.__unsaved=1;cur_frm.frm_head.refresh_labels()}
 _f.Frm.prototype.show_comments=function(){if(!cur_frm.comments){cur_frm.comments=new Dialog(540,400,'Comments');cur_frm.comments.comment_body=$a(cur_frm.comments.body,'div','dialog_frm');$y(cur_frm.comments.body,{backgroundColor:'#EEE'});cur_frm.comments.list=new CommentList(cur_frm.comments.comment_body);}
@@ -1856,9 +1857,9 @@ $.each(fnames,function(i,f){var field=wn.meta.get_docfield(cur_frm.doctype,f,cur
 if(field){fn(field);cur_frm.refresh_field(f);};})}
 _f.Frm.prototype.set_df_property=function(fieldname,property,value){var field=wn.meta.get_docfield(cur_frm.doctype,fieldname,cur_frm.docname)
 if(field){field[property]=value;cur_frm.refresh_field(fieldname);};}
-_f.Frm.prototype.toggle_enable=function(fnames,enable){cur_frm.field_map(fnames,function(field){field.disabled=enable?false:true;});}
-_f.Frm.prototype.toggle_reqd=function(fnames,mandatory){cur_frm.field_map(fnames,function(field){field.reqd=mandatory?true:false;});}
-_f.Frm.prototype.toggle_display=function(fnames,show){cur_frm.field_map(fnames,function(field){field.hidden=show?false:true;});}
+_f.Frm.prototype.toggle_enable=function(fnames,enable){cur_frm.field_map(fnames,function(field){field.disabled=enable?0:1;});}
+_f.Frm.prototype.toggle_reqd=function(fnames,mandatory){cur_frm.field_map(fnames,function(field){field.reqd=mandatory?1:0;});}
+_f.Frm.prototype.toggle_display=function(fnames,show){cur_frm.field_map(fnames,function(field){field.hidden=show?0:1;});}
 _f.Frm.prototype.call_server=function(method,args,callback){$c_obj(cur_frm.get_doclist(),method,args,callback);}
 _f.Frm.prototype.set_value=function(field,value){cur_frm.get_doc()[field]=value;cur_frm.fields_dict[field].refresh();}
 /*
@@ -2140,10 +2141,8 @@ errprint('[set_field_tip] Unable to set field tip: '+n);}}
 refresh_field=function(n,docname,table_field){if(typeof n==typeof[])refresh_many(n,docname,table_field);if(table_field){if(_f.frm_dialog&&_f.frm_dialog.display){_f.frm_dialog.cur_frm.refresh_field(n);}else{var g=_f.cur_grid_cell;if(g)var hc=g.grid.head_row.cells[g.cellIndex];if(g&&hc&&hc.fieldname==n&&g.row.docname==docname){hc.template.refresh();}else{cur_frm.fields_dict[table_field].grid.refresh_cell(docname,n);}}}else if(cur_frm){cur_frm.refresh_field(n)}}
 set_field_options=function(n,txt){cur_frm.set_df_property(n,'options',txt)}
 set_field_permlevel=function(n,level){cur_frm.set_df_property(n,'permlevel',level)}
-hide_field=function(n){function _hide_field(n,hidden){cur_frm.set_df_property(n,'hidden',hidden)}
-if(cur_frm){if(typeof n=='string')_hide_field(n,1);else{for(var i in n)_hide_field(n[i],1)}}}
-unhide_field=function(n){function _hide_field(n,hidden){cur_frm.set_df_property(n,'hidden',hidden)}
-if(cur_frm){if(typeof n=='string')_hide_field(n,0);else{for(var i in n)_hide_field(n[i],0)}}}
+hide_field=function(n){if(typeof n=='string')n=[n];for(var i in n)cur_frm.set_df_property(n,'hidden',1);}
+unhide_field=function(n){if(typeof n=='string')n=[n];for(var i in n)cur_frm.set_df_property(n,'hidden',0);}
 /*
  *	lib/js/legacy/widgets/form/form_comments.js
  */
