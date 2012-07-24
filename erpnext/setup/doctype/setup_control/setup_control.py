@@ -45,17 +45,16 @@ class DocType:
 			
 		
 		# Fiscal Year
-		master_dict = {'Fiscal Year':{
-			'year': curr_fiscal_year,
-			'year_start_date': fy_start_date,
-			'company': args.get('company_name')}}
-		self.create_records(master_dict)
-		
-		# Company
-		master_dict = {'Company':{'company_name':args.get('company_name'),
-								  'abbr':args.get('company_abbr'),
-								  'default_currency':args.get('currency')
-								}}
+		master_dict = {
+			'Fiscal Year':{
+				'year': curr_fiscal_year,
+				'year_start_date': fy_start_date,
+			},
+			'Company':{'company_name':args.get('company_name'),
+				'abbr':args.get('company_abbr'),
+				'default_currency':args.get('currency')
+			}
+		}
 		self.create_records(master_dict)
 		
 		def_args = {'current_fiscal_year':curr_fiscal_year,
