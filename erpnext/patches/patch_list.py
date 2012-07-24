@@ -131,7 +131,9 @@ patch_dict = {
 		'update_purchase_tax',
 		'cms2',
 		'auth_table',
-		'remove_event_role_owner_match'
+		'remove_event_role_owner_match',
+		'sync_trial_balance',
+		'drop_rename_tool'		
 	],
 
 }
