@@ -18,14 +18,9 @@ import webnotes
 
 from webnotes.model.doc import Document
 from webnotes import msgprint
+from webnotes.model.base import BaseDocType
 
-
-class DocType:
-	def __init__(self, d, dl):
-		self.doc, self.doclist = d, dl
-		self.cl = []
-	
-	# validate currency
+class DocType(BaseDocType):
 	def is_currency_valid(self, currency):
 		if currency in self.cl:
 			return 1
@@ -52,7 +47,7 @@ class DocType:
 	# update prices in Price List
 	def update_prices(self):
 		import csv 
-		data = csv.reader(self.get_csv_data().splitlines())
+		data = self.get_csv_from_attachment()
 				
 		updated = 0
 		
@@ -83,23 +78,3 @@ class DocType:
 		
 		msgprint("<b>%s</b> items updated" % updated)
 
-	# Update CSV data
-	def get_csv_data(self):
-		if not self.doc.file_list:
-		  msgprint("File not attached!")
-		  raise Exception
-
-		fid = self.doc.file_list.split(',')[1]
-		  
-		try:
-			from webnotes.utils import file_manager
-			fn, content = file_manager.get_file(fid)
-		except Exception, e:
-			webnotes.msgprint("Unable to open attached file. Please try again.")
-			raise e
-	
-		# NOTE: Don't know why this condition exists
-		if not isinstance(content, basestring) and hasattr(content, 'tostring'):
-		  content = content.tostring()
-
-		return content	

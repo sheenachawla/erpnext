@@ -3,9 +3,9 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-05-15 12:14:41',
+		'creation': '2012-07-23 12:36:19',
 		'docstatus': 0,
-		'modified': '2012-07-18 17:41:49',
+		'modified': '2012-07-24 11:48:28',
 		'modified_by': u'Administrator',
 		'owner': u'Administrator'
 	},
@@ -13,6 +13,7 @@
 	# These values are common for all DocType
 	{
 		'_last_update': u'1306471021',
+		'allow_rename': 1,
 		'allow_trash': 1,
 		'colour': u'White:FFF',
 		'doctype': 'DocType',
