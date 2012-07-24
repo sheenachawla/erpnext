@@ -3,9 +3,9 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-03-27 14:35:55',
+		'creation': '2012-07-03 13:30:40',
 		'docstatus': 0,
-		'modified': '2012-03-27 14:35:55',
+		'modified': '2012-07-24 11:50:48',
 		'modified_by': u'Administrator',
 		'owner': u'Administrator'
 	},
@@ -14,6 +14,7 @@
 	{
 		'_last_update': u'1308918132',
 		'allow_attach': 1,
+		'allow_rename': 1,
 		'allow_trash': 1,
 		'colour': u'White:FFF',
 		'doctype': 'DocType',
@@ -26,7 +27,7 @@
 		'show_in_menu': 0,
 		'subject': u'%(employee_name)s',
 		'tag_fields': u'status',
-		'version': 444
+		'version': 1
 	},
 
 	# These values are common for all DocField
@@ -52,6 +53,30 @@
 	{
 		'doctype': 'DocType',
 		'name': u'Employee'
+	},
+
+	# DocPerm
+	{
+		'amend': 0,
+		'cancel': 0,
+		'create': 0,
+		'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'Employee',
+		'submit': 0,
+		'write': 0
+	},
+
+	# DocPerm
+	{
+		'amend': 0,
+		'cancel': 0,
+		'create': 0,
+		'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'Employee',
+		'submit': 0,
+		'write': 0
 	},
 
 	# DocPerm
@@ -93,54 +118,6 @@
 		'doctype': u'DocPerm',
 		'permlevel': 1,
 		'role': u'HR Manager'
-	},
-
-	# DocPerm
-	{
-		'amend': 0,
-		'cancel': 0,
-		'create': 0,
-		'doctype': u'DocPerm',
-		'match': u'owner',
-		'permlevel': 0,
-		'submit': 0,
-		'write': 0
-	},
-
-	# DocPerm
-	{
-		'amend': 0,
-		'cancel': 0,
-		'create': 0,
-		'doctype': u'DocPerm',
-		'match': u'owner',
-		'permlevel': 0,
-		'submit': 0,
-		'write': 0
-	},
-
-	# DocPerm
-	{
-		'amend': 0,
-		'cancel': 0,
-		'create': 0,
-		'doctype': u'DocPerm',
-		'match': u'owner',
-		'permlevel': 0,
-		'submit': 0,
-		'write': 0
-	},
-
-	# DocPerm
-	{
-		'amend': 0,
-		'cancel': 0,
-		'create': 0,
-		'doctype': u'DocPerm',
-		'match': u'owner',
-		'permlevel': 0,
-		'submit': 0,
-		'write': 0
 	},
 
 	# DocField

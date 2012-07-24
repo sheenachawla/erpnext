@@ -102,8 +102,8 @@ erpnext.startup.start = function() {
 	}
 
 		
-	$('body').append('<a class="erpnext-logo" title="Powered by ERPNext" \
-		href="http://erpnext.com" target="_blank"></a>')
+	//$('body').append('<a class="erpnext-logo" title="Powered by ERPNext" \
+	//	href="http://erpnext.com" target="_blank"></a>')
 }
 
 

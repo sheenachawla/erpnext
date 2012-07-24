@@ -22,6 +22,7 @@ from webnotes.model.doclist import getlist
 from webnotes.model.code import get_obj
 from webnotes import msgprint
 
+
 # -----------------------------------------------------------------------------------------
 
 from utilities.transaction_base import TransactionBase

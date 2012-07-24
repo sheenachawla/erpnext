@@ -5,7 +5,7 @@
 	{
 		'creation': '2012-07-03 13:30:55',
 		'docstatus': 0,
-		'modified': '2012-07-11 14:43:55',
+		'modified': '2012-07-24 11:49:50',
 		'modified_by': u'Administrator',
 		'owner': u'Administrator'
 	},
@@ -13,6 +13,7 @@
 	# These values are common for all DocType
 	{
 		'_last_update': u'1323855292',
+		'allow_rename': 1,
 		'allow_trash': 1,
 		'autoname': u'field:company_name',
 		'colour': u'White:FFF',
