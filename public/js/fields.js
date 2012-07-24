@@ -6,8 +6,8 @@ var no_value_fields=['Section Break','Column Break','HTML','Table','FlexTable','
 Field.prototype.make_body=function(){var ischk=(this.df.fieldtype=='Check'?1:0);if(this.parent)
 this.wrapper=$a(this.parent,(this.with_label?'div':'span'));else
 this.wrapper=document.createElement((this.with_label?'div':'span'));this.label_area=$a(this.wrapper,'div','',{margin:'0px 0px 2px 0px',minHeight:'1em'});if(ischk&&!this.in_grid){this.input_area=$a(this.label_area,'span','',{marginRight:'4px'});this.disp_area=$a(this.label_area,'span','',{marginRight:'4px'});}
-if(this.with_label){this.label_span=$a(this.label_area,'span','small',{cssFloat:'left'})
-this.label_icon=$('<i class="icon icon-warning-sign">').toggle(false).appendTo(this.label_area).css('float','left').css('margin-left','7px').attr("title","This field is mandatory.");this.suggest_icon=$('<i class="icon icon-chevron-down">').toggle(false).appendTo(this.label_area).css('float','left').css('margin-left','7px').attr("title","will show suggestions as you type.");}else{this.label_span=$a(this.label_area,'span','',{marginRight:'4px'})
+if(this.with_label){this.label_span=$a(this.label_area,'span','small')
+if(!ischk)$(this.label_span).css('float','left');this.label_icon=$('<i class="icon icon-warning-sign">').toggle(false).appendTo(this.label_area).css('float','left').css('margin-left','7px').attr("title","This field is mandatory.");this.suggest_icon=$('<i class="icon icon-chevron-down">').toggle(false).appendTo(this.label_area).css('float','left').css('margin-left','7px').attr("title","will show suggestions as you type.");}else{this.label_span=$a(this.label_area,'span','',{marginRight:'4px'})
 $dh(this.label_area);}
 if(!this.input_area){this.input_area=$a(this.wrapper,(this.with_label?'div':'span'));this.disp_area=$a(this.wrapper,(this.with_label?'div':'span'));}
 if(this.in_grid){if(this.label_area)$dh(this.label_area);}else{this.input_area.className='input_area';$y(this.wrapper,{marginBottom:'9px'});this.set_description();}
@@ -27,8 +27,7 @@ if(cur_frm.editable&&a_o_s&&cint(cur_frm.doc.docstatus)>0&&!this.df.hidden){tmp_
 return ret;}
 Field.prototype.set_style_mandatory=function(add){if(add){$(this.txt?this.txt:this.input).addClass('input-mandatory');if(this.disp_area)$(this.disp_area).addClass('input-mandatory');}else{$(this.txt?this.txt:this.input).removeClass('input-mandatory');if(this.disp_area)$(this.disp_area).removeClass('input-mandatory');}}
 Field.prototype.refresh_mandatory=function(){if(this.in_filter)return;if(this.df.reqd){if(this.label_area)this.label_area.style.color="#d22";this.set_style_mandatory(1);}else{if(this.label_area)this.label_area.style.color="#222";this.set_style_mandatory(0);}
-this.refresh_label_icon()
-this.set_reqd=this.df.reqd;}
+this.refresh_label_icon()}
 Field.prototype.refresh_display=function(){if(!this.current_status||this.current_status!=this.disp_status){if(this.disp_status=='Write'){if(this.make_input&&(!this.input)){this.make_input();if(this.onmake_input)this.onmake_input();}
 if(this.show)this.show()
 else{$ds(this.wrapper);}
@@ -63,7 +62,8 @@ this.format_input();}
 if(this.input.focus){try{this.input.focus();}catch(e){}}}
 if(this.txt){try{this.txt.focus();}catch(e){}
 this.txt.field_object=this;}}
-function DataField(){}DataField.prototype=new Field();DataField.prototype.make_input=function(){var me=this;this.input=$a_input(this.input_area,this.df.fieldtype=='Password'?'password':'text');this.get_value=function(){var v=this.input.value;if(this.validate)
+function DataField(){}DataField.prototype=new Field();DataField.prototype.make_input=function(){var me=this;this.input=$a_input(this.input_area,this.df.fieldtype=='Password'?'password':'text');$(this.input).addClass('mousetrap')
+this.get_value=function(){var v=this.input.value;if(this.validate)
 v=this.validate(v);return v;}
 this.input.name=this.df.fieldname;$(this.input).change(function(){me.set_value(me.get_value?me.get_value():$(this.input).val());});this.set_value=function(val){if(!me.last_value)me.last_value='';if(me.validate){val=me.validate(val);me.input.value=val==undefined?'':val;}
 me.set(val);if(me.format_input)

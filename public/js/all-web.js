@@ -497,7 +497,7 @@ msg=JSON.stringify(msg);if(msg.substr(0,8)=='__small:'){show_alert(msg.substr(8)
 if(!msg_dialog){msg_dialog=new wn.ui.Dialog({title:"Message",onhide:function(){msg_dialog.msg_area.empty();}});msg_dialog.msg_area=$('<div class="msgprint">').appendTo(msg_dialog.body);}
 if(msg.search(/<br>|<p>|<li>/)==-1)
 msg=replace_newlines(msg);msg_dialog.set_title(title||'Message')
-msg_dialog.msg_area.append(msg);msg_dialog.show();}
+msg_dialog.msg_area.append('<p>'+msg+'</p>');msg_dialog.show();}
 var growl_area;function show_alert(txt,id){if(!growl_area){if(!$('#dialog-container').length){$('<div id="dialog-container">').appendTo('body');}
 growl_area=$a($i('dialog-container'),'div','',{position:'fixed',bottom:'8px',right:'8px',width:'320px',zIndex:10});}
 var wrapper=$a(growl_area,'div','',{position:'relative'});var body=$a(wrapper,'div','notice');var c=$a(body,'i','icon-remove-sign',{cssFloat:'right',cursor:'pointer'});$(c).click(function(){$dh(this.wrapper)});c.wrapper=wrapper;var t=$a(body,'div','',{color:'#FFF'});$(t).html(txt);if(id){$(t).attr('id',id);}
@@ -532,7 +532,8 @@ opts.parent.appframe=new wn.ui.AppFrame($(opts.parent).find('.layout-appframe'))
 wn.widgets.FieldGroup=function(){this.first_button=false;this.make_fields=function(body,fl){if(!window.make_field){wn.require('css/fields.css');wn.require('js/fields.js');}
 $y(this.body,{padding:'11px'});this.fields_dict={};for(var i=0;i<fl.length;i++){var df=fl[i];var div=$a(body,'div','',{margin:'6px 0px'})
 f=make_field(df,null,div,null);f.not_in_form=1;this.fields_dict[df.fieldname]=f
-f.refresh();if(df.fieldtype=='Button'&&!this.first_button){$(f.input).addClass('btn-info');this.first_button=true;}}}
+f.refresh();if(df["default"]){f.set_input(df["default"]);}
+if(df.fieldtype=='Button'&&!this.first_button){$(f.input).addClass('btn-info');this.first_button=true;}}}
 this.catch_enter_as_submit=function(){var me=this;$(this.body).find(':input[type="text"], :input[type="password"]').keypress(function(e){if(e.which==13){$(me.body).find('.btn-info:first').click();}})}
 this.get_values=function(){var ret={};var errors=[];for(var key in this.fields_dict){var f=this.fields_dict[key];var v=f.get_value?f.get_value():null;if(f.df.reqd&&!v)
 errors.push(f.df.label+' is mandatory');if(v)ret[f.df.fieldname]=v;}
@@ -634,7 +635,8 @@ wn.meta.add_field(d);if(d.localname){wn.model.new_names[d.localname]=d.name;$(do
 LocalDB.clear_locals=function(dt,dn){var doclist=make_doclist(dt,dn,1);$.each(doclist,function(i,v){v&&delete locals[v.doctype][v.name];});}
 local_name_idx={};LocalDB.get_localname=function(doctype){if(!local_name_idx[doctype])local_name_idx[doctype]=1;var n='New '+get_doctype_label(doctype)+' '+local_name_idx[doctype];local_name_idx[doctype]++;return n;}
 LocalDB.set_default_values=function(doc){var doctype=doc.doctype;var docfields=wn.meta.docfield_list[doctype];if(!docfields){return;}
-var fields_to_refresh=[];for(var fid=0;fid<docfields.length;fid++){var f=docfields[fid];if(!in_list(no_value_fields,f.fieldtype)&&doc[f.fieldname]==null){var v=LocalDB.get_default_value(f.fieldname,f.fieldtype,f['default']);if(v){doc[f.fieldname]=v;fields_to_refresh.push(f.fieldname);}}}
+var fields_to_refresh=[];for(var fid=0;fid<docfields.length;fid++){var f=docfields[fid];if(!in_list(no_value_fields,f.fieldtype)&&doc[f.fieldname]==null){var v=LocalDB.get_default_value(f.fieldname,f.fieldtype,f['default']);if(v){if(in_list(["Int","Check"],f.fieldtype)){doc[f.fieldname]=cint(v);}else if(in_list(["Currency","Float"],f.fieldtype)){doc[f.fieldname]=flt(v);}else{doc[f.fieldname]=v;}
+fields_to_refresh.push(f.fieldname);}}}
 return fields_to_refresh;}
 function check_perm_match(p,dt,dn){if(!dn)return true;var out=false;if(p.match){if(user_defaults[p.match]){for(var i=0;i<user_defaults[p.match].length;i++){if(user_defaults[p.match][i]==locals[dt][dn][p.match]){return true;}}
 return false;}else if(!locals[dt][dn][p.match]){return true;}else{return false;}}else{return true;}}
