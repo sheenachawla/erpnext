@@ -129,7 +129,6 @@ patch_dict = {
 		'deprecate_import_data_control',
 		'default_freeze_account',
 		'update_purchase_tax',
-		'cms2',
 		'auth_table',
 		'remove_event_role_owner_match',
 		'sync_trial_balance',
