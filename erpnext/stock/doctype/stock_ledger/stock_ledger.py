@@ -23,6 +23,7 @@ from webnotes.model.doclist import getlist
 from webnotes.model.code import get_obj
 from webnotes import msgprint, errprint
 
+
 # -----------------------------------------------------------------------------------------
 
 def get_sr_no_list(sr_nos, qty = 0, item_code = ''):

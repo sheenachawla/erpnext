@@ -89,8 +89,8 @@ class DocType:
 
 		self.doc.set_options = "\n".join(options)
 
-		from webnotes.utils.cache import CacheItem
-		CacheItem(doctype).clear()
+		from webnotes.model.doctype import clear_cache
+		clear_cache(doctype)
 			
 	def check_duplicate(self):
 		from core.doctype.doctype.doctype import DocType
