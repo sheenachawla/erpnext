@@ -18,7 +18,7 @@
 import webnotes
 from webnotes.utils import add_days, cint, cstr, date_diff, default_fields, flt, getdate, now, nowdate
 from webnotes.model.doc import Document, addchild, getchildren, make_autoname
-from webnotes.model.doclist import getlist, copy_doclist
+from webnotes.model.doclist import getlist
 from webnotes.model.code import get_obj
 from webnotes import  msgprint, errprint
 

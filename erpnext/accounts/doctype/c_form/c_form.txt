@@ -3,9 +3,9 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2011-12-14 11:40:47',
+		'creation': '2012-07-03 13:30:49',
 		'docstatus': 0,
-		'modified': '2012-04-06 17:29:50',
+		'modified': '2012-07-25 11:53:18',
 		'modified_by': u'Administrator',
 		'owner': u'Administrator'
 	},
@@ -21,7 +21,7 @@
 		'name': '__common__',
 		'section_style': u'Simple',
 		'show_in_menu': 0,
-		'version': 19
+		'version': 1
 	},
 
 	# These values are common for all DocField
@@ -30,8 +30,7 @@
 		'name': '__common__',
 		'parent': u'C-Form',
 		'parentfield': u'fields',
-		'parenttype': u'DocType',
-		'permlevel': 0
+		'parenttype': u'DocType'
 	},
 
 	# These values are common for all DocPerm
@@ -183,7 +182,7 @@
 		'fieldname': u'state',
 		'fieldtype': u'Select',
 		'label': u'State',
-		'options': u"link:State\ncountry='India'",
+		'options': u'\nAndaman and Nicobar Islands\nAndhra Pradesh\nArunachal Pradesh\nAssam\nBihar\nChandigarh\nChhattisgarh\nDadra and Nagar Haveli\nDaman and Diu\nDelhi\nGoa\nGujarat\nHaryana\nHimachal Pradesh\nJammu and Kashmir\nJharkhand\nKarnataka\nKerala\nLakshadweep\nMadhya Pradesh\nMaharashtra\nManipur\nMeghalaya\nMizoram\nNagaland\nOrissa\nPuducherry\nPunjab\nRajasthan\nSikkim\nTamil Nadu\nTripura\nUttar Pradesh\nUttarakhand\nWest Bengal',
 		'permlevel': 0,
 		'reqd': 1
 	},
