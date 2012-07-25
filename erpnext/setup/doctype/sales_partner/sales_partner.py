@@ -18,11 +18,10 @@
 import webnotes
 
 from webnotes.utils import add_days, add_months, add_years, cint, cstr, date_diff, default_fields, flt, fmt_money, formatdate, generate_hash, getTraceback, get_defaults, get_first_day, get_last_day, getdate, has_common, month_name, now, nowdate, replace_newlines, sendmail, set_default, str_esc_quote, user_format, validate_email_add
-
 from webnotes.model.doc import Document, addchild, getchildren, make_autoname
 from webnotes.model.doclist import getlist
 from webnotes.model.code import get_obj, get_server_obj, run_server_obj, updatedb, check_syntax
-from webnotes import session, form, is_testing, msgprint, errprint
+from webnotes import session, form, msgprint, errprint
 
 set = webnotes.conn.set
 sql = webnotes.conn.sql
@@ -37,7 +36,6 @@ class DocType:
   def __init__(self, doc, doclist=[]):
     self.doc = doc
     self.doclist = doclist
-    self.prefix = is_testing and 'test' or 'tab'
 
   def validate(self):
     import string

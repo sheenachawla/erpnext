@@ -22,7 +22,7 @@ from webnotes.utils import cint, cstr, flt, fmt_money, formatdate, getTraceback,
 from webnotes.model.doc import Document, addchild, getchildren, make_autoname
 from webnotes.model.doclist import getlist
 from webnotes.model.code import get_obj, get_server_obj, run_server_obj, updatedb, check_syntax
-from webnotes import session, form, is_testing, msgprint, errprint
+from webnotes import session, form, msgprint, errprint
 
 set = webnotes.conn.set
 sql = webnotes.conn.sql
