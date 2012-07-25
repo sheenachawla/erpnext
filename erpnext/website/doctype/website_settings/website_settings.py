@@ -48,6 +48,8 @@ class DocType:
 		
 		d = Document('Default Home Page')
 		d.parent = 'Control Panel'
+		d.parenttype = 'Control Panel'
+		d.parentfield = 'default_home_pages'
 		d.role = 'Guest'
 		d.home_page = self.doc.home_page
 		d.save()

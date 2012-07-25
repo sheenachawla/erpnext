@@ -93,7 +93,7 @@ def get_predefined_pages():
 def prepare_args(page_name):
 	if page_name == 'index':
 		page_name = get_home_page()
-
+	
 	if page_name in get_predefined_pages():
 		args = {
 			'template': 'pages/%s.html' % page_name,
@@ -118,7 +118,11 @@ def get_home_page():
 
 def get_doc_fields(page_name):
 	import webnotes
-	doc_type, doc_name = webnotes.conn.get_value('Web Cache', page_name, ['doc_type', 'doc_name'])
+	res = webnotes.conn.get_value('Web Cache', page_name, ['doc_type', 'doc_name'])
+	if not res:
+		raise Exception, "Page %s not found" % page_name
+	
+	doc_type, doc_name = res
 	
 	import webnotes.model.code
 	obj = webnotes.model.code.get_obj(doc_type, doc_name)
