@@ -54,25 +54,25 @@ class DocType(BaseDocType):
 		for line in data:
 			if line and len(line)==3 and line[0]!='Item':
 				# if item exists
-				if webnotes.conn.sql("select name from tabItem where name=%s", line[0]):
-					if self.is_currency_valid(line[2]):
-						# if price exists
-						ref_ret_detail = webnotes.conn.sql("select name from `tabItem Price` where parent=%s and price_list_name=%s and ref_currency=%s", \
-							(line[0], self.doc.name, line[2]))
-						if ref_ret_detail:
-							webnotes.conn.sql("update `tabItem Price` set ref_rate=%s where name=%s", (line[1], ref_ret_detail[0][0]))
-						else:
-							d = Document('Item Price')
-							d.parent = line[0]
-							d.parentfield = 'ref_rate_details'
-							d.parenttype = 'Item'
-							d.price_list_name = self.doc.name
-							d.ref_rate = line[1]
-							d.ref_currency = line[2]
-							d.save(1)
-						updated += 1
+				if webnotes.conn.exists('Item', line[0]):
+					# if price exists
+					ref_ret_detail = webnotes.conn.sql("""select name from `tabItem Price` 
+						where parent=%s and price_list_name=%s and ref_currency=%s""",
+						(line[0], self.doc.name, line[2]))
+					if ref_ret_detail:
+						d = Document('Item Price', ref_ret_detail[0][0])
+						d.ref_rate = line[1]
+						d.save()
 					else:
-						msgprint("[Ignored] Unknown currency '%s' for Item '%s'" % (line[2], line[0]))
+						d = Document('Item Price')
+						d.parent = line[0]
+						d.parentfield = 'ref_rate_details'
+						d.parenttype = 'Item'
+						d.price_list_name = self.doc.name
+						d.ref_rate = line[1]
+						d.ref_currency = line[2]
+						d.save()
+					updated += 1
 				else:
 					msgprint("[Ignored] Did not find Item '%s'" % line[1])
 		
