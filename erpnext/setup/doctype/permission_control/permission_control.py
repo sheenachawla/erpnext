@@ -194,8 +194,8 @@ class DocType:
 						sql("update tabDocType set modified = %s where name = %s",(now(), parent))
 
 
-		from webnotes.utils.cache import CacheItem
-		CacheItem(parent).clear()		
+		from webnotes.model.doctype import clear_cache
+		clear_cache(parent)
 
 		msgprint("Permissions Updated")
 				
