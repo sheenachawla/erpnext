@@ -81,4 +81,3 @@ class TestBase(unittest.TestCase):
 	def tearDown(self):
 		webnotes.conn.rollback()
 		webnotes.conn.close()
-		print '_'*30

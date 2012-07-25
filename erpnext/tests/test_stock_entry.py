@@ -35,35 +35,27 @@ class TestStockEntry(TestBase):
 	def setUp(self):
 		TestBase.setUp(self)
 		self.create_docs(masters, validate=1, on_update=1)
-		print 'Master Data Created'
 
 
 	def test_mr_onsubmit(self):
-		print "Test Case: Material Receipt submission"
 		self.submit_doc(mr, 1, 1)
 
 		# stock ledger entry
 		self.assertDoc(self.get_expected_sle('mr_submit'))
 		# bin qty
-		self.assertDoc([{'doctype':'Bin', 'actual_qty':10, 'item_code':'test_item_serialized', 'warehouse':'test_wh1'}])
-		# serial no
-		self.assertCount([[{'doctype': 'Serial No', 'item_code': 'test_item_serialized', 'warehouse': 'test_wh1', 'status': 'In Store', 'docstatus': 0}, 10]])
+		self.assertDoc([{'doctype':'Bin', 'actual_qty':10, 'item_code':'test_item', 'warehouse':'test_wh1'}])
 
 		
 	def test_mr_oncancel(self):
-		print "Test Case: Material Receipt Cancellation"
 		self.cancel_doc(mr, 1, 1)
 		
 		# stock ledger entry
 		self.assertDoc(self.get_expected_sle('mr_cancel'))
 		# bin qty
-		self.assertDoc([{'doctype':'Bin', 'actual_qty':0, 'item_code':'test_item_serialized', 'warehouse':'test_wh1'}])
-		# serial no
-		self.assertCount([[{'doctype': 'Serial No', 'item_code': 'test_item_serialized', 'warehouse': '', 'status': 'Not in Use', 'docstatus': 2}, 10]])
+		self.assertDoc([{'doctype':'Bin', 'actual_qty':0, 'item_code':'test_item', 'warehouse':'test_wh1'}])
 		
-
+	
 	def test_mtn_onsubmit(self):
-		print "Test Case: Material Transfer Note submission"
 		self.submit_doc(mr, 1, 1)
 		self.submit_doc(mtn, 1, 1)
 		
@@ -71,18 +63,12 @@ class TestStockEntry(TestBase):
 		self.assertDoc(self.get_expected_sle('mtn_submit'))
 		# bin qty
 		self.assertDoc([
-			{'doctype':'Bin', 'actual_qty':5, 'item_code':'test_item_serialized', 'warehouse':'test_wh1'},
-			{'doctype':'Bin', 'actual_qty':5, 'item_code':'test_item_serialized', 'warehouse':'test_wh2'}
-		])
-		# serial no		
-		self.assertCount([
-			[{'doctype': 'Serial No', 'item_code': 'test_item_serialized', 'warehouse': 'test_wh1', 'status': 'In Store', 'docstatus': 0}, 5], 
-			[{'doctype': 'Serial No', 'item_code': 'test_item_serialized', 'warehouse': 'test_wh2', 'status': 'In Store', 'docstatus': 0}, 5]
+			{'doctype':'Bin', 'actual_qty':5, 'item_code':'test_item', 'warehouse':'test_wh1'},
+			{'doctype':'Bin', 'actual_qty':5, 'item_code':'test_item', 'warehouse':'test_wh2'}
 		])
 		
-
+	
 	def test_mtn_oncancel(self):
-		print "Test Case: Material Transfer Note Cancellation"
 		self.submit_doc(mr, 1, 1)
 		self.cancel_doc(mtn, 1, 1)
 		
@@ -90,46 +76,36 @@ class TestStockEntry(TestBase):
 		self.assertDoc(self.get_expected_sle('mtn_cancel'))
 		# bin qty
 		self.assertDoc([
-			{'doctype':'Bin', 'actual_qty':10, 'item_code':'test_item_serialized', 'warehouse':'test_wh1'},
-			{'doctype':'Bin', 'actual_qty':0, 'item_code':'test_item_serialized', 'warehouse':'test_wh2'}
+			{'doctype':'Bin', 'actual_qty':10, 'item_code':'test_item', 'warehouse':'test_wh1'},
+			{'doctype':'Bin', 'actual_qty':0, 'item_code':'test_item', 'warehouse':'test_wh2'}
 		])
-		# serial no
-		self.assertCount([[{'doctype': 'Serial No', 'item_code': 'test_item_serialized', 'warehouse': 'test_wh1', 'status': 'In Store', 'docstatus': 0}, 10]])
-		
 		
 	def test_mi_onsubmit(self):
-		print "Test Case: Material Issue submission"
 		self.submit_doc(mr, 1, 1)
 		self.submit_doc(mi, 1, 1)
 		
 		# stock ledger entry
 		self.assertDoc(self.get_expected_sle('mi_submit'))
 		# bin qty
-		self.assertDoc([{'doctype':'Bin', 'actual_qty':6, 'item_code':'test_item_serialized', 'warehouse':'test_wh1'}])
-		# serial no		
-		self.assertCount([
-			[{'doctype': 'Serial No', 'item_code': 'test_item_serialized', 'warehouse': 'test_wh1', 'status': 'In Store', 'docstatus': 0}, 6]
-		])
+		self.assertDoc([{'doctype':'Bin', 'actual_qty':6, 'item_code':'test_item', 'warehouse':'test_wh1'}])
 		
 		
 	def test_mi_oncancel(self):
-		print "Test Case: Material Issue Cancellation"
 		self.submit_doc(mr, 1, 1)
 		self.cancel_doc(mi, 1, 1)
-
+	
 		# stock ledger entry
 		self.assertDoc(self.get_expected_sle('mi_cancel'))
 		# bin qty
 		self.assertDoc([
-			{'doctype':'Bin', 'actual_qty':10, 'item_code':'test_item_serialized', 'warehouse':'test_wh1'}
+			{'doctype':'Bin', 'actual_qty':10, 'item_code':'test_item', 'warehouse':'test_wh1'}
 		])
-		# serial no
-		self.assertCount([
-			[{'doctype': 'Serial No', 'item_code': 'test_item_serialized', 'warehouse': 'test_wh1', 'status': 'In Store', 'docstatus': 0}, 10]
-		])
-
+		
+	
 	def test_entries_on_same_datetime(self):
-		print "Test Case: Multiple entries on same datetime, cancel first one"
+		"""
+			Test Case: Multiple entries on same datetime, cancel first one
+		"""
 		m = self.submit_doc(mr, 1, 1)
 		
 		self.submit_doc(mr1, 1, 1)
@@ -145,13 +121,8 @@ class TestStockEntry(TestBase):
 		self.assertDoc(self.get_expected_sle('entries_on_same_datetime'))
 		# bin qty
 		self.assertDoc([
-			{'doctype':'Bin', 'actual_qty':0, 'item_code':'test_item_serialized', 'warehouse':'test_wh1'},
-			{'doctype':'Bin', 'actual_qty':5, 'item_code':'test_item_serialized', 'warehouse':'test_wh2'}
-		])
-		# serial no		
-		self.assertCount([
-			[{'doctype': 'Serial No', 'item_code': 'test_item_serialized', 'warehouse': 'test_wh1', 'status': 'In Store', 'docstatus': 0}, 5], 
-			[{'doctype': 'Serial No', 'item_code': 'test_item_serialized', 'warehouse': 'test_wh2', 'status': 'In Store', 'docstatus': 0}, 0]
+			{'doctype':'Bin', 'actual_qty':0, 'item_code':'test_item', 'warehouse':'test_wh1'},
+			{'doctype':'Bin', 'actual_qty':5, 'item_code':'test_item', 'warehouse':'test_wh2'}
 		])
 		
 		
@@ -161,7 +132,7 @@ class TestStockEntry(TestBase):
 		expected_sle = {
 			'mr_submit': [{
 							'doctype': 'Stock Ledger Entry',
-							'item_code':'test_item_serialized',
+							'item_code':'test_item',
 							'warehouse':'test_wh1', 
 							'voucher_type': 'Stock Entry',
 							'voucher_no': 'MR001',
@@ -172,7 +143,7 @@ class TestStockEntry(TestBase):
 						}],
 			'mr_cancel': [{
 							'doctype': 'Stock Ledger Entry', 
-							'item_code':'test_item_serialized',
+							'item_code':'test_item',
 							'warehouse':'test_wh1',
 							'voucher_type': 'Stock Entry',
 							'voucher_no': 'MR001',
@@ -182,7 +153,7 @@ class TestStockEntry(TestBase):
 							'is_cancelled': 'Yes'
 						},{
 							'doctype': 'Stock Ledger Entry', 
-							'item_code':'test_item_serialized',
+							'item_code':'test_item',
 							'warehouse':'test_wh1',
 							'voucher_type': 'Stock Entry',
 							'voucher_no': 'MR001',
@@ -193,7 +164,7 @@ class TestStockEntry(TestBase):
 						}],
 			'mtn_submit': [{
 							'doctype': 'Stock Ledger Entry',
-							'item_code':'test_item_serialized',
+							'item_code':'test_item',
 							'warehouse':'test_wh1',
 							'voucher_type': 'Stock Entry',
 							'voucher_no': 'MTN001',
@@ -203,7 +174,7 @@ class TestStockEntry(TestBase):
 							'is_cancelled': 'No'
 						}, {
 							'doctype': 'Stock Ledger Entry',
-							'item_code':'test_item_serialized',
+							'item_code':'test_item',
 							'warehouse':'test_wh2',
 							'voucher_type': 'Stock Entry',
 							'voucher_no': 'MTN001',
@@ -214,7 +185,7 @@ class TestStockEntry(TestBase):
 						}],
 			'mtn_cancel': [{
 							'doctype': 'Stock Ledger Entry',
-							'item_code':'test_item_serialized',
+							'item_code':'test_item',
 							'warehouse':'test_wh1',
 							'voucher_type': 'Stock Entry',
 							'voucher_no': 'MTN001',
@@ -223,7 +194,7 @@ class TestStockEntry(TestBase):
 							'is_cancelled': 'Yes'
 						}, {
 							'doctype': 'Stock Ledger Entry',
-							'item_code':'test_item_serialized',
+							'item_code':'test_item',
 							'warehouse':'test_wh2',
 							'voucher_type': 'Stock Entry',
 							'voucher_no': 'MTN001',
@@ -233,7 +204,7 @@ class TestStockEntry(TestBase):
 							'is_cancelled': 'Yes'
 						}, {
 							'doctype': 'Stock Ledger Entry',
-							'item_code':'test_item_serialized',
+							'item_code':'test_item',
 							'warehouse':'test_wh1',
 							'voucher_type': 'Stock Entry',
 							'voucher_no': 'MTN001',
@@ -241,7 +212,7 @@ class TestStockEntry(TestBase):
 							'is_cancelled': 'Yes'
 						}, {
 							'doctype': 'Stock Ledger Entry',
-							'item_code':'test_item_serialized',
+							'item_code':'test_item',
 							'warehouse':'test_wh2',
 							'voucher_type': 'Stock Entry',
 							'voucher_no': 'MTN001',
@@ -249,7 +220,7 @@ class TestStockEntry(TestBase):
 							'is_cancelled': 'Yes'
 						}],
 			'mi_submit': [{'doctype': 'Stock Ledger Entry',
-							'item_code':'test_item_serialized',
+							'item_code':'test_item',
 							'warehouse':'test_wh1', 
 							'voucher_type': 'Stock Entry',
 							'voucher_no': 'MI001',
@@ -260,7 +231,7 @@ class TestStockEntry(TestBase):
 						}],
 			'mi_cancel': [{
 							'doctype': 'Stock Ledger Entry', 
-							'item_code':'test_item_serialized',
+							'item_code':'test_item',
 							'warehouse':'test_wh1',
 							'voucher_type': 'Stock Entry',
 							'voucher_no': 'MI001',
@@ -270,7 +241,7 @@ class TestStockEntry(TestBase):
 							'is_cancelled': 'Yes'
 						},{
 							'doctype': 'Stock Ledger Entry', 
-							'item_code':'test_item_serialized',
+							'item_code':'test_item',
 							'warehouse':'test_wh1',
 							'voucher_type': 'Stock Entry',
 							'voucher_no': 'MI001',
@@ -281,7 +252,7 @@ class TestStockEntry(TestBase):
 						}],
 			'entries_on_same_datetime': [{
 							'doctype': 'Stock Ledger Entry', 
-							'item_code':'test_item_serialized',
+							'item_code':'test_item',
 							'warehouse':'test_wh1',
 							'voucher_type': 'Stock Entry',
 							'voucher_no': 'MR001',
@@ -291,7 +262,7 @@ class TestStockEntry(TestBase):
 							'is_cancelled': 'Yes'
 						}, {
 							'doctype': 'Stock Ledger Entry', 
-							'item_code':'test_item_serialized',
+							'item_code':'test_item',
 							'warehouse':'test_wh1',
 							'voucher_type': 'Stock Entry',
 							'voucher_no': 'MR001',
@@ -299,9 +270,10 @@ class TestStockEntry(TestBase):
 							'ifnull(bin_aqat, 0)': 0,
 							'ifnull(valuation_rate, 0)': 0,
 							"ifnull(is_cancelled, 'No')": 'Yes'
-						}, {
+						}, 
+						{
 							'doctype': 'Stock Ledger Entry', 
-							'item_code':'test_item_serialized',
+							'item_code':'test_item',
 							'warehouse':'test_wh1',
 							'voucher_type': 'Stock Entry',
 							'voucher_no': 'MR002',
@@ -311,17 +283,17 @@ class TestStockEntry(TestBase):
 							'is_cancelled': 'No'
 						}, {
 							'doctype': 'Stock Ledger Entry',
-							'item_code':'test_item_serialized',
+							'item_code':'test_item',
 							'warehouse':'test_wh1',
 							'voucher_type': 'Stock Entry',
 							'voucher_no': 'MTN001',
 							'actual_qty': -5,
 							'bin_aqat': 0,
-							'valuation_rate': 400,
+							'ifnull(valuation_rate, 0)': 0,
 							'is_cancelled': 'No'
 						}, {
 							'doctype': 'Stock Ledger Entry',
-							'item_code':'test_item_serialized',
+							'item_code':'test_item',
 							'warehouse':'test_wh2',
 							'voucher_type': 'Stock Entry',
 							'voucher_no': 'MTN001',
