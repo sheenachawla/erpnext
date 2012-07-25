@@ -34,12 +34,9 @@ import conf
 sys.path.append('../lib/py')
 sys.path.append(conf.modules_path)
 
-import webnotes
-import webnotes.handler
-import webnotes.auth
-
 def init():
 	# make the form_dict
+	import webnotes
 	webnotes.auto_cache_clear = getattr(conf, 'auto_cache_clear', False)
 	webnotes.form = cgi.FieldStorage(keep_blank_values=True)
 	for key in webnotes.form.keys():
@@ -47,6 +44,7 @@ def init():
 
 	# init request
 	try:
+		import webnotes.auth
 		webnotes.http_request = webnotes.auth.HTTPRequest()
 		return True
 	except webnotes.AuthenticationError, e:
@@ -55,6 +53,7 @@ def init():
 	#	print "Location: " + (conf.redirect_404)
 	except webnotes.SessionStopped, e:
 		if 'cmd' in webnotes.form_dict:
+			import webnotes.handler
 			webnotes.handler.print_json()
 		else:
 			print "Content-Type: text/html"
@@ -71,6 +70,7 @@ def init():
 def respond():
 	import webnotes
 	if 'cmd' in webnotes.form_dict:
+		import webnotes.handler
 		webnotes.handler.handle()
 	else:
 		print "Content-Type: text/html"

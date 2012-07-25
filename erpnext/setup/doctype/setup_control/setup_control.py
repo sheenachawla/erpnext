@@ -48,40 +48,45 @@ class DocType:
 		master_dict = {
 			'Fiscal Year':{
 				'year': curr_fiscal_year,
-				'year_start_date': fy_start_date,
-			},
-			'Company':{'company_name':args.get('company_name'),
+				'year_start_date': fy_start_date
+			}
+		}
+		self.create_records(master_dict)
+		
+		master_dict = {
+			'Company':{
+				'company_name':args.get('company_name'),
 				'abbr':args.get('company_abbr'),
 				'default_currency':args.get('currency')
 			}
 		}
 		self.create_records(master_dict)
 		
-		def_args = {'current_fiscal_year':curr_fiscal_year,
-								'default_currency': args.get('currency'),
-								'fraction_currency': (args.get('currency') == 'INR') and 'Paise' or '',
-								'default_company':args.get('company_name'),
-								'default_valuation_method':'FIFO',
-								'default_stock_uom':'Nos',
-								'date_format':'dd-mm-yyyy',
-								'default_currency_format':'Lacs',
-								'so_required':'No',
-								'dn_required':'No',
-								'po_required':'No',
-								'pr_required':'No',
-								'emp_created_by':'Naming Series',
-								'cust_master_name':'Customer Name', 
-								'supp_master_name':'Supplier Name',
-								'default_currency_format': (args.get('currency')=='INR') and 'Lacs' or 'Millions',
-								'default_territory': 'Default',
-								'default_customer_group': 'Default Customer Group',
-								'default_warehouse_type': 'Default Warehouse Type',
-								'default_price_list': 'Standard',
-								'default_supplier_type': 'Default Supplier Type',
-								'default_item_group': 'Default',
-								'maintain_same_rate': 1
-								
-					}
+		def_args = {
+			'current_fiscal_year':curr_fiscal_year,
+			'default_currency': args.get('currency'),
+			'fraction_currency': (args.get('currency') == 'INR') and 'Paise' or '',
+			'default_company':args.get('company_name'),
+			'default_valuation_method':'FIFO',
+			'default_stock_uom':'Nos',
+			'date_format':'dd-mm-yyyy',
+			'default_currency_format':'Lacs',
+			'so_required':'No',
+			'dn_required':'No',
+			'po_required':'No',
+			'pr_required':'No',
+			'emp_created_by':'Naming Series',
+			'cust_master_name':'Customer Name', 
+			'supp_master_name':'Supplier Name',
+			'default_currency_format': (args.get('currency')=='INR') and 'Lacs' or 'Millions',
+			'default_territory': 'Default',
+			'default_customer_group': 'Default Customer Group',
+			'default_warehouse_type': 'Default Warehouse Type',
+			'default_price_list': 'Standard',
+			'default_supplier_type': 'Default Supplier Type',
+			'default_item_group': 'Default',
+			'maintain_same_rate': 1						
+		}
 
 		# Set 
 		self.set_defaults(def_args)
