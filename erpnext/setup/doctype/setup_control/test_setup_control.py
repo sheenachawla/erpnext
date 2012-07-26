@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import unicode_literals
 import webnotes
 from webnotes.utils import cstr, cint, flt, get_defaults, getdate, add_days, get_first_day
 from tests.test_base import TestBase

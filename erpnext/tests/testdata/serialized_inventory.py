@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Material  Receipt
+from __future__ import unicode_literals
 mr = [
 	{'doctype': 'Stock Entry', 'posting_date': '2012-09-01', 'transfer_date': '2012-09-01', 'posting_time': '12:00', 'company': 'Test Company', 'fiscal_year' : '2012-2013', 'purpose': 'Material Receipt', 'name': 'MR001'},
 	{'doctype': 'Stock Entry Detail', 'parenttype': 'Stock Entry', 'parentfield' : 'mtn_details', 'parent' : 'MR001', 'name': 'SED001', 'item_code' : 'test_item_serialized', 't_warehouse' : 'test_wh1', 'qty' : 10, 'transfer_qty' : 10, 'incoming_rate': 100, 'stock_uom': 'Nos', 'conversion_factor': 1, 'serial_no': 'srno1, srno2, srno3, srno4, srno5, srno6, srno7, srno8, srno9, srno10'}

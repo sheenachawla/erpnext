@@ -2305,8 +2305,8 @@ wn.provide('erpnext.toolbar');erpnext.toolbar.setup=function(){erpnext.toolbar.a
    onclick="return false;">Help<b class="caret"></b></a>\
   <ul class="dropdown-menu" id="toolbar-help">\
   </ul></li>')
-$('#toolbar-help').append('<li><a href="http://erpnext.com/manual" target="_blank">\
-  User Manual</a></li>')
+$('#toolbar-help').append('<li><a href="https://erpnext.com/manual" target="_blank">\
+  Documentation</a></li>')
 $('#toolbar-help').append('<li><a href="http://groups.google.com/group/erpnext-user-forum" target="_blank">\
   Forum</a></li>')
 $('#toolbar-help').append('<li><a href="http://www.providesupport.com?messenger=iwebnotes" target="_blank">\
