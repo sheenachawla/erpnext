@@ -28,11 +28,8 @@ from webnotes.model.doclist import getlist
 sql = webnotes.conn.sql
 
 from sandbox.testdata import leaves
-#----------------------------------------------------------
-
 
 class TestLeave(unittest.TestCase):
-	#===========================================================================
 	def setUp(self):
 		webnotes.conn.begin()
 		leaves.emp.save(new = 1, make_autoname = 0)

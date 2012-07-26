@@ -1,5 +1,6 @@
 import unittest, sys
 import os
+sys.path.append('.')
 sys.path.append('lib/py')
 sys.path.append('erpnext')
 
@@ -17,11 +18,29 @@ from test_masters import *
 from test_sales_order import *
 from test_delivery_note import *
 
-
-def install_erpnext(rootpwd, dbname, pwd):
-	os.system('python install_erpnext.py %s %s %s' % (rootpwd, dbname, pwd))
-	#setup
+def run():
+	options, args = setup_options()
+	import conf
+	
+	if options.install:
+		install_erpnext(options.install, conf.test_db_name, conf.db_password)
+	
+	# delete all command line arguments before run testcases
+	del sys.argv[1:]
+	
 	webnotes.connect()
+	unittest.main()
+	webnotes.conn.close()
+	
+def install_erpnext(rootpwd, dbname, pwd):
+	from webnotes.install_lib.install import Installer
+	print rootpwd
+	inst = Installer('root', rootpwd)
+	inst.import_from_db(dbname, verbose = 1)	
+	
+	#setup
+	import conf
+	webnotes.connect(conf.test_db_name)
 	print "Setting up account..."
 	setup_account()
 	webnotes.conn.close()
@@ -48,24 +67,11 @@ def setup_options():
 	from optparse import OptionParser
 	parser = OptionParser()
 	
-	parser.add_option('-i', '--install', dest='install', nargs=3, metavar = "rootpassword dbname pwd",
+	parser.add_option('-i', '--install', dest='install', nargs=1, metavar = "rootpassword",
 						help="install fresh db and setup company")
-		
+
 	return parser.parse_args()
 
-
-def run():
-	options, args = setup_options()
-	
-	if options.install:
-		install_erpnext(options.install[0], options.install[1], options.install[2])
-	
-	# delete all command line arguments before run testcases
-	del sys.argv[1:]
-	
-	webnotes.connect()
-	unittest.main()
-	webnotes.conn.close()
 
 if __name__ == '__main__':
 	run()

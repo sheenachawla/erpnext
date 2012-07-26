@@ -6,7 +6,8 @@ from webnotes.model.code import get_obj
 
 class TestBase(unittest.TestCase):
 	def setUp(self):
-		webnotes.connect()
+		import conf
+		webnotes.connect(conf.test_db_name)
 		webnotes.conn.begin()
 				
 		
