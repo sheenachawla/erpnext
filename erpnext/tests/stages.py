@@ -74,7 +74,7 @@ def upto(stage, with_test=False):
 			
 	committed.append(stage)
 
-def run_stage(stage):
+def test_stage(stage):
 	"""run a stage"""
 	import unittest, conf
 	webnotes.connect(conf.test_db_name)

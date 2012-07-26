@@ -121,13 +121,12 @@ class TestAccountSetup(TestBase):
 					
 	def test_patches(self):
 		pv = webnotes.conn.get_default('patch_version')
-		print pv
 		from patches.patch_list import patch_dict
 		patches_in_latest_version = len(patch_dict[max(patch_dict.keys())])
 		patches_executed_from_latest_version = webnotes.conn.sql("select count(*) from `__PatchLog`\
 			where patch like '%%%s%%'" % max(patch_dict.keys()))[0][0]
+		
 		self.assertEqual(patches_in_latest_version, patches_executed_from_latest_version)
-		print "The system is not up-to-date, please execute patches"
 		
 	def test_user(self):
 		users = [d[0] for d in webnotes.conn.sql("select name from `tabProfile` order by name")]
