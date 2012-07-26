@@ -35,7 +35,7 @@ class DocType:
 		if not self.doc.company:
 			msgprint("Please select company", raise_exception=1)
 			
-		if not in_transaction:
+		if not webnotes.conn.in_transaction:
 			sql("start transaction")
 		
 		self.clear_account_balances()

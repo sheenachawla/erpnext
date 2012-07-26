@@ -77,18 +77,18 @@ class DocType:
 
 	def update_status(self, status):
 		if status == 'Stopped':
-			set(self.doc, 'status', cstr(status))
+			webnotes.conn.set(self.doc, 'status', cstr(status))
 		else:
 			if flt(self.doc.qty) == flt(self.doc.produced_qty):
-				set(self.doc, 'status', 'Completed')
+				webnotes.conn.set(self.doc, 'status', 'Completed')
 			if flt(self.doc.qty) > flt(self.doc.produced_qty):
-				set(self.doc, 'status', 'In Process')
+				webnotes.conn.set(self.doc, 'status', 'In Process')
 			if flt(self.doc.produced_qty) == 0:
-				set(self.doc, 'status', 'Submitted')
+				webnotes.conn.set(self.doc, 'status', 'Submitted')
 
 
 	def on_submit(self):
-		set(self.doc,'status', 'Submitted')
+		webnotes.conn.set(self.doc,'status', 'Submitted')
 		# increase Planned Qty of Prooduction Item by Qty
 		get_obj('Warehouse', self.doc.fg_warehouse).update_bin(0, 0, 0, 0,flt(self.doc.qty), self.doc.production_item, now())
 
@@ -102,6 +102,6 @@ class DocType:
 				Hence can not be cancelled.""" % st[0][0])
 			raise Exception
 
-		set(self.doc,'status', 'Cancelled')
+		webnotes.conn.set(self.doc,'status', 'Cancelled')
 		# decrease Planned Qty of Prooduction Item by Qty
 		get_obj('Warehouse', self.doc.fg_warehouse).update_bin(0, 0, 0, 0,-flt(self.doc.qty), self.doc.production_item, now())

@@ -143,7 +143,7 @@ class DocType:
 				total = total + m2
 			
 			actual_total = time.strftime("%H:%M", time.gmtime(total))
-			set(self.doc, 'act_total_hrs', actual_total)
+			webnotes.conn.set(self.doc, 'act_total_hrs', actual_total)
 	
 	# validate and fetch actual start and end date
 	def validate_with_timesheet_dates(self):

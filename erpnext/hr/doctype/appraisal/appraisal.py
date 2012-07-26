@@ -114,7 +114,7 @@ class DocType:
 			ret = {'status':'No Score'}
 			return ret
 		self.update_appraisal()
-		#set(self.doc, 'status', 'Completed')
+		#webnotes.conn.set(self.doc, 'status', 'Completed')
 		ret = {'status':'Completed'}
 		return ret
 	
@@ -125,10 +125,10 @@ class DocType:
 				raise Exception
 			d.save()
 		if self.doc.total_score:
-			set(self.doc,'total_score',self.doc.total_score)
+			webnotes.conn.set(self.doc,'total_score',self.doc.total_score)
 	
 	def on_update(self):
-		set(self.doc, 'status', 'Draft')
+		webnotes.conn.set(self.doc, 'status', 'Draft')
 	
 	def validate_total_weightage(self):
 		total_w = 0
@@ -152,7 +152,7 @@ class DocType:
 	
 	def on_submit(self):
 		self.validate_appraisal_detail()
-		set(self.doc, 'status', 'Submitted')
+		webnotes.conn.set(self.doc, 'status', 'Submitted')
 	
 	def on_cancel(self): 
-		set(self.doc, 'status', 'Cancelled')
+		webnotes.conn.set(self.doc, 'status', 'Cancelled')

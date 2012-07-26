@@ -41,7 +41,7 @@ class DocType:
 				d = d.replace(x, '')
 
 			# mobile no validation for erpnext gateway
-			if get_value('SMS Settings', None, 'sms_gateway_url'):
+			if webnotes.conn.get_value('SMS Settings', None, 'sms_gateway_url'):
 				mob_no = d
 			else:
 				if not d.startswith("0") and len(d) == 10:
@@ -69,7 +69,6 @@ class DocType:
 
 	def get_sender_name(self):
 		"returns name as SMS sender"
-		sender_name = webnotes.conn.get_value('Global Defaults', None, 'sms_sender_name') or 'ERPNXT'
 		if len(sender_name) > 6:
 			msgprint("""
 				As per TRAI rule, sender name must be exactly 6 characters.
@@ -97,14 +96,13 @@ class DocType:
 	def send_sms(self, receiver_list, msg, sender_name = ''):
 		receiver_list = self.validate_receiver_nos(receiver_list)
 
-		arg = { 'account_name'	: webnotes.conn.get_value('Control Panel',None,'account_id'),
 				'receiver_list' : receiver_list,
 				'message'		: msg,
 				'sender_name'	: sender_name or self.get_sender_name()
 			}
 
 		# personalized or erpnext gateway
-		if get_value('SMS Settings', None, 'sms_gateway_url'):
+		if webnotes.conn.get_value('SMS Settings', None, 'sms_gateway_url'):
 			ret = self.send_via_personalized_gateway(arg)
 			msgprint(ret)
 

@@ -71,7 +71,7 @@ class DocType:
       
       if bgt_flag and bgt_flag[0]['monthly_bgt_flag'] in ['Stop', 'Warn']:
         # get start date and last date
-        st_date = get_value('Fiscal Year', cfy, 'year_start_date').strftime('%Y-%m-%d')
+        st_date = webnotes.conn.get_value('Fiscal Year', cfy, 'year_start_date').strftime('%Y-%m-%d')
         lt_date = sql("select LAST_DAY('%s')" % post_dt)
         
         # get Actual

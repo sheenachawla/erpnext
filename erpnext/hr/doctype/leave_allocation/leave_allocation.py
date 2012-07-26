@@ -55,7 +55,7 @@ class DocType:
     cf = sql("select is_carry_forward from `tabLeave Type` where name = %s" , self.doc.leave_type)
     cf = cf and cint(cf[0][0]) or 0
     if not cf:
-      set(self.doc,'carry_forward',0)
+      webnotes.conn.set(self.doc,'carry_forward',0)
       msgprint("Sorry ! You cannot carry forward %s" % (self.doc.leave_type))
       raise Exception
 
@@ -84,8 +84,8 @@ class DocType:
   # ---------------------------
   def get_total_allocated_leaves(self):
     leave_det = self.get_carry_forwarded_leaves()
-    set(self.doc,'carry_forwarded_leaves',flt(leave_det['carry_forwarded_leaves']))
-    set(self.doc,'total_leaves_allocated',flt(leave_det['total_leaves_allocated']))
+    webnotes.conn.set(self.doc,'carry_forwarded_leaves',flt(leave_det['carry_forwarded_leaves']))
+    webnotes.conn.set(self.doc,'total_leaves_allocated',flt(leave_det['total_leaves_allocated']))
 
   # ------------------------------------------------------------------------------------
   # validate leave (i.e. check whether leave for same type is already allocated or not)

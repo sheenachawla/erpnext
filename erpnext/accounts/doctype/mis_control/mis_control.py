@@ -404,7 +404,7 @@ class DocType:
 
     r['Bank Accounts'] = self.bl_bs('Bank Accounts', company, getdate(d['year_start_date']))
     
-    r['Top Customers'] = convert_to_lists(self.get_top_5_cust(company))
-    r['Top Expenses'] = convert_to_lists(self.get_top_5_exp(company))
+    r['Top Customers'] = webnotes.conn.convert_to_lists(self.get_top_5_cust(company))
+    r['Top Expenses'] = webnotes.conn.convert_to_lists(self.get_top_5_exp(company))
     
     return r

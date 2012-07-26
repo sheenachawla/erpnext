@@ -153,7 +153,7 @@ class DocType:
 	# =============================================================================
 	def repair_bal(self, d, acc_obj, fiscal_yr):
 		# check balances 
-		ysd = get_value('Fiscal Year', fiscal_yr, 'year_start_date')
+		ysd = webnotes.conn.get_value('Fiscal Year', fiscal_yr, 'year_start_date')
 		bal = get_obj('GL Control').get_as_on_balance(acc_obj.doc.name, fiscal_yr, d.end_date, acc_obj.doc.debit_or_credit, acc_obj.doc.is_pl_account, acc_obj.doc.lft, acc_obj.doc.rgt, ysd)
 		if flt(d.balance) != flt(bal):
 			msgprint('<div style="color: RED"> Difference found in Balance of Account %s for Period %s in Fiscal Year %s (Before : %s; After : %s) </div>' % (acc_obj.doc.name, d.period, fiscal_yr, flt(d.balance), flt(bal))) 
@@ -170,7 +170,7 @@ class DocType:
 		if not fiscal_yr:
 			import webnotes.utils
 			fiscal_yr = webnotes.utils.get_defaults()['fiscal_year']
-		if not past_yr: past_yr = get_value('Fiscal Year', fiscal_yr, 'past_year')
+		if not past_yr: past_yr = webnotes.conn.get_value('Fiscal Year', fiscal_yr, 'past_year')
 
 		# Repair Opening and Balance For Account Balances
 		for d in getlist(acc_obj.doclist, 'account_balances'):
@@ -199,6 +199,6 @@ In Account := %s User := %s has Reposted %s and following was found:-
 
 %s
 
-""" % (get_value('Control Panel', None,'account_id'), session['user'], subject, '\n'.join(self.msg))
+""" % (webnotes.conn.get_value('Control Panel', None,'account_id'), session['user'], subject, '\n'.join(self.msg))
 
 			sendmail(['support@iwebnotes.com'], subject='Repair of ' + cstr(subject), parts = [('text/plain', email_msg)])

@@ -93,7 +93,7 @@ class DocType:
 				series = [d.options for d in docfield if d.doctype == 'DocField' and d.fieldname == 'naming_series']
 				if series:
 					sr = series[0].split("\n")
-					set(self.doc, 'naming_series', sr[0])
+					webnotes.conn.set(self.doc, 'naming_series', sr[0])
 			else:
 				msgprint("Please specify naming series")
 				raise Exception
