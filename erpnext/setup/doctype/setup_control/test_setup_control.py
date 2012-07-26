@@ -120,8 +120,8 @@ class TestAccountSetup(TestBase):
 		self.assertEqual(hp, 'desktop')
 					
 	def test_patches(self):
-		pv = webnotes.conn.sql("select defvalue from `tabDefaultValue` \
-			where parent = 'Control Panel' and defkey = 'patch_version'")[0][0]
+		pv = webnotes.conn.get_default('patch_version')
+		print pv
 		from patches.patch_list import patch_dict
 		patches_in_latest_version = len(patch_dict[max(patch_dict.keys())])
 		patches_executed_from_latest_version = webnotes.conn.sql("select count(*) from `__PatchLog`\
