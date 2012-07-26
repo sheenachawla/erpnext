@@ -15,64 +15,54 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import unicode_literals
-import unittest
+
 import webnotes
-import copy
+import webnotes.model
+from webnotes.tests.test_base import TestBase
 
-from webnotes.model.doclist import DocList
-from webnotes.model.doc import Document
-from webnotes.utils import flt
+base_item_group = {
+	"doctype":"Item Group", "parent_item_group":"All Item Groups",
+	"is_group": "No"
+}
 
-sql = webnotes.conn.sql
+base_item = {
+	'doctype': 'Item', 'item_name': 'test_item', 
+	'item_code': 'test_item', 'item_group': 'Default Item Group', 'is_stock_item': 'Yes', 
+	'has_serial_no': 'No', 'stock_uom': 'Nos', 'is_sales_item': 'Yes', 'is_purchase_item': 'Yes', 
+	'is_service_item': 'No'
+}
 
-
-class TestItem(unittest.TestCase):
-	def setUp(self):
-		webnotes.conn.begin()
-
-	def tearDown(self):
-		webnotes.conn.rollback()
-		
-	def testInsert(self):
-		d = DocList()
-
-		count_before =  flt(sql("select count(*) from tab"+_doctype)[0][0])
-		if docok:
-			for i in docok:
-				d.doc = i
-				d.children = None
-				d.doc.fields['__islocal']=1
-				d.save(1)
-		count_after = flt(sql("select count(*) from tab"+_doctype)[0][0])
-		self.assertTrue(count_before+len(docok)==count_after)
+def make_item_groups():
+	webnotes.model.insert_variants(base_item_group, [
+		{"name":"Desktops", "is_group":"Yes"},
+			{"name":"Home Series", "parent_item_group":"Desktops"},
+			{"name":"Pro Series", "parent_item_group":"Desktops"},
+			{"name":"Gaming Series", "parent_item_group":"Desktops"},
+		{"name":"Laptops", "is_group":"Yes"},
+			{"name":"Designer Series", "parent_item_group":"Laptops"},
+			{"name":"Netbook Series", "parent_item_group":"Laptops"},
+			{"name":"Ultrabook Series", "parent_item_group":"Laptops"},
+		{"name":"Tablets", "is_group":"Yes"},
+			{"name":"7 inch Series", "parent_item_group":"Tablets"},
+			{"name":"8 inch Series", "parent_item_group":"Tablets"},
+			{"name":"9 inch Series", "parent_item_group":"Tablets"},
+		{"name":"Accessories", "is_group":"Yes"},
+			{"name":"Laptop Bag", "parent_item_group":"Accessories"},
+			{"name":"Tablet Cover", "parent_item_group":"Accessories"},
+			{"name":"Mouse", "parent_item_group":"Accessories"},
+			{"name":"Peripherals", "parent_item_group":"Accessories"},
+		{"name":"Services", "is_group":"Yes"},
+			{"name":"Warranty Plan", "parent_item_group":"Services"},
+			{"name":"Repairs", "parent_item_group":"Services"},
+			{"name":"Website Development", "parent_item_group":"Services"},
+	])
 	
-	def testFailAssert(self):
-		if docnotok:
-			with self.assertRaises(Exception) as context:
-				d = DocList()
-				d.doc = docnotok[0]
-				d.children = None
-				d.doc.fields['__islocal']=1
-				d.save(1)
-
-# Test Data
-
-tabOK = [
-		{'is_purchase_item': None, 'is_pro_applicable': 'No', 'is_manufactured_item': None, 'description': 'Gel Ink', 'default_warehouse': None, 'item_name': 'Gel Ink', 'item_group': 'Ink', 'item_code': 'GELINK', 'is_sub_contracted_item': None, 'is_stock_item': 'Yes', 'stock_uom': 'Nos', 'docstatus': '0'}, 
-		{'is_purchase_item': None, 'is_pro_applicable': 'No', 'is_manufactured_item': None, 'description': 'Gel Refill', 'default_warehouse': None, 'item_name': 'Gel Refill', 'item_group': 'Refill', 'item_code': 'GELREF', 'is_sub_contracted_item': None, 'is_stock_item': 'Yes', 'stock_uom': 'Nos', 'docstatus': '0'}, 
-		{'is_purchase_item': None, 'is_pro_applicable': 'No', 'is_manufactured_item': None, 'description': 'Gel Pen', 'default_warehouse': None, 'item_name': 'Gel Pen', 'item_group': 'Pen', 'item_code': 'GELPEN', 'is_sub_contracted_item': None, 'is_stock_item': 'Yes', 'stock_uom': 'Nos', 'docstatus': '0'}
-	]
-
-tabNotOK =	[
-			{'is_purchase_item': None, 'is_pro_applicable': None, 'is_manufactured_item': None, 'description': 'F Ink', 'default_warehouse': None, 'item_name': 'F Ink', 'item_group': 'F Ink', 'item_code': None, 'is_sub_contracted_item': None, 'is_stock_item': 'No', 'stock_uom': 'Nos', 'docstatus': '0'}
-		]
-	      
-_doctype = 'Item'
-
-for i in tabOK: i['doctype']=_doctype
-for i in tabNotOK: i['doctype']=_doctype
-
-docok = [Document(fielddata=r) for r in tabOK]
-docnotok = [Document(fielddata=r) for r in tabNotOK]
+class TestItem(TestBase):
+	def test_item_creation(self):
+		make_item_groups()
+		webnotes.model.insert_variants(base_item, [{
+			"name":"Home Desktop 100"
+		}])
+		self.assertTrue(webnotes.conn.exists("Item", "Home Desktop 100"))
 
 

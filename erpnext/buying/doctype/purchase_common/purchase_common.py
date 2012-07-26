@@ -187,16 +187,20 @@ class DocType(TransactionBase):
 		import json
 		arg, ret = json.loads(arg), {}
 	
-		uom = webnotes.conn.sql("""\
-			select conversion_factor
-			from `tabUOM Conversion Detail`
-			where parent = %s and uom = %s""", (arg['item_code'],arg['uom']), as_dict = 1)
+		if arg['uom'] != args['stock_uom']:
+			uom = webnotes.conn.sql("""\
+				select conversion_factor
+				from `tabUOM Conversion Detail`
+				where parent = %s and uom = %s""", (arg['item_code'],arg['uom']), as_dict = 1)
+			conversion_factor = flt(uom[0]['conversion_factor'])
+		else:
+			conversion_factor = 1
 		
 		if not uom: return ret
 		
-		last_purchase_details, last_purchase_date = self.get_last_purchase_details(arg['item_code'], arg['doc_name'])
+		last_purchase_details, last_purchase_date = self.get_last_purchase_details(arg['item_code'], 
+			arg['doc_name'])
 
-		conversion_factor = flt(uom[0]['conversion_factor'])
 		conversion_rate = flt(arg['conversion_rate'])
 		purchase_ref_rate = last_purchase_details and \
 							(last_purchase_details['purchase_ref_rate'] * conversion_factor) or 0

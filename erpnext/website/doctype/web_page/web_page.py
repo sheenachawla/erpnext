@@ -20,10 +20,6 @@ import website.utils
 import website.web_page
 
 class DocType(website.web_page.Page):
-	def __init__(self, d, dl):
-		super(DocType, self).__init__('Web Page')
-		self.doc, self.doclist = d, dl
-
 	def on_update(self):
 		super(DocType, self).on_update()
 		self.if_home_clear_cache()

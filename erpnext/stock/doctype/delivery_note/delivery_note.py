@@ -323,9 +323,9 @@ class DocType(TransactionBase):
 			""", self.doc.name)
 
 		if res and res[0][1]>0:
-			from webnotes.model.doclist import DocList
+			from webnotes.model.doclist import DocListController
 			for r in res:
-				ps = DocList(dt='Packing Slip', dn=r[0])
+				ps = DocListController(dt='Packing Slip', dn=r[0])
 				ps.cancel()
 			webnotes.msgprint("%s Packing Slip(s) Cancelled" % res[0][1])
 

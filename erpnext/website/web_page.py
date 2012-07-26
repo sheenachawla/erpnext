@@ -19,24 +19,21 @@ import webnotes
 import website.utils
 import website.web_cache
 
-class Page(object):
-	def __init__(self, doctype):
-		self.doctype = doctype
-		
+from webnotes.model.base import BaseDocType
+
+class Page(BaseDocType):
 	def autoname(self):
 		"""name from title"""
 		self.doc.name = website.utils.page_name(self.doc.title)
 		
 	def validate(self):
 		if self.doc.name:
-			self.old_page_name = webnotes.conn.get_value(self.doctype, self.doc.name, 'page_name')
+			self.old_page_name = webnotes.conn.get_value(self.doc.doctype, self.doc.name, 'page_name')
 
 	def on_update(self):
 		# page name updates with the title
 		self.update_page_name()
-		
 		self.clear_web_cache()
-
 		self.doc.save()
 		
 	def on_trash(self):
@@ -49,12 +46,12 @@ class Page(object):
 		
 		res = webnotes.conn.sql("""\
 			select count(*) from `tab%s`
-			where page_name=%s and name!=%s""" % (self.doctype, '%s', '%s'),
+			where page_name=%s and name!=%s""" % (self.doc.doctype, '%s', '%s'),
 			(self.doc.page_name, self.doc.name))
 		if res and res[0][0] > 0:
 			webnotes.msgprint("""A %s with the same title already exists.
 				Please change the title of %s and save again."""
-				% (self.doctype, self.doc.name), raise_exception=1)
+				% (self.doc.doctype, self.doc.name), raise_exception=1)
 
 	def clear_web_cache(self):
 		"""
