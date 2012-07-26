@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import unicode_literals
 import patches.12_03.website.login
 import patches.12_03.website.feed
 import patches.12_03.website.website
@@ -22,7 +23,6 @@ import patches.12_03.website.domain_list
 import patches.12_03.website.file_data_rename
 import patches.12_03.website.analytics
 import patches.12_03.website.allow_product_delete
-
 
 def execute():
 	patches.12_03.website.login.execute()

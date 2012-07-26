@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import unicode_literals
 patch_dict = {
 	'00_00' : [
 		'update_patch_log',
@@ -132,7 +133,9 @@ patch_dict = {
 		'auth_table',
 		'remove_event_role_owner_match',
 		'sync_trial_balance',
-		'drop_rename_tool'		
+		'drop_rename_tool',
+		'deprecate_bulk_rename',
+		'unicode_conf',
 	],
 
 }

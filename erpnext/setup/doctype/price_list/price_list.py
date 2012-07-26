@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import unicode_literals
 import webnotes
 
 from webnotes.model.doc import Document
@@ -46,8 +47,9 @@ class DocType(BaseDocType):
 	
 	# update prices in Price List
 	def update_prices(self):
-		import csv 
-		data = self.get_csv_from_attachment()
+		from core.page.data_import_tool.data_import_tool import read_csv_content
+		
+		data = read_csv_content(self.get_csv_data())
 				
 		updated = 0
 		
@@ -78,3 +80,19 @@ class DocType(BaseDocType):
 		
 		msgprint("<b>%s</b> items updated" % updated)
 
+	# Update CSV data
+	def get_csv_data(self):
+		if not self.doc.file_list:
+		  msgprint("File not attached!")
+		  raise Exception
+
+		fid = self.doc.file_list.split(',')[1]
+		  
+		try:
+			from webnotes.utils import file_manager
+			fn, content = file_manager.get_file(fid)
+		except Exception, e:
+			webnotes.msgprint("Unable to open attached file. Please try again.")
+			raise e
+
+		return content

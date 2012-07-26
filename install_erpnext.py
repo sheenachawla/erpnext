@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+from __future__ import unicode_literals
 import os, commands
 import getpass, sys
 

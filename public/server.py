@@ -23,6 +23,7 @@
 # 
 
 
+from __future__ import unicode_literals
 import cgi, cgitb, os, sys
 cgitb.enable()
 
@@ -35,14 +36,11 @@ sys.path.append('../lib/py')
 sys.path.append(conf.modules_path)
 
 def init():
-	# make the form_dict
 	import webnotes
-	webnotes.auto_cache_clear = getattr(conf, 'auto_cache_clear', False)
-	webnotes.form = cgi.FieldStorage(keep_blank_values=True)
-	for key in webnotes.form.keys():
-		webnotes.form_dict[key] = webnotes.form.getvalue(key)
-
+	webnotes.get_cgi_fields()
+	
 	# init request
+	import webnotes
 	try:
 		import webnotes.auth
 		webnotes.http_request = webnotes.auth.HTTPRequest()

@@ -1,5 +1,6 @@
 # This patch will get executed while merging testcases branch
 
+from __future__ import unicode_literals
 def execute():
 	import webnotes
 	
