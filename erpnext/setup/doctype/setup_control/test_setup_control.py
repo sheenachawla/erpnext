@@ -16,7 +16,7 @@
 
 from __future__ import unicode_literals
 import webnotes
-from webnotes.utils import cstr, cint, flt, get_defaults, getdate, add_days, get_first_day
+from webnotes.utils import get_defaults, getdate, add_days, get_first_day
 from tests.test_base import TestBase
 
 class TestAccountSetup(TestBase):

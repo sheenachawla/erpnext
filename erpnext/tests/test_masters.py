@@ -5,8 +5,6 @@ sys.path.append('lib/py')
 sys.path.append('erpnext')
 
 import webnotes
-from webnotes.utils import cstr, cint, flt
-from webnotes.model.code import get_obj
 
 from testdata.masters import masters
 from utils import TestBase

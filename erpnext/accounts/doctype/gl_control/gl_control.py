@@ -14,22 +14,18 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Please edit this list and import only required elements
 from __future__ import unicode_literals
 import webnotes
 
-from webnotes.utils import add_days, add_months, add_years, cint, cstr, date_diff, default_fields, flt, fmt_money, formatdate, generate_hash, getTraceback, get_defaults, get_first_day, get_last_day, getdate, has_common, month_name, now, nowdate, replace_newlines, sendmail, set_default, str_esc_quote, user_format, validate_email_add
+from webnotes.utils import add_days, cint, cstr, date_diff, flt, fmt_money, get_defaults, getdate, now, nowdate, sendmail
 
-from webnotes.model.doc import Document, addchild, getchildren, make_autoname
+from webnotes.model.doc import Document, addchild
 from webnotes.model.doclist import getlist, clone
 from webnotes.model.code import get_obj
-from webnotes import session, form, msgprint, errprint
+from webnotes import form, msgprint
 from webnotes.utils.email_lib import sendmail
 
-in_transaction = webnotes.conn.in_transaction
-convert_to_lists = webnotes.conn.convert_to_lists
 
-# -----------------------------------------------------------------------------------------
 from utilities.transaction_base import TransactionBase
 
 class DocType:

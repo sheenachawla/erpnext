@@ -23,10 +23,6 @@ sys.path.append('erpnext')
 
 import webnotes
 
-from webnotes.model.doc import Document
-from webnotes.model.code import get_obj
-from webnotes.utils import cstr, flt
-from webnotes.model.doclist import getlist
 
 from testdata.masters import masters
 from testdata.stock_entry import *

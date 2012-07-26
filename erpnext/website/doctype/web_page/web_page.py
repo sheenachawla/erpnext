@@ -28,7 +28,7 @@ class DocType(website.web_page.Page):
 		super(DocType, self).on_update()
 		self.if_home_clear_cache()
 
-	def if_home_clear_cache(self):
+	def if_home_clear(self):
 		"""if home page, clear cache"""
 		if webnotes.conn.get_value("Website Settings", None, "home_page")==self.doc.name:
 			from webnotes.session_cache import clear_cache

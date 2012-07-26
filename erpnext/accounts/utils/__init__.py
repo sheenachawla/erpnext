@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import unicode_literals
-from webnotes.model.doc import make_autoname, Document, addchild
+from webnotes.model.doc import Document, addchild
 # Posts JV
 
 def post_jv(data):

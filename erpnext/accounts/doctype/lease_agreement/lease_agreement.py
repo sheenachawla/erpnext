@@ -16,8 +16,7 @@
 
 from __future__ import unicode_literals
 import webnotes
-from webnotes.model.doc import make_autoname, Document, addchild
-from webnotes import msgprint
+from webnotes.model.doc import make_autoname, Document
 from webnotes.utils import get_defaults
 import json
 from accounts.utils import post_jv
