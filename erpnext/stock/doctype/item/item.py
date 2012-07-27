@@ -19,7 +19,7 @@ import webnotes
 
 from website.web_page import Page
 
-class DocType(Page):
+class DocType(Page):		
 	def autoname(self):
 		self.doc.name = self.doc.item_code
 		
