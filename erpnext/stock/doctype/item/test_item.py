@@ -56,7 +56,7 @@ def make_item_groups():
 			{"name":"Repairs", "parent_item_group":"Services"},
 			{"name":"Website Development", "parent_item_group":"Services"},
 	])
-	
+		
 class TestItem(TestBase):
 	def test_item_creation(self):
 		make_item_groups()
@@ -64,5 +64,18 @@ class TestItem(TestBase):
 			"name":"Home Desktop 100"
 		}])
 		self.assertTrue(webnotes.conn.exists("Item", "Home Desktop 100"))
+
+	def test_duplicate(self):
+		item = base_item.copy()
+		item.update({"name":"Home Desktop 100"})
+		ref_rate_detail = {"doctype":"Item Price", "price_list_name":"Retail", 
+			"ref_currency":"INR", "parentfield":"ref_rate_details", "parenttype":"Item"}
+		self.assertRaises(webnotes.DuplicateEntryError, webnotes.model.insert, [item, 
+			ref_rate_detail, ref_rate_detail])
+		
+		item = item.copy()
+		item["name"] = "Home Desktop 200"
+		webnotes.model.insert([item, ref_rate_detail])
+		
 
 

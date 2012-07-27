@@ -24,6 +24,9 @@ class DocType(Page):
 		self.doc.name = self.doc.item_code
 		
 	def validate(self):
+		self.no_duplicate('uom_conversion_details', keys=['uom'])
+		self.no_duplicate('ref_rate_details', keys=['price_list_name', 'ref_currency'])
+		self.no_duplicate('item_tax', keys=['tax_type'])
 		Page.validate(self)
 	
 	def on_update(self):
