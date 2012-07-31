@@ -30,3 +30,8 @@ class ItemController(PageController):
 	def get_tax_rate(self, tax_type):
 		rate = webnotes.conn.sql("select tax_rate from tabAccount where name = %s", tax_type)
 		return { 'tax_rate'	:	rate and flt(rate[0][0]) or 0 }
+
+	def check_if_sle_exists(self):
+		"""returns 'exists' or 'not exists'"""
+		sle = sql("select name from `tabStock Ledger Entry` where item_code = %s and ifnull(is_cancelled, 'No') = 'No'", self.doc.name)
+		return sle and 'exists' or 'not exists'
