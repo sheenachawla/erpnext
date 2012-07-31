@@ -27,7 +27,7 @@ base_item_group = {
 
 base_item = {
 	'doctype': 'Item', 'item_name': 'test_item', 
-	'item_code': 'test_item', 'item_group': 'Default Item Group', 'is_stock_item': 'Yes', 
+	'item_code': 'test_item', 'item_group': 'Default', 'is_stock_item': 'Yes', 
 	'has_serial_no': 'No', 'stock_uom': 'Nos', 'is_sales_item': 'Yes', 'is_purchase_item': 'Yes', 
 	'is_service_item': 'No'
 }
@@ -84,7 +84,44 @@ class TestItem(TestBase):
 		item.update({"name":"Home Desktop 100", "purchase_account":"Expenses - EW"})
 		self.assertRaises(webnotes.LinkFilterError, webnotes.model.insert, [item])
 
+		# check if link filter error occurs for child item
+		item = base_item.copy()
+		item["name"] = "Home Desktop 200"
+		item_tax = {
+			"doctype": "Item Tax",
+			"parenttype": "Item",
+			"parentfield": "item_tax",
+			"tax_type": "Tax Assets - EW",
+			"tax_rate": 10.0
+		}
+		self.assertRaises(webnotes.LinkFilterError, webnotes.model.insert, [item, item_tax])
+
 		# valid entry
+		item["name"] = "Home Desktop 300"
 		item["purchase_account"] = "Miscellaneous Expenses - EW"
+		item_tax["tax_type"] = "Sales Promotion Expenses - EW"
+		webnotes.model.insert([item, item_tax])
+		self.assertTrue(webnotes.conn.exists("Item", "Home Desktop 300"))
+		
+	def test_conditional_validation(self):
+		item = base_item.copy()
+		
+		# check for parent
+		# not a stock item but has a serial no
+		item.update({
+			"name": "Home Desktop 100",
+			"has_serial_no": "Yes",
+			"is_stock_item": "No"
+		})
+		self.assertRaises(webnotes.ConditionalPropertyError, webnotes.model.insert, [item])
+		
+		# valid entry
+		item.update({
+			"name": "Home Desktop 200",
+			"has_serial_no": "Yes",
+			"is_stock_item": "Yes",
+			"has_batch_no": "Yes"
+		})
 		webnotes.model.insert([item])
-		self.assertTrue(webnotes.conn.exists("Item", "Home Desktop 100"))
+		self.assertTrue(webnotes.conn.exists("Item", "Home Desktop 200"))
+		
