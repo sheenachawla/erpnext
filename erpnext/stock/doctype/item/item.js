@@ -47,53 +47,11 @@ cur_frm.cscript.show_in_website = function(doc, dt, dn) {
 	cur_frm.cscript.hide_website_fields(doc);
 }
 
-cur_frm.fields_dict['default_bom'].get_query = function(doc) {
-   //var d = locals[this.doctype][this.docname];
-   return 'SELECT DISTINCT `tabBOM`.`name` FROM `tabBOM` WHERE `tabBOM`.`item` = "' + doc.item_code + '"  AND `tabBOM`.`is_active` = "No" and `tabBOM`.docstatus != 2 AND `tabBOM`.%(key)s LIKE "%s" ORDER BY `tabBOM`.`name` LIMIT 50'
-}
-
-
-// Expense Account
-// ---------------------------------
-cur_frm.fields_dict['purchase_account'].get_query = function(doc){
-  return 'SELECT DISTINCT `tabAccount`.`name` FROM `tabAccount` WHERE `tabAccount`.`debit_or_credit`="Debit" AND `tabAccount`.`group_or_ledger`="Ledger" AND `tabAccount`.`docstatus`!=2 AND `tabAccount`.%(key)s LIKE "%s" ORDER BY `tabAccount`.`name` LIMIT 50'
-}
-
-// Income Account
-// --------------------------------
-cur_frm.fields_dict['default_income_account'].get_query = function(doc) {
-  return 'SELECT DISTINCT `tabAccount`.`name` FROM `tabAccount` WHERE `tabAccount`.`debit_or_credit`="Credit" AND `tabAccount`.`group_or_ledger`="Ledger" AND `tabAccount`.`docstatus`!=2 AND `tabAccount`.`account_type` ="Income Account" AND `tabAccount`.%(key)s LIKE "%s" ORDER BY `tabAccount`.`name` LIMIT 50'
-}
-
-
-// Purchase Cost Center
-// -----------------------------
-cur_frm.fields_dict['cost_center'].get_query = function(doc) {
-  return 'SELECT `tabCost Center`.`name` FROM `tabCost Center` WHERE `tabCost Center`.%(key)s LIKE "%s" AND `tabCost Center`.`group_or_ledger` = "Ledger" AND `tabCost Center`.`docstatus`!= 2 ORDER BY  `tabCost Center`.`name` ASC LIMIT 50'
-}
-
-
-// Sales Cost Center
-// -----------------------------
-cur_frm.fields_dict['default_sales_cost_center'].get_query = function(doc) {
-  return 'SELECT `tabCost Center`.`name` FROM `tabCost Center` WHERE `tabCost Center`.%(key)s LIKE "%s" AND `tabCost Center`.`group_or_ledger` = "Ledger" AND `tabCost Center`.`docstatus`!= 2 ORDER BY  `tabCost Center`.`name` ASC LIMIT 50'
-}
-
-
-cur_frm.fields_dict['item_tax'].grid.get_field("tax_type").get_query = function(doc, cdt, cdn) {
-  return 'SELECT `tabAccount`.`name` FROM `tabAccount` WHERE `tabAccount`.`account_type` in ("Tax", "Chargeable") and `tabAccount`.`docstatus` != 2 and `tabAccount`.%(key)s LIKE "%s" ORDER BY `tabAccount`.`name` DESC LIMIT 50'
-}
-
 cur_frm.cscript.tax_type = function(doc, cdt, cdn){
   var d = locals[cdt][cdn];
   get_server_fields('get_tax_rate',d.tax_type,'item_tax',doc, cdt, cdn, 1);
 }
 
-
-//get query select item group
-cur_frm.fields_dict['item_group'].get_query = function(doc,cdt,cdn) {
-  return 'SELECT `tabItem Group`.`name`,`tabItem Group`.`parent_item_group` FROM `tabItem Group` WHERE `tabItem Group`.`is_group` = "No" AND `tabItem Group`.`docstatus`!= 2 AND `tabItem Group`.%(key)s LIKE "%s"  ORDER BY  `tabItem Group`.`name` ASC LIMIT 50'
-}
 
 // for description from attachment
 // takes the first attachment and creates
