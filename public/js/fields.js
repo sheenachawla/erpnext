@@ -69,9 +69,7 @@ this.input.name=this.df.fieldname;$(this.input).change(function(){me.set_value(m
 me.set(val);if(me.format_input)
 me.format_input();if(in_list(['Currency','Float','Int'],me.df.fieldtype)){if(flt(me.last_value)==flt(val)){me.last_value=val;return;}}
 me.last_value=val;me.run_trigger();}
-this.input.set_input=function(val){if(val==null)val='';me.input.value=val;if(me.format_input)me.format_input();}
-if(this.df.options=='Suggest'){if(this.suggest_icon)this.suggest_icon.toggle(true);$(me.input).autocomplete({source:function(request,response){wn.call({method:'webnotes.widgets.search.search_link',args:{'txt':request.term,'dt':me.df.options,'query':repl('SELECT DISTINCT `%(fieldname)s` FROM \
-       `tab%(dt)s` WHERE `%(fieldname)s` LIKE "%s" LIMIT 50',{fieldname:me.df.fieldname,dt:me.df.parent})},callback:function(r){response(r.results);}});},select:function(event,ui){me.set(ui.item.value);}});}}
+this.input.set_input=function(val){if(val==null)val='';me.input.value=val;if(me.format_input)me.format_input();}}
 DataField.prototype.validate=function(v){if(this.df.options=='Phone'){if(v+''=='')return'';v1=''
 v=v.replace(/ /g,'').replace(/-/g,'').replace(/\(/g,'').replace(/\)/g,'');if(v&&v.substr(0,1)=='+'){v1='+';v=v.substr(1);}
 if(v&&v.substr(0,2)=='00'){v1+='00';v=v.substr(2);}
@@ -98,21 +96,26 @@ return v;};function LinkField(){}LinkField.prototype=new Field();LinkField.proto
 $(me.btn2).css('display','inline-block');else $dh(me.btn2);}}
 me.txt.field_object=this;me.input.set_input=function(val){if(val==undefined)val='';me.txt.value=val;}
 me.get_value=function(){return me.txt.value;}
-$(me.txt).autocomplete({source:function(request,response){wn.call({method:'webnotes.widgets.search.search_link',args:{'txt':request.term,'dt':me.df.options,'query':me.get_custom_query()},callback:function(r){response(r.results);},});},select:function(event,ui){me.set_input_value(ui.item.value);}}).data('autocomplete')._renderItem=function(ul,item){return $('<li></li>').data('item.autocomplete',item).append(repl('<a>%(label)s<br><span style="font-size:10px">%(info)s</span></a>',item)).appendTo(ul);};$(this.txt).change(function(){var val=$(this).val();me.set_input_value_executed=false;if(!val){if(selector&&selector.display)
-return;me.set_input_value('');}else{setTimeout(function(){if(!me.set_input_value_executed){me.set_input_value(val);}},1000);}})}
+$(me.txt).autocomplete({source:function(request,response){var tab_name="`tab"+me.df.options+"`"
+var filters=[[me.df.options,"name","like",request.term+'%']].concat(me.filters||[]);wn.call({method:'webnotes.widgets.doclistview.get',args:{'docstatus':["0","1"],"fields":[tab_name+".name"],"filters":filters,'doctype':me.df.options},callback:function(r){response($.map(r.message,function(v){return{"label":v.name,"info":""}}));}});},select:function(event,ui){me.set_input_value(ui.item.value);}}).data('autocomplete')._renderItem=function(ul,item){return $('<li></li>').data('item.autocomplete',item).append(repl('<a>%(label)s<br><span style="font-size:10px">%(info)s</span></a>',item)).appendTo(ul);};$(this.txt).change(function(){var val=$(this).val();me.set_input_value_executed=false;console.log('fired:'+me.dialog_fired)
+if(!val){if(me.dialog_fired)
+return;me.set_input_value('');}else{setTimeout(function(){if(!me.set_input_value_executed){me.set_input_value(val);}},1000);}});this.setup_validators();}
+LinkField.prototype.setup_validators=function(){var me=this;var filters={"doctype":"DocType Link Filter","link_field":this.df.fieldname}
+if(this.grid){filters["table_field"]=this.grid.field.df.fieldname;}
+this.filters=$.map(wn.model.get(filters),function(d){return[[me.df.options,d.fieldname,d.condition,d.value]]});}
 LinkField.prototype.get_custom_query=function(){this.set_get_query();if(this.get_query){if(cur_frm)
 var doc=locals[cur_frm.doctype][cur_frm.docname];return this.get_query(doc,this.doctype,this.docname);}}
-LinkField.prototype.setup_buttons=function(){var me=this;me.btn.onclick=function(){selector.set(me,me.df.options,me.df.label);selector.show(me.txt);}
-if(me.btn1)me.btn1.onclick=function(){if(me.txt.value&&me.df.options){loaddoc(me.df.options,me.txt.value);}}
+LinkField.prototype.setup_buttons=function(){var me=this;me.btn.onclick=function(){var txt=$(me.txt).val();me.dialog_fired=true;me.search_dialog=new wn.ui.Search({doctype:me.df.options,txt:txt,with_filters:me.filters,df:me.df,callback:function(val){me.set_input_value(val);me.dialog_fired=false;}});}
+if(me.btn1)me.btn1.onclick=function(){if(me.txt.value&&me.df.options){wn.set_route('Form',me.df.options,me.txt.value);}}
 me.can_create=0;if((!me.not_in_form)&&in_list(profile.can_create,me.df.options)){me.can_create=1;me.btn2.onclick=function(){var on_save_callback=function(new_rec){if(new_rec){var d=_f.calling_doc_stack.pop();locals[d[0]][d[1]][me.df.fieldname]=new_rec;me.refresh();if(me.grid)me.grid.refresh();me.run_trigger();}}
 _f.calling_doc_stack.push([me.doctype,me.docname]);new_doc(me.df.options,me.on_new,1,on_save_callback,me.doctype,me.docname,me.frm.not_in_container);}}else{$dh(me.btn2);$y($td(me.tab,0,2),{width:'0px'});}}
-LinkField.prototype.set_input_value=function(val){var me=this;me.set_input_value_executed=true;var from_selector=false;if(selector&&selector.display)from_selector=true;me.refresh_label_icon();if(me.not_in_form){$(this.txt).val(val);return;}
+LinkField.prototype.set_input_value=function(val){var me=this;me.set_input_value_executed=true;me.refresh_label_icon();if(me.not_in_form){$(this.txt).val(val);return;}
 if(cur_frm){if(val==locals[me.doctype][me.docname][me.df.fieldname]){me.run_trigger();return;}}
 me.set(val);if(_f.cur_grid_cell)
 _f.cur_grid_cell.grid.cell_deselect();if(locals[me.doctype][me.docname][me.df.fieldname]&&!val){me.run_trigger();return;}
-me.validate_link(val,from_selector);}
-LinkField.prototype.validate_link=function(val,from_selector){var me=this;var fetch='';if(cur_frm.fetch_dict[me.df.fieldname])
-fetch=cur_frm.fetch_dict[me.df.fieldname].columns.join(', ');$c('webnotes.widgets.form.utils.validate_link',{'value':val,'options':me.df.options,'fetch':fetch},function(r,rt){if(r.message=='Ok'){if($(me.txt).val()!=val){if((me.grid&&!from_selector)||(!me.grid)){$(me.txt).val(val);}}
+me.validate_link(val);}
+LinkField.prototype.validate_link=function(val){var me=this;var fetch='';if(cur_frm.fetch_dict[me.df.fieldname])
+fetch=cur_frm.fetch_dict[me.df.fieldname].columns.join(', ');$c('webnotes.widgets.form.utils.validate_link',{'value':val,'options':me.df.options,'fetch':fetch},function(r,rt){if(r.message=='Ok'){if($(me.txt).val()!=val){if((me.grid&&!me.dialog_fired)||(!me.grid)){$(me.txt).val(val);}}
 if(r.fetch_values)
 me.set_fetch_values(r.fetch_values);me.run_trigger();}else{var astr='';if(in_list(profile.can_create,me.df.options))astr=repl('<br><br><span class="link_type" onclick="newdoc(\'%(dt)s\')">Click here</span> to create a new %(dtl)s',{dt:me.df.options,dtl:get_doctype_label(me.df.options)})
 msgprint(repl('error:<b>%(val)s</b> is not a valid %(dt)s.<br><br>You must first create a new %(dt)s <b>%(val)s</b> and then select its value. To find an existing %(dt)s, click on the magnifying glass next to the field.%(add)s',{val:me.txt.value,dt:get_doctype_label(me.df.options),add:astr}));me.txt.value='';me.set('');}});}
@@ -121,7 +124,7 @@ for(i=0;i<changed_fields.length;i++){if(cur_frm.fields_dict[changed_fields[i]])
 cur_frm.fields_dict[changed_fields[i]].run_trigger();}
 if(this.grid)this.grid.refresh();}
 LinkField.prototype.set_get_query=function(){if(this.get_query)return;if(this.grid){var f=this.grid.get_field(this.df.fieldname);if(f.get_query)this.get_query=f.get_query;}}
-LinkField.prototype.set_disp=function(val){var t=null;if(val)t="<a href=\'javascript:loaddoc(\""+this.df.options+"\", \""+val+"\")\'>"+val+"</a>";this.set_disp_html(t);}
+LinkField.prototype.set_disp=function(val){var t=null;if(val)t="<a href='#Form/"+this.df.options+"/"+val+"'>"+val+"</a>";this.set_disp_html(t);}
 function IntField(){}IntField.prototype=new DataField();IntField.prototype.validate=function(v){if(isNaN(parseInt(v)))return null;return cint(v);};IntField.prototype.format_input=function(){if(this.input.value==null)this.input.value='';}
 function FloatField(){}FloatField.prototype=new DataField();FloatField.prototype.validate=function(v){var v=parseFloat(v);if(isNaN(v))
 return null;return v;};FloatField.prototype.format_input=function(){if(this.input.value==null)this.input.value='';}
@@ -187,9 +190,7 @@ TimeField.prototype.set_disp=function(v){var t=time_to_ampm(v);var t=t[0]+':'+t[
 function makeinput_popup(me,iconsrc,iconsrc1,iconsrc2){var icon_style={cursor:'pointer',width:'16px',verticalAlign:'middle',marginBottom:'-3px'};me.input=$a(me.input_area,'div');if(!me.not_in_form)
 $y(me.input,{width:'80%'});me.input.set_width=function(w){$y(me.input,{width:(w-2)+'px'});}
 var tab=$a(me.input,'table');me.tab=tab;$y(tab,{width:'100%',borderCollapse:'collapse',tableLayout:'fixed'});var c0=tab.insertRow(0).insertCell(0);var c1=tab.rows[0].insertCell(1);$y(c1,{width:'20px'});me.txt=$a($a($a(c0,'div','',{paddingRight:'8px'}),'div'),'input','',{width:'100%'});me.btn=$a(c1,'i',iconsrc,icon_style)
-if(iconsrc1)
-me.btn.setAttribute('title','Search');else
-me.btn.setAttribute('title','Select Date');if(iconsrc1){var c2=tab.rows[0].insertCell(2);$y(c2,{width:'20px'});me.btn1=$a(c2,'i',iconsrc1,icon_style)
+me.btn.setAttribute('title','Search');if(iconsrc1){var c2=tab.rows[0].insertCell(2);$y(c2,{width:'20px'});me.btn1=$a(c2,'i',iconsrc1,icon_style)
 me.btn1.setAttribute('title','Open Link');}
 if(iconsrc2){var c3=tab.rows[0].insertCell(3);$y(c3,{width:'20px'});me.btn2=$a(c3,'i',iconsrc2,icon_style)
 me.btn2.setAttribute('title','Create New');$dh(me.btn2);}

@@ -4,7 +4,7 @@
 	# These values are common in all dictionaries
 	{
 		u'docstatus': 0,
-		u'modified': '2012-07-30 12:30:14',
+		u'modified': '2012-07-31 12:43:32',
 		u'modified_by': u'Administrator'
 	},
 
@@ -17,7 +17,6 @@
 
 	# These values are common for all DocType Link Filter
 	{
-		'condition': u'=',
 		u'doctype': u'DocType Link Filter',
 		u'name': u'__common__',
 		'parent': u'Item',
@@ -56,6 +55,7 @@
 
 	# DocType Link Filter
 	{
+		'condition': u'=',
 		u'doctype': u'DocType Link Filter',
 		'fieldname': u'group_or_ledger',
 		'link_field': u'purchase_account',
@@ -64,6 +64,7 @@
 
 	# DocType Link Filter
 	{
+		'condition': u'=',
 		u'doctype': u'DocType Link Filter',
 		'fieldname': u'debit_or_credit',
 		'link_field': u'purchase_account',
@@ -72,6 +73,7 @@
 
 	# DocType Link Filter
 	{
+		'condition': u'=',
 		u'doctype': u'DocType Link Filter',
 		'fieldname': u'group_or_ledger',
 		'link_field': u'default_income_account',
@@ -80,10 +82,58 @@
 
 	# DocType Link Filter
 	{
+		'condition': u'=',
 		u'doctype': u'DocType Link Filter',
 		'fieldname': u'debit_or_credit',
 		'link_field': u'default_income_account',
 		'value': u'Credit'
+	},
+
+	# DocType Link Filter
+	{
+		'condition': u'=',
+		u'doctype': u'DocType Link Filter',
+		'fieldname': u'is_group',
+		'link_field': u'item_group',
+		'value': u'No'
+	},
+
+	# DocType Link Filter
+	{
+		'condition': u'=',
+		u'doctype': u'DocType Link Filter',
+		'fieldname': u'group_or_ledger',
+		'link_field': u'cost_center',
+		'value': u'Ledger'
+	},
+
+	# DocType Link Filter
+	{
+		'condition': u'=',
+		u'doctype': u'DocType Link Filter',
+		'fieldname': u'group_or_ledger',
+		'link_field': u'default_sales_cost_center',
+		'value': u'Ledger'
+	},
+
+	# DocType Link Filter
+	{
+		'condition': u'=',
+		u'doctype': u'DocType Link Filter',
+		'fieldname': u'group_or_ledger',
+		'link_field': u'tax_type',
+		'table_field': u'item_tax',
+		'value': u'Ledger'
+	},
+
+	# DocType Link Filter
+	{
+		'condition': u'in',
+		u'doctype': u'DocType Link Filter',
+		'fieldname': u'account_type',
+		'link_field': u'tax_type',
+		'table_field': u'item_tax',
+		'value': u'Tax, Chargeable'
 	},
 
 	# DocType Conditional Property
