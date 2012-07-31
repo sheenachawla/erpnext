@@ -77,5 +77,14 @@ class TestItem(TestBase):
 		item["name"] = "Home Desktop 200"
 		webnotes.model.insert([item, ref_rate_detail])
 		
+	def test_link_validation(self):
+		item = base_item.copy()
+		
+		# expenses is a group
+		item.update({"name":"Home Desktop 100", "purchase_account":"Expenses - EW"})
+		self.assertRaises(webnotes.LinkFilterError, webnotes.model.insert, [item])
 
-
+		# valid entry
+		item["purchase_account"] = "Miscellaneous Expenses - EW"
+		webnotes.model.insert([item])
+		self.assertTrue(webnotes.conn.exists("Item", "Home Desktop 100"))

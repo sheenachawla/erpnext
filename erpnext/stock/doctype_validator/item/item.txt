@@ -1,0 +1,121 @@
+# DocType Validator, Item
+[
+
+	# These values are common in all dictionaries
+	{
+		u'docstatus': 0,
+		u'modified': '2012-07-30 12:30:14',
+		u'modified_by': u'Administrator'
+	},
+
+	# These values are common for all DocType Validator
+	{
+		u'doctype': u'DocType Validator',
+		'for_doctype': u'Item',
+		u'name': u'__common__'
+	},
+
+	# These values are common for all DocType Link Filter
+	{
+		'condition': u'=',
+		u'doctype': u'DocType Link Filter',
+		u'name': u'__common__',
+		'parent': u'Item',
+		'parentfield': u'link_filters',
+		'parenttype': u'DocType Validator'
+	},
+
+	# These values are common for all DocType Conditional Property
+	{
+		u'doctype': u'DocType Conditional Property',
+		'if_condition': u'=',
+		'if_value': u'Yes',
+		u'name': u'__common__',
+		'parent': u'Item',
+		'parentfield': u'conditional_properties',
+		'parenttype': u'DocType Validator',
+		'then_condition': u'=',
+		'then_field': u'is_stock_item',
+		'then_value': u'Yes'
+	},
+
+	# These values are common for all DocType Unique Row
+	{
+		u'doctype': u'DocType Unique Row',
+		u'name': u'__common__',
+		'parent': u'Item',
+		'parentfield': u'unique_rows',
+		'parenttype': u'DocType Validator'
+	},
+
+	# DocType Validator, Item
+	{
+		u'doctype': u'DocType Validator',
+		u'name': u'Item'
+	},
+
+	# DocType Link Filter
+	{
+		u'doctype': u'DocType Link Filter',
+		'fieldname': u'group_or_ledger',
+		'link_field': u'purchase_account',
+		'value': u'Ledger'
+	},
+
+	# DocType Link Filter
+	{
+		u'doctype': u'DocType Link Filter',
+		'fieldname': u'debit_or_credit',
+		'link_field': u'purchase_account',
+		'value': u'Debit'
+	},
+
+	# DocType Link Filter
+	{
+		u'doctype': u'DocType Link Filter',
+		'fieldname': u'group_or_ledger',
+		'link_field': u'default_income_account',
+		'value': u'Ledger'
+	},
+
+	# DocType Link Filter
+	{
+		u'doctype': u'DocType Link Filter',
+		'fieldname': u'debit_or_credit',
+		'link_field': u'default_income_account',
+		'value': u'Credit'
+	},
+
+	# DocType Conditional Property
+	{
+		u'doctype': u'DocType Conditional Property',
+		'if_field': u'has_serial_no'
+	},
+
+	# DocType Conditional Property
+	{
+		u'doctype': u'DocType Conditional Property',
+		'if_field': u'has_batch_no'
+	},
+
+	# DocType Unique Row
+	{
+		u'doctype': u'DocType Unique Row',
+		'keys': u'tax_type',
+		'unique_table_field': u'item_tax'
+	},
+
+	# DocType Unique Row
+	{
+		u'doctype': u'DocType Unique Row',
+		'keys': u'uom',
+		'unique_table_field': u'uom_conversion_details'
+	},
+
+	# DocType Unique Row
+	{
+		u'doctype': u'DocType Unique Row',
+		'keys': u'price_list_name\nref_currency',
+		'unique_table_field': u'ref_rate_details'
+	}
+]

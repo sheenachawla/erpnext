@@ -19,9 +19,9 @@ import webnotes
 import website.utils
 import website.web_cache
 
-from webnotes.model.base import BaseDocType
+from webnotes.model.doclist import DocListController
 
-class Page(BaseDocType):
+class PageController(DocListController):
 	def autoname(self):
 		"""name from title"""
 		self.doc.name = website.utils.page_name(self.doc.title)
