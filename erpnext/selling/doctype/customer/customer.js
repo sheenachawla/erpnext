@@ -29,7 +29,6 @@ cur_frm.cscript.onload = function(doc,dt,dn){
 	}
 	// make address, contact, shipping, history list body
 	cur_frm.cscript.make_hl_body();
-  	//cur_frm.cscript.make_sl_body();
 
 	cur_frm.cscript.load_defaults(doc, dt, dn);
 	
@@ -38,37 +37,27 @@ cur_frm.cscript.onload = function(doc,dt,dn){
 
 cur_frm.cscript.load_defaults = function(doc, dt, dn) {
 	doc = locals[doc.doctype][doc.name];
-	if(!(doc.__islocal && doc.lead_name)) { return; }
-
-	var fields_to_refresh = LocalDB.set_default_values(doc);
-	if(fields_to_refresh) { refresh_many(fields_to_refresh); }
+	if (doc.__islocal && doc.lead_name) {
+		var fields_to_refresh = LocalDB.set_default_values(doc);
+		if(fields_to_refresh) refresh_many(fields_to_refresh);
+	}
 }
 
-cur_frm.add_fetch('lead_name', 'company_name', 'customer_name');
-cur_frm.add_fetch('default_sales_partner','commission_rate','default_commission_rate');
-
-/* ********************************* refresh ********************************************* */
-
 cur_frm.cscript.refresh = function(doc,dt,dn) {
-	if(sys_defaults.cust_master_name == 'Customer Name')
-		hide_field('naming_series');
-	else
-		unhide_field('naming_series');
+	cur_frm.toggle_display('naming_series', (sys_defaults.cust_master_name == 'Customer Name'))
+	cur_frm.toggle_display(['address_html','contact_html'], doc.__islocal);
 
-	if(doc.__islocal){		
-		hide_field(['address_html','contact_html']);
-		//cur_frm.cscript.set_hl_msg(doc);
- 		//cur_frm.cscript.set_sl_msg(doc);
-	}else{
-		unhide_field(['address_html','contact_html']);
+	if(!doc.__islocal){
 		// make lists
 		cur_frm.cscript.make_address(doc,dt,dn);
 		cur_frm.cscript.make_contact(doc,dt,dn);
 		cur_frm.cscript.make_history(doc,dt,dn);
 		cur_frm.cscript.render_communication_list(doc, cdt, cdn);
-		//cur_frm.cscript.make_shipping_address(doc,dt,dn);
 	}
 }
+
+cur_frm.add_fetch('lead_name', 'company_name', 'customer_name');
+cur_frm.add_fetch('default_sales_partner','commission_rate','default_commission_rate');
 
 cur_frm.cscript.make_address = function() {
 	if(!cur_frm.address_list) {
@@ -104,26 +93,7 @@ cur_frm.cscript.make_contact = function() {
 		// note: render_contact_row is defined in contact_control.js
 	}
 	cur_frm.contact_list.run();
-
 }
-
-/* ********************************* client triggers ************************************** */
-
-// ---------------
-// customer group
-// ---------------
-cur_frm.fields_dict['customer_group'].get_query = function(doc,dt,dn) {
-	return 'SELECT `tabCustomer Group`.`name`, `tabCustomer Group`.`parent_customer_group` FROM `tabCustomer Group` WHERE `tabCustomer Group`.`is_group` = "No" AND `tabCustomer Group`.`docstatus`!= 2 AND `tabCustomer Group`.%(key)s LIKE "%s" ORDER BY	`tabCustomer Group`.`name` ASC LIMIT 50';
-}
-
-
-// -----
-// lead
-// -----
-cur_frm.fields_dict['lead_name'].get_query = function(doc,dt,dn){
-	return 'SELECT `tabLead`.`name` FROM `tabLead` WHERE `tabLead`.`status`!="Converted" AND `tabLead`.%(key)s LIKE "%s" ORDER BY `tabLead`.`name` ASC LIMIT 50';	
-}
-
 
 // Transaction History
 // functions called by these functions are defined in communication.js
