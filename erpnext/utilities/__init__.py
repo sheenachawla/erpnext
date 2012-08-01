@@ -40,3 +40,20 @@ def get_report_list():
 		and tabReport.docstatus in (0, NULL)
 		order by tabReport.name 
 		limit %(limit_start)s, %(limit_page_length)s""" % webnotes.form_dict, as_dict=True)
+		
+def get_fiscal_year(date):
+	"""returns name of fiscal year record for a given date"""
+	import datetime
+	if isinstance(date, datetime.date):
+		date = date.strftime('%Y-%m-%d')
+		
+	res = webnotes.conn.sql("""select name from `tabFiscal Year`
+		where year_start_date <= %s and adddate(year_start_date, interval 1 year) >= %s""",
+		(date, date))
+	if not res:
+		class FiscalYearNotFound(webnotes.ValidationError): pass
+		from webnotes.utils import formatdate
+		webnotes.msgprint("The date '%s' does not lie within any fiscal year" % formatdate(date),
+			raise_exception=FiscalYearNotFound)
+
+	return res[0][0]

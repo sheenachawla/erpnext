@@ -24,13 +24,12 @@ class ItemController(PageController):
 		webnotes.conn.sql("update tabItem set item_code = %s where name = %s", (newdn, olddn))
 
 	def get_tax_rate(self, tax_type):
-		rate = webnotes.conn.sql("select tax_rate from tabAccount where name = %s", tax_type)
-		return { 'tax_rate'	:	rate and flt(rate[0][0]) or 0 }
+		from webnotes.utils import flt
+		return { "tax_rate": flt(webnotes.conn.get_value("Account", tax_type, "tax_rate")) }
 
 	def check_if_sle_exists(self):
 		"""returns 'exists' or 'not exists'"""
-		sle = webnotes.conn.get_value("Stock Ledger Entry", {"item_code": self.doc.name, "is_cancelled[No]": "No"}, "name")
-
-		# sle = sql("select name from `tabStock Ledger Entry` where item_code = %s and ifnull(is_cancelled, 'No') = 'No'", self.doc.name)
+		sle = webnotes.conn.get_value("Stock Ledger Entry",
+			{"item_code": self.doc.name, "is_cancelled['No']": "No"}, "name")
 
 		return sle and 'exists' or 'not exists'
