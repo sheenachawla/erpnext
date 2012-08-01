@@ -17,26 +17,21 @@
 cur_frm.cscript.refresh = function(doc) {
 	// make sensitive fields(has_serial_no, is_stock_item, valuation_method)
 	// read only if any stock ledger entry exists
-
 	if ((!doc.__islocal) && (doc.is_stock_item == 'Yes')) {
-		var callback = function(r, rt) {
-			if (r.message == 'exists') permlevel = 1;
-			else permlevel = 0;
-
-			set_field_permlevel('has_serial_no', permlevel);
-			set_field_permlevel('is_stock_item', permlevel);
-			set_field_permlevel('valuation_method', permlevel);
+		var callback = function(r) {
+			var permlevel = r.message === "exists" ? 1 : 0;
+			set_field_permlevel(["has_serial_no", "is_stock_item", "valuation_method"], permlevel);
 		}
-		$c_obj(make_doclist(doc.doctype, doc.name),'check_if_sle_exists','',callback);
+		$c_obj(make_doclist(doc.doctype, doc.name), 'check_if_sle_exists', '', callback);
 	}
 	
+	// hide website related fields if show in website is unchecked
 	cur_frm.cscript.hide_website_fields(doc);
 }
 
 cur_frm.cscript.hide_website_fields = function(doc) {
-	var website_fields_list = ['page_name', 'website_image', 'web_short_description',
-								'web_long_description'];
-	cur_frm.toggle_display(website_fields_list, cint(doc.show_in_website))
+	cur_frm.toggle_display(['page_name', 'website_image', 'web_short_description',
+		'web_long_description'], cint(doc.show_in_website));
 }
 
 cur_frm.cscript.show_in_website = function(doc, dt, dn) {
@@ -44,8 +39,8 @@ cur_frm.cscript.show_in_website = function(doc, dt, dn) {
 }
 
 cur_frm.cscript.tax_type = function(doc, cdt, cdn){
-  var d = locals[cdt][cdn];
-  get_server_fields('get_tax_rate',d.tax_type,'item_tax',doc, cdt, cdn, 1);
+	var d = locals[cdt][cdn];
+	get_server_fields('get_tax_rate',d.tax_type,'item_tax',doc, cdt, cdn, 1);
 }
 
 

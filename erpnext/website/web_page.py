@@ -22,10 +22,6 @@ import website.web_cache
 from webnotes.model.controller import DocListController
 
 class PageController(DocListController):
-	def autoname(self):
-		"""name from title"""
-		self.doc.name = website.utils.page_name(self.doc.title)
-		
 	def validate(self):
 		if self.doc.name:
 			self.old_page_name = webnotes.conn.get_value(self.doc.doctype, self.doc.name, 'page_name')

@@ -20,10 +20,6 @@ import webnotes
 from website.web_page import PageController
 
 class ItemController(PageController):
-	new_style = True
-	def autoname(self):
-		self.doc.name = self.doc.item_code
-
 	def on_rename(self,newdn,olddn):
 		webnotes.conn.sql("update tabItem set item_code = %s where name = %s", (newdn, olddn))
 
@@ -33,5 +29,8 @@ class ItemController(PageController):
 
 	def check_if_sle_exists(self):
 		"""returns 'exists' or 'not exists'"""
-		sle = sql("select name from `tabStock Ledger Entry` where item_code = %s and ifnull(is_cancelled, 'No') = 'No'", self.doc.name)
+		sle = webnotes.conn.get_value("Stock Ledger Entry", {"item_code": self.doc.name, "is_cancelled[No]": "No"}, "name")
+
+		# sle = sql("select name from `tabStock Ledger Entry` where item_code = %s and ifnull(is_cancelled, 'No') = 'No'", self.doc.name)
+
 		return sle and 'exists' or 'not exists'

@@ -17,9 +17,13 @@
 from __future__ import unicode_literals
 import webnotes
 import website.utils
-import website.web_page
+from website.web_page import PageController
 
-class DocType(website.web_page.Page):
+class DocType(PageController):
+	def autoname(self):
+		"""name from title"""
+		self.doc.name = website.utils.page_name(self.doc.title)
+
 	def on_update(self):
 		super(DocType, self).on_update()
 		self.if_home_clear_cache()
