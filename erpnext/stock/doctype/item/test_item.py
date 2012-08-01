@@ -64,6 +64,12 @@ class TestItem(TestBase):
 			"name":"Home Desktop 100"
 		}])
 		self.assertTrue(webnotes.conn.exists("Item", "Home Desktop 100"))
+		
+		# test item creation with autoname
+		webnotes.model.insert_variants(base_item, [{
+			"item_code": "Home Desktop 200"
+		}])
+		self.assertTrue(webnotes.conn.exists("Item", "Home Desktop 200"))
 
 	def test_duplicate(self):
 		item = base_item.copy()
@@ -135,4 +141,3 @@ class TestItem(TestBase):
 		})
 		webnotes.model.insert([item])
 		self.assertTrue(webnotes.conn.exists("Item", "Home Desktop 300"))
-		

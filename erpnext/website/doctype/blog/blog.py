@@ -23,9 +23,13 @@ naming for same name files: file.gif, file-1.gif, file-2.gif etc
 
 import webnotes
 import website.utils
-import website.web_page
+from website.web_page import PageController
 
-class DocType(website.web_page.Page):
+class DocType(PageController):
+	def autoname(self):
+		"""name from title"""
+		self.doc.name = website.utils.page_name(self.doc.title)
+
 	def on_update(self):
 		super(DocType, self).on_update()
 		if not webnotes.utils.cint(self.doc.published):

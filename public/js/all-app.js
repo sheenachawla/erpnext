@@ -2131,7 +2131,7 @@ cur_frm.fields_dict[n].comment_area.innerHTML=replace_newlines(txt);else
 errprint('[set_field_tip] Unable to set field tip: '+n);}}
 refresh_field=function(n,docname,table_field){if(typeof n==typeof[])refresh_many(n,docname,table_field);if(table_field){if(_f.frm_dialog&&_f.frm_dialog.display){_f.frm_dialog.cur_frm.refresh_field(n);}else{var g=_f.cur_grid_cell;if(g)var hc=g.grid.head_row.cells[g.cellIndex];if(g&&hc&&hc.fieldname==n&&g.row.docname==docname){hc.template.refresh();}else{cur_frm.fields_dict[table_field].grid.refresh_cell(docname,n);}}}else if(cur_frm){cur_frm.refresh_field(n)}}
 set_field_options=function(n,txt){cur_frm.set_df_property(n,'options',txt)}
-set_field_permlevel=function(n,level){cur_frm.set_df_property(n,'permlevel',level)}
+set_field_permlevel=function(n,level){if($.isArray(n)){$.each(n,function(i,v){cur_frm.set_df_property(v,'permlevel',level);});}else{cur_frm.set_df_property(n,'permlevel',level);}}
 hide_field=function(n){if(typeof n=='string')n=[n];for(var i in n)cur_frm.set_df_property(n,'hidden',1);}
 unhide_field=function(n){if(typeof n=='string')n=[n];for(var i in n)cur_frm.set_df_property(n,'hidden',0);}
 /*
