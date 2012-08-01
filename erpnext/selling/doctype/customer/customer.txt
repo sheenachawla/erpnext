@@ -3,11 +3,11 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-07-23 12:36:20',
-		'docstatus': 0,
-		'modified': '2012-07-24 11:48:43',
-		'modified_by': u'Administrator',
-		'owner': u'Administrator'
+		u'creation': '2012-07-26 13:40:14',
+		u'docstatus': 0,
+		u'modified': '2012-08-01 17:26:40',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
 	},
 
 	# These values are common for all DocType
@@ -18,10 +18,10 @@
 		'allow_trash': 1,
 		'colour': u'White:FFF',
 		'default_print_format': u'Standard',
-		'doctype': 'DocType',
+		u'doctype': u'DocType',
 		'document_type': u'Master',
 		'module': u'Selling',
-		'name': '__common__',
+		u'name': u'__common__',
 		'search_fields': u'customer_name,customer_group,country,territory',
 		'section_style': u'Tabbed',
 		'server_code_error': u' ',
@@ -33,8 +33,8 @@
 
 	# These values are common for all DocField
 	{
-		'doctype': u'DocField',
-		'name': '__common__',
+		u'doctype': u'DocField',
+		u'name': u'__common__',
 		'parent': u'Customer',
 		'parentfield': u'fields',
 		'parenttype': u'DocType'
@@ -43,8 +43,8 @@
 	# These values are common for all DocPerm
 	{
 		'amend': 0,
-		'doctype': u'DocPerm',
-		'name': '__common__',
+		u'doctype': u'DocPerm',
+		u'name': u'__common__',
 		'parent': u'Customer',
 		'parentfield': u'permissions',
 		'parenttype': u'DocType',
@@ -54,85 +54,15 @@
 
 	# DocType, Customer
 	{
-		'doctype': 'DocType',
-		'name': u'Customer'
-	},
-
-	# DocPerm
-	{
-		'cancel': 0,
-		'create': 0,
-		'doctype': u'DocPerm',
-		'permlevel': 1,
-		'role': u'Sales Manager',
-		'write': 0
-	},
-
-	# DocPerm
-	{
-		'cancel': 0,
-		'create': 0,
-		'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'Sales Manager',
-		'write': 0
-	},
-
-	# DocPerm
-	{
-		'cancel': 0,
-		'create': 0,
-		'doctype': u'DocPerm',
-		'permlevel': 1,
-		'role': u'Sales User',
-		'write': 0
-	},
-
-	# DocPerm
-	{
-		'cancel': 0,
-		'create': 0,
-		'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'Sales User',
-		'write': 0
-	},
-
-	# DocPerm
-	{
-		'cancel': 1,
-		'create': 1,
-		'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'Sales Master Manager',
-		'write': 1
-	},
-
-	# DocPerm
-	{
-		'cancel': 0,
-		'create': 0,
-		'doctype': u'DocPerm',
-		'permlevel': 1,
-		'role': u'Sales Master Manager',
-		'write': 0
-	},
-
-	# DocPerm
-	{
-		'cancel': 0,
-		'create': 1,
-		'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'Purchase User',
-		'write': 1
+		u'doctype': u'DocType',
+		u'name': u'Customer'
 	},
 
 	# DocField
 	{
 		'colour': u'White:FFF',
 		'description': u'Note: You Can Manage Multiple Address or Contacts via Addresses & Contacts',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'basic_info',
 		'fieldtype': u'Section Break',
 		'label': u'Basic Info',
@@ -143,7 +73,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'customer_name',
 		'fieldtype': u'Data',
 		'hidden': 0,
@@ -161,7 +91,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'customer_type',
 		'fieldtype': u'Select',
 		'label': u'Customer Type',
@@ -174,7 +104,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'naming_series',
 		'fieldtype': u'Select',
 		'label': u'Series',
@@ -188,7 +118,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'Fetch lead which will be converted into customer.',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'lead_name',
 		'fieldtype': u'Link',
 		'hidden': 0,
@@ -206,7 +136,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'column_break0',
 		'fieldtype': u'Column Break',
 		'permlevel': 0,
@@ -217,7 +147,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'<a href="#!Sales Browser/Customer Group">To manage Customer Groups, click here</a>',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'customer_group',
 		'fieldtype': u'Link',
 		'hidden': 0,
@@ -237,7 +167,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'<a href="#!Sales Browser/Territory">To manage Territory, click here</a>',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'territory',
 		'fieldtype': u'Link',
 		'label': u'Territory',
@@ -253,7 +183,7 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'address_contacts',
 		'fieldtype': u'Section Break',
 		'label': u'Address & Contacts',
@@ -264,7 +194,7 @@
 	{
 		'colour': u'White:FFF',
 		'depends_on': u'eval:doc.__islocal',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'address_desc',
 		'fieldtype': u'HTML',
 		'label': u'Address Desc',
@@ -275,7 +205,7 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'address_html',
 		'fieldtype': u'HTML',
 		'label': u'Address HTML',
@@ -284,7 +214,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'column_break1',
 		'fieldtype': u'Column Break',
 		'permlevel': 0,
@@ -295,7 +225,7 @@
 	{
 		'colour': u'White:FFF',
 		'depends_on': u'eval:doc.__islocal',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'contact_desc',
 		'fieldtype': u'HTML',
 		'label': u'Contact Desc',
@@ -306,7 +236,7 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'contact_html',
 		'fieldtype': u'HTML',
 		'label': u'Contact HTML',
@@ -316,7 +246,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'communication_history',
 		'fieldtype': u'Section Break',
 		'label': u'Communication History',
@@ -325,7 +255,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'communication_html',
 		'fieldtype': u'HTML',
 		'label': u'Communication HTML',
@@ -335,7 +265,7 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'more_info',
 		'fieldtype': u'Section Break',
 		'label': u'More Info',
@@ -345,7 +275,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'column_break2',
 		'fieldtype': u'Column Break',
 		'permlevel': 0,
@@ -354,24 +284,7 @@
 
 	# DocField
 	{
-		'colour': u'White:FFF',
-		'description': u'To create an Account Head under a different company, select the company and save customer.',
-		'doctype': u'DocField',
-		'fieldname': u'company',
-		'fieldtype': u'Link',
-		'in_filter': 1,
-		'label': u'Company',
-		'oldfieldname': u'company',
-		'oldfieldtype': u'Link',
-		'options': u'Company',
-		'permlevel': 0,
-		'reqd': 1,
-		'search_index': 1
-	},
-
-	# DocField
-	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'default_price_list',
 		'fieldtype': u'Link',
 		'label': u'Default Price List',
@@ -383,7 +296,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'This currency will get fetched in Sales transactions of this customer',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'default_currency',
 		'fieldtype': u'Select',
 		'label': u'Default Currency',
@@ -396,7 +309,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u"Your Customer's TAX registration numbers (if applicable) or any general information",
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'customer_details',
 		'fieldtype': u'Text',
 		'label': u'Customer Details',
@@ -407,7 +320,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'column_break3',
 		'fieldtype': u'Column Break',
 		'permlevel': 0,
@@ -416,7 +329,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'credit_days',
 		'fieldtype': u'Int',
 		'label': u'Credit Days',
@@ -427,7 +340,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'credit_limit',
 		'fieldtype': u'Currency',
 		'label': u'Credit Limit',
@@ -438,7 +351,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'website',
 		'fieldtype': u'Data',
 		'label': u'Website',
@@ -447,7 +360,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'sales_team_section_break',
 		'fieldtype': u'Section Break',
 		'label': u'Sales Team',
@@ -457,7 +370,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'default_sales_partner',
 		'fieldtype': u'Link',
 		'label': u'Default Sales Partner',
@@ -469,7 +382,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'default_commission_rate',
 		'fieldtype': u'Currency',
 		'label': u'Default Commission Rate',
@@ -480,7 +393,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'sales_team',
 		'fieldtype': u'Table',
 		'label': u'Sales Team Details',
@@ -494,7 +407,7 @@
 	{
 		'colour': u'White:FFF',
 		'depends_on': u'eval:!doc.__islocal',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'transaction_history',
 		'fieldtype': u'Section Break',
 		'label': u'Transaction History',
@@ -505,7 +418,7 @@
 	{
 		'colour': u'White:FFF',
 		'depends_on': u'eval:!doc.__islocal',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'history_html',
 		'fieldtype': u'HTML',
 		'label': u'History HTML',
@@ -515,12 +428,72 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'trash_reason',
 		'fieldtype': u'Small Text',
 		'label': u'Trash Reason',
 		'oldfieldname': u'trash_reason',
 		'oldfieldtype': u'Small Text',
 		'permlevel': 1
+	},
+
+	# DocPerm
+	{
+		'cancel': 0,
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'permlevel': 1,
+		'role': u'Sales Manager',
+		'write': 0
+	},
+
+	# DocPerm
+	{
+		'cancel': 0,
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'Sales Manager',
+		'write': 0
+	},
+
+	# DocPerm
+	{
+		'cancel': 0,
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'permlevel': 1,
+		'role': u'Sales User',
+		'write': 0
+	},
+
+	# DocPerm
+	{
+		'cancel': 0,
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'Sales User',
+		'write': 0
+	},
+
+	# DocPerm
+	{
+		'cancel': 1,
+		'create': 1,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'Sales Master Manager',
+		'write': 1
+	},
+
+	# DocPerm
+	{
+		'cancel': 0,
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'permlevel': 1,
+		'role': u'Sales Master Manager',
+		'write': 0
 	}
 ]
