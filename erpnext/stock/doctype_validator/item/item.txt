@@ -3,9 +3,11 @@
 
 	# These values are common in all dictionaries
 	{
+		u'creation': '2012-07-31 12:53:38',
 		u'docstatus': 0,
-		u'modified': '2012-07-31 12:43:32',
-		u'modified_by': u'Administrator'
+		u'modified': '2012-08-01 14:45:16',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
 	},
 
 	# These values are common for all DocType Validator
@@ -27,15 +29,10 @@
 	# These values are common for all DocType Conditional Property
 	{
 		u'doctype': u'DocType Conditional Property',
-		'if_condition': u'=',
-		'if_value': u'Yes',
 		u'name': u'__common__',
 		'parent': u'Item',
 		'parentfield': u'conditional_properties',
-		'parenttype': u'DocType Validator',
-		'then_condition': u'=',
-		'then_field': u'is_stock_item',
-		'then_value': u'Yes'
+		'parenttype': u'DocType Validator'
 	},
 
 	# These values are common for all DocType Unique Row
@@ -139,13 +136,32 @@
 	# DocType Conditional Property
 	{
 		u'doctype': u'DocType Conditional Property',
-		'if_field': u'has_serial_no'
+		'if_condition': u'=',
+		'if_field': u'has_serial_no',
+		'if_value': u'Yes',
+		'then_condition': u'=',
+		'then_field': u'is_stock_item',
+		'then_value': u'Yes'
 	},
 
 	# DocType Conditional Property
 	{
 		u'doctype': u'DocType Conditional Property',
-		'if_field': u'has_batch_no'
+		'if_condition': u'=',
+		'if_field': u'has_batch_no',
+		'if_value': u'Yes',
+		'then_condition': u'=',
+		'then_field': u'is_stock_item',
+		'then_value': u'Yes'
+	},
+
+	# DocType Conditional Property
+	{
+		u'doctype': u'DocType Conditional Property',
+		'if_condition': u'Filled',
+		'if_field': u'net_weight',
+		'then_condition': u'Filled',
+		'then_field': u'weight_uom'
 	},
 
 	# DocType Unique Row

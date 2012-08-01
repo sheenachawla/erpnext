@@ -20,7 +20,7 @@ import webnotes
 from webnotes.utils import add_days, cstr, getdate, now, sendmail, validate_email_add
 
 from webnotes.model.doc import Document, addchild, make_autoname
-from webnotes.model.doclist import getlist
+from webnotes.model.controller import getlist
 from webnotes.model.code import get_obj
 from webnotes import session, msgprint
 

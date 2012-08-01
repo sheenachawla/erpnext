@@ -20,7 +20,7 @@ import webnotes
 from webnotes.utils import flt, now, nowdate
 
 from webnotes.model.doc import addchild
-from webnotes.model.doclist import getlist
+from webnotes.model.controller import getlist
 from webnotes import msgprint
 
 sql = webnotes.conn.sql

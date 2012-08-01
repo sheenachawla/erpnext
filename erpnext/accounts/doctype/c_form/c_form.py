@@ -18,7 +18,7 @@ from __future__ import unicode_literals
 import webnotes
 from webnotes.utils import flt, getdate
 from webnotes.model.doc import make_autoname
-from webnotes.model.doclist import getlist
+from webnotes.model.controller import getlist
 from webnotes import  msgprint
 
 sql = webnotes.conn.sql	

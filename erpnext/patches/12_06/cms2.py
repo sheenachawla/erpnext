@@ -67,7 +67,7 @@ def save_pages():
 	}
 
 	import webnotes
-	from webnotes.model.doclist import DocListController
+	from webnotes.model.controller import DocListController
 	import webnotes.modules.patch_handler
 
 	for dt in query_map:

@@ -19,9 +19,9 @@ import webnotes
 
 from webnotes.model.doc import Document
 from webnotes import msgprint
-from webnotes.model.base import BaseDocType
+from webnotes.model.controller import DocListController
 
-class DocType(BaseDocType):
+class PriceListController(DocListController):
 	def is_currency_valid(self, currency):
 		if currency in self.cl:
 			return 1

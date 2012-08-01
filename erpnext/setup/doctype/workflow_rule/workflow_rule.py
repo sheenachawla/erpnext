@@ -19,7 +19,7 @@ import webnotes
 
 from webnotes.utils import cstr
 
-from webnotes.model.doclist import getlist
+from webnotes.model.controller import getlist
 from webnotes import form, msgprint
 
 sql = webnotes.conn.sql

@@ -17,7 +17,7 @@
 from __future__ import unicode_literals
 import webnotes
 from webnotes.utils import add_days, flt, getdate
-from webnotes.model.doclist import getlist
+from webnotes.model.controller import getlist
 from webnotes.model.code import get_obj
 from webnotes import msgprint
 

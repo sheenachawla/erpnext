@@ -17,7 +17,7 @@
 from __future__ import unicode_literals
 import webnotes
 
-from webnotes.model.doclist import getlist
+from webnotes.model.controller import getlist
 from webnotes.utils import flt
 
 from webnotes.utils.nestedset import DocTypeNestedSet

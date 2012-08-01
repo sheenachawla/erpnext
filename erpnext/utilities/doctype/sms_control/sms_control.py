@@ -21,7 +21,7 @@ from webnotes.utils import load_json, nowdate, cstr
 from webnotes.model.code import get_obj
 from webnotes.model.doc import Document
 from webnotes import msgprint
-from webnotes.model.doclist import getlist
+from webnotes.model.controller import getlist
 
 sql = webnotes.conn.sql
 	

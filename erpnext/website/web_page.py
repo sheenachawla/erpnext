@@ -19,7 +19,7 @@ import webnotes
 import website.utils
 import website.web_cache
 
-from webnotes.model.doclist import DocListController
+from webnotes.model.controller import DocListController
 
 class PageController(DocListController):
 	def autoname(self):

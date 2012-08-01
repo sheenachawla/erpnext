@@ -72,20 +72,6 @@ cur_frm.cscript.add_image = function(doc, dt, dn) {
 
 	refresh_field('description_html');
 }
-//===================== Quotation to validation - either customer or lead mandatory ====================
-cur_frm.cscript.weight_to_validate = function(doc,cdt,cdn){
-
-  if((doc.nett_weight || doc.gross_weight) && !doc.weight_uom)
-  {
-    alert('Weight is mentioned,\nPlease mention "Weight UOM" too');
-    validated=0;
-  }
-}
-//===================validation function =================================
-
-cur_frm.cscript.validate = function(doc,cdt,cdn){
-  cur_frm.cscript.weight_to_validate(doc,cdt,cdn);
-}
 
 //===========Fill Default Currency in "Item Prices====================
 cur_frm.fields_dict['ref_rate_details'].grid.onrowadd = function(doc, cdt, cdn){

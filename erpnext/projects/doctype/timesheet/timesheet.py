@@ -19,7 +19,7 @@ import webnotes
 
 from webnotes.utils import cint, cstr, getdate, now, nowdate
 
-from webnotes.model.doclist import getlist
+from webnotes.model.controller import getlist
 from webnotes import msgprint
 
 sql = webnotes.conn.sql

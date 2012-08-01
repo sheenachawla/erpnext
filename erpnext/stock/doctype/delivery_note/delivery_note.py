@@ -18,7 +18,7 @@ from __future__ import unicode_literals
 import webnotes
 from webnotes.utils import cstr, flt, getdate
 from webnotes.model.doc import make_autoname
-from webnotes.model.doclist import getlist
+from webnotes.model.controller import getlist
 from webnotes.model.code import get_obj
 from webnotes import msgprint
 
@@ -323,7 +323,7 @@ class DocType(TransactionBase):
 			""", self.doc.name)
 
 		if res and res[0][1]>0:
-			from webnotes.model.doclist import DocListController
+			from webnotes.model.controller import DocListController
 			for r in res:
 				ps = DocListController(dt='Packing Slip', dn=r[0])
 				ps.cancel()

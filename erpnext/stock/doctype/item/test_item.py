@@ -115,13 +115,24 @@ class TestItem(TestBase):
 		})
 		self.assertRaises(webnotes.ConditionalPropertyError, webnotes.model.insert, [item])
 		
-		# valid entry
+		# check if error is raised if net weight is specified, but weight uom is not
+		item = base_item.copy()
 		item.update({
 			"name": "Home Desktop 200",
+			"net_weight": 500
+		})
+		self.assertRaises(webnotes.ConditionalPropertyError, webnotes.model.insert, [item])
+		
+		# valid entry
+		item = base_item.copy()
+		item.update({
+			"name": "Home Desktop 300",
 			"has_serial_no": "Yes",
 			"is_stock_item": "Yes",
-			"has_batch_no": "Yes"
+			"has_batch_no": "Yes",
+			"net_weight": 500,
+			"weight_uom": "Kgs"
 		})
 		webnotes.model.insert([item])
-		self.assertTrue(webnotes.conn.exists("Item", "Home Desktop 200"))
+		self.assertTrue(webnotes.conn.exists("Item", "Home Desktop 300"))
 		

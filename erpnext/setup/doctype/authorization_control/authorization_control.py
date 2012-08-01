@@ -19,7 +19,7 @@ import webnotes
 
 from webnotes.utils import cstr, flt, has_common, make_esc
 
-from webnotes.model.doclist import getlist
+from webnotes.model.controller import getlist
 from webnotes import session, msgprint
 
 	

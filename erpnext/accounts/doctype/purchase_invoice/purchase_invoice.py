@@ -20,7 +20,7 @@ import webnotes
 from webnotes.utils import add_days, cint, cstr, flt, formatdate, get_defaults
 
 from webnotes.model.doc import Document, make_autoname
-from webnotes.model.doclist import getlist
+from webnotes.model.controller import getlist
 from webnotes.model.code import get_obj
 from webnotes import form, msgprint
 

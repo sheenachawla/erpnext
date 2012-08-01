@@ -19,7 +19,7 @@ import webnotes
 
 from webnotes.utils import cstr, flt, getTraceback, get_defaults, now, sendmail
 
-from webnotes.model.doclist import getlist
+from webnotes.model.controller import getlist
 from webnotes.model.code import get_obj
 from webnotes import session, msgprint
 

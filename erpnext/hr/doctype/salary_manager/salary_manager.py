@@ -20,7 +20,7 @@ import webnotes
 from webnotes.utils import cint, flt
 
 from webnotes.model.doc import Document
-from webnotes.model.doclist import getlist
+from webnotes.model.controller import getlist
 from webnotes.model.code import get_obj
 from webnotes import msgprint
 

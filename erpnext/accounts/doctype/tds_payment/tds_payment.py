@@ -20,7 +20,7 @@ import webnotes
 from webnotes.utils import cstr, flt, now
 
 from webnotes.model.doc import addchild, make_autoname
-from webnotes.model.doclist import getlist
+from webnotes.model.controller import getlist
 from webnotes import msgprint
 
 sql = webnotes.conn.sql
