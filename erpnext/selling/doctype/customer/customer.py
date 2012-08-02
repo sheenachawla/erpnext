@@ -61,9 +61,9 @@ class CustomerController(DocListController):
 			if not webnotes.conn.exists('Account', self.doc.name+" - "+comp['abbr']):
 				ac = get_obj('GL Control').add_ac(cstr({
 					'account_name':self.doc.name,
-					'parent_account': self.get_receivables_group(comp), 
+					'parent_account': self.get_receivables_group(comp['name']), 
 					'group_or_ledger':'Ledger', 
-					'company':comp,
+					'company':comp['name'],
 					'master_type':'Customer',
 					'master_name':self.doc.name
 				}))
@@ -78,8 +78,8 @@ class CustomerController(DocListController):
 	def update_credit_days_limit(self):
 		webnotes.conn.sql("""
 			update tabAccount 
-			set credit_days = '%s', credit_limit = '%s'
-			where master_type = 'Customer' and master_name = '%s'
+			set credit_days = %s, credit_limit = %s
+			where master_type = 'Customer' and master_name = %s
 		""", (self.doc.credit_days, self.doc.credit_limit, self.doc.name))
 
 	def create_address_and_contact(self):

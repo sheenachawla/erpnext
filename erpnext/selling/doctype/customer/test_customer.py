@@ -68,7 +68,5 @@ class TestCustomer(TestBase):
 			"naming_series": "CUST", "customer_name":"Ultimate Electronics", 
 			"customer_group": "Computers", "territory": "West"
 		}])
-		print webnotes.conn.get_value("Customer", \
-			{"customer_name": "Ultimate Electronics"}, "name")
 		self.assertEqual(webnotes.conn.get_value("Customer", \
 			{"customer_name": "Ultimate Electronics"}, "name")[:4], "CUST")

@@ -30,9 +30,8 @@ stages = {
 	"Master": {
 		"stages": ["Setup"],
 		"tests": [
-			"selling.doctype.customer.test_customer",
 			"stock.doctype.item.test_item",
-
+			"selling.doctype.customer.test_customer",
 			#"buying.doctype.supplier.test_supplier",
 		],
 	}
@@ -79,9 +78,11 @@ def upto(stage, with_tests=False):
 def test_stage(stage):
 	"""run a stage"""
 	import unittest, conf
+	import sys
 	webnotes.connect(conf.test_db_name)
 	
 	stagedata = stages[stage]
-	for test_module_name in stagedata["tests"]:
-		print test_module_name
-		unittest.main(module = test_module_name)
+	test_suite = unittest.TestSuite()
+	for module in map(lambda module_name: __import__(module_name, fromlist = True), stagedata["tests"]):
+		test_suite.addTest(unittest.TestLoader().loadTestsFromModule(module))
+	unittest.TextTestRunner().run(test_suite)
