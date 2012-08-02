@@ -30,8 +30,9 @@ stages = {
 	"Master": {
 		"stages": ["Setup"],
 		"tests": [
+			"selling.doctype.customer.test_customer",
 			"stock.doctype.item.test_item",
-			#"selling.doctype.customer.test_customer",
+
 			#"buying.doctype.supplier.test_supplier",
 		],
 	}
@@ -82,4 +83,5 @@ def test_stage(stage):
 	
 	stagedata = stages[stage]
 	for test_module_name in stagedata["tests"]:
+		print test_module_name
 		unittest.main(module = test_module_name)
