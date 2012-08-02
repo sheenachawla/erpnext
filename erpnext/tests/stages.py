@@ -77,12 +77,19 @@ def upto(stage, with_tests=False):
 
 def test_stage(stage):
 	"""run a stage"""
-	import unittest, conf
-	import sys
+	import unittest, conf, sys
 	webnotes.connect(conf.test_db_name)
 	
-	stagedata = stages[stage]
-	test_suite = unittest.TestSuite()
-	for module in map(lambda module_name: __import__(module_name, fromlist = True), stagedata["tests"]):
-		test_suite.addTest(unittest.TestLoader().loadTestsFromModule(module))
-	unittest.TextTestRunner().run(test_suite)
+	def _load_test_suite():
+		stagedata = stages[stage]
+		
+		test_suite = unittest.TestSuite()
+		for module in map(lambda module_name: __import__(module_name, fromlist = True),
+			stagedata["tests"]):
+			test_suite.addTest(unittest.TestLoader().loadTestsFromModule(module))
+		return test_suite
+	
+	# change verbosity to 2 for listing which test cases were run
+	verbosity = 1
+	unittest.TextTestRunner(verbosity=verbosity).run(_load_test_suite())
+	
