@@ -16,7 +16,7 @@
 
 from __future__ import unicode_literals
 import webnotes
-
+import webnotes.model
 from webnotes.utils import cstr, get_defaults
 from webnotes.model.doc import Document, make_autoname
 from webnotes.model.code import get_obj
@@ -40,7 +40,7 @@ class CustomerController(DocListController):
 	def validate_series(self):
 		""" If master name by naming series, series field mandatory"""
 		if get_defaults('cust_master_name') == 'Naming Series' and not self.doc.naming_series:
-			msgprint("Series is Mandatory.", raise_exception=1)
+			msgprint("Series is Mandatory.", raise_exception=webnotes.MandatoryError)
 
 	def on_update(self):
 		self.update_lead_status('Converted')
@@ -91,6 +91,7 @@ class CustomerController(DocListController):
 				from `tabLead` where name = %s
 			""", self.doc.lead_name, as_dict = 1)[0]
 				
+			
 			lead_details.update({
 				'customer': self.doc.name,
 				'customer_name': self.doc.customer_name,
@@ -101,17 +102,10 @@ class CustomerController(DocListController):
 			})
 			
 			# create address
-			self.create_doc('Address', lead_details)			
+			webnotes.model.insert_variants(lead_details, [{'doctype': 'Address'}], ignore_fields=1)			
 			# create contact
-			self.create_doc('Contact', lead_details)
+			#self.create_doc('Contact', lead_details)
 			
-	def create_doc(self, dt, args):
-		try:
-			d = Document(dt)
-			d.fields.update(args)
-			d.save(1)
-		except NameError, e:
-			pass
 	
 	def on_trash(self):
 		self.delete_customer_address_and_contact()

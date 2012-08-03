@@ -89,7 +89,5 @@ def test_stage(stage):
 			test_suite.addTest(unittest.TestLoader().loadTestsFromModule(module))
 		return test_suite
 	
-	# change verbosity to 2 for listing which test cases were run
 	verbosity = 1
 	unittest.TextTestRunner(verbosity=verbosity).run(_load_test_suite())
-	

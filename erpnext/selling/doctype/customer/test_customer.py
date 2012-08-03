@@ -32,7 +32,8 @@ base_territory = {
 
 base_customer = {
 	"doctype": 'Customer', "customer_name": "test_customer", "default_currency": "INR",
-	"default_price_list": "Standard", "territory": "Default Territory"
+	"default_price_list": "Standard", "territory": "Default Territory",
+	"customer_group": "Default Customer Group"
 }
 
 def make_customer_groups():
@@ -57,16 +58,37 @@ class TestCustomer(TestBase):
 	def test_customer_creation(self):
 		make_customer_groups()
 		make_territory()
-		webnotes.model.insert_variants(base_customer, [{
-			"customer_name":"Modern Electronics", "customer_group": "Computers", "territory": "East"
-		}])
+		
+		customer = base_customer.copy()
+		customer.update({
+			"customer_name":"Modern Electronics", 
+			"customer_group": "Computers", "territory": "East"
+		})
+		webnotes.model.insert(customer)
 		self.assertTrue(webnotes.conn.exists("Customer", "Modern Electronics"))
 	
 		# test customer creation with naming series
 		webnotes.conn.set_default("cust_master_name", "Naming Series")
-		webnotes.model.insert_variants(base_customer, [{
-			"naming_series": "CUST", "customer_name":"Ultimate Electronics", 
-			"customer_group": "Computers", "territory": "West"
-		}])
+		# without series
+		self.assertRaises(webnotes.MandatoryError, webnotes.model.insert, [customer])
+		
+		# with series
+		customer = base_customer.copy()
+		customer["naming_series"] = "CUST"
+		webnotes.model.insert(customer)
 		self.assertEqual(webnotes.conn.get_value("Customer", \
-			{"customer_name": "Ultimate Electronics"}, "name")[:4], "CUST")
+			{"customer_name": "test_customer"}, "name")[:4], "CUST")
+
+	def test_lead_status(self):
+		lead = {
+			"doctype": "Lead", "name": "LEAD001", "lead_name": "LEAD001",
+			"status": "Open", "naming_series": "LEAD"
+		}
+		webnotes.model.insert(lead)
+		
+		cust = base_customer.copy()
+		cust['lead_name'] = 'LEAD001'
+		webnotes.model.insert(cust, ignore_fields=1)
+		self.assertEqual(webnotes.conn.get_value("Lead", "LEAD001", "status"), "Converted")
+		
+	def test
