@@ -80,15 +80,93 @@ class TestCustomer(TestBase):
 			{"customer_name": "test_customer"}, "name")[:4], "CUST")
 
 	def test_lead_status(self):
-		lead = {
+		webnotes.model.insert({
 			"doctype": "Lead", "name": "LEAD001", "lead_name": "LEAD001",
 			"status": "Open", "naming_series": "LEAD"
-		}
-		webnotes.model.insert(lead)
+		})
 		
 		cust = base_customer.copy()
 		cust['lead_name'] = 'LEAD001'
 		webnotes.model.insert(cust, ignore_fields=1)
 		self.assertEqual(webnotes.conn.get_value("Lead", "LEAD001", "status"), "Converted")
 		
-	def test
+	def test_customer_account(self):
+		cust = base_customer.copy()
+		cust.update({"credit_days": "90", "credit_limit": "100000"})
+		webnotes.model.insert(cust)
+		
+		self.assertTrue(
+			webnotes.conn.get_value("Account", {
+				"account_name": "test_customer",
+				"parent_account": webnotes.conn.get_value("Company", "East Wind Corporation", "receivables_group"), 
+				"master_name": "test_customer", 
+				"debit_or_credit": "Debit", 
+				"group_or_ledger": "Ledger",
+				"credit_days": 90, 
+				"credit_limit": 100000
+			})
+		)
+		
+	def test_address_and_contact(self):
+		webnotes.model.insert({
+			"doctype": "Lead", "name": "LEAD001", "lead_name": "Robert Smith",
+			"status": "Open", "naming_series": "LEAD", "address_line1": "F/102, 247 Park",
+			"mobile_no": "1234567890", "email_id": "email@domain.com"
+		})
+		
+		cust = base_customer.copy()
+		cust['lead_name'] = 'LEAD001'
+		webnotes.model.insert(cust, ignore_fields=1)
+		
+		self.assertTrue(
+			webnotes.conn.get_value("Address", {
+				"customer": "test_customer",
+				"address_type": "Office",
+				"email_id": "email@domain.com",
+				"is_primary_address": 1,
+				"name": "test_customer-Office"
+			})
+		)
+		self.assertTrue(
+			webnotes.conn.get_value("Contact", {
+				"customer": "test_customer",
+				"email_id": "email@domain.com",
+				"is_primary_contact": 1,
+				"first_name": "Robert Smith",
+				"name": "Robert Smith-test_customer"
+			})
+		)
+
+	def test_customer_deletion(self):
+		webnotes.model.insert({
+			"doctype": "Lead", "name": "LEAD001", "lead_name": "Robert Smith",
+			"status": "Open", "naming_series": "LEAD", "address_line1": "F/102, 247 Park",
+			"mobile_no": "1234567890", "email_id": "email@domain.com"
+		})
+		
+		cust = base_customer.copy()
+		cust['lead_name'] = 'LEAD001'
+		webnotes.model.insert(cust, ignore_fields=1)
+
+		webnotes.model.delete_doc('Customer', 'test_customer')
+		
+		self.assertFalse(webnotes.conn.exists("Account", "test_customer - EW"))
+		self.assertFalse(webnotes.conn.exists("Address", "test_customer-Office"))
+		self.assertFalse(webnotes.conn.exists("Account", "Robert Smith-test_customer"))
+		
+		self.assertEqual(webnotes.conn.get_value("Lead", "LEAD001", "status"), "Open")
+		
+	def test_customer_renaming(self):
+		webnotes.model.insert(base_customer, ignore_fields=1)
+		
+		#from webnotes.model.utils import rename
+		from webnotes.model.rename_doc import rename_doc
+		rename_doc("Customer", "test_customer", "test_customer_renamed")
+		
+		self.assertFalse(webnotes.conn.exists("Customer", "test_customer"))
+		self.assertTrue(webnotes.conn.exists("Customer", "test_customer_renamed"))
+		self.assertTrue(
+			webnotes.conn.get_value("Account", {
+				"account_name": "test_customer", "master_name": "test_customer_renamed"
+			})
+		)

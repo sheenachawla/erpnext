@@ -5,7 +5,7 @@
 	{
 		u'creation': '2012-07-26 13:40:14',
 		u'docstatus': 0,
-		u'modified': '2012-08-01 17:26:40',
+		u'modified': '2012-08-06 17:07:21',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -87,19 +87,6 @@
 		'report_hide': 0,
 		'reqd': 1,
 		'search_index': 1
-	},
-
-	# DocField
-	{
-		u'doctype': u'DocField',
-		'fieldname': u'customer_type',
-		'fieldtype': u'Select',
-		'label': u'Customer Type',
-		'oldfieldname': u'customer_type',
-		'oldfieldtype': u'Select',
-		'options': u'\nCompany\nIndividual',
-		'permlevel': 0,
-		'reqd': 1
 	},
 
 	# DocField
@@ -423,18 +410,6 @@
 		'fieldtype': u'HTML',
 		'label': u'History HTML',
 		'permlevel': 0
-	},
-
-	# DocField
-	{
-		'colour': u'White:FFF',
-		u'doctype': u'DocField',
-		'fieldname': u'trash_reason',
-		'fieldtype': u'Small Text',
-		'label': u'Trash Reason',
-		'oldfieldname': u'trash_reason',
-		'oldfieldtype': u'Small Text',
-		'permlevel': 1
 	},
 
 	# DocPerm

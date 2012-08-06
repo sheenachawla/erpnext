@@ -26,11 +26,11 @@ from webnotes.model.controller import DocListController
 class CustomerController(DocListController):
 	def autoname(self):
 		if get_defaults('cust_master_name') == 'Customer Name':
+			# TODO: Allow creation of such a supplier
 			if webnotes.conn.exists('Supplier', self.doc.customer):
 				msgprint("You already have a Supplier with same name, \
-					please change the customer name", raise_exception=1)
-			else:
-				self.doc.name = self.doc.customer_name
+					please change the customer name", raise_exception=webnotes.NameError)
+			self.doc.name = self.doc.customer_name
 		else:
 			self.doc.name = make_autoname(self.doc.naming_series+'.#####')
 
@@ -57,8 +57,8 @@ class CustomerController(DocListController):
 			create customer account head, parent as per 
 			receivable group mentioned in company master
 		"""
-		for comp in webnotes.conn.sql("select name, abbr from `tabCompany`", as_dict=1):
-			if not webnotes.conn.exists('Account', self.doc.name+" - "+comp['abbr']):
+		for comp in webnotes.conn.sql("select name from `tabCompany`", as_dict=1):
+			if not webnotes.conn.exists('Account', {"account_name": self.doc.name, "company": comp}):
 				ac = get_obj('GL Control').add_ac(cstr({
 					'account_name':self.doc.name,
 					'parent_account': self.get_receivables_group(comp['name']), 
@@ -72,7 +72,8 @@ class CustomerController(DocListController):
 	def get_receivables_group(self, company):
 		rg = webnotes.conn.get_value('Company', company, 'receivables_group')
 		if not rg:
-			msgprint("Assign a default group for Receivables in company: %s" % company, raise_exception=1)
+			msgprint("Assign a default group for Receivables in company: %s" % \
+				company, raise_exception=webnotes.MandatoryError)
 		return rg
 
 	def update_credit_days_limit(self):
@@ -86,7 +87,7 @@ class CustomerController(DocListController):
 		""" Create address and contact from lead details"""
 		if self.doc.lead_name:
 			lead_details = webnotes.conn.sql("""
-				select name, lead_name, address_line1, address_line2, city, 
+				select lead_name, address_line1, address_line2, city, 
 					country, state, pincode, phone, mobile_no, fax, email_id 
 				from `tabLead` where name = %s
 			""", self.doc.lead_name, as_dict = 1)[0]
@@ -102,32 +103,33 @@ class CustomerController(DocListController):
 			})
 			
 			# create address
-			webnotes.model.insert_variants(lead_details, [{'doctype': 'Address'}], ignore_fields=1)			
-			# create contact
-			#self.create_doc('Contact', lead_details)
+			self.create_doc('Address', lead_details, self.doc.name + "-Office")
 			
+			# create contact
+			self.create_doc('Contact', lead_details, lead_details['lead_name'])
+			
+	def create_doc(self, dt, values, dn):
+		if not webnotes.conn.exists(dt, dn):
+			webnotes.model.insert_variants(values, [{'doctype': dt}], ignore_fields=1)
 	
 	def on_trash(self):
 		self.delete_customer_address_and_contact()
 		self.delete_customer_communication()
 		self.delete_customer_account()
-		self.update_lead_status('Interested')
+		self.update_lead_status('Open')
 			
 	def delete_customer_address_and_contact(self):
 		for dt in ['Address', 'Contact']:
-			webnotes.conn.sql("delete from `tab%s` where customer=%s" % ('%s', self.doc.name), dt)
+			webnotes.model.delete_doc(dt, webnotes.conn.get_value(dt, {"customer": self.doc.name}))
 
 	def delete_customer_communication(self):
-		webnotes.conn.webnotes.conn.sql("""delete from `tabCommunication`
-			where customer = %s and supplier is null""", self.doc.name)
+		webnotes.conn.sql("""delete from `tabCommunication` where customer = %s""", self.doc.name)
 
 	def delete_customer_account(self):
 		"""delete customer's ledger if exist and check balance before deletion"""
-		acc = sql("select name from `tabAccount` where master_type = 'Customer' \
-			and master_name = %s", self.doc.name)
+		acc = webnotes.conn.get_value("Account", {"master_type": "Customer", "master_name": self.doc.name})
 		if acc:
-			from webnotes.model import delete_doc
-			delete_doc('Account', acc[0][0])
+			webnotes.model.delete_doc('Account', acc)
 			
 	def on_rename(self,newdn,olddn):
 		"""
@@ -135,10 +137,15 @@ class CustomerController(DocListController):
 			if customer id is set by customer name
 		"""
 		if get_defaults().get('cust_master_name') == 'Customer Name':
-			for dt in sql("select parent from `tabDocField` \
-				where fieldname = 'customer_name' and parent != 'Customer'"):
-				sql("update `tab%s` set customer_name = %s where customer = %s" % (dt, '%s', '%s'), newdn, olddn)
+			dt_list = webnotes.conn.sql("""
+				select dt.name from `tabDocField` df, `tabDocType` dt
+				where df.fieldname = 'customer_name' and df.parent != 'Customer'
+				and df.parent = dt.name and ifnull(dt.issingle, 0)=0
+			""")
+			for dt in dt_list:
+				webnotes.conn.sql("update `tab%s` set customer_name = %s \
+					where customer_name = %s" % (dt[0], '%s', '%s'), (newdn, olddn))
 
 		#update new master_name in customer account
-		webnotes.conn.sql("update `tabAccount` set master_name = %s, master_type = 'Customer' \
-			where master_name = '%s'", (newdn,olddn))
+		webnotes.conn.sql("update `tabAccount` set master_name = %s \
+			where master_name = %s", (newdn,olddn))
