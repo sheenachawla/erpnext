@@ -35,7 +35,8 @@ class DocType:
 		
 		# clear web cache
 		import website.web_cache
-		website.web_cache.refresh_cache(build=['Blog'])
+		#website.web_cache.refresh_cache(build=['Blog'])
+		website.web_cache.refresh_cache()
 
 		from webnotes.session_cache import clear_cache
 		clear_cache('Guest')

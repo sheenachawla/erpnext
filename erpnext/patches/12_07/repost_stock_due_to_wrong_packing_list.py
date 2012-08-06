@@ -1,31 +1,54 @@
 from __future__ import unicode_literals
-def repost_reserved_qty():
-	import webnotes
-	bins = webnotes.conn.sql("select item_code, warehouse, name, reserved_qty from `tabBin`")
-	for d in bins:
-		reserved_qty = webnotes.conn.sql("""
-			select sum((dnpi.qty/so_item.qty)*(so_item.qty - ifnull(so_item.delivered_qty, 0))), so.transaction_date 
-			
-			from `tabDelivery Note Packing Item` dnpi, `tabSales Order Item` so_item, `tabSales Order` so
-			
-			where dnpi.parent = so.name
-			and so_item.parent = so.name
-			and dnpi.parenttype = 'Sales Order'
-			and dnpi.parent_detail_docname = so_item.name
-			and dnpi.parent_item = so_item.item_code
-			and so.docstatus = 1
-			and so.status != 'Stopped'
-			and dnpi.item_code = %s
-			and dnpi.warehouse = %s
-		""", (d[0], d[1]))
-		if flt(d[3]) != flt(reserved_qty[0][0]):
-			print d, reserved_qty
-		#webnotes.conn.sql("""
-		#	update `tabBin` set reserved_qty = %s where name = %s
-		#""", (reserved_qty and reserved_qty[0][0] or 0, d[2]))
-		
-repost_reserved_qty()
+import webnotes
 
+def execute():
+	# add index
+	webnotes.conn.commit()
+	try:
+		webnotes.conn.sql("""create index item_code_warehouse
+			on `tabDelivery Note Packing Item` (item_code, warehouse)""")
+	except:
+		pass
+	webnotes.conn.begin()
+
+	repost_reserved_qty()
+	cleanup_wrong_sle()
+
+def repost_reserved_qty():
+	from webnotes.utils import flt
+	bins = webnotes.conn.sql("select item_code, warehouse, name, reserved_qty from `tabBin`")
+	i = 0
+	for d in bins:
+		i += 1
+		print i
+		reserved_qty = webnotes.conn.sql("""
+			select sum((dnpi_qty / so_item_qty) * (so_item_qty - so_item_delivered_qty))
+			from (select
+			qty as dnpi_qty,
+			(
+				select qty from `tabSales Order Item`
+				where name = dnpi.parent_detail_docname
+			) as so_item_qty,
+			(
+				select ifnull(delivered_qty, 0) from `tabSales Order Item`
+				where name = dnpi.parent_detail_docname
+			) as so_item_delivered_qty
+			from 
+			(
+				select qty, parent_detail_docname
+				from `tabDelivery Note Packing Item` dnpi_in
+				where item_code = %s and warehouse = %s
+				and parenttype="Sales Order"
+				and exists (select * from `tabSales Order` so
+				where name = dnpi_in.parent and docstatus = 1 and status != 'Stopped')
+			) dnpi) tab""", (d[0], d[1]))
+
+		if flt(d[3]) != flt(reserved_qty[0][0]):
+			print d[3], reserved_qty[0][0]
+			webnotes.conn.sql("""
+				update `tabBin` set reserved_qty = %s where name = %s
+			""", (reserved_qty and reserved_qty[0][0] or 0, d[2]))
+		
 def cleanup_wrong_sle():
 	sle = webnotes.conn.sql("""
 		select item_code, warehouse, voucher_no, name
@@ -45,17 +68,14 @@ def cleanup_wrong_sle():
 	""")
 	if sle:
 		print sle
-	# for d in sle:
-	# 	webnotes.conn.sql("update `tabStock Ledger Entry` set is_cancelled = 'Yes' where name = %s", d[3])
-	# 	create_comment(d[3])
-	# 	repost_bin(d[0], d[1])
+		for d in sle:
+			webnotes.conn.sql("update `tabStock Ledger Entry` set is_cancelled = 'Yes' where name = %s", d[3])
+			create_comment(d[3])
+			repost_bin(d[0], d[1])
 	
 def create_comment(dn):
 	from webnotes.model.doc import Document
 	cmt = Document('Comment')
-	for arg in ['comment', 'comment_by', 'comment_by_fullname', 'comment_doctype', \
-		'comment_docname']:
-		cmt.fields[arg] = args[arg]
 	cmt.comment = 'Cancelled by administrator due to wrong entry in packing list'
 	cmt.comment_by = 'Administrator'
 	cmt.comment_by_fullname = 'Administrator'
@@ -70,8 +90,3 @@ def repost_bin(item, wh):
 		where item_code = %s and warehouse = %s", (item, wh))
 			
 	get_obj('Bin', bin[0][0]).update_entries_after(posting_date = '2012-07-01', posting_time = '12:05')
-	
-	
-def execute():
-	repost_reserved_qty()
-	cleanup_wrong_sle()

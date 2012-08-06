@@ -136,6 +136,10 @@ patch_dict = {
 		'drop_rename_tool',
 		'deprecate_bulk_rename',
 		'unicode_conf',
+		'sync_trial_balance',
+		'blog_guest_permission',
+		'bin_permission',
+		'project_patch_repeat',
+		'repost_stock_due_to_wrong_packing_list'
 	],
-
 }

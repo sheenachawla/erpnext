@@ -69,6 +69,7 @@ class SupportMailbox(POP3Mailbox):
 			if re_result and re_result[0]: email_id = re_result[0]
 		
 		from webnotes.utils import decode_email_header
+		
 		full_email_id = decode_email_header(mail.mail['From'])
 
 		for thread_id in thread_list:
@@ -100,7 +101,9 @@ class SupportMailbox(POP3Mailbox):
 		from webnotes.model.doc import Document
 		d = Document('Support Ticket')
 		d.description = content
-		d.subject = mail.mail['Subject']
+		
+		d.subject = decode_email_header(mail.mail['Subject'])
+		
 		d.raised_by = full_email_id
 		d.content_type = content_type
 		d.status = 'Open'

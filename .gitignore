@@ -13,3 +13,6 @@ public/files
 public/backups
 public/css/wn-web.css
 public/js/wn-web.js
+backups
+files
+logs
