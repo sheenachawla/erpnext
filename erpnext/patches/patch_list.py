@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import unicode_literals
+<<<<<<< HEAD
 patch_dict = {
 	'00_00' : [
 		'update_patch_log',
@@ -136,6 +137,10 @@ patch_dict = {
 		'drop_rename_tool',
 		'deprecate_bulk_rename',
 		'unicode_conf',
+		'sync_trial_balance',
+		'blog_guest_permission',
+		'bin_permission',
+		'project_patch_repeat',
+		'repost_stock_due_to_wrong_packing_list'
 	],
-
 }

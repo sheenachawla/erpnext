@@ -35,6 +35,8 @@ def get_blog_list(args=None):
 		from webnotes.utils import global_date_format, get_fullname
 		res['full_name'] = get_fullname(res['owner'])
 		res['published'] = global_date_format(res['published'])
+		if not res['content']:
+			res['content'] = website.web_cache.get_html(res['name'])
 		res['content'] = split_blog_content(res['content'])
 		res['content'] = res['content'][:1000]
 
@@ -54,7 +56,7 @@ def get_recent_blog_list(args=None):
 	if not args: args = webnotes.form_dict
 	
 	query = """\
-		select name, title, left(content, 100) as content
+		select name, page_name, title, left(content, 100) as content
 		from tabBlog
 		where ifnull(published,0)=1 and
 		name!=%(name)s order by creation desc"""
@@ -95,9 +97,6 @@ def add_comment(args=None):
 	website.web_cache.clear_cache(args.get('page_name'),
 		args.get('comment_doctype'), args.get('comment_docname'))
 	
-	# loads fresh blog into cache
-	get_blog_content(args.get('page_name'))
-	
 	import webnotes.utils
 	
 	comment['comment_date'] = webnotes.utils.pretty_date(comment['creation'])
@@ -108,6 +107,25 @@ def add_comment(args=None):
 
 	return comment_html
 
+@webnotes.whitelist(allow_guest=True)
+def add_subscriber():
+	"""add blog subscriber to lead"""
+	full_name = webnotes.form_dict.get('your_name')
+	email = webnotes.form_dict.get('your_email_address')
+	name = webnotes.conn.sql("""select name from tabLead where email_id=%s""", email)
+	
+	from webnotes.model.doc import Document
+	if name:
+		lead = Document('Lead', name[0][0])
+	else:
+		lead = Document('Lead')
+		
+	lead.unsubscribed = 0
+	lead.blog_subscriber = 1
+	lead.lead_name = full_name
+	lead.email_id = email
+	lead.save()
+		
 def get_blog_content(blog_page_name):
 	import website.web_cache
 	content = website.web_cache.get_html(blog_page_name)

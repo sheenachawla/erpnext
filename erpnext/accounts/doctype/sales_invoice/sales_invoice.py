@@ -193,6 +193,7 @@ class DocType(TransactionBase):
 			if ret['warehouse']:
 				actual_qty = webnotes.conn.sql("select actual_qty from `tabBin` where item_code = '%s' and warehouse = '%s'" % (args['item_code'], ret['warehouse']))
 				ret['actual_qty']= actual_qty and flt(actual_qty[0][0]) or 0
+			msgprint(ret)
 		return ret
 
 	def get_barcode_details(self, barcode):
@@ -360,14 +361,13 @@ class DocType(TransactionBase):
 
 	def so_dn_required(self):
 		"""check in manage account if sales order / delivery note required or not."""
-		dict = {'Sales Order':'so_required','Delivery Note':'dn_required'}
-		for i in dict:	
-			res = webnotes.conn.sql("select value from `tabSingles` where doctype = 'Global Defaults' and field = '%s'"%dict[i])
-			if res and res[0][0] == 'Yes':
+		dic = {'Sales Order':'so_required','Delivery Note':'dn_required'}
+		for i in dic:	
+			if webnotes.conn.get_value('Global Defaults', 'Global Defaults', dic[i]) == 'Yes':
 				for d in getlist(self.doclist,'entries'):
-					if not d.fields[i.lower().replace(' ','_')]:
-						msgprint("%s No. required against item %s"%(i,d.item_code))
-						raise Exception
+					if webnotes.conn.get_value('Item', d.item_code, 'is_stock_item') == 'Yes' \
+						and not d.fields[i.lower().replace(' ','_')]:
+						msgprint("%s is mandatory for stock item which is not mentioed against item: %s"%(i,d.item_code), raise_exception=1)
 
 
 	def validate_proj_cust(self):
@@ -632,7 +632,6 @@ class DocType(TransactionBase):
 			sales_com_obj.update_prevdoc_detail(0,self)
 
 		self.make_gl_entries(is_cancel=1)
-
 
 	# Get Warehouse
 	def get_warehouse(self):
