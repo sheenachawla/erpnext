@@ -15,7 +15,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import unicode_literals
-<<<<<<< HEAD
 patch_dict = {
 	'00_00' : [
 		'update_patch_log',

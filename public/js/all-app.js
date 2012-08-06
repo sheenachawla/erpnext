@@ -764,15 +764,9 @@ LinkField.prototype.set_input_value=function(val){var me=this;me.set_input_value
 if(cur_frm){if(val==locals[me.doctype][me.docname][me.df.fieldname]){me.run_trigger();return;}}
 me.set(val);if(_f.cur_grid_cell)
 _f.cur_grid_cell.grid.cell_deselect();if(locals[me.doctype][me.docname][me.df.fieldname]&&!val){me.run_trigger();return;}
-<<<<<<< HEAD
 me.validate_link(val);}
 LinkField.prototype.validate_link=function(val){var me=this;var fetch='';if(cur_frm.fetch_dict[me.df.fieldname])
 fetch=cur_frm.fetch_dict[me.df.fieldname].columns.join(', ');$c('webnotes.widgets.form.utils.validate_link',{'value':val,'options':me.df.options,'fetch':fetch},function(r,rt){if(r.message=='Ok'){if($(me.txt).val()!=val){if((me.grid&&!me.dialog_fired)||(!me.grid)){$(me.txt).val(val);}}
-=======
-if(val){me.validate_link(val,from_selector);}}
-LinkField.prototype.validate_link=function(val,from_selector){var me=this;var fetch='';if(cur_frm.fetch_dict[me.df.fieldname])
-fetch=cur_frm.fetch_dict[me.df.fieldname].columns.join(', ');$c('webnotes.widgets.form.utils.validate_link',{'value':val,'options':me.df.options,'fetch':fetch},function(r,rt){if(r.message=='Ok'){if($(me.txt).val()!=val){if((me.grid&&!from_selector)||(!me.grid)){$(me.txt).val(val);}}
->>>>>>> unicode
 if(r.fetch_values)
 me.set_fetch_values(r.fetch_values);me.run_trigger();}else{var astr='';if(in_list(profile.can_create,me.df.options))astr=repl('<br><br><span class="link_type" onclick="newdoc(\'%(dt)s\')">Click here</span> to create a new %(dtl)s',{dt:me.df.options,dtl:get_doctype_label(me.df.options)})
 msgprint(repl('error:<b>%(val)s</b> is not a valid %(dt)s.<br><br>You must first create a new %(dt)s <b>%(val)s</b> and then select its value. To find an existing %(dt)s, click on the magnifying glass next to the field.%(add)s',{val:me.txt.value,dt:get_doctype_label(me.df.options),add:astr}));me.txt.value='';me.set('');}});}
@@ -1577,15 +1571,9 @@ LinkField.prototype.set_input_value=function(val){var me=this;me.set_input_value
 if(cur_frm){if(val==locals[me.doctype][me.docname][me.df.fieldname]){me.run_trigger();return;}}
 me.set(val);if(_f.cur_grid_cell)
 _f.cur_grid_cell.grid.cell_deselect();if(locals[me.doctype][me.docname][me.df.fieldname]&&!val){me.run_trigger();return;}
-<<<<<<< HEAD
 me.validate_link(val);}
 LinkField.prototype.validate_link=function(val){var me=this;var fetch='';if(cur_frm.fetch_dict[me.df.fieldname])
 fetch=cur_frm.fetch_dict[me.df.fieldname].columns.join(', ');$c('webnotes.widgets.form.utils.validate_link',{'value':val,'options':me.df.options,'fetch':fetch},function(r,rt){if(r.message=='Ok'){if($(me.txt).val()!=val){if((me.grid&&!me.dialog_fired)||(!me.grid)){$(me.txt).val(val);}}
-=======
-if(val){me.validate_link(val,from_selector);}}
-LinkField.prototype.validate_link=function(val,from_selector){var me=this;var fetch='';if(cur_frm.fetch_dict[me.df.fieldname])
-fetch=cur_frm.fetch_dict[me.df.fieldname].columns.join(', ');$c('webnotes.widgets.form.utils.validate_link',{'value':val,'options':me.df.options,'fetch':fetch},function(r,rt){if(r.message=='Ok'){if($(me.txt).val()!=val){if((me.grid&&!from_selector)||(!me.grid)){$(me.txt).val(val);}}
->>>>>>> unicode
 if(r.fetch_values)
 me.set_fetch_values(r.fetch_values);me.run_trigger();}else{var astr='';if(in_list(profile.can_create,me.df.options))astr=repl('<br><br><span class="link_type" onclick="newdoc(\'%(dt)s\')">Click here</span> to create a new %(dtl)s',{dt:me.df.options,dtl:get_doctype_label(me.df.options)})
 msgprint(repl('error:<b>%(val)s</b> is not a valid %(dt)s.<br><br>You must first create a new %(dt)s <b>%(val)s</b> and then select its value. To find an existing %(dt)s, click on the magnifying glass next to the field.%(add)s',{val:me.txt.value,dt:get_doctype_label(me.df.options),add:astr}));me.txt.value='';me.set('');}});}
@@ -2148,19 +2136,12 @@ cur_frm.fields_dict[n].comment_area.innerHTML=replace_newlines(txt);else
 errprint('[set_field_tip] Unable to set field tip: '+n);}}
 refresh_field=function(n,docname,table_field){if(typeof n==typeof[])refresh_many(n,docname,table_field);if(table_field){if(_f.frm_dialog&&_f.frm_dialog.display){_f.frm_dialog.cur_frm.refresh_field(n);}else{var g=_f.cur_grid_cell;if(g)var hc=g.grid.head_row.cells[g.cellIndex];if(g&&hc&&hc.fieldname==n&&g.row.docname==docname){hc.template.refresh();}else{cur_frm.fields_dict[table_field].grid.refresh_cell(docname,n);}}}else if(cur_frm){cur_frm.refresh_field(n)}}
 set_field_options=function(n,txt){cur_frm.set_df_property(n,'options',txt)}
-<<<<<<< HEAD
 set_field_permlevel=function(n,level){if($.isArray(n)){$.each(n,function(i,v){cur_frm.set_df_property(v,'permlevel',level);});}else{cur_frm.set_df_property(n,'permlevel',level);}}
-hide_field=function(n){if(typeof n=='string')n=[n];for(var i in n)cur_frm.set_df_property(n,'hidden',1);}
-unhide_field=function(n){if(typeof n=='string')n=[n];for(var i in n)cur_frm.set_df_property(n,'hidden',0);}
-=======
-set_field_permlevel=function(n,level){cur_frm.set_df_property(n,'permlevel',level)}
 toggle_field=function(n,hidden){var df_obj=get_field_obj(n);var df=Meta.get_field(cur_frm.doctype,n,cur_frm.docname);if(df){if(df_obj.df.fieldtype==="Section Break"){$(df_obj.row.wrapper).toggle(hidden?false:true);}else if(df_obj.df.fieldtype==="Column Break"){$(df_obj.cell.wrapper).toggle(hidden?false:true);}else{df.hidden=hidden;refresh_field(n);}}
 else{console.log((hidden?"hide_field":"unhide_field")+" cannot find field "+n);}}
-hide_field=function(n){if(cur_frm){if(n.substr)toggle_field(n,1);else{for(var i in n)toggle_field(n[i],1)}}}
-unhide_field=function(n){if(cur_frm){if(n.substr)toggle_field(n,0);else{for(var i in n)toggle_field(n[i],0)}}}
-get_field_obj=function(fn){return cur_frm.fields_dict[fn];}
+hide_field=function(n){if(typeof n=='string')n=[n];for(var i in n)cur_frm.set_df_property(n,'hidden',1);}
+unhide_field=function(n){if(typeof n=='string')n=[n];for(var i in n)cur_frm.set_df_property(n,'hidden',0);}
 set_missing_values=function(doc,dict){var fields_to_set={};$.each(dict,function(i,v){if(!doc[i]){fields_to_set[i]=v;}});if(fields_to_set){set_multiple(doc.doctype,doc.name,fields_to_set);}}
->>>>>>> unicode
 /*
  *	lib/js/legacy/widgets/form/form_comments.js
  */
