@@ -16,11 +16,11 @@
 
 from __future__ import unicode_literals
 patch_dict = {
-	'00_00' : [
+	'00_00': [
 		'update_patch_log',
 	],
 	
-	'12_03'	:	[
+	'12_03': [
 		'stable_branch_shift_09_01_12',
 		'print_hide_totals',
 		'rename_doctype_indent',
@@ -73,7 +73,7 @@ patch_dict = {
 		'usertags',
 	],
 	
-	'12_04'	:	[
+	'12_04': [
 		'reload_c_form',
 		'after_sync_cleanup',
 		'change_cacheitem_schema',
@@ -87,7 +87,7 @@ patch_dict = {
 		'delete_about_contact',
 	],
 	
-	'12_05'	:	[
+	'12_05': [
 		'cleanup_property_setter',		
 		'rename_prev_doctype',
 		'cleanup_notification_control',
@@ -109,7 +109,7 @@ patch_dict = {
 		'remove_communication_log',
 	],
 	
-	'12_06'	: [
+	'12_06': [
 		'fetch_organization_from_lead',
 		'copy_uom_for_pur_inv_item',
 		'barcode_in_feature_setup',	
@@ -123,7 +123,7 @@ patch_dict = {
 		'cms2'
 	],
 	
-	'12_07' : [
+	'12_07': [
 		'reload_pr_po_mapper',
 		'address_contact_perms',
 		'packing_list_cleanup_and_serial_no',
@@ -140,6 +140,10 @@ patch_dict = {
 		'blog_guest_permission',
 		'bin_permission',
 		'project_patch_repeat',
-		'repost_stock_due_to_wrong_packing_list'
+		'repost_stock_due_to_wrong_packing_list',
+		'supplier_quotation'
+	],
+	'12_08': [
+		'report_supplier_quotations'
 	],
 }
