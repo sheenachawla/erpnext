@@ -18,7 +18,6 @@ wn.require('erpnext/setup/doctype/contact_control/contact_control.js');
 wn.require('erpnext/support/doctype/communication/communication.js');
 
 cur_frm.cscript.onload = function(doc,dt,dn){
-
 	// history doctypes and scripts
 	cur_frm.history_dict = {
 		'Purchase Order' : 'cur_frm.cscript.make_po_list(this.body, this.doc)',
@@ -26,27 +25,20 @@ cur_frm.cscript.onload = function(doc,dt,dn){
 		'Purchase Invoice' : 'cur_frm.cscript.make_pi_list(this.body, this.doc)'
 	}
 	
-	// make contact, history list body
-	//cur_frm.cscript.make_cl_body();
+	// make communication, history list body
 	cur_frm.cscript.make_hl_body();
 	cur_frm.cscript.make_communication_body();
 }
 
 cur_frm.cscript.refresh = function(doc,dt,dn) {
-  if(sys_defaults.supp_master_name == 'Supplier Name')
-    hide_field('naming_series');
-  else
-    unhide_field('naming_series'); 
+	cur_frm.toggle_display('naming_series', (sys_defaults.supp_master_name != 'Supplier Name'));
+	cur_frm.toggle_display(['address_html','contact_html'], !doc.__islocal);
     
-  if(doc.__islocal){
-    	hide_field(['address_html','contact_html']); 
-   }
-  else{
-	  	unhide_field(['address_html','contact_html']);
+	if(!doc.__islocal){
 		// make lists
 		cur_frm.cscript.make_address(doc,dt,dn);
 		cur_frm.cscript.make_contact(doc,dt,dn);
-		cur_frm.cscript.render_communication_list(doc, cdt, cdn);
+		cur_frm.cscript.render_communication_list(doc, dt, dn);
 		cur_frm.cscript.make_history(doc,dt,dn);
   }
 }
@@ -58,7 +50,10 @@ cur_frm.cscript.make_address = function() {
 			page_length: 2,
 			new_doctype: "Address",
 			get_query: function() {
-				return "select name, address_type, address_line1, address_line2, city, state, country, pincode, fax, email_id, phone, is_primary_address, is_shipping_address from tabAddress where supplier='"+cur_frm.docname+"' and docstatus != 2 order by is_primary_address desc"
+				return "select name, address_type, address_line1, address_line2, city, \
+				state, country, pincode, fax, email_id, phone, is_primary_address, \
+				is_shipping_address from tabAddress where supplier='"+cur_frm.docname+"' \
+				and docstatus != 2 order by is_primary_address desc"
 			},
 			as_dict: 1,
 			no_results_message: 'No addresses created',
@@ -76,7 +71,10 @@ cur_frm.cscript.make_contact = function() {
 			page_length: 2,
 			new_doctype: "Contact",
 			get_query: function() {
-				return "select name, first_name, last_name, email_id, phone, mobile_no, department, designation, is_primary_contact from tabContact where supplier='"+cur_frm.docname+"' and docstatus != 2 order by is_primary_contact desc"
+				return "select name, first_name, last_name, email_id, phone, mobile_no, \
+				department, designation, is_primary_contact from tabContact \
+				where supplier='"+cur_frm.docname+"' and docstatus != 2 \
+				order by is_primary_contact desc"
 			},
 			as_dict: 1,
 			no_results_message: 'No contacts created',
@@ -91,88 +89,70 @@ cur_frm.cscript.make_contact = function() {
 // Transaction History
 
 cur_frm.cscript.make_po_list = function(parent, doc) {
-	var ListView = wn.views.ListView.extend({
-		init: function(doclistview) {
-			this._super(doclistview);
-			this.fields = this.fields.concat([
-				"`tabPurchase Order`.status",
-				"`tabPurchase Order`.currency",
-				"ifnull(`tabPurchase Order`.grand_total_import, 0) as grand_total_import",
-				
-			]);
-		},
-
-		prepare_data: function(data) {
-			this._super(data);
-			data.grand_total_import = data.currency + " " + fmt_money(data.grand_total_import);
-		},
-
-		columns: [
-			{width: '3%', content: 'docstatus'},
-			{width: '20%', content: 'name'},
-			{width: '30%', content: 'status',
-				css: {'text-align': 'right', 'color': '#777'}},
-			{width: '35%', content: 'grand_total_import', css: {'text-align': 'right'}},
-			{width: '12%', content:'modified', css: {'text-align': 'right'}}
-		],
-	});
-	
-	cur_frm.cscript.render_list(doc, 'Purchase Order', parent, ListView);
+	flds = [
+		"`tabPurchase Order`.status",
+		"`tabPurchase Order`.currency",
+		"ifnull(`tabPurchase Order`.grand_total_import, 0) as grand_total_import",		
+	]
+	cols_data = [
+		{width: '3%', content: 'docstatus'},
+		{width: '20%', content: 'name'},
+		{width: '30%', content: 'status',
+			css: {'text-align': 'right', 'color': '#777'}},
+		{width: '35%', content: 'grand_total_import', css: {'text-align': 'right'}},
+		{width: '12%', content:'modified', css: {'text-align': 'right'}}
+	]
+	cur_frm.cscript.make_history(parent, doc, 'Purchase Order', flds, cols_data);
 }
 
 cur_frm.cscript.make_pr_list = function(parent, doc) {
-	var ListView = wn.views.ListView.extend({
-		init: function(doclistview) {
-			this._super(doclistview);
-			this.fields = this.fields.concat([
-				"`tabPurchase Receipt`.status",
-				"`tabPurchase Receipt`.currency",
-				"ifnull(`tabPurchase Receipt`.grand_total_import, 0) as grand_total_import",
-				"ifnull(`tabPurchase Receipt`.per_billed, 0) as per_billed",
-			]);
-		},
-
-		prepare_data: function(data) {
-			this._super(data);
-			data.grand_total_import = data.currency + " " + fmt_money(data.grand_total_import);
-		},
-
-		columns: [
-			{width: '3%', content: 'docstatus'},
-			{width: '20%', content: 'name'},
-			{width: '20%', content: 'status',
-				css: {'text-align': 'right', 'color': '#777'}},
-			{width: '35%', content: 'grand_total_import', css: {'text-align': 'right'}},
-			{width: '10%', content: 'per_billed', type: 'bar-graph', label: 'Billed'},
-			{width: '12%', content:'modified', css: {'text-align': 'right'}}
-		],
-	});
+	flds = [
+		"`tabPurchase Receipt`.status",
+		"`tabPurchase Receipt`.currency",
+		"ifnull(`tabPurchase Receipt`.grand_total_import, 0) as grand_total_import",
+		"ifnull(`tabPurchase Receipt`.per_billed, 0) as per_billed",
+	]
+	cols_data = [
+		{width: '3%', content: 'docstatus'},
+		{width: '20%', content: 'name'},
+		{width: '20%', content: 'status',
+			css: {'text-align': 'right', 'color': '#777'}},
+		{width: '35%', content: 'grand_total_import', css: {'text-align': 'right'}},
+		{width: '10%', content: 'per_billed', type: 'bar-graph', label: 'Billed'},
+		{width: '12%', content:'modified', css: {'text-align': 'right'}}
+	]
 	
-	cur_frm.cscript.render_list(doc, 'Purchase Receipt', parent, ListView);
+	cur_frm.cscript.make_history(parent, doc, 'Purchase Receipt', flds, cols_data);
 }
 
 cur_frm.cscript.make_pi_list = function(parent, doc) {
+	flds = [
+		"`tabPurchase Invoice`.currency", 
+		"ifnull(`tabPurchase Invoice`.grand_total_import, 0) as grand_total_import"
+	]
+	cols_data = [
+		{width: '3%', content: 'docstatus'},
+		{width: '30%', content: 'name'},
+		{width: '55%', content: 'grand_total_import', css: {'text-align': 'right'}},
+		{width: '12%', content:'modified', css: {'text-align': 'right'}}
+	]
+	cur_frm.cscript.make_history(parent, doc, 'Purchase Invoice', flds, cols_data);
+}
+
+cur_frm.cscript.make_history = function(parent, doc, dt, flds, cols_data) {
 	var ListView = wn.views.ListView.extend({
 		init: function(doclistview) {
 			this._super(doclistview);
-			this.fields = this.fields.concat([
-				"`tabPurchase Invoice`.currency",
-				"ifnull(`tabPurchase Invoice`.grand_total_import, 0) as grand_total_import",
-			]);
+			this.fields = this.fields.concat(flds);
 		},
 
 		prepare_data: function(data) {
 			this._super(data);
 			data.grand_total_import = data.currency + " " + fmt_money(data.grand_total_import);
 		},
-
-		columns: [
-			{width: '3%', content: 'docstatus'},
-			{width: '30%', content: 'name'},
-			{width: '55%', content: 'grand_total_import', css: {'text-align': 'right'}},
-			{width: '12%', content:'modified', css: {'text-align': 'right'}}
-		],
+		
+		columns: cols_data,
 	});
 	
-	cur_frm.cscript.render_list(doc, 'Purchase Invoice', parent, ListView);
+	cur_frm.cscript.render_list(doc, dt, parent, ListView);
 }
