@@ -32,7 +32,7 @@ stages = {
 		"tests": [
 			"stock.doctype.item.test_item",
 			"selling.doctype.customer.test_customer",
-			#"buying.doctype.supplier.test_supplier",
+			"buying.doctype.supplier.test_supplier",
 		],
 	}
 }
@@ -89,5 +89,5 @@ def test_stage(stage):
 			test_suite.addTest(unittest.TestLoader().loadTestsFromModule(module))
 		return test_suite
 	
-	verbosity = 1
+	verbosity = 2
 	unittest.TextTestRunner(verbosity=verbosity).run(_load_test_suite())
