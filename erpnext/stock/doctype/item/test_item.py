@@ -27,39 +27,22 @@ base_item_group = {
 
 base_item = {
 	'doctype': 'Item', 'item_name': 'test_item', 
-	'item_code': 'test_item', 'item_group': 'Default', 'is_stock_item': 'Yes', 
+	'item_code': 'test_item', 'item_group': 'Home Series', 'is_stock_item': 'Yes', 
 	'has_serial_no': 'No', 'stock_uom': 'Nos', 'is_sales_item': 'Yes', 'is_purchase_item': 'Yes', 
 	'is_service_item': 'No'
 }
 
 def make_item_groups():
-	webnotes.model.insert_variants(base_item_group, [
-		{"name":"Desktops", "is_group":"Yes"},
-			{"name":"Home Series", "parent_item_group":"Desktops"},
-			{"name":"Pro Series", "parent_item_group":"Desktops"},
-			{"name":"Gaming Series", "parent_item_group":"Desktops"},
-		{"name":"Laptops", "is_group":"Yes"},
-			{"name":"Designer Series", "parent_item_group":"Laptops"},
-			{"name":"Netbook Series", "parent_item_group":"Laptops"},
-			{"name":"Ultrabook Series", "parent_item_group":"Laptops"},
-		{"name":"Tablets", "is_group":"Yes"},
-			{"name":"7 inch Series", "parent_item_group":"Tablets"},
-			{"name":"8 inch Series", "parent_item_group":"Tablets"},
-			{"name":"9 inch Series", "parent_item_group":"Tablets"},
-		{"name":"Accessories", "is_group":"Yes"},
-			{"name":"Laptop Bag", "parent_item_group":"Accessories"},
-			{"name":"Tablet Cover", "parent_item_group":"Accessories"},
-			{"name":"Mouse", "parent_item_group":"Accessories"},
-			{"name":"Peripherals", "parent_item_group":"Accessories"},
-		{"name":"Services", "is_group":"Yes"},
-			{"name":"Warranty Plan", "parent_item_group":"Services"},
-			{"name":"Repairs", "parent_item_group":"Services"},
-			{"name":"Website Development", "parent_item_group":"Services"},
-	])
+	from webnotes.modules.export import get_test_doclist
+	for doclist in get_test_doclist('Item Group'):
+		webnotes.model.insert(doclist)
 		
 class TestItem(TestBase):
-	def test_item_creation(self):
+	def setUp(self):
+		TestBase.setUp(self)
 		make_item_groups()
+		
+	def test_item_creation(self):
 		webnotes.model.insert_variants(base_item, [{
 			"name":"Home Desktop 100"
 		}])
