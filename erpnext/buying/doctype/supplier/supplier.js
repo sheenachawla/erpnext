@@ -102,7 +102,7 @@ cur_frm.cscript.make_po_list = function(parent, doc) {
 		{width: '35%', content: 'grand_total_import', css: {'text-align': 'right'}},
 		{width: '12%', content:'modified', css: {'text-align': 'right'}}
 	]
-	cur_frm.cscript.make_history(parent, doc, 'Purchase Order', flds, cols_data);
+	cur_frm.cscript.make_record_list(parent, doc, 'Purchase Order', flds, cols_data);
 }
 
 cur_frm.cscript.make_pr_list = function(parent, doc) {
@@ -122,7 +122,7 @@ cur_frm.cscript.make_pr_list = function(parent, doc) {
 		{width: '12%', content:'modified', css: {'text-align': 'right'}}
 	]
 	
-	cur_frm.cscript.make_history(parent, doc, 'Purchase Receipt', flds, cols_data);
+	cur_frm.cscript.make_record_list(parent, doc, 'Purchase Receipt', flds, cols_data);
 }
 
 cur_frm.cscript.make_pi_list = function(parent, doc) {
@@ -136,10 +136,10 @@ cur_frm.cscript.make_pi_list = function(parent, doc) {
 		{width: '55%', content: 'grand_total_import', css: {'text-align': 'right'}},
 		{width: '12%', content:'modified', css: {'text-align': 'right'}}
 	]
-	cur_frm.cscript.make_history(parent, doc, 'Purchase Invoice', flds, cols_data);
+	cur_frm.cscript.make_record_list(parent, doc, 'Purchase Invoice', flds, cols_data);
 }
 
-cur_frm.cscript.make_history = function(parent, doc, dt, flds, cols_data) {
+cur_frm.cscript.make_record_list = function(parent, doc, dt, flds, cols_data) {
 	var ListView = wn.views.ListView.extend({
 		init: function(doclistview) {
 			this._super(doclistview);
