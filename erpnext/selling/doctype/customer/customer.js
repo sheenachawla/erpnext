@@ -44,7 +44,7 @@ cur_frm.cscript.load_defaults = function(doc, dt, dn) {
 }
 
 cur_frm.cscript.refresh = function(doc,dt,dn) {
-	cur_frm.toggle_display('naming_series', (sys_defaults.cust_master_name == 'Customer Name'))
+	cur_frm.toggle_display('naming_series', (sys_defaults.cust_master_name != 'Customer Name'))
 	cur_frm.toggle_display(['address_html','contact_html'], doc.__islocal);
 
 	if(!doc.__islocal){

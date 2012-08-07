@@ -102,8 +102,8 @@ class TestCustomer(TestBase):
 				"master_name": "test_customer", 
 				"debit_or_credit": "Debit", 
 				"group_or_ledger": "Ledger",
-				"credit_days": 90, 
-				"credit_limit": 100000
+				"credit_days": "90", 
+				"credit_limit": "100000"
 			})
 		)
 		
@@ -159,7 +159,6 @@ class TestCustomer(TestBase):
 	def test_customer_renaming(self):
 		webnotes.model.insert(base_customer, ignore_fields=1)
 		
-		#from webnotes.model.utils import rename
 		from webnotes.model.rename_doc import rename_doc
 		rename_doc("Customer", "test_customer", "test_customer_renamed")
 		
