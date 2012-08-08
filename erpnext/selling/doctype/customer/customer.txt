@@ -5,7 +5,7 @@
 	{
 		u'creation': '2012-07-26 13:40:14',
 		u'docstatus': 0,
-		u'modified': '2012-08-07 18:03:22',
+		u'modified': '2012-08-08 14:03:03',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -312,6 +312,17 @@
 		'fieldtype': u'Column Break',
 		'permlevel': 0,
 		'width': u'50%'
+	},
+
+	# DocField
+	{
+		'description': u'To create an Account Head under a different company, select the company and save customer.',
+		u'doctype': u'DocField',
+		'fieldname': u'company',
+		'fieldtype': u'Select',
+		'label': u'Company',
+		'options': u'link:Company',
+		'permlevel': 0
 	},
 
 	# DocField
