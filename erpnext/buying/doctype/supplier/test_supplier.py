@@ -22,7 +22,8 @@ from webnotes.tests.test_base import TestBase
 
 base_supplier = {
 	"doctype": 'Supplier', "supplier_name": "test_supplier", 
-	"default_currency": "INR", "supplier_type": "Default Supplier Type"
+	"default_currency": "INR", "supplier_type": "Default Supplier Type",
+	"company": "East Wind Corporation"
 }
 
 def make_supplier_type():
@@ -34,9 +35,8 @@ def make_supplier_type():
 class TestSupplier(TestBase):
 	def test_supplier_creation(self):
 		make_supplier_type()
-		
 		supplier = base_supplier.copy()
-		supplier.update({"supplier_name":"Apple", "supplier_type": "Electronics"})		
+		supplier.update({"supplier_name":"Apple", "supplier_type": "Electronics"})
 		webnotes.model.insert(supplier)
 		self.assertTrue(webnotes.conn.exists("Supplier", "Apple"))
 			
@@ -60,12 +60,21 @@ class TestSupplier(TestBase):
 			webnotes.conn.get_value("Account", {
 				"account_name": "test_supplier",
 				"parent_account": cust['supplier_type'] + ' - EW',
-				"master_name": "test_supplier", 
+				"supplier": "test_supplier", 
 				"debit_or_credit": "Credit", 
 				"group_or_ledger": "Ledger",
 				"credit_days": "90"
 			})
 		)
+		
+	def test_nsm_for_supplier_account(self):
+		def _get_rgt():
+			return webnotes.conn.get_value("Account", "Source of Funds (Liabilities) - EW", "rgt")
+		prev_rgt = _get_rgt()
+		webnotes.model.insert(base_supplier.copy())
+		# rgt will be incresed by 4, 2 for supplier account and 2 for supplier type account
+		self.assertEqual(_get_rgt(), prev_rgt + 4)
+
 			
 	def test_supplier_deletion(self):		
 		supp = base_supplier.copy()
@@ -87,6 +96,6 @@ class TestSupplier(TestBase):
 		self.assertTrue(webnotes.conn.exists("Supplier", "test_supplier_renamed"))
 		self.assertTrue(
 			webnotes.conn.get_value("Account", {
-				"account_name": "test_supplier", "master_name": "test_supplier_renamed"
+				"account_name": "test_supplier", "supplier": "test_supplier_renamed"
 			})
 		)

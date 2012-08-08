@@ -4,12 +4,10 @@ cur_frm.cscript.make_address = function() {
 			parent: cur_frm.fields_dict['address_html'].wrapper,
 			page_length: 2,
 			new_doctype: "Address",
-			get_query: function() {
-				return "select name, address_type, address_line1, address_line2, city, \
-				state, country, pincode, fax, email_id, phone, is_primary_address, \
-				is_shipping_address from tabAddress \
-				where "+cur_frm.doctype.toLowerCase() +"='"+cur_frm.docname+"' \
-				and docstatus != 2 order by is_primary_address desc"
+			method: "controllers.party.get_addresses",
+			args: {
+				doctype: cur_frm.doctype,
+				name: cur_frm.docname
 			},
 			as_dict: 1,
 			no_results_message: 'No addresses created',

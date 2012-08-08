@@ -33,7 +33,7 @@ base_territory = {
 base_customer = {
 	"doctype": 'Customer', "customer_name": "test_customer", "default_currency": "INR",
 	"default_price_list": "Standard", "territory": "Default Territory",
-	"customer_group": "Default Customer Group"
+	"customer_group": "Default Customer Group", "company": "East Wind Corporation"
 }
 
 def make_customer_groups():
@@ -99,13 +99,20 @@ class TestCustomer(TestBase):
 			webnotes.conn.get_value("Account", {
 				"account_name": "test_customer",
 				"parent_account": webnotes.conn.get_value("Company", "East Wind Corporation", "receivables_group"), 
-				"master_name": "test_customer", 
+				"customer": "test_customer", 
 				"debit_or_credit": "Debit", 
 				"group_or_ledger": "Ledger",
 				"credit_days": "90", 
 				"credit_limit": "100000"
 			})
 		)
+		
+	def test_nsm_for_customer_account(self):
+		def _get_rgt():
+			return webnotes.conn.get_value("Account", "Application of Funds (Assets) - EW", "rgt")
+		prev_rgt = _get_rgt()
+		webnotes.model.insert(base_customer)
+		self.assertEqual(_get_rgt(), prev_rgt + 2)
 		
 	def test_address_and_contact(self):
 		webnotes.model.insert({
@@ -166,6 +173,6 @@ class TestCustomer(TestBase):
 		self.assertTrue(webnotes.conn.exists("Customer", "test_customer_renamed"))
 		self.assertTrue(
 			webnotes.conn.get_value("Account", {
-				"account_name": "test_customer", "master_name": "test_customer_renamed"
+				"account_name": "test_customer", "customer": "test_customer_renamed"
 			})
 		)

@@ -41,10 +41,11 @@ class CustomerController(PartyController):
 			webnotes.conn.set_value('Lead', self.doc.lead_name, 'status', status)
 
 	def create_customer_ledger(self):
-		for comp in webnotes.conn.sql("select name from `tabCompany`", as_dict=1):
-			parent_account = self.get_party_group(comp['name'], 'receivables_group')
-			self.create_account({'parent_account': parent_account, 'company': comp['name']})
-		
+		self.create_account({
+			'parent_account': self.get_party_group('receivables_group'),
+			'customer': self.doc.name
+		})
+	
 	def create_address_and_contact(self):
 		""" Create address and contact from lead details"""
 		if self.doc.lead_name:
