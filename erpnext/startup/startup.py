@@ -45,6 +45,11 @@ def get_todays_events():
 		AND event_date = %s""", (
 		webnotes.session.get('user'), nowdate()))
 	return todays_events and cint(todays_events[0][0]) or 0
+
+def get_unanswered_questions():
+	return len(filter(lambda d: d[0]==0,
+		webnotes.conn.sql("""select (select count(*) from tabAnswer 
+		where tabAnswer.question = tabQuestion.name) as answers from tabQuestion""")))
 	
 @webnotes.whitelist()
 def get_global_status_messages(arg=None):

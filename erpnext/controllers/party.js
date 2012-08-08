@@ -20,19 +20,16 @@ cur_frm.cscript.make_address = function() {
 	cur_frm.address_list.run();
 }
 
-
-
 cur_frm.cscript.make_contact = function() {
 	if(!cur_frm.contact_list) {
 		cur_frm.contact_list = new wn.ui.Listing({
 			parent: cur_frm.fields_dict['contact_html'].wrapper,
 			page_length: 2,
 			new_doctype: "Contact",
-			get_query: function() {
-				return "select name, first_name, last_name, email_id, phone, mobile_no, \
-				department, designation, is_primary_contact from tabContact \
-				where "+cur_frm.doctype.toLowerCase() +"='"+cur_frm.docname+"' and docstatus != 2 \
-				order by is_primary_contact desc"
+			method: "controllers.party.get_contacts",
+			args: {
+				doctype: cur_frm.doctype,
+				name: cur_frm.docname
 			},
 			as_dict: 1,
 			no_results_message: 'No contacts created',
