@@ -143,6 +143,9 @@ patch_dict = {
 		'project_patch_repeat',
 		'repost_stock_due_to_wrong_packing_list',
 		'supplier_quotation',
+	],
+	
+	'12_08' : [
 		'report_supplier_quotations'
 	],
 }
