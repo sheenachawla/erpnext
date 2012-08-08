@@ -64,7 +64,7 @@ $.extend(cur_frm.cscript, {
 		}
 	},
 	'Installment Reciept': function(doc, dt, dn) {
-		var d = new wn.widgets.Dialog({
+		var d = new wn.ui.Dialog({
 			width: 500,
 			title: 'Add a new payment installment',
 			fields: [
