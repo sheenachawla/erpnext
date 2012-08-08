@@ -111,3 +111,13 @@ class PartyController(DocListController):
 		#update new master_name in party account
 		webnotes.conn.sql("update `tabAccount` set master_name = %s \
 			where master_name = %s", (newdn,olddn))
+			
+@webnotes.whitelist()
+def get_contacts():
+	return webnotes.conn.sql("""select name, first_name, last_name, email_id, phone, mobile_no,
+	department, designation, is_primary_contact from tabContact
+	where %s=%s and docstatus != 2
+	order by is_primary_contact desc limit %s, %s""" % (webnotes.form_dict.get('doctype').lower(), 
+		'%s', webnotes.form_dict.get("limit_start"), 
+		webnotes.form_dict.get("limit_page_length")),
+		webnotes.form_dict.get('name'), as_dict=1)

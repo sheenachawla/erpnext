@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import unicode_literals
+
 patch_dict = {
 	'00_00': [
 		'update_patch_log',
@@ -141,9 +142,11 @@ patch_dict = {
 		'bin_permission',
 		'project_patch_repeat',
 		'repost_stock_due_to_wrong_packing_list',
-		'supplier_quotation'
+		'supplier_quotation',
 	],
-	'12_08': [
+	
+	'12_08' : [
 		'report_supplier_quotations'
 	],
+
 }
