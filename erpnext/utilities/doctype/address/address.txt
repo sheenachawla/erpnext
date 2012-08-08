@@ -3,11 +3,11 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-07-02 19:57:47',
-		'docstatus': 0,
-		'modified': '2012-07-02 20:24:15',
-		'modified_by': u'Administrator',
-		'owner': u'Administrator'
+		u'creation': '2012-08-07 18:08:58',
+		u'docstatus': 0,
+		u'modified': '2012-08-07 18:09:12',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
 	},
 
 	# These values are common for all DocType
@@ -16,11 +16,11 @@
 		'allow_trash': 1,
 		'colour': u'White:FFF',
 		'default_print_format': u'Standard',
-		'doctype': 'DocType',
+		u'doctype': u'DocType',
 		'document_type': u'Master',
 		'in_dialog': 1,
 		'module': u'Utilities',
-		'name': '__common__',
+		u'name': u'__common__',
 		'search_fields': u'customer, supplier, sales_partner, country, state',
 		'section_style': u'Simple',
 		'show_in_menu': 0,
@@ -29,8 +29,8 @@
 
 	# These values are common for all DocField
 	{
-		'doctype': u'DocField',
-		'name': '__common__',
+		u'doctype': u'DocField',
+		u'name': u'__common__',
 		'parent': u'Address',
 		'parentfield': u'fields',
 		'parenttype': u'DocType'
@@ -38,8 +38,8 @@
 
 	# These values are common for all DocPerm
 	{
-		'doctype': u'DocPerm',
-		'name': '__common__',
+		u'doctype': u'DocPerm',
+		u'name': u'__common__',
 		'parent': u'Address',
 		'parentfield': u'permissions',
 		'parenttype': u'DocType',
@@ -48,128 +48,14 @@
 
 	# DocType, Address
 	{
-		'doctype': 'DocType',
-		'name': u'Address'
-	},
-
-	# DocPerm
-	{
-		'cancel': 1,
-		'create': 1,
-		'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'System Manager',
-		'write': 1
-	},
-
-	# DocPerm
-	{
-		'cancel': 1,
-		'create': 1,
-		'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'Sales Master Manager',
-		'write': 1
-	},
-
-	# DocPerm
-	{
-		'cancel': 1,
-		'create': 1,
-		'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'Purchase Master Manager',
-		'write': 1
-	},
-
-	# DocPerm
-	{
-		'cancel': 0,
-		'create': 1,
-		'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'Maintenance Manager',
-		'write': 1
-	},
-
-	# DocPerm
-	{
-		'cancel': 0,
-		'create': 1,
-		'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'Accounts Manager',
-		'write': 1
-	},
-
-	# DocPerm
-	{
-		'create': 1,
-		'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'Sales Manager',
-		'write': 1
-	},
-
-	# DocPerm
-	{
-		'create': 1,
-		'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'Purchase Manager',
-		'write': 1
-	},
-
-	# DocPerm
-	{
-		'create': 1,
-		'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'Sales User',
-		'write': 1
-	},
-
-	# DocPerm
-	{
-		'create': 1,
-		'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'Purchase User',
-		'write': 1
-	},
-
-	# DocPerm
-	{
-		'create': 1,
-		'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'Maintenance User',
-		'write': 1
-	},
-
-	# DocPerm
-	{
-		'create': 1,
-		'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'Accounts User',
-		'write': 1
-	},
-
-	# DocPerm
-	{
-		'cancel': 0,
-		'create': 0,
-		'doctype': u'DocPerm',
-		'permlevel': 1,
-		'role': u'All',
-		'write': 0
+		u'doctype': u'DocType',
+		u'name': u'Address'
 	},
 
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'address_details',
 		'fieldtype': u'Section Break',
 		'label': u'Address Details',
@@ -180,7 +66,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'<em>e.g. Office, Billing, Shipping</em>',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'address_type',
 		'fieldtype': u'Data',
 		'label': u'Address Type',
@@ -191,7 +77,7 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'address_line1',
 		'fieldtype': u'Data',
 		'label': u'Address Line1',
@@ -201,7 +87,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'address_line2',
 		'fieldtype': u'Data',
 		'label': u'Address Line2',
@@ -211,7 +97,7 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'city',
 		'fieldtype': u'Data',
 		'in_filter': 1,
@@ -223,7 +109,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'pincode',
 		'fieldtype': u'Data',
 		'in_filter': 1,
@@ -235,7 +121,7 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'country',
 		'fieldtype': u'Select',
 		'in_filter': 1,
@@ -250,7 +136,7 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'state',
 		'fieldtype': u'Data',
 		'in_filter': 1,
@@ -262,7 +148,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'column_break0',
 		'fieldtype': u'Column Break',
 		'permlevel': 0,
@@ -272,7 +158,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'phone',
 		'fieldtype': u'Data',
 		'label': u'Phone',
@@ -282,7 +168,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'email_id',
 		'fieldtype': u'Data',
 		'label': u'Email Id',
@@ -291,7 +177,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'fax',
 		'fieldtype': u'Data',
 		'in_filter': 1,
@@ -303,7 +189,7 @@
 	{
 		'colour': u'White:FFF',
 		'depends_on': u'eval:!doc.supplier && !doc.sales_partner',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'customer',
 		'fieldtype': u'Link',
 		'label': u'Customer',
@@ -315,7 +201,7 @@
 	{
 		'colour': u'White:FFF',
 		'depends_on': u'eval:!doc.supplier && !doc.sales_partner',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'customer_name',
 		'fieldtype': u'Data',
 		'in_filter': 1,
@@ -327,7 +213,7 @@
 	{
 		'colour': u'White:FFF',
 		'depends_on': u'eval:!doc.customer && !doc.sales_partner',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'supplier',
 		'fieldtype': u'Link',
 		'label': u'Supplier',
@@ -339,7 +225,7 @@
 	{
 		'colour': u'White:FFF',
 		'depends_on': u'eval:!doc.customer && !doc.sales_partner',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'supplier_name',
 		'fieldtype': u'Data',
 		'in_filter': 1,
@@ -352,7 +238,7 @@
 	{
 		'colour': u'White:FFF',
 		'depends_on': u'eval:!doc.customer && !doc.supplier',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'sales_partner',
 		'fieldtype': u'Link',
 		'label': u'Sales Partner',
@@ -365,7 +251,7 @@
 		'colour': u'White:FFF',
 		'default': u'0',
 		'description': u'Check to make primary address',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'is_primary_address',
 		'fieldtype': u'Check',
 		'label': u'Is Primary Address',
@@ -377,7 +263,7 @@
 		'colour': u'White:FFF',
 		'default': u'0',
 		'description': u'Check to make Shipping Address',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'is_shipping_address',
 		'fieldtype': u'Check',
 		'label': u'Is Shipping Address',
@@ -386,10 +272,124 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'trash_reason',
 		'fieldtype': u'Small Text',
 		'label': u'Trash Reason',
 		'permlevel': 0
+	},
+
+	# DocPerm
+	{
+		'cancel': 1,
+		'create': 1,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'System Manager',
+		'write': 1
+	},
+
+	# DocPerm
+	{
+		'cancel': 1,
+		'create': 1,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'Sales Master Manager',
+		'write': 1
+	},
+
+	# DocPerm
+	{
+		'cancel': 1,
+		'create': 1,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'Purchase Master Manager',
+		'write': 1
+	},
+
+	# DocPerm
+	{
+		'cancel': 0,
+		'create': 1,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'Maintenance Manager',
+		'write': 1
+	},
+
+	# DocPerm
+	{
+		'cancel': 0,
+		'create': 1,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'Accounts Manager',
+		'write': 1
+	},
+
+	# DocPerm
+	{
+		'create': 1,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'Sales Manager',
+		'write': 1
+	},
+
+	# DocPerm
+	{
+		'create': 1,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'Purchase Manager',
+		'write': 1
+	},
+
+	# DocPerm
+	{
+		'create': 1,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'Sales User',
+		'write': 1
+	},
+
+	# DocPerm
+	{
+		'create': 1,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'Purchase User',
+		'write': 1
+	},
+
+	# DocPerm
+	{
+		'create': 1,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'Maintenance User',
+		'write': 1
+	},
+
+	# DocPerm
+	{
+		'create': 1,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'Accounts User',
+		'write': 1
+	},
+
+	# DocPerm
+	{
+		'cancel': 0,
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'permlevel': 1,
+		'role': u'All',
+		'write': 0
 	}
 ]
