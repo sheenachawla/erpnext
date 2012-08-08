@@ -16,6 +16,7 @@
 
 wn.require('erpnext/setup/doctype/contact_control/contact_control.js');
 wn.require('erpnext/support/doctype/communication/communication.js');
+wn.require('erpnext/controllers/party.js');
 
 cur_frm.cscript.onload = function(doc,dt,dn){
 	// history doctypes and scripts
@@ -23,8 +24,7 @@ cur_frm.cscript.onload = function(doc,dt,dn){
 		'Purchase Order' : 'cur_frm.cscript.make_po_list(this.body, this.doc)',
 		'Purchase Receipt' : 'cur_frm.cscript.make_pr_list(this.body, this.doc)',
 		'Purchase Invoice' : 'cur_frm.cscript.make_pi_list(this.body, this.doc)'
-	}
-	
+	}	
 	// make communication, history list body
 	cur_frm.cscript.make_hl_body();
 	cur_frm.cscript.make_communication_body();
@@ -43,51 +43,7 @@ cur_frm.cscript.refresh = function(doc,dt,dn) {
   }
 }
 
-cur_frm.cscript.make_address = function() {
-	if(!cur_frm.address_list) {
-		cur_frm.address_list = new wn.ui.Listing({
-			parent: cur_frm.fields_dict['address_html'].wrapper,
-			page_length: 2,
-			new_doctype: "Address",
-			get_query: function() {
-				return "select name, address_type, address_line1, address_line2, city, \
-				state, country, pincode, fax, email_id, phone, is_primary_address, \
-				is_shipping_address from tabAddress where supplier='"+cur_frm.docname+"' \
-				and docstatus != 2 order by is_primary_address desc"
-			},
-			as_dict: 1,
-			no_results_message: 'No addresses created',
-			render_row: cur_frm.cscript.render_address_row,
-		});
-		// note: render_address_row is defined in contact_control.js
-	}
-	cur_frm.address_list.run();
-}
-
-cur_frm.cscript.make_contact = function() {
-	if(!cur_frm.contact_list) {
-		cur_frm.contact_list = new wn.ui.Listing({
-			parent: cur_frm.fields_dict['contact_html'].wrapper,
-			page_length: 2,
-			new_doctype: "Contact",
-			get_query: function() {
-				return "select name, first_name, last_name, email_id, phone, mobile_no, \
-				department, designation, is_primary_contact from tabContact \
-				where supplier='"+cur_frm.docname+"' and docstatus != 2 \
-				order by is_primary_contact desc"
-			},
-			as_dict: 1,
-			no_results_message: 'No contacts created',
-			render_row: cur_frm.cscript.render_contact_row,
-		});
-		// note: render_contact_row is defined in contact_control.js
-	}
-	cur_frm.contact_list.run();
-}
-
-
 // Transaction History
-
 cur_frm.cscript.make_po_list = function(parent, doc) {
 	flds = [
 		"`tabPurchase Order`.status",
@@ -102,7 +58,7 @@ cur_frm.cscript.make_po_list = function(parent, doc) {
 		{width: '35%', content: 'grand_total_import', css: {'text-align': 'right'}},
 		{width: '12%', content:'modified', css: {'text-align': 'right'}}
 	]
-	cur_frm.cscript.make_record_list(parent, doc, 'Purchase Order', flds, cols_data);
+	cur_frm.cscript.get_common_list_view(parent, doc, 'Purchase Order', flds, cols_data);
 }
 
 cur_frm.cscript.make_pr_list = function(parent, doc) {
@@ -122,7 +78,7 @@ cur_frm.cscript.make_pr_list = function(parent, doc) {
 		{width: '12%', content:'modified', css: {'text-align': 'right'}}
 	]
 	
-	cur_frm.cscript.make_record_list(parent, doc, 'Purchase Receipt', flds, cols_data);
+	cur_frm.cscript.get_common_list_view(parent, doc, 'Purchase Receipt', flds, cols_data);
 }
 
 cur_frm.cscript.make_pi_list = function(parent, doc) {
@@ -136,10 +92,10 @@ cur_frm.cscript.make_pi_list = function(parent, doc) {
 		{width: '55%', content: 'grand_total_import', css: {'text-align': 'right'}},
 		{width: '12%', content:'modified', css: {'text-align': 'right'}}
 	]
-	cur_frm.cscript.make_record_list(parent, doc, 'Purchase Invoice', flds, cols_data);
+	cur_frm.cscript.get_common_list_view(parent, doc, 'Purchase Invoice', flds, cols_data);
 }
 
-cur_frm.cscript.make_record_list = function(parent, doc, dt, flds, cols_data) {
+cur_frm.cscript.get_common_list_view = function(parent, doc, dt, flds, cols_data) {
 	var ListView = wn.views.ListView.extend({
 		init: function(doclistview) {
 			this._super(doclistview);
