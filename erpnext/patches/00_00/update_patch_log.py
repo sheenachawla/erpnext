@@ -15,7 +15,8 @@ def execute():
 		['april_2012', '12_04'],
 		['may_2012', '12_05'],
 		['june_2012', '12_06'],
-		['july_2012', '12_07']
+		['july_2012', '12_07'],
+		['august_2012', '12_08'],
 	]
 	for d in repl:
 		webnotes.conn.sql("update `__PatchLog` set patch = replace(patch, %s, %s)", (d[0], d[1]))
