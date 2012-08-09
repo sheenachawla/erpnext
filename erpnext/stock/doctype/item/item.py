@@ -20,6 +20,7 @@ import webnotes
 from website.web_page import PageController
 
 class ItemController(PageController):
+	new_style = True
 	def on_rename(self,newdn,olddn):
 		webnotes.conn.sql("update tabItem set item_code = %s where name = %s", (newdn, olddn))
 

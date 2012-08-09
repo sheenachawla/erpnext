@@ -34,7 +34,9 @@ base_item = {
 
 def make_item_groups():
 	from webnotes.modules.export import get_test_doclist
-	for doclist in get_test_doclist('Item Group'):
+	item_groups = sorted(get_test_doclist('Item Group'),
+		key=lambda ig: (ig[0].get('parent_item_group'), ig[0].get('name')))
+	for doclist in item_groups:
 		webnotes.model.insert(doclist)
 		
 class TestItem(TestBase):
@@ -55,6 +57,8 @@ class TestItem(TestBase):
 		self.assertTrue(webnotes.conn.exists("Item", "Home Desktop 200"))
 
 	def test_duplicate(self):
+		webnotes.model.insert([{"doctype": "Price List", "name": "Retail"}])
+		
 		item = base_item.copy()
 		item.update({"name":"Home Desktop 100"})
 		ref_rate_detail = {"doctype":"Item Price", "price_list_name":"Retail", 
@@ -120,7 +124,7 @@ class TestItem(TestBase):
 			"is_stock_item": "Yes",
 			"has_batch_no": "Yes",
 			"net_weight": 500,
-			"weight_uom": "Kgs"
+			"weight_uom": "Kg"
 		})
 		webnotes.model.insert([item])
 		self.assertTrue(webnotes.conn.exists("Item", "Home Desktop 300"))
