@@ -103,8 +103,8 @@ def get_contacts():
 		from tabContact
 		where %s=%s and docstatus != 2
 		order by is_primary_contact desc limit %s, %s""" % 
-		(webnotes.form_dict.get('doctype').lower(), '%s', webnotes.form_dict.get("limit_start"), 
-		webnotes.form_dict.get("limit_page_length")), webnotes.form_dict.get('name'), as_dict=1)
+		(webnotes.form.get('doctype').lower(), '%s', webnotes.form.get("limit_start"), 
+		webnotes.form.get("limit_page_length")), webnotes.form.get('name'), as_dict=1)
 
 @webnotes.whitelist()
 def get_addresses():		
@@ -112,5 +112,5 @@ def get_addresses():
 		state, country, pincode, fax, email_id, phone, is_primary_address, is_shipping_address 
 		from tabAddress 
 		where %s = %s and docstatus != 2 order by is_primary_address desc limit %s, %s""" %
-		(webnotes.form_dict.get('doctype').lower(), '%s', webnotes.form_dict.get("limit_start"), 
-		webnotes.form_dict.get("limit_page_length")), webnotes.form_dict.get('name'), as_dict=1)
+		(webnotes.form.get('doctype').lower(), '%s', webnotes.form.get("limit_start"), 
+		webnotes.form.get("limit_page_length")), webnotes.form.get('name'), as_dict=1)

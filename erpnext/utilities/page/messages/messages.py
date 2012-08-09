@@ -20,11 +20,11 @@ import webnotes
 @webnotes.whitelist()
 def get_list(arg=None):
 	"""get list of messages"""
-	webnotes.form_dict['limit_start'] = int(webnotes.form_dict['limit_start'])
-	webnotes.form_dict['limit_page_length'] = int(webnotes.form_dict['limit_page_length'])
-	webnotes.form_dict['user'] = webnotes.session['user']
+	webnotes.form['limit_start'] = int(webnotes.form['limit_start'])
+	webnotes.form['limit_page_length'] = int(webnotes.form['limit_page_length'])
+	webnotes.form['user'] = webnotes.session['user']
 
-	if webnotes.form_dict['contact'] == webnotes.session['user']:
+	if webnotes.form['contact'] == webnotes.session['user']:
 		# set all messages as read
 		webnotes.conn.sql("""UPDATE `tabComment`
 		set docstatus = 1 where comment_doctype in ('My Company', 'Message')
@@ -36,14 +36,14 @@ def get_list(arg=None):
 		where (owner=%(contact)s or comment_docname=%(user)s)
 		and comment_doctype in ('My Company', 'Message')
 		order by creation desc
-		limit %(limit_start)s, %(limit_page_length)s""", webnotes.form_dict, as_dict=1)		
+		limit %(limit_start)s, %(limit_page_length)s""", webnotes.form, as_dict=1)		
 	else:
 		return webnotes.conn.sql("""select * from `tabComment` 
 		where (owner=%(contact)s and comment_docname=%(user)s)
 		or (owner=%(user)s and comment_docname=%(contact)s)
 		and comment_doctype in ('My Company', 'Message')
 		order by creation desc
-		limit %(limit_start)s, %(limit_page_length)s""", webnotes.form_dict, as_dict=1)
+		limit %(limit_start)s, %(limit_page_length)s""", webnotes.form, as_dict=1)
 		
 
 @webnotes.whitelist()
@@ -63,7 +63,7 @@ def post(arg=None):
 		arg = json.loads(arg)
 	else:
 		arg = {}
-		arg.update(webnotes.form_dict)
+		arg.update(webnotes.form)
 	from webnotes.model.doc import Document
 	d = Document('Comment')
 	d.comment = arg['txt']
@@ -78,7 +78,7 @@ def post(arg=None):
 @webnotes.whitelist()
 def delete(arg=None):
 	webnotes.conn.sql("""delete from `tabComment` where name=%s""", 
-		webnotes.form_dict['name']);
+		webnotes.form['name']);
 
 def notify(arg=None):
 	from webnotes.utils import cstr

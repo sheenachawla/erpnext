@@ -30,7 +30,7 @@ def get(arg=None):
 @webnotes.whitelist()		
 def edit(arg=None):
 	import markdown2
-	args = webnotes.form_dict
+	args = webnotes.form
 
 	d = Document('ToDo', args.get('name') or None)
 	d.description = args['description']
@@ -47,7 +47,7 @@ def edit(arg=None):
 
 @webnotes.whitelist()
 def delete(arg=None):
-	name = webnotes.form_dict['name']
+	name = webnotes.form['name']
 	d = Document('ToDo', name)
 	if d and d.name:
 		notify_assignment(d)

@@ -24,7 +24,7 @@ def get_customer_supplier(args=None):
 		Get Customer/Supplier, given a contact, if a unique match exists
 	"""
 	import webnotes
-	if not args: args = webnotes.form_dict
+	if not args: args = webnotes.form
 	if not args.get('contact'):
 		raise Exception, "Please specify a contact to fetch Customer/Supplier"
 	result = webnotes.conn.sql("""\

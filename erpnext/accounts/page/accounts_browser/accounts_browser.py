@@ -8,7 +8,7 @@ def get_companies():
 	
 @webnotes.whitelist()
 def get_children():
-	args = webnotes.form_dict
+	args = webnotes.form
 	ctype, company = args['ctype'], args['comp']
 	
 	company_field = ctype=='Account' and 'company' or 'company_name'
@@ -44,6 +44,6 @@ def get_children():
 
 @webnotes.whitelist()		
 def get_account_balance():
-	args = webnotes.form_dict
+	args = webnotes.form
 	acc = args['acc']
 	return 'Rs. 100'

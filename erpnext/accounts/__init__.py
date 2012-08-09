@@ -24,7 +24,7 @@ def get_default_bank_account():
 	"""
 		Get default bank account for a company
 	"""
-	company = webnotes.form_dict.get('company')
+	company = webnotes.form.get('company')
 	if not company: return
 	res = webnotes.conn.sql("""\
 		SELECT default_bank_account FROM `tabCompany`
@@ -37,8 +37,8 @@ def get_new_jv_details():
 	"""
 		Get details which will help create new jv on sales/purchase return
 	"""
-	doclist = webnotes.form_dict.get('doclist')
-	fiscal_year = webnotes.form_dict.get('fiscal_year')
+	doclist = webnotes.form.get('doclist')
+	fiscal_year = webnotes.form.get('fiscal_year')
 	if not (isinstance(doclist, basestring) and isinstance(fiscal_year, basestring)): return
 
 	import json

@@ -26,11 +26,11 @@ def get_questions():
 	import json
 	conds = ''
 	
-	if 'search_text' in webnotes.form_dict:
-		conds = ' and t1.question like "%'+ webnotes.form_dict['search_text'] + '%"'
+	if 'search_text' in webnotes.form:
+		conds = ' and t1.question like "%'+ webnotes.form['search_text'] + '%"'
 		
-	if 'tag_filters' in webnotes.form_dict:
-		tag_filters = json.loads(webnotes.form_dict['tag_filters'])
+	if 'tag_filters' in webnotes.form:
+		tag_filters = json.loads(webnotes.form['tag_filters'])
 		for t in tag_filters:
 			conds += ' and t1._user_tags like "%'+ t +'%"'
 	

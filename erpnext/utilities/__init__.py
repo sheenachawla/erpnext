@@ -27,7 +27,7 @@ def get_sc_list(arg=None):
 		and docstatus in (0, NULL)
 		and ifnull(disabled, 0) = 0 
 		order by criteria_name 
-		limit %(limit_start)s, %(limit_page_length)s""" % webnotes.form_dict, as_dict=True)
+		limit %(limit_start)s, %(limit_page_length)s""" % webnotes.form, as_dict=True)
 
 @webnotes.whitelist()
 def get_report_list():
@@ -39,7 +39,7 @@ def get_report_list():
 		and tabDocType.name = tabReport.ref_doctype
 		and tabReport.docstatus in (0, NULL)
 		order by tabReport.name 
-		limit %(limit_start)s, %(limit_page_length)s""" % webnotes.form_dict, as_dict=True)
+		limit %(limit_start)s, %(limit_page_length)s""" % webnotes.form, as_dict=True)
 		
 def get_fiscal_year(date):
 	"""returns name of fiscal year record for a given date"""

@@ -33,15 +33,15 @@ class OverDeliveryError(webnotes.ValidationError): pass
 def get_comp_base_currency(arg=None):
 	""" get default currency of company"""
 	res = webnotes.conn.sql("""select default_currency from `tabCompany`
-			where name = %s""", webnotes.form_dict.get('company'))
+			where name = %s""", webnotes.form.get('company'))
 	return res and res[0][0] or None
 
 @webnotes.whitelist()
 def get_price_list_currency(arg=None):
 	""" Get all currency in which price list is maintained"""
-	plc = webnotes.conn.sql("select distinct ref_currency from `tabItem Price` where price_list_name = %s", webnotes.form_dict['price_list'])
+	plc = webnotes.conn.sql("select distinct ref_currency from `tabItem Price` where price_list_name = %s", webnotes.form['price_list'])
 	plc = [d[0] for d in plc]
-	base_currency = get_comp_base_currency(webnotes.form_dict['company'])
+	base_currency = get_comp_base_currency(webnotes.form['company'])
 	return plc, base_currency
 
 

@@ -11,7 +11,7 @@ def get_blog_list(args=None):
 	"""
 	import webnotes
 	
-	if not args: args = webnotes.form_dict
+	if not args: args = webnotes.form
 	
 	query = """\
 		select
@@ -54,7 +54,7 @@ def get_recent_blog_list(args=None):
 	"""
 	import webnotes
 	
-	if not args: args = webnotes.form_dict
+	if not args: args = webnotes.form
 	
 	query = """\
 		select name, page_name, title, left(content, 100) as content
@@ -88,7 +88,7 @@ def add_comment(args=None):
 	"""
 	import webnotes
 	
-	if not args: args = webnotes.form_dict
+	if not args: args = webnotes.form
 	
 	import webnotes.widgets.form.comments
 	comment = webnotes.widgets.form.comments.add_comment(args)
@@ -128,8 +128,8 @@ def add_comment(args=None):
 @webnotes.whitelist(allow_guest=True)
 def add_subscriber():
 	"""add blog subscriber to lead"""
-	full_name = webnotes.form_dict.get('your_name')
-	email = webnotes.form_dict.get('your_email_address')
+	full_name = webnotes.form.get('your_name')
+	email = webnotes.form.get('your_email_address')
 	name = webnotes.conn.sql("""select name from tabLead where email_id=%s""", email)
 	
 	from webnotes.model.doc import Document

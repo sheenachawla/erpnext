@@ -13,5 +13,5 @@ def get_feed(arg=None):
 		and ifnull(t2.`read`,0) = 1
 		order by t1.modified desc
 		limit %s, %s""" % ("','".join(webnotes.get_roles()), 
-			webnotes.form_dict['limit_start'], webnotes.form_dict['limit_page_length']), 
+			webnotes.form['limit_start'], webnotes.form['limit_page_length']), 
 			as_dict=1)
