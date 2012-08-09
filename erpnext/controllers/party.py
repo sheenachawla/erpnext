@@ -30,7 +30,7 @@ class PartyController(DocListController):
 			If exists, do not allow saving because it will conflict in party account
 		"""
 		if get_defaults(global_naming_key) == naming_based_on:
-			party_name = self.doc.fields[naming_based_on.lower().replace(' ', '_')]
+			party_name = self.doc[naming_based_on.lower().replace(' ', '_')]
 			if webnotes.conn.exists(opp_dt, party_name):
 				msgprint("You already have a %s with same name, please change the %s name"
 				 	% (opp_dt, self.doc.doctype.lower()), raise_exception=webnotes.NameError)
@@ -51,7 +51,7 @@ class PartyController(DocListController):
 			set credit_days = %s, credit_limit = %s
 			where %s = %s
 		"""% ('%s', '%s', self.doc.doctype.lower(), '%s'), 
-		(self.doc.credit_days, self.doc.fields.get('credit_limit', 0), self.doc.name))
+		(self.doc.credit_days, self.doc.get('credit_limit', 0), self.doc.name))
 
 	def get_party_group(self, fld):
 		"""Returns Parent Account of customer/supplier from company master"""

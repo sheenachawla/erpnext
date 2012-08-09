@@ -11,8 +11,8 @@ def execute():
 		doclist = webnotes.model.doctype.get(dt[0], form=0)
 		is_submittable = 0
 		for d in doclist:
-			if d.doctype == 'DocPerm' and d.fields.get('permlevel') == 0 \
-				and cint(d.fields.get('submit')) == 1:
+			if d.doctype == 'DocPerm' and d.get('permlevel') == 0 \
+				and cint(d.get('submit')) == 1:
 					is_submittable = 1
 					break
 		if is_submittable:

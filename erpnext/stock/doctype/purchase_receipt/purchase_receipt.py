@@ -63,15 +63,15 @@ class DocType(TransactionBase):
 			import json
 			obj = get_obj('Purchase Common')
 			for doc in self.doclist:
-				if doc.fields.get('item_code'):
+				if doc.get('item_code'):
 					temp = {
-						'item_code': doc.fields.get('item_code'),
-						'warehouse': doc.fields.get('warehouse')
+						'item_code': doc.get('item_code'),
+						'warehouse': doc.get('warehouse')
 					}
 					ret = obj.get_item_details(self, json.dumps(temp))
 					for r in ret:
-						if not doc.fields.get(r):
-							doc.fields[r] = ret[r]
+						if not doc.get(r):
+							doc[r] = ret[r]
 
 
 	# Get UOM Details
@@ -143,7 +143,7 @@ class DocType(TransactionBase):
 	def check_for_stopped_status(self, pc_obj):
 		check_list =[]
 		for d in getlist(self.doclist, 'purchase_receipt_details'):
-			if d.fields.has_key('prevdoc_docname') and d.prevdoc_docname and d.prevdoc_docname not in check_list:
+			if d.has_key('prevdoc_docname') and d.prevdoc_docname and d.prevdoc_docname not in check_list:
 				check_list.append(d.prevdoc_docname)
 				pc_obj.check_for_stopped_status( d.prevdoc_doctype, d.prevdoc_docname)
 
@@ -252,7 +252,7 @@ class DocType(TransactionBase):
 			serial_no = d.serial_no
 
 		self.values.append({
-			'item_code'					: d.fields.has_key('item_code') and d.item_code or d.rm_item_code,
+			'item_code'					: d.has_key('item_code') and d.item_code or d.rm_item_code,
 			'warehouse'					: wh,
 			'transaction_date'			: getdate(self.doc.modified).strftime('%Y-%m-%d'),
 			'posting_date'				: self.doc.posting_date,
@@ -282,7 +282,7 @@ class DocType(TransactionBase):
 	def check_for_stopped_status(self, pc_obj):
 		check_list =[]
 		for d in getlist(self.doclist, 'purchase_receipt_details'):
-			if d.fields.has_key('prevdoc_docname') and d.prevdoc_docname and d.prevdoc_docname not in check_list:
+			if d.has_key('prevdoc_docname') and d.prevdoc_docname and d.prevdoc_docname not in check_list:
 				check_list.append(d.prevdoc_docname)
 				pc_obj.check_for_stopped_status( d.prevdoc_doctype, d.prevdoc_docname)
 

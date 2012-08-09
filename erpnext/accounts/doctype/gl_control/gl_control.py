@@ -118,7 +118,7 @@ class DocType:
 		arg = eval(arg)
 		ac = Document('Account')
 		for d in arg.keys():
-			ac.fields[d] = arg[d]
+			ac[d] = arg[d]
 		ac.old_parent = ''
 		ac_obj = get_obj(doc=ac)
 		ac_obj.doc.freeze_account='No'
@@ -135,7 +135,7 @@ class DocType:
 		cc = Document('Cost Center')
 		# map fields
 		for d in arg.keys():
-			cc.fields[d] = arg[d]
+			cc[d] = arg[d]
 		# map company abbr
 		other_info = webnotes.conn.sql("select company_abbr from `tabCost Center` where name='%s'"%arg['parent_cost_center'])
 		cc.company_abbr = other_info and other_info[0][0] or arg['company_abbr']
@@ -154,11 +154,11 @@ class DocType:
 		if not src:
 			return None
 		if src.startswith('parent:'):
-			return parent.fields[src.split(':')[1]]
+			return parent[src.split(':')[1]]
 		elif src.startswith('value:'):
 			return eval(src.split(':')[1])
 		elif src:
-			return d.fields.get(src)
+			return d.get(src)
 
 	def check_if_in_list(self, le):
 		for e in self.entries:
@@ -181,7 +181,7 @@ class DocType:
 			# Create new GL entry object and map values
 			le = Document('GL Entry')
 			for k in flist:
-				le.fields[k] = self.get_val(le_map[k], d, parent)
+				le[k] = self.get_val(le_map[k], d, parent)
 
 			# if there is already an entry in this account then just add it to that entry
 			same_head = self.check_if_in_list(le)
@@ -234,7 +234,7 @@ class DocType:
 			if le_map['table_field']:
 				for d in getlist(doclist,le_map['table_field']):
 					# purchase_tax_details is the table of other charges in purchase cycle
-					if le_map['table_field'] != 'purchase_tax_details' or (le_map['table_field'] == 'purchase_tax_details' and d.fields.get('category') != 'For Valuation'):
+					if le_map['table_field'] != 'purchase_tax_details' or (le_map['table_field'] == 'purchase_tax_details' and d.get('category') != 'For Valuation'):
 						self.make_single_entry(doc,d,le_map,cancel, merge_entries)
 			else:
 				self.make_single_entry(None,doc,le_map,cancel, merge_entries)
@@ -360,7 +360,7 @@ class DocType:
 		add.account = account_head
 		add.cost_center = cstr(jvd[0][1])
 		add.balance = cstr(jvd[0][2])
-		add.fields[dr_or_cr] = balance
+		add[dr_or_cr] = balance
 		add.against_account = cstr(jvd[0][3])
 		add.is_advance = 'Yes'
 		add.save(1)
@@ -427,8 +427,8 @@ class DocType:
 			ch.account = d['account']
 			ch.cost_center = cstr(jvd[0][0])
 			ch.balance = cstr(jvd[0][1])
-			ch.fields[d['dr_or_cr']] = flt(d['unadjusted_amt']) - flt(d['allocated_amt'])
-			ch.fields[d['dr_or_cr']== 'debit' and 'credit' or 'debit'] = 0
+			ch[d['dr_or_cr']] = flt(d['unadjusted_amt']) - flt(d['allocated_amt'])
+			ch[d['dr_or_cr']== 'debit' and 'credit' or 'debit'] = 0
 			ch.against_account = cstr(jvd[0][2])
 			ch.is_advance = cstr(jvd[0][3])
 			ch.docstatus = 1

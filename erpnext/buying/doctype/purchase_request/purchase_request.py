@@ -110,15 +110,15 @@ class DocType:
 		else:
 			obj = get_obj('Purchase Common')
 			for doc in self.doclist:
-				if doc.fields.get('item_code'):
+				if doc.get('item_code'):
 					temp = {
-						'item_code': doc.fields.get('item_code'),
-						'warehouse': doc.fields.get('warehouse')
+						'item_code': doc.get('item_code'),
+						'warehouse': doc.get('warehouse')
 					}
 					ret = obj.get_item_details(self, json.dumps(temp))
 					for r in ret:
-						if not doc.fields.get(r):
-							doc.fields[r] = ret[r]
+						if not doc.get(r):
+							doc[r] = ret[r]
 
 
 	# Get UOM Details

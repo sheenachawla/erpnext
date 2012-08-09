@@ -35,7 +35,7 @@ class DocType:
 			res['qty'] = self.doc.qty or (res['qty']>=0 and res['qty'] or 0)
 			del res['total_qty']
 			del res['packed_qty']
-			self.doc.fields.update(res)
+			self.doc.update(res)
 
 		res = webnotes.conn.sql("""\
 			SELECT net_weight, weight_uom FROM `tabItem`
@@ -43,4 +43,4 @@ class DocType:
 
 		if res and len(res)>0:
 			res = res[0]
-			self.doc.fields.update(res)
+			self.doc.update(res)

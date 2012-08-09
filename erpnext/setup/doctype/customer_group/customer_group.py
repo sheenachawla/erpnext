@@ -41,8 +41,9 @@ class DocType:
 		self.update_nsm_model()   
 
 
-	def validate(self): 
-		if webnotes.conn.sql("select name from `tabCustomer Group` where name = %s and docstatus = 2", (self.doc.customer_group_name)):
+	def validate(self):
+		if self.doc.customer_group_name and webnotes.conn.sql("""select name from `tabCustomer Group`
+			where name = %s and docstatus = 2""", self.doc.customer_group_name):
 			msgprint("""Another %s record is trashed. 
 				To untrash please go to Setup & click on Trash."""%(self.doc.customer_group_name), raise_exception = 1)
 

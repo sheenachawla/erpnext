@@ -20,7 +20,7 @@ def add_node():
 	parent_field = 'parent_' + ctype.lower().replace(' ', '_')
 
 	d = Document(ctype)
-	d.fields[ctype.lower().replace(' ', '_') + '_name'] = webnotes.form_dict['name_field']
-	d.fields[parent_field] = webnotes.form_dict['parent']
+	d[ctype.lower().replace(' ', '_') + '_name'] = webnotes.form_dict['name_field']
+	d[parent_field] = webnotes.form_dict['parent']
 	d.is_group = webnotes.form_dict['is_group']
 	d.save()

@@ -169,7 +169,7 @@ class DocType:
 						'expenses_booked', 'invoiced_amount', 'collections',
 						'income', 'bank_balance', 'stock_below_rl',
 						'income_year_to_date', 'enabled']:
-					edigest.fields[f] = 1
+					edigest[f] = 1
 				exists = webnotes.conn.sql("""\
 					SELECT name FROM `tabEmail Digest`
 					WHERE name = %s""", edigest.name)
@@ -202,11 +202,11 @@ class DocType:
 		for d in master_dict.keys():
 			rec = Document(d)
 			for fn in master_dict[d].keys():
-				rec.fields[fn] = master_dict[d][fn]
+				rec[fn] = master_dict[d][fn]
 			# add blank fields
-			for fn in rec.fields:
+			for fn in rec:
 				if fn not in master_dict[d].keys()+['name','owner','doctype']:
-					rec.fields[fn] = ''
+					rec[fn] = ''
 			rec_obj = get_obj(doc=rec)
 			rec_obj.doc.save(1)
 			if hasattr(rec_obj, 'on_update'):
@@ -218,7 +218,7 @@ class DocType:
 	def set_defaults(self, def_args):
 		ma_obj = get_obj('Global Defaults','Global Defaults')
 		for d in def_args.keys():
-			ma_obj.doc.fields[d] = def_args[d]
+			ma_obj.doc[d] = def_args[d]
 		ma_obj.doc.save()
 		ma_obj.on_update()
 

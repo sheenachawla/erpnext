@@ -157,7 +157,7 @@ def reset_global_defaults():
 	from webnotes.model.code import get_obj
 	gd = get_obj('Global Defaults', 'Global Defaults')
 	for d in flds:
-		gd.doc.fields[d] = flds[d]
+		gd.doc[d] = flds[d]
 	gd.doc.save()
 	
 	webnotes.clear_cache()

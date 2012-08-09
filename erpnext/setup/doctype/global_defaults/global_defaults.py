@@ -55,7 +55,7 @@ class DocType:
 		"""update defaults"""
 		
 		for key in keydict:
-			webnotes.conn.set_default(key, self.doc.fields.get(keydict[key], ''))
+			webnotes.conn.set_default(key, self.doc.get(keydict[key], ''))
 			
 		# update year start date and year end date from fiscal_year
 		ysd = webnotes.conn.sql("""select year_start_date from `tabFiscal Year` 

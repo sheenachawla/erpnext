@@ -245,8 +245,8 @@ class DocType:
 		for k in args.keys():
 			# adds warehouse_type
 			if k == 'warehouse':
-				sle.fields['warehouse_type'] = webnotes.conn.get_value('Warehouse' , args[k], 'warehouse_type')
-			sle.fields[k] = args[k]
+				sle['warehouse_type'] = webnotes.conn.get_value('Warehouse' , args[k], 'warehouse_type')
+			sle[k] = args[k]
 		sle_obj = get_obj(doc=sle)
 		
 		# validate

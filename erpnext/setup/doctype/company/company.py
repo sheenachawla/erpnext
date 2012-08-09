@@ -156,7 +156,7 @@ class DocType:
 	def add_acc(self,lst):
 		ac = Document('Account')
 		for d in self.fld_dict.keys():
-			ac.fields[d] = (d == 'parent_account' and lst[self.fld_dict[d]]) and lst[self.fld_dict[d]] +' - '+ self.doc.abbr or lst[self.fld_dict[d]]
+			ac[d] = (d == 'parent_account' and lst[self.fld_dict[d]]) and lst[self.fld_dict[d]] +' - '+ self.doc.abbr or lst[self.fld_dict[d]]
 		ac.old_parent = ''
 		ac_obj = get_obj(doc=ac)
 		ac_obj.doc.freeze_account='No'

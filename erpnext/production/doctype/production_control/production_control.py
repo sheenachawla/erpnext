@@ -82,10 +82,10 @@ class DocType:
 		for d in pp_items:
 			pro_doc = Document('Production Order')
 			for key in d.keys():
-				pro_doc.fields[key] = d[key]
+				pro_doc[key] = d[key]
 
 			for key in default_values:
-				pro_doc.fields[key] = default_values[key]
+				pro_doc[key] = default_values[key]
 			
 			pro_doc.save(new = 1)
 			pro_list.append(pro_doc.name)

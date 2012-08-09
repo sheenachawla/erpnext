@@ -33,10 +33,12 @@ def make_template(doc, path, convert_fields = ['main_section', 'side_section']):
 	with open(path, 'r') as f:
 		temp = jinja2.Template(f.read())
 	
-	return temp.render(doc = doc.fields)
+	return temp.render(doc = doc)
 
 def page_name(title):
 	"""make page name from title"""
+	if not title: return
+	
 	import re
 	name = title.lower()
 	name = re.sub('[~!@#$%^&*()<>,."\']', '', name)

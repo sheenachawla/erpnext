@@ -71,5 +71,5 @@ class PageController(DocListController):
 		import markdown2
 		for f in fields_list:
 			field_name = "%s_html" % f
-			self.doc.fields[field_name] = markdown2.markdown(self.doc.fields.get(f) or '', \
+			self.doc[field_name] = markdown2.markdown(self.doc.get(f) or '', \
 				extras=["wiki-tables"])

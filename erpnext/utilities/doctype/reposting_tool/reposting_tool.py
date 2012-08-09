@@ -80,9 +80,9 @@ class DocType:
 	def check_bin_qty(self, bin_obj, qty_dict):
 		label_dict = {'actual_qty': 'Actual Qty', 'indented_qty': 'Quantity Requested for Purchase', 'ordered_qty': 'Ordered Qty', 'reserved_qty': 'Reserved Qty', 'planned_qty': 'Planned Qty'}
 		for f in qty_dict:
-			if flt(bin_obj.doc.fields[f]) != qty_dict[f]:
-				msgprint('<div style="color: RED"> Difference found in %s for Item:= %s and Warehouse:= %s (Before : %s; After : %s)</div>' % (label_dict[f], bin_obj.doc.item_code, bin_obj.doc.warehouse, cstr(bin_obj.doc.fields[f]), cstr(qty_dict[f])))
-				self.msg.append('<div style="color: RED"> Difference found in %s for Item:= %s and Warehouse:= %s (Before : %s; After : %s)</div>' % (label_dict[f], bin_obj.doc.item_code, bin_obj.doc.warehouse, cstr(bin_obj.doc.fields[f]), cstr(qty_dict[f])))
+			if flt(bin_obj.doc[f]) != qty_dict[f]:
+				msgprint('<div style="color: RED"> Difference found in %s for Item:= %s and Warehouse:= %s (Before : %s; After : %s)</div>' % (label_dict[f], bin_obj.doc.item_code, bin_obj.doc.warehouse, cstr(bin_obj.doc[f]), cstr(qty_dict[f])))
+				self.msg.append('<div style="color: RED"> Difference found in %s for Item:= %s and Warehouse:= %s (Before : %s; After : %s)</div>' % (label_dict[f], bin_obj.doc.item_code, bin_obj.doc.warehouse, cstr(bin_obj.doc[f]), cstr(qty_dict[f])))
 		
 		# Check projected qty
 		projected_qty = flt(qty_dict['actual_qty']) + flt(qty_dict['indented_qty']) + flt(qty_dict['ordered_qty']) + flt(qty_dict['planned_qty']) - flt(qty_dict['reserved_qty'])

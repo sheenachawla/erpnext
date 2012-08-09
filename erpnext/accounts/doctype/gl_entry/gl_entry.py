@@ -37,7 +37,7 @@ class DocType:
 		# Following fields are mandatory in GL Entry
 		mandatory = ['account','remarks','voucher_type','voucher_no','fiscal_year','company']
 		for k in mandatory:
-			if not self.doc.fields.get(k):
+			if not self.doc.get(k):
 				msgprint("%s is mandatory for GL Entry" % k)
 				raise Exception
 				

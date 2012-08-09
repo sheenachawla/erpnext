@@ -202,6 +202,6 @@ class DocType:
 		self.create_periods()
 		self.create_account_balances()
 
-		if self.doc.fields.get('localname', '')[:15] == 'New Fiscal Year':
+		if self.doc.get('localname', '')[:15] == 'New Fiscal Year':
 			for d in sql("select name from tabCompany"):
 				self.update_opening(d[0])

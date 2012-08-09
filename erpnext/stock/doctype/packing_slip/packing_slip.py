@@ -43,7 +43,7 @@ class DocType:
 		res = webnotes.conn.sql("""\
 			SELECT docstatus FROM `tabDelivery Note`
 			WHERE name=%(delivery_note)s
-			""", self.doc.fields)
+			""", self.doc)
 
 		if not(res and res[0][0]==0):
 			webnotes.msgprint("""Invalid Delivery Note. Delivery Note should exist 
@@ -61,7 +61,7 @@ class DocType:
 			WHERE delivery_note = %(delivery_note)s AND docstatus = 1 AND
 			(from_case_no BETWEEN %(from_case_no)s AND %(to_case_no)s
 			OR to_case_no BETWEEN %(from_case_no)s AND %(to_case_no)s)\
-			""", self.doc.fields)
+			""", self.doc)
 
 		if res:
 			webnotes.msgprint("""Case No(s). already in use. Please rectify and try again.
@@ -184,7 +184,7 @@ class DocType:
 		"""
 		recommended_case_no = webnotes.conn.sql("""\
 			SELECT MAX(to_case_no) FROM `tabPacking Slip`
-			WHERE delivery_note = %(delivery_note)s AND docstatus=1""", self.doc.fields)
+			WHERE delivery_note = %(delivery_note)s AND docstatus=1""", self.doc)
 
 		return cint(recommended_case_no[0][0]) + 1
 		

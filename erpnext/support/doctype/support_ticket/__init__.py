@@ -30,7 +30,7 @@ class SupportMailbox(POP3Mailbox):
 
 		# extract email settings
 		self.email_settings = Document('Email Settings','Email Settings')
-		if not self.email_settings.fields.get('sync_support_mails'): return
+		if not self.email_settings.get('sync_support_mails'): return
 		
 		s = Document('Support Email Settings')
 		s.use_ssl = self.email_settings.support_use_ssl
@@ -152,9 +152,9 @@ class SupportMailbox(POP3Mailbox):
 			Send auto reply to emails
 		"""
 		from webnotes.utils import cstr
-		signature = self.email_settings.fields.get('support_signature') or ''
+		signature = self.email_settings.get('support_signature') or ''
 
-		response = self.email_settings.fields.get('support_autoreply') or ("""
+		response = self.email_settings.get('support_autoreply') or ("""
 A new Ticket has been raised for your query. If you have any additional information, please
 reply back to this mail.
 		
@@ -168,7 +168,7 @@ We will get back to you as soon as possible
 		
 		sendmail(\
 			recipients = [cstr(d.raised_by)], \
-			sender = cstr(self.email_settings.fields.get('support_email')), \
+			sender = cstr(self.email_settings.get('support_email')), \
 			subject = '['+cstr(d.name)+'] ' + cstr(d.subject), \
 			msg = cstr(response))
 		

@@ -172,7 +172,7 @@ class TestItem(TestBase):
 		
 		# update account with tax rate
 		acc = webnotes.model.get("Account", "Sales Promotion Expenses - EW")[0]
-		acc.fields.update({"tax_rate": 5.0})
+		acc.update({"tax_rate": 5.0})
 		acc.save()
 		
 		# test if correct value is fetched

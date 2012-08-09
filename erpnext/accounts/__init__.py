@@ -119,7 +119,7 @@ def get_item_accountwise_jv_record(doc, children, fiscal_year, obj):
 		amt_field = 'credit'
 		ac_field = 'expense_head'
 	
-	inv_children = dict([[ic.fields.get('item_code'), ic] for ic in obj.doclist if ic.fields.get('item_code')])
+	inv_children = dict([[ic.get('item_code'), ic] for ic in obj.doclist if ic.get('item_code')])
 
 	accwise_list = []
 	
@@ -131,16 +131,16 @@ def get_item_accountwise_jv_record(doc, children, fiscal_year, obj):
 
 		accounts = [[jvd['account'], jvd['cost_center']] for jvd in accwise_list]
 		
-		if [inv_ch.fields.get(ac_field), inv_ch.fields.get('cost_center')] not in accounts:
+		if [inv_ch.get(ac_field), inv_ch.get('cost_center')] not in accounts:
 			rec = {
-				'account': inv_ch.fields.get(ac_field),
-				'cost_center': inv_ch.fields.get('cost_center'),
-				'balance': get_obj('GL Control').get_bal(inv_ch.fields.get(ac_field) + "~~~" + fiscal_year)
+				'account': inv_ch.get(ac_field),
+				'cost_center': inv_ch.get('cost_center'),
+				'balance': get_obj('GL Control').get_bal(inv_ch.get(ac_field) + "~~~" + fiscal_year)
 			}
 			rec[amt_field] = amount
 			accwise_list.append(rec)
 		else:
-			rec = accwise_list[accounts.index([inv_ch.fields.get(ac_field), inv_ch.fields.get('cost_center')])]
+			rec = accwise_list[accounts.index([inv_ch.get(ac_field), inv_ch.get('cost_center')])]
 			rec[amt_field] = rec[amt_field] + amount
 		
 	return accwise_list
@@ -171,8 +171,8 @@ def get_prev_doc_list(obj, prev_doctype):
 	"""
 	prevdoc_list = []
 	for ch in obj.doclist:
-		if ch.fields.get('prevdoc_docname') and ch.fields.get('prevdoc_doctype')==prev_doctype:
-			prevdoc_list.append(ch.fields.get('prevdoc_docname'))
+		if ch.get('prevdoc_docname') and ch.get('prevdoc_doctype')==prev_doctype:
+			prevdoc_list.append(ch.get('prevdoc_docname'))
 	return prevdoc_list
 
 

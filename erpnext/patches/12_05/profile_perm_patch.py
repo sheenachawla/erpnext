@@ -15,7 +15,7 @@ def execute():
 	]
 	for perms in new_perms:
 		doc = webnotes.model.doc.Document('DocPerm')
-		doc.fields.update(perms)
+		doc.update(perms)
 		doc.save()
 	webnotes.conn.commit()
 	webnotes.conn.begin()
