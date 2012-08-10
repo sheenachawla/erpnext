@@ -2395,6 +2395,27 @@ legend + .control-group {
   padding-left: 160px;
 }
 
+/* Extensions */
+.control-static {
+	cursor: pointer;
+	padding: 5px 0px;
+	line-height: 18px;
+}
+.form-horizontal .control-group {
+	margin-bottom: 9px;
+}
+.form-horizontal .help-block {
+	margin: 0px;
+	float: right;
+	width: 200px;
+	padding: 5px 0px;
+}
+.slick-cell .btn-small {
+	padding: 3px 8px;
+}
+
+
+
 /*
  *	lib/css/legacy/body.css
  */
