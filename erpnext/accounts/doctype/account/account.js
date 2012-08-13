@@ -16,7 +16,6 @@
 
 
 // Onload
-// -----------------------------------------
 cur_frm.cscript.onload = function(doc, cdt, cdn) {
 }
 
@@ -28,7 +27,6 @@ cur_frm.cscript.set_breadcrumbs = function(barea) {
 }
 
 // Refresh
-// -----------------------------------------
 cur_frm.cscript.refresh = function(doc, cdt, cdn) {
 	cur_frm.toggle_display('account_name', doc.__islocal);
 	
@@ -58,12 +56,10 @@ cur_frm.cscript.refresh = function(doc, cdt, cdn) {
 }
 
 // Fetch parent details
-// -----------------------------------------
 cur_frm.add_fetch('parent_account', 'debit_or_credit', 'debit_or_credit');
 cur_frm.add_fetch('parent_account', 'is_pl_account', 'is_pl_account');
 
 // Hide tax rate based on account type
-// -----------------------------------------
 cur_frm.cscript.account_type = function(doc, cdt, cdn) {
 	if(doc.group_or_ledger=='Ledger') {
 		cur_frm.toggle_display(['tax_rate'], 
@@ -74,7 +70,6 @@ cur_frm.cscript.account_type = function(doc, cdt, cdn) {
 }
 
 // Hide/unhide group or ledger
-// -----------------------------------------
 cur_frm.cscript.hide_unhide_group_ledger = function(doc) {
 	if (cstr(doc.group_or_ledger) == 'Group') {
 		cur_frm.add_custom_button('Convert to Ledger', 
@@ -85,7 +80,6 @@ cur_frm.cscript.hide_unhide_group_ledger = function(doc) {
 	}
 }
 // Convert group to ledger
-// -----------------------------------------
 cur_frm.cscript.convert_to_ledger = function(doc, cdt, cdn) {
   $c_obj(cur_frm.get_doclist(),'convert_group_to_ledger','',function(r,rt) {
     if(r.message == 1) {  
@@ -95,7 +89,6 @@ cur_frm.cscript.convert_to_ledger = function(doc, cdt, cdn) {
 }
 
 // Convert ledger to group
-// -----------------------------------------
 cur_frm.cscript.convert_to_group = function(doc, cdt, cdn) {
   $c_obj(cur_frm.get_doclist(),'convert_ledger_to_group','',function(r,rt) {
     if(r.message == 1) {
