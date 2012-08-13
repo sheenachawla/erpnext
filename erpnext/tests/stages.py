@@ -85,10 +85,10 @@ def test_stage(stage):
 		stagedata = stages[stage]
 		
 		test_suite = unittest.TestSuite()
-		for module in map(lambda module_name: __import__(module_name, fromlist = True),
-			stagedata["tests"]):
+		for module in map(lambda module_name: __import__(module_name,
+			fromlist = [module_name.split(".")[-1]]), stagedata["tests"]):
 			test_suite.addTest(unittest.TestLoader().loadTestsFromModule(module))
 		return test_suite
 	
-	verbosity = 2
+	verbosity = 1
 	unittest.TextTestRunner(verbosity=verbosity).run(_load_test_suite())

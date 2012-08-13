@@ -26,35 +26,39 @@ base_customer_group = {
 }
 
 base_territory = {
-	"doctype": "Territory", "parent_territory": "Root",
+	"doctype": "Territory", "parent_territory": "All Territories",
 	"is_group": "No"
 }
 
 base_customer = {
 	"doctype": 'Customer', "customer_name": "test_customer", "default_currency": "INR",
-	"default_price_list": "Standard", "territory": "Default Territory",
+	"default_price_list": "Standard", "territory": "Default",
 	"customer_group": "Default Customer Group", "company": "East Wind Corporation"
 }
 
 def make_customer_groups():
 	webnotes.model.insert_variants(base_customer_group, [
-		{"name":"Electronics", "parent_customer_group":"Root", "is_group":"Yes"},
+		{"name":"Electronics", "parent_customer_group":"All Customer Groups", "is_group":"Yes"},
 			{"name":"Computers", "parent_customer_group":"Electronics", "is_group": "No"},
 			{"name":"TV", "parent_customer_group":"Electronics", "is_group": "No"},
 			{"name":"Circuits", "parent_customer_group":"Electronics", "is_group": "No"},
-		{"name": "Apparel", "parent_customer_group":"Root", "is_group": "No"}
+		{"name": "Apparel", "parent_customer_group":"All Customer Groups", "is_group": "No"}
 	])
 
 
 def make_territory():
 	webnotes.model.insert_variants(base_territory, [
-		{"name":"East", "parent_territory":"Root", "is_group": "No"},
-		{"name":"West", "parent_territory":"Root", "is_group": "No"},
-		{"name":"North", "parent_territory":"Root", "is_group": "No"},
-		{"name":"South", "parent_territory":"Root", "is_group": "No"},
+		{"name":"East", "parent_territory":"All Territories", "is_group": "No"},
+		{"name":"West", "parent_territory":"All Territories", "is_group": "No"},
+		{"name":"North", "parent_territory":"All Territories", "is_group": "No"},
+		{"name":"South", "parent_territory":"All Territories", "is_group": "No"},
 	])
 		
 class TestCustomer(TestBase):
+	# def tearDown(self):
+	# 	webnotes.conn.rollback()
+	# 	print "customer"
+	
 	def test_customer_creation(self):
 		make_customer_groups()
 		make_territory()
