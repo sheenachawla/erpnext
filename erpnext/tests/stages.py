@@ -33,6 +33,7 @@ stages = {
 			"stock.doctype.item.test_item",
 			"selling.doctype.customer.test_customer",
 			"buying.doctype.supplier.test_supplier",
+			"accounts.doctype.account.test_account",
 		],
 	}
 }
