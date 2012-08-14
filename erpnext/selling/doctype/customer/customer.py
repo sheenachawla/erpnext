@@ -43,7 +43,8 @@ class CustomerController(PartyController):
 	def create_customer_ledger(self):
 		self.create_account({
 			'parent_account': self.get_party_group('receivables_group'),
-			'customer': self.doc.name
+			'customer': self.doc.name,
+			'debit_or_credit': "Debit"
 		})
 	
 	def create_address_and_contact(self):

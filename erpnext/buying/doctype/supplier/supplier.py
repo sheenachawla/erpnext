@@ -38,7 +38,8 @@ class SupplierController(PartyController):
 	def create_supplier_ledger(self):
 		self.create_account({
 			'parent_account': self.get_parent_account(),
-			'supplier': self.doc.name
+			'supplier': self.doc.name,
+			"debit_or_credit": "Credit"
 		})
 
 	def get_parent_account(self):
