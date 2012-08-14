@@ -16,11 +16,11 @@
 
 from __future__ import unicode_literals
 import webnotes
+import webnotes.model.controller
 from webnotes.utils import load_json, cstr, flt, get_defaults
-from webnotes.model.doc import addchild
 from webnotes.model.code import get_obj
 
-class TransactionBase:
+class TransactionBase(webnotes.model.controller.DocListController):
 
 	# Get Customer Default Primary Address - first load
 	# -----------------------

@@ -71,7 +71,7 @@ class CustomerController(PartyController):
 			
 	def create_doc(self, dt, values, dn):
 		if not webnotes.conn.exists(dt, dn):
-			webnotes.model.insert_variants(values, [{'doctype': dt}], ignore_fields=1)
+			webnotes.model.insert_variants(values, [{'doctype': dt}])
 	
 	def on_trash(self):
 		PartyController.on_trash(self)

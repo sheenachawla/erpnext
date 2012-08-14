@@ -16,10 +16,11 @@
 
 from __future__ import unicode_literals
 import webnotes
+import webnotes.model.controller
 
 from webnotes.utils import add_days, cint, cstr, date_diff, flt, fmt_money, get_defaults, getdate, now, nowdate, sendmail
 
-from webnotes.model.doc import Document, addchild
+from webnotes.model.doc import Document
 from webnotes.model.controller import getlist, clone
 from webnotes.model.code import get_obj
 from webnotes import form, msgprint
@@ -28,11 +29,7 @@ from webnotes.utils.email_lib import sendmail
 
 from utilities.transaction_base import TransactionBase
 
-class DocType:
-	def __init__(self,d,dl):
-		self.doc, self.doclist = d, dl
-		self.entries = []
-
+class GLControlController(webnotes.model.controller.DocListController):
 	def get_company_currency(self,arg=''):
 		dcc = TransactionBase().get_company_currency(arg)
 		return dcc
@@ -112,21 +109,11 @@ class DocType:
 				cl = webnotes.conn.sql("select name,group_or_ledger,cost_center_name from `tabCost Center` where ifnull(parent_cost_center, '')=%s and docstatus != 2 and company_name=%s order by name asc",(parent,company),as_dict=1)
 		return {'parent':parent, 'parent_acc_name':parent_acc_name, 'cl':cl}
 
-	# Add a new account
-	# -----------------
-	def add_ac(self,arg):
-		arg = eval(arg)
-		ac = Document('Account')
-		for d in arg.keys():
-			ac[d] = arg[d]
-		ac.old_parent = ''
-		ac_obj = get_obj(doc=ac)
-		ac_obj.doc.freeze_account='No'
-		ac_obj.validate()
-		ac_obj.doc.save(1)
-		ac_obj.on_update()
-
-		return ac_obj.doc.name
+	def add_ac(self, args):
+		account_doc = {"doctype": "Account", "freeze_account": "No"}
+		account_doc.update(args)
+		account_controller = webnotes.model.insert(account_doc)
+		return account_controller.doc.name
 
 	# Add a new cost center
 	#----------------------

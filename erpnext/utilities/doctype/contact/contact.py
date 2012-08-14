@@ -16,13 +16,10 @@
 
 from __future__ import unicode_literals
 import webnotes
+import webnotes.model.controller
 
 
-class DocType:
-	def __init__(self, doc, doclist=[]):
-		self.doc = doc
-		self.doclist = doclist
-
+class ContactController(webnotes.model.controller.DocListController):
 	def autoname(self):
 		if self.doc.customer:
 			self.doc.name = self.doc.first_name + (self.doc.last_name and ' ' + self.doc.last_name or '') + '-' + self.doc.customer

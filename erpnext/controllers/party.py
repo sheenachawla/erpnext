@@ -61,22 +61,18 @@ class PartyController(DocListController):
 				self.doc.company, raise_exception=webnotes.MandatoryError)
 		return rg
 		
-	def create_account(self, det):
+	def create_account(self, account_args):
 		""" 
 			create party account head under
 			parent group mentioned in company master
 		"""
-		acc_details = {
-			'account_name':self.doc.name,
-			'group_or_ledger':'Ledger', 
-			'company': self.doc.company
-		}
-		acc_details.update(det)
-		if not webnotes.conn.get_value('Account', 
-			{"account_name": acc_details['account_name'], "company": self.doc.company}):
-			ac = get_obj('GL Control').add_ac(cstr(acc_details))
-			msgprint("Account Head: %s created" % ac)
-			return ac
+		if not webnotes.conn.get_value("Account", 
+			{"account_name": self.doc.name, "company": self.doc.company}):
+			args = {"account_name": self.doc.name, "group_or_ledger": "Ledger",
+				"company": self.doc.company}
+			args.update(account_args)
+			account_head_name = webnotes.model.get_controller("GL Control").add_ac(args)
+			webnotes.msgprint("""Account Head: "%s" created""" % account_head_name)
 
 	def on_trash(self):
 		self.delete_party_address_and_contact()

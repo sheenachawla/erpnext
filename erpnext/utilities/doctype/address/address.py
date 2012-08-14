@@ -16,14 +16,9 @@
 
 from __future__ import unicode_literals
 import webnotes
+import webnotes.model.controller
 
-from webnotes import msgprint
-
-class DocType:
-	def __init__(self, doc, doclist=[]):
-		self.doc = doc
-		self.doclist = doclist
-
+class AddressController(webnotes.model.controller.DocListController):
 	def autoname(self):
 		if self.doc.customer:
 			self.doc.name = self.doc.customer + '-' + self.doc.address_type
@@ -40,7 +35,7 @@ class DocType:
 
 	def validate_for_whom(self):
 		if not (self.doc.customer or self.doc.supplier or self.doc.sales_partner):
-			msgprint("Please enter value in atleast one of customer, supplier and sales partner field", raise_exception=1)
+			webnotes.msgprint("Please enter value in atleast one of customer, supplier and sales partner field", raise_exception=1)
 	
 	def validate_primary_address(self):
 		"""Validate that there can only be one primary address for particular customer, supplier"""
