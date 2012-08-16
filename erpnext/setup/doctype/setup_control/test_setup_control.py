@@ -51,14 +51,6 @@ class TestAccountSetup(TestBase):
 			where ifnull(parent_account, '') = '' and docstatus < 2")]
 		root_orig = ['Application of Funds (Assets)', 'Expenses', 'Income', 'Source of Funds (Liabilities)']
 		self.assertEqual(root_acc, root_orig)
-				
-	def test_account_balance(self):
-		acc_count = webnotes.conn.sql("select count(name) from `tabAccount` where docstatus < 2")[0][0]
-		acc_bal = webnotes.conn.sql("select count(name) from `tabAccount Balance` \
-			where docstatus < 2 group by fiscal_year")[0][0]
-		
-		self.assertEqual(acc_count*13, acc_bal)
-		
 		self.assertNsm('Account', 'parent_account', 'group_or_ledger')
 				
 	def test_cost_center(self):

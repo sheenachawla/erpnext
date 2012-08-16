@@ -71,7 +71,9 @@ class PartyController(DocListController):
 			args = {"account_name": self.doc.name, "group_or_ledger": "Ledger",
 				"company": self.doc.company}
 			args.update(account_args)
-			account_head_name = webnotes.model.get_controller("GL Control").add_ac(args)
+
+			import accounts.utils
+			account_head_name = accounts.utils.add_account(args)
 			webnotes.msgprint("""Account Head: "%s" created""" % account_head_name)
 
 	def on_trash(self):

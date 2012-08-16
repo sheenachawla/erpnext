@@ -603,14 +603,12 @@ class DocType(TransactionBase):
 			exact_outstanding = flt(tot_outstanding) + flt(grand_total)
 			get_obj('Account',acc_head[0][0]).check_credit_limit(acc_head[0][0], obj.doc.company, exact_outstanding)
 
-	def validate_fiscal_year(self,fiscal_year,transaction_date,dn):
+	def validate_fiscal_year(self,fiscal_year,transaction_date,field_label):
 		fy=webnotes.conn.sql("select year_start_date from `tabFiscal Year` where name='%s'"%fiscal_year)
 		ysd=fy and fy[0][0] or ""
 		yed=add_days(str(ysd),365)
 		if str(transaction_date) < str(ysd) or str(transaction_date) > str(yed):
-			msgprint("%s not within the fiscal year"%(dn))
-			raise Exception
-
+			msgprint("%s not within the fiscal year"%(field_label), raise_exception=webnotes.ValidationError)
 
 	# get against document date	self.prevdoc_date_field
 	#-----------------------------
