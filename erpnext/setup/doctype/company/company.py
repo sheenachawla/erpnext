@@ -192,11 +192,10 @@ class DocType:
 	# Create default cost center
 	# ---------------------------------------------------
 	def create_default_cost_center(self):
-		glc = get_obj('GL Control')
+		import accounts.utils
 		cc_list = [{'cost_center_name':'Root','company_name':self.doc.name,'company_abbr':self.doc.abbr,'group_or_ledger':'Group','parent_cost_center':'','old_parent':''}, {'cost_center_name':'Default CC Ledger','company_name':self.doc.name,'company_abbr':self.doc.abbr,'group_or_ledger':'Ledger','parent_cost_center':'Root - ' + self.doc.abbr,'old_parent':''}]
 		for c in cc_list:
-			glc.add_cc(str(c))
-			
+			accounts.utils.add_cost_center(c)
 			
 	# On update
 	# ---------------------------------------------------

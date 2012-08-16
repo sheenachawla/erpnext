@@ -27,7 +27,7 @@ class CostCenterController(DocListController, DocTypeNestedSet):
 		self.nsm_parent_field = 'parent_cost_center'
 				
 	def autoname(self):
-		abbr = webnotes.conn.get_value('Company', self.doc.company, 'abbr')
+		abbr = webnotes.conn.get_value('Company', self.doc.company_name, 'abbr')
 		self.doc.name = self.doc.cost_center_name + ' - ' + abbr
 		
 	def validate(self):
@@ -62,7 +62,7 @@ class CostCenterController(DocListController, DocTypeNestedSet):
 			return 1
 			
 	def convert_ledger_to_group(self):
-		if webnotes.conn.exists('GL Entry', {'cost_center': self.doc.name, 'is_cancelled': 'No'})
+		if webnotes.conn.exists('GL Entry', {'cost_center': self.doc.name, 'is_cancelled': 'No'}):
 			msgprint("Cost Center with existing transaction can not be converted to group."
 				, raise_exception=webnotes.ValidationError)
 		else:
