@@ -73,8 +73,9 @@ class PartyController(DocListController):
 			args.update(account_args)
 
 			import accounts.utils
-			account_head_name = accounts.utils.add_account(args)
-			webnotes.msgprint("""Account Head: "%s" created""" % account_head_name)
+			account_head = accounts.utils.add_account(args)
+			webnotes.msgprint("""Account Head: "%s" created""" % account_head.doc.name)
+			return account_head
 
 	def on_trash(self):
 		self.delete_party_address_and_contact()

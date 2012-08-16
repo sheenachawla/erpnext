@@ -154,15 +154,13 @@ class DocType:
 	# Create account
 	# ---------------------------------------------------
 	def add_acc(self,lst):
-		ac = Document('Account')
+		import accounts.utils
+		ac = {"freeze_account": "No"}
 		for d in self.fld_dict.keys():
 			ac[d] = (d == 'parent_account' and lst[self.fld_dict[d]]) and lst[self.fld_dict[d]] +' - '+ self.doc.abbr or lst[self.fld_dict[d]]
-		ac.old_parent = ''
-		ac_obj = get_obj(doc=ac)
-		ac_obj.doc.freeze_account='No'
-		ac_obj.validate()
-		ac_obj.doc.save(1)
-		ac_obj.on_update()
+		
+		accounts.utils.add_account(ac)
+
 		sql("commit")
 		sql("start transaction")
 
