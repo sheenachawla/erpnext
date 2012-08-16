@@ -16,16 +16,15 @@
 
 from __future__ import unicode_literals
 import webnotes
+import webnotes.model
 
 from webnotes.utils import cint, cstr, getdate, now, nowdate
-from webnotes.model.doc import Document, addchild
+from webnotes.model.doc import Document
 from webnotes.model.code import get_obj
 from webnotes import session, form, msgprint
 
-class DocType:
-	def __init__(self, d, dl):
-		self.doc, self.doclist = d, dl
-	
+from webnotes.model.controller import DocListController
+class SetupController(DocListController):
 	# Account Setup
 	# ---------------
 	def setup_account(self, args):
@@ -252,7 +251,14 @@ class DocType:
 			'Purchase Manager', 'Purchase User', 'Purchase Master Manager', 'Quality Manager', \
 			'Sales Manager', 'Sales User', 'Sales Master Manager', 'Support Manager', 'Support Team', \
 			'System Manager', 'Website Manager']
+		
+		profile_controller = webnotes.model.get_controller([pr])
+		
 		for r in roles_list:
-			d = addchild(pr, 'userroles', 'UserRole', 1)
-			d.role = r
-			d.save(1)
+			profile_controller.add_child({
+				"doctype": "UserRole",
+				"parentfield": "userroles",
+				"role": r
+			})
+
+		profile_controller.save()

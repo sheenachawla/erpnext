@@ -753,7 +753,7 @@ if(!val){if(me.dialog_fired)
 return;me.set_input_value('');}else{setTimeout(function(){if(!me.set_input_value_executed){me.set_input_value(val);}},1000);}});this.setup_validators();}
 LinkField.prototype.setup_validators=function(){var me=this;var validators=wn.model.get({"doctype":"DocType Validator","for_doctype":cur_frm.doc.doctype});var filters={"doctype":"DocType Link Filter","link_field":this.df.fieldname,"parent":$.map(validators,function(d){return d.name})}
 if(this.grid){filters["table_field"]=this.grid.field.df.fieldname;}
-this.filters=$.map(wn.model.get(filters),function(d){return[[me.df.options,d.fieldname,d.condition,d.value]]});}
+this.filters=$.map(wn.model.get(filters),function(d){var val=(d.value.indexOf('field:')==0)&&cur_frm.doc[strip(d.value.slice(6))]||d.value;return[[me.df.options,d.fieldname,d.condition,val]]});}
 LinkField.prototype.get_custom_query=function(){this.set_get_query();if(this.get_query){if(cur_frm)
 var doc=locals[cur_frm.doctype][cur_frm.docname];return this.get_query(doc,this.doctype,this.docname);}}
 LinkField.prototype.setup_buttons=function(){var me=this;me.btn.onclick=function(){var txt=$(me.txt).val();me.dialog_fired=true;me.search_dialog=new wn.ui.Search({doctype:me.df.options,txt:txt,with_filters:me.filters,df:me.df,callback:function(val){me.set_input_value(val);me.dialog_fired=false;}});}
@@ -1560,7 +1560,7 @@ if(!val){if(me.dialog_fired)
 return;me.set_input_value('');}else{setTimeout(function(){if(!me.set_input_value_executed){me.set_input_value(val);}},1000);}});this.setup_validators();}
 LinkField.prototype.setup_validators=function(){var me=this;var validators=wn.model.get({"doctype":"DocType Validator","for_doctype":cur_frm.doc.doctype});var filters={"doctype":"DocType Link Filter","link_field":this.df.fieldname,"parent":$.map(validators,function(d){return d.name})}
 if(this.grid){filters["table_field"]=this.grid.field.df.fieldname;}
-this.filters=$.map(wn.model.get(filters),function(d){return[[me.df.options,d.fieldname,d.condition,d.value]]});}
+this.filters=$.map(wn.model.get(filters),function(d){var val=(d.value.indexOf('field:')==0)&&cur_frm.doc[strip(d.value.slice(6))]||d.value;return[[me.df.options,d.fieldname,d.condition,val]]});}
 LinkField.prototype.get_custom_query=function(){this.set_get_query();if(this.get_query){if(cur_frm)
 var doc=locals[cur_frm.doctype][cur_frm.docname];return this.get_query(doc,this.doctype,this.docname);}}
 LinkField.prototype.setup_buttons=function(){var me=this;me.btn.onclick=function(){var txt=$(me.txt).val();me.dialog_fired=true;me.search_dialog=new wn.ui.Search({doctype:me.df.options,txt:txt,with_filters:me.filters,df:me.df,callback:function(val){me.set_input_value(val);me.dialog_fired=false;}});}

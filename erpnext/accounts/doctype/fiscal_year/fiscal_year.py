@@ -26,11 +26,8 @@ from webnotes import msgprint
 sql = webnotes.conn.sql
 	
 
-
-class DocType:
-	def __init__(self, d, dl):
-		self.doc, self.doclist = d,dl
-		
+from webnotes.model.controller import DocListController
+class FiscalYearController(DocListController):
 	def repost(self):
 		if not self.doc.company:
 			msgprint("Please select company", raise_exception=1)
@@ -202,6 +199,6 @@ class DocType:
 		self.create_periods()
 		self.create_account_balances()
 
-		if self.doc.get('localname', '')[:15] == 'New Fiscal Year':
+		if (self.doc.get('localname') or "")[:15] == 'New Fiscal Year':
 			for d in sql("select name from tabCompany"):
 				self.update_opening(d[0])

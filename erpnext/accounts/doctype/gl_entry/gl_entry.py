@@ -248,13 +248,14 @@ class DocType:
 	# Total outstanding can not be greater than credit limit for any time for any customer
 	#---------------------------------------------------------------------------------------------
 	def check_credit_limit(self):
-		#check for user role Freezed
-		master_type=sql("select master_type, master_name from `tabAccount` where name='%s' " %self.doc.account)
+		cust_acc = webnotes.conn.get_value("Account", self.doc.account, "customer")
 		tot_outstanding = 0	#needed when there is no GL Entry in the system for that acc head
-		if (self.doc.voucher_type=='Journal Voucher' or self.doc.voucher_type=='Sales Invoice') and (master_type and master_type[0][0]=='Customer' and master_type[0][1]):
-			dbcr = sql("select sum(debit),sum(credit) from `tabGL Entry` where account = '%s' and is_cancelled='No'" % self.doc.account)
+		if cust_acc:
+			dbcr = sql("select sum(debit), sum(credit) from `tabGL Entry` \
+				where account = '%s' and is_cancelled='No'" % self.doc.account)
 			if dbcr:
-				tot_outstanding = flt(dbcr[0][0])-flt(dbcr[0][1])+flt(self.doc.debit)-flt(self.doc.credit)
+				tot_outstanding = flt(dbcr[0][0]) - flt(dbcr[0][1]) + flt(self.doc.debit) - flt(self.doc.credit)
+				
 			get_obj('Account',self.doc.account).check_credit_limit(self.doc.account, self.doc.company, tot_outstanding)
 	
 	#for opening entry account can not be pl account
@@ -278,7 +279,7 @@ class DocType:
 
 	# On Update
 	#----------
-	def on_update(self,adv_adj, cancel, update_outstanding = 'Yes'):
+	def on_update(self,adv_adj=0, cancel=0, update_outstanding = 'Yes'):
 		# Account must be ledger, active and not freezed
 		self.validate_account_details(adv_adj)
 		
