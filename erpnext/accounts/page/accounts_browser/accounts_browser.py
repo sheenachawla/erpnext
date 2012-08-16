@@ -1,10 +1,10 @@
 from __future__ import unicode_literals
 import webnotes
-from webnotes.utils import get_defaults, cstr
+from webnotes.utils import cstr, nowdate
 
 @webnotes.whitelist()
 def get_companies():
-	return [r[0] for r in webnotes.conn.sql("""select name from tabCompany where docstatus!=2""")]
+	return [r[0] for r in webnotes.connn.sql("""select name from tabCompany where docstatus!=2""")]
 	
 @webnotes.whitelist()
 def get_children():
@@ -33,17 +33,9 @@ def get_children():
 				args['parent'], as_dict=1)
 				
 	if ctype == 'Account':
-		currency = webnotes.conn.sql("select default_currency from `tabCompany` where name = %s", company)[0][0]
+		currency = webnotes.conn.get_value('Company', company, 'default_currency')
+		import accounts.utils
 		for each in acc:
-			bal = webnotes.conn.sql("select balance from `tabAccount Balance` \
-				where account = %s and period = %s", (each.get('value'), get_defaults('fiscal_year')))[0][0]
+			bal = accounts.utils.get_balance_on_specific_date(each.get('value'), nowdate)
 			each['balance'] = currency + ' ' + cstr(bal)
-		
 	return acc
-	
-
-@webnotes.whitelist()		
-def get_account_balance():
-	args = webnotes.form_dict
-	acc = args['acc']
-	return 'Rs. 100'

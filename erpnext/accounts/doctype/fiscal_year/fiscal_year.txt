@@ -3,118 +3,102 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-07-03 13:30:47',
-		'docstatus': 0,
-		'modified': '2012-07-11 14:56:41',
-		'modified_by': u'Administrator',
-		'owner': u'Administrator'
+		u'creation': datetime.datetime(2012, 7, 26, 13, 40, 8),
+		u'docstatus': 0L,
+		u'modified': datetime.datetime(2012, 8, 14, 17, 54, 20),
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
 	},
 
 	# These values are common for all DocType
 	{
 		'_last_update': u'1322549700',
-		'allow_trash': 1,
+		'allow_trash': 1L,
 		'autoname': u'field:year',
 		'colour': u'White:FFF',
 		'default_print_format': u'Standard',
 		'description': u'**Fiscal Year** represents a Financial Year. All accounting entries and other major transactions are tracked against **Fiscal Year**.',
-		'doctype': 'DocType',
+		u'doctype': u'DocType',
 		'document_type': u'Master',
 		'module': u'Accounts',
-		'name': '__common__',
+		u'name': u'__common__',
 		'section_style': u'Tabbed',
 		'server_code_error': u' ',
-		'show_in_menu': 0,
-		'version': 1
+		'show_in_menu': 0L,
+		'version': 1L
 	},
 
 	# These values are common for all DocField
 	{
-		'doctype': u'DocField',
-		'name': '__common__',
+		u'doctype': u'DocField',
+		u'name': u'__common__',
 		'parent': u'Fiscal Year',
 		'parentfield': u'fields',
-		'parenttype': u'DocType'
+		'parenttype': u'DocType',
+		'permlevel': 0L
 	},
 
 	# These values are common for all DocPerm
 	{
-		'cancel': 1,
-		'create': 1,
-		'doctype': u'DocPerm',
-		'name': '__common__',
+		'cancel': 1L,
+		'create': 1L,
+		u'doctype': u'DocPerm',
+		u'name': u'__common__',
 		'parent': u'Fiscal Year',
 		'parentfield': u'permissions',
 		'parenttype': u'DocType',
-		'permlevel': 0,
-		'read': 1,
+		'permlevel': 0L,
+		'read': 1L,
 		'role': u'System Manager',
-		'write': 1
+		'write': 1L
 	},
 
 	# DocType, Fiscal Year
 	{
-		'doctype': 'DocType',
-		'name': u'Fiscal Year'
-	},
-
-	# DocPerm
-	{
-		'amend': 0,
-		'doctype': u'DocPerm',
-		'submit': 0
-	},
-
-	# DocPerm
-	{
-		'doctype': u'DocPerm'
+		u'doctype': u'DocType',
+		u'name': u'Fiscal Year'
 	},
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'year_details',
 		'fieldtype': u'Section Break',
 		'label': u'Fiscal Year Details',
-		'oldfieldtype': u'Section Break',
-		'permlevel': 0
-	},
-
-	# DocField
-	{
-		'doctype': u'DocField',
-		'fieldname': u'trash_reason',
-		'fieldtype': u'Small Text',
-		'label': u'Trash Reason',
-		'oldfieldname': u'trash_reason',
-		'oldfieldtype': u'Small Text',
-		'permlevel': 1
+		'oldfieldtype': u'Section Break'
 	},
 
 	# DocField
 	{
 		'colour': u'White:FFF',
 		'description': u'For e.g. 2012, 2012-13',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'year',
 		'fieldtype': u'Data',
 		'label': u'Year Name',
 		'oldfieldname': u'year',
 		'oldfieldtype': u'Data',
-		'permlevel': 0,
-		'reqd': 1
+		'reqd': 1L
 	},
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'year_start_date',
 		'fieldtype': u'Date',
 		'label': u'Year Start Date',
 		'oldfieldname': u'year_start_date',
 		'oldfieldtype': u'Date',
-		'permlevel': 0,
-		'reqd': 1
+		'reqd': 1L
+	},
+
+	# DocField
+	{
+		u'doctype': u'DocField',
+		'fieldname': u'year_end_date',
+		'fieldtype': u'Date',
+		'label': u'Year End Date',
+		'reqd': 1L
 	},
 
 	# DocField
@@ -122,14 +106,25 @@
 		'colour': u'White:FFF',
 		'default': u'No',
 		'description': u'Entries are not allowed against this Fiscal Year if the year is closed.',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'is_fiscal_year_closed',
 		'fieldtype': u'Select',
 		'label': u'Year Closed',
 		'oldfieldname': u'is_fiscal_year_closed',
 		'oldfieldtype': u'Select',
 		'options': u'\nNo\nYes',
-		'permlevel': 0,
-		'reqd': 0
+		'reqd': 0L
+	},
+
+	# DocPerm
+	{
+		'amend': 0L,
+		u'doctype': u'DocPerm',
+		'submit': 0L
+	},
+
+	# DocPerm
+	{
+		u'doctype': u'DocPerm'
 	}
 ]

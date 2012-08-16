@@ -221,9 +221,6 @@ class DocType:
 			# delete gl entry
 			sql("delete from `tabGL Entry` where company = %s", self.doc.name)
 
-			#delete tabAccount Balance
-			sql("delete ab.* from `tabAccount Balance` ab, `tabAccount` a where ab.account = a.name and a.company = %s", self.doc.name)
-
 			#delete tabAccount
 			sql("delete from `tabAccount` where company = %s order by lft desc, rgt desc", self.doc.name)
 			

@@ -17,7 +17,7 @@
 from __future__ import unicode_literals
 import webnotes
 
-from webnotes.utils import cint, cstr, getdate, now, nowdate
+from webnotes.utils import cint, cstr, getdate, now, nowdate, get_first_day, get_last_day
 from webnotes.model.doc import Document, addchild
 from webnotes.model.code import get_obj
 from webnotes import session, form, msgprint
@@ -33,7 +33,7 @@ class DocType:
 		args = json.loads(args)
 		webnotes.conn.begin()
 
-		curr_fiscal_year, fy_start_date, fy_abbr = self.get_fy_details(args.get('fy_start'))
+		curr_fiscal_year, fy_abbr, fy_start_date, fy_end_date = self.get_fy_details(args.get('fy_start'))
 
 		args['name'] = webnotes.session.get('user')
 
@@ -49,7 +49,8 @@ class DocType:
 		master_dict = {
 			'Fiscal Year':{
 				'year': curr_fiscal_year,
-				'year_start_date': fy_start_date
+				'year_start_date': fy_start_date,
+				'year_end_date': fy_end_date
 			}
 		}
 		self.create_records(master_dict)
@@ -185,15 +186,16 @@ class DocType:
 		curr_year = getdate(nowdate()).year
 		if cint(getdate(nowdate()).month) < cint((st[fy_start].split('-'))[0]):
 			curr_year = getdate(nowdate()).year - 1
-		stdt = cstr(curr_year)+'-'+cstr(st[fy_start])
-		#eddt = sql("select DATE_FORMAT(DATE_SUB(DATE_ADD('%s', INTERVAL 1 YEAR), INTERVAL 1 DAY),'%%d-%%m-%%Y')" % (stdt.split('-')[2]+ '-' + stdt.split('-')[1] + '-' + stdt.split('-')[0]))
+		start_date = cstr(curr_year)+'-'+cstr(st[fy_start])
+		end_date = get_last_day(get_first_day(start_date,0,11)).strftime('%Y-%m-%d')
+		
 		if(fy_start == '1st Jan'):
 			fy = cstr(getdate(nowdate()).year)
 			abbr = cstr(fy)[-2:]
 		else:
 			fy = cstr(curr_year) + '-' + cstr(curr_year+1)
 			abbr = cstr(curr_year)[-2:] + '-' + cstr(curr_year+1)[-2:]
-		return fy, stdt, abbr
+		return fy, abbr, start_date, end_date
 
 
 	# Create Company and Fiscal Year

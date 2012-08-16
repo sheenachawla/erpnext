@@ -74,7 +74,8 @@ class PartyController(DocListController):
 		acc_details.update(det)
 		if not webnotes.conn.get_value('Account', 
 			{"account_name": acc_details['account_name'], "company": self.doc.company}):
-			ac = get_obj('GL Control').add_ac(cstr(acc_details))
+			import accounts.utils
+			ac = accounts.utils.add_account(cstr(acc_details))
 			msgprint("Account Head: %s created" % ac)
 			return ac
 

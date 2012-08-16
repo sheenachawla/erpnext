@@ -16,11 +16,7 @@
 
 from __future__ import unicode_literals
 import webnotes
-
-from webnotes.utils import flt, fmt_money, get_defaults
-
-from webnotes.model.doc import Document
-from webnotes.model.code import get_obj
+from webnotes.utils import flt, fmt_money
 from webnotes import msgprint
 from webnotes.model.controller import DocListController
 
@@ -50,14 +46,15 @@ class AccountController(DocListController):
 		"""
 		if self.doc.parent_account:
 			if self.doc.parent_account == self.doc.name:
-				msgprint("You can not assign itself as parent account", raise_exception=webnotes.CircularLinkError)
+				msgprint("You can not assign itself as parent account"
+					, raise_exception=webnotes.CircularLinkError)
 			elif not self.doc.is_pl_account or not self.doc.debit_or_credit:
 				par = webnotes.conn.get_value("Account", self.doc.parent_account, ["is_pl_account", "debit_or_credit"])
 				self.doc.is_pl_account = par[0]
 				self.doc.debit_or_credit = par[1]
-		elif self.doc.account_name not in ['Income','Source of Funds', 'Expenses','Application of Funds']:
+		elif self.doc.account_name not in ['Income','Source of Funds (Liabilities)', \
+			'Expenses', 'Application of Funds (Assets)']:
 			msgprint("Parent Account is mandatory", raise_exception=webnotes.MandatoryError)
-			
 	
 	def validate_duplicate_account(self):
 		"""Account name must be unique"""
@@ -67,34 +64,36 @@ class AccountController(DocListController):
 				
 	def validate_root_details(self):
 		#does not exists parent
-		if self.doc.account_name in ['Income','Source of Funds', 'Expenses','Application of Funds'] and self.doc.parent_account:
+		if self.doc.account_name in ['Income','Source of Funds (Liabilities)', \
+			'Expenses', 'Application of Funds (Assets)'] and self.doc.parent_account:
 			msgprint("You can not assign parent for root account", raise_exception=webnotes.ValidationError)
 
 		# Debit / Credit
-		if self.doc.account_name in ['Income','Source of Funds']:
+		if self.doc.account_name in ['Income','Source of Funds (Liabilities)']:
 			self.doc.debit_or_credit = 'Credit'
-		elif self.doc.account_name in ['Expenses','Application of Funds']:
+		elif self.doc.account_name in ['Expenses','Application of Funds (Assets)']:
 			self.doc.debit_or_credit = 'Debit'
 				
 		# Is PL Account 
 		if self.doc.account_name in ['Income','Expenses']:
 			self.doc.is_pl_account = 'Yes'
-		elif self.doc.account_name in ['Source of Funds','Application of Funds']:
+		elif self.doc.account_name in ['Source of Funds (Liabilities)','Application of Funds (Assets)']:
 			self.doc.is_pl_account = 'No'
 
 	def validate_mandatory(self):
 		if not self.doc.debit_or_credit or not self.doc.is_pl_account:
-			msgprint("'Debit or Credit' and 'Is PL Account' field is mandatory", raise_exception=webnotes.MandatoryError)
+			msgprint("'Debit or Credit' and 'Is PL Account' field is mandatory"
+				, raise_exception=webnotes.MandatoryError)
 
 	def convert_group_to_ledger(self):
 		# if child exists
 		if webnotes.conn.exists("Account", {"parent_account": self.doc.name}):
 			msgprint("Account: %s has existing child. You can not convert \
 				this account to ledger.	To proceed, move those children under \
-				another parent and try again," % self.doc.name, raise_exception=webnotes.ValidationError)
+				another parent and try again," 
+				% self.doc.name, raise_exception=webnotes.ValidationError)
 		else:
-			self.doc.group_or_ledger = 'Ledger'
-			self.doc.save()
+			webnotes.conn.set(self.doc, 'group_or_ledger', 'Ledger')
 			return 1
 			
 	def convert_ledger_to_group(self):
@@ -102,11 +101,10 @@ class AccountController(DocListController):
 			msgprint("Account with existing transaction can not be converted to group.", 
 				raise_exception=webnotes.ValidationError)
 		elif self.doc.customer or self.doc.supplier or self.doc.account_type:
-			msgprint("Cannot covert to Group because Customer/Supplier/Account Type is selected.", 
-				raise_exception=webnotes.ValidationError)
+			msgprint("Cannot covert to Group because Customer/Supplier/Account Type is selected."
+				, raise_exception=webnotes.ValidationError)
 		else:
-			self.doc.group_or_ledger = 'Group'
-			self.doc.save()
+			webnotes.conn.set(self.doc, 'group_or_ledger', 'Group')
 			return 1
 
 	def check_gle_exists(self):

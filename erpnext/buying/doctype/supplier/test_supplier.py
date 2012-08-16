@@ -35,20 +35,16 @@ def make_supplier_type():
 class TestSupplier(TestBase):
 	def test_supplier_creation(self):
 		make_supplier_type()
-		supplier = base_supplier.copy()
-		supplier.update({"supplier_name":"Apple", "supplier_type": "Electronics"})
-		webnotes.model.insert(supplier)
+		webnotes.model.insert_variants(base_supplier, [{"supplier_name":"Apple", "supplier_type": "Electronics"}])
 		self.assertTrue(webnotes.conn.exists("Supplier", "Apple"))
 			
 		# test supplier creation with naming series
 		webnotes.conn.set_default("supp_master_name", "Naming Series")
 		# without series
-		self.assertRaises(webnotes.MandatoryError, webnotes.model.insert, [supplier])
+		self.assertRaises(webnotes.MandatoryError, webnotes.model.insert, [base_supplier])
 		
 		# with series
-		supplier = base_supplier.copy()
-		supplier["naming_series"] = "SUPP"
-		webnotes.model.insert(supplier)
+		webnotes.model.insert_variants(base_supplier, [{'naming_series': 'SUPP'}])
 		self.assertEqual(webnotes.conn.get_value("Supplier", \
 			{"supplier_name": "test_supplier"}, "name")[:4], "SUPP")
 		

@@ -148,6 +148,7 @@ patch_dict = {
 	'12_08' : [
 		'report_supplier_quotations',
 		'task_allocated_to_assigned',
+		'accounts_cleanup',
 	],
 
 }
