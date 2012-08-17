@@ -3143,7 +3143,10 @@ div.fix_ff_cursor { overflow: auto; }
 
 /* --- Layout --- */
 
-div.comment { color: #444; }
+.comment { 
+	font-family: 'Marck Script';
+	font-size: 15px;
+}
 
 .small {
 	font-size: 12px;
@@ -4102,6 +4105,7 @@ div.appframe-toolbar {
   font-weight: 400;
   src: local('Marck Script'), local('MarckScript-Regular'), url('fonts/marckscript.woff') format('woff');
 }
+
 
 
 /*
