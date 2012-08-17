@@ -21,17 +21,15 @@ import webnotes.model.controller
 from webnotes.utils import add_days, cint, cstr, date_diff, flt, fmt_money, get_defaults, getdate, now, nowdate, sendmail
 
 from webnotes.model.doc import Document
-from webnotes.model.controller import getlist, clone
-from webnotes.model.code import get_obj
+from webnotes.model.controller import DocListController
 from webnotes import form, msgprint
 from webnotes.utils.email_lib import sendmail
 
 
 from utilities.transaction_base import TransactionBase
 
-class GLController(webnotes.model.controller.DocListController):
-	def __init__(self, doctype, name=None):
-		super(GLController, self).__init__(doctype, name)
+class GLControlController(DocListController):
+	def setup(self):
 		self.entries = []
 
 	def get_period_difference(self,arg, cost_center =''):

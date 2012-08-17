@@ -16,21 +16,18 @@
 
 from __future__ import unicode_literals
 import webnotes
-import webnotes.model.controller
+from webnotes.model.controller import DocListController
 
 from webnotes.utils import cstr, now, sendmail, validate_email_add
 
 from webnotes.model.doc import Document, make_autoname
 
 
-from webnotes.model.code import get_obj
 from webnotes import session, msgprint
 
 sql = webnotes.conn.sql
 	
-
-
-class LeadController(webnotes.model.controller.DocListController):
+class LeadController(DocListController):
 	def check_status(self):
 		chk = sql("select status from `tabLead` where name=%s", self.doc.name)
 		chk = chk and chk[0][0] or ''
@@ -120,7 +117,8 @@ class LeadController(webnotes.model.controller.DocListController):
 					receiver_list.append(d.other_mobile_no)
 		
 		if receiver_list:
-			msgprint(get_obj('SMS Control', 'SMS Control').send_sms(receiver_list, self.doc.sms_message))
+			msgprint(webnotes.model.get_controller("SMS Control", "SMS Control").send_sms(
+				receiver_list, self.doc.sms_message))
 			
 			# TODO: add to Communication
 			

@@ -20,11 +20,9 @@ import webnotes
 from webnotes import msgprint
 	
 
-
-class DocType:
-	def __init__(self, doc, doclist=[]):
-		self.doc = doc
-		self.doclist = doclist
+from webnotes.model.controller import DocListController
+class CustomerGroupController(DocListController):
+	def setup(self):
 		self.nsm_parent_field = 'parent_customer_group';
 
 

@@ -22,20 +22,16 @@ from webnotes.model.controller import getlist
 from webnotes.model.code import get_obj
 from webnotes import msgprint
 
-
+import webnotes.model
 from utilities.transaction_base import TransactionBase
 
-class DocType(TransactionBase):
-	def __init__(self, doc, doclist=[]):
-		self.doc = doc
-		self.doclist = doclist
+class DeliveryNoteController(TransactionBase):
+	def setup(self):
 		self.tname = 'Delivery Note Item'
 		self.fname = 'delivery_note_details'
 
-
 	def autoname(self):
 		self.doc.name = make_autoname(self.doc.naming_series+'.#####')
-
 
 	def validate_fiscal_year(self):
 		get_obj('Sales Common').validate_fiscal_year(self.doc.fiscal_year,self.doc.posting_date,'Posting Date')
@@ -322,10 +318,8 @@ class DocType(TransactionBase):
 			""", self.doc.name)
 
 		if res and res[0][1]>0:
-			from webnotes.model.controller import DocListController
 			for r in res:
-				ps = DocListController(dt='Packing Slip', dn=r[0])
-				ps.cancel()
+				webnotes.model.get_controller("Packing Slip", r[0]).cancel()
 			webnotes.msgprint("%s Packing Slip(s) Cancelled" % res[0][1])
 
 

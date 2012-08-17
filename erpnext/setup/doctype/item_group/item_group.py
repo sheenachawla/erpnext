@@ -18,10 +18,8 @@ from __future__ import unicode_literals
 import webnotes
 
 
-from webnotes.utils.nestedset import DocTypeNestedSet
+from webnotes.utils.nestedset import NestedSetController
 
-class DocType(DocTypeNestedSet):
-	def __init__(self, doc, doclist=[]):
-		self.doc = doc
-		self.doclist = doclist
+class ItemGroupController(NestedSetController):
+	def setup(self):
 		self.nsm_parent_field = 'parent_item_group'

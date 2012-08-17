@@ -17,7 +17,6 @@
 from __future__ import unicode_literals
 import webnotes
 from webnotes.utils import flt, nowdate
-from webnotes.model.code import get_obj
 
 @webnotes.whitelist()
 def get_default_bank_account():

@@ -20,11 +20,10 @@ import webnotes.model
 
 from webnotes.utils import cint, cstr, getdate, now, nowdate, get_first_day, get_last_day
 from webnotes.model.doc import Document
-from webnotes.model.code import get_obj
 from webnotes import session, form, msgprint
 
 from webnotes.model.controller import DocListController
-class SetupController(DocListController):
+class SetupControlController(DocListController):
 	# Account Setup
 	# ---------------
 	def setup_account(self, args):
@@ -201,39 +200,23 @@ class SetupController(DocListController):
 	# ------------------------------- 
 	def create_records(self, master_dict):
 		for d in master_dict.keys():
-			rec = Document(d)
-			for fn in master_dict[d].keys():
-				rec[fn] = master_dict[d][fn]
-			# add blank fields
-			for fn in rec:
-				if fn not in master_dict[d].keys()+['name','owner','doctype']:
-					rec[fn] = ''
-			rec_obj = get_obj(doc=rec)
-			rec_obj.doc.save(1)
-			if hasattr(rec_obj, 'on_update'):
-				rec_obj.on_update()
-
+			master_dict[d]["doctype"] = d
+			webnotes.model.insert(master_dict[d])
 
 	# Set System Defaults
 	# --------------------
 	def set_defaults(self, def_args):
-		ma_obj = get_obj('Global Defaults','Global Defaults')
-		for d in def_args.keys():
-			ma_obj.doc[d] = def_args[d]
-		ma_obj.doc.save()
-		ma_obj.on_update()
-
+		args = def_args.copy()
+		args.update({"doctype": "Global Defaults", "name": "Global Defaults"})
+		webnotes.model.update(args)
 
 	# Set Control Panel Defaults
 	# --------------------------
 	def set_cp_defaults(self, industry, country, timezone, company_name):
-		cp = Document('Control Panel','Control Panel')
-		cp.company_name = company_name
-		cp.industry = industry
-		cp.time_zone = timezone
-		cp.country = country
-		cp.save()
-			
+		webnotes.model.update({"doctype": "Control Panel", "name": "Control Panel",
+			"company_name": company_name, "industry": industry, "time_zone": timezone,
+			"country": country})
+
 	# Create Profile
 	# --------------
 	def create_profile(self, user_email, user_fname, user_lname, pwd=None):

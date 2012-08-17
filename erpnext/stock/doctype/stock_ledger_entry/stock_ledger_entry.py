@@ -21,12 +21,8 @@ from webnotes.utils import cstr, cint, flt, cstr, getdate
 from webnotes import msgprint
 
 
-
-class DocType:
-	def __init__(self, doc, doclist=[]):
-		self.doc = doc
-		self.doclist = doclist
-	
+from webnotes.model.controller import DocListController
+class StockLedgerEntryController(DocListController):
 	#check for item quantity available in stock
 	def actual_amt_check(self):
 		if self.doc.batch_no:
