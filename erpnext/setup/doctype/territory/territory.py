@@ -17,19 +17,15 @@
 from __future__ import unicode_literals
 import webnotes
 
-from webnotes.model.controller import getlist
 from webnotes.utils import flt
 
-from webnotes.utils.nestedset import DocTypeNestedSet
+from webnotes.utils.nestedset import NestedSetController
 	
-class DocType(DocTypeNestedSet):
-	def __init__(self, doc, doclist=[]):
-		self.doc = doc
-		self.doclist = doclist
+class TerritoryController(NestedSetController):
+	def setup(self):
 		self.nsm_parent_field = 'parent_territory'
 
-	def validate(self): 
-		for d in getlist(self.doclist, 'target_details'):
+	def validate(self):
+		for d in self.doclist.get({"parentfield": "target_details"}):
 			if not flt(d.target_qty) and not flt(d.target_amount):
-				msgprint("Either target qty or target amount is mandatory.")
-				raise Exception
+				msgprint("Either target qty or target amount is mandatory.", raise_exception=1)

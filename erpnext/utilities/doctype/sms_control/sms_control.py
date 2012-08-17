@@ -21,15 +21,11 @@ from webnotes.utils import load_json, nowdate, cstr
 from webnotes.model.code import get_obj
 from webnotes.model.doc import Document
 from webnotes import msgprint
-from webnotes.model.controller import getlist
 
 sql = webnotes.conn.sql
-	
-class DocType:
-	def __init__(self, doc, doclist=[]):
-		self.doc = doc
-		self.doclist = doclist
 
+from webnotes.model.controller import DocListController
+class SMSControlController(DocListController):
 	# validate receiver numbers
 	# =========================================================
 	def validate_receiver_nos(self,receiver_list):

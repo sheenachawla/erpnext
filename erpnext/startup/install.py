@@ -34,24 +34,21 @@ def set_home_page():
 	
 def save_features_setup():
 	""" save global defaults and features setup"""
-	from webnotes.model.code import get_obj
-	flds = ['fs_item_serial_nos', 'fs_item_batch_nos', 'fs_brands', 'fs_item_barcode', 'fs_item_advanced', \
-		'fs_packing_details', 'fs_item_group_in_details', 'fs_exports', 'fs_imports', 'fs_discounts', \
-		'fs_purchase_discounts', 'fs_after_sales_installations', 'fs_projects', 'fs_sales_extras', \
+	doc = {"doctype": "Features Setup", "name": "Features Setup"}
+
+	# store value as 1 for all these fields
+	flds = ['fs_item_serial_nos', 'fs_item_batch_nos', 'fs_brands', 'fs_item_barcode', 'fs_item_advanced',
+		'fs_packing_details', 'fs_item_group_in_details', 'fs_exports', 'fs_imports', 'fs_discounts',
+		'fs_purchase_discounts', 'fs_after_sales_installations', 'fs_projects', 'fs_sales_extras',
 		'fs_recurring_invoice', 'fs_pos', 'fs_manufacturing', 'fs_quality', 'fs_page_break', 'fs_more_info'
 	]
-	fs = get_obj('Features Setup', 'Features Setup')
-	for f in flds:
-		fs.doc[f] = 1
-	fs.doc.save()
-	fs.validate()
-
+	doc.update(dict(zip(flds, [1]*len(flds))))
+	
+	webnotes.model.insert(doc)
 	
 def set_all_roles_to_admin():
 	"""Set all roles to administrator profile"""
-	from webnotes.model.code import get_obj
-	prof = get_obj('Profile', 'Administrator')
-	get_obj('Setup Control').add_roles(prof.doc)
+	webnotes.model.get_controller("Setup Control").add_roles(webnotes.model.get("Profile", "Administrator")[0])
 	
 def update_patch_log():
 	"""Update patch version and patch log"""
@@ -77,19 +74,9 @@ def create_doc(records, validate=0, on_update=0):
 			create_single_doc(data, validate, on_update)
 
 			
-def	create_single_doc(data, validate=0, on_update=0):
-	from webnotes.model.doc import Document
-	from webnotes.model.code import get_obj
-
-	d = Document(data['doctype'])
-	d.update(data)
-	d.save(1)
-	doc_obj = get_obj(data['doctype'], d.name)
-	if validate and hasattr(doc_obj, 'validate'):
-		doc_obj.validate()
-	if on_update and hasattr(doc_obj, 'on_update'):
-		doc_obj.on_update()
-	#print 'Created %(doctype)s %(name)s' % d
+def create_single_doc(data, validate=0, on_update=0):
+	webnotes.model.insert(data)
+	#print 'Created %(doctype)s %(name)s' % data
 
 	
 def create_default_roles():

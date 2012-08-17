@@ -19,7 +19,6 @@ import webnotes
 import webnotes.model
 from webnotes.utils import cstr, get_defaults
 from webnotes.model.doc import Document, make_autoname
-from webnotes.model.code import get_obj
 from webnotes import msgprint
 from webnotes.model.controller import DocListController
 
