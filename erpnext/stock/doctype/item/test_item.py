@@ -52,7 +52,7 @@ class TestItem(TestBase):
 		
 		# test item creation with autoname
 		webnotes.model.insert_variants(base_item, [{
-			"item_code": "Home Desktop 200"
+			"item_code": "Home Desktop 200",
 		}])
 		self.assertTrue(webnotes.conn.exists("Item", "Home Desktop 200"))
 
@@ -171,8 +171,8 @@ class TestItem(TestBase):
 		webnotes.model.insert([item])
 		
 		# update account with tax rate
-		acc = webnotes.model.get("Account", "Sales Promotion Expenses - EW")[0]
-		acc.fields.update({"tax_rate": 5.0})
+		acc = webnotes.model.get_controller("Account", "Sales Promotion Expenses - EW").doc
+		acc.update({"tax_rate": 5.0})
 		acc.save()
 		
 		# test if correct value is fetched

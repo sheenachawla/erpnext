@@ -57,7 +57,7 @@ class DocType(TransactionBase):
 				
 			for i in lst:
 				val = pos and pos[0][i] or ''
-				self.doc.fields[i] = val
+				self.doc[i] = val
 			self.set_pos_item_values()
 			
 			val = pos and flt(pos[0]['conversion_rate']) or 0	
@@ -163,14 +163,14 @@ class DocType(TransactionBase):
 		else:
 			obj = get_obj('Sales Common')
 			for doc in self.doclist:
-				if doc.fields.get('item_code'):
-					arg = {'item_code':doc.fields.get('item_code'), 'income_account':doc.fields.get('income_account'), 
-						'cost_center': doc.fields.get('cost_center'), 'warehouse': doc.fields.get('warehouse')};
+				if doc.get('item_code'):
+					arg = {'item_code':doc.get('item_code'), 'income_account':doc.get('income_account'), 
+						'cost_center': doc.get('cost_center'), 'warehouse': doc.get('warehouse')};
 
 					ret = self.get_pos_details(arg)
 					for r in ret:
-						if not doc.fields.get(r):
-							doc.fields[r] = ret[r]		
+						if not doc.get(r):
+							doc[r] = ret[r]		
 
 
 	def get_pos_details(self, args, ret = {}):
@@ -365,7 +365,7 @@ class DocType(TransactionBase):
 			if webnotes.conn.get_value('Global Defaults', 'Global Defaults', dic[i]) == 'Yes':
 				for d in getlist(self.doclist,'entries'):
 					if webnotes.conn.get_value('Item', d.item_code, 'is_stock_item') == 'Yes' \
-						and not d.fields[i.lower().replace(' ','_')]:
+						and not d[i.lower().replace(' ','_')]:
 						msgprint("%s is mandatory for stock item which is not mentioed against item: %s"%(i,d.item_code), raise_exception=1)
 
 

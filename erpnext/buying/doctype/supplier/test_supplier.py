@@ -35,20 +35,16 @@ def make_supplier_type():
 class TestSupplier(TestBase):
 	def test_supplier_creation(self):
 		make_supplier_type()
-		supplier = base_supplier.copy()
-		supplier.update({"supplier_name":"Apple", "supplier_type": "Electronics"})
-		webnotes.model.insert(supplier)
+		webnotes.model.insert_variants(base_supplier, [{"supplier_name":"Apple", "supplier_type": "Electronics"}])
 		self.assertTrue(webnotes.conn.exists("Supplier", "Apple"))
 			
 		# test supplier creation with naming series
 		webnotes.conn.set_default("supp_master_name", "Naming Series")
 		# without series
-		self.assertRaises(webnotes.MandatoryError, webnotes.model.insert, [supplier])
+		self.assertRaises(webnotes.MandatoryError, webnotes.model.insert, [base_supplier])
 		
 		# with series
-		supplier = base_supplier.copy()
-		supplier["naming_series"] = "SUPP"
-		webnotes.model.insert(supplier)
+		webnotes.model.insert_variants(base_supplier, [{'naming_series': 'SUPP'}])
 		self.assertEqual(webnotes.conn.get_value("Supplier", \
 			{"supplier_name": "test_supplier"}, "name")[:4], "SUPP")
 		
@@ -78,7 +74,7 @@ class TestSupplier(TestBase):
 			
 	def test_supplier_deletion(self):		
 		supp = base_supplier.copy()
-		webnotes.model.insert(supp, ignore_fields=1)
+		webnotes.model.insert(supp)
 		
 		webnotes.model.delete_doc('Supplier', 'test_supplier')
 		
@@ -87,7 +83,7 @@ class TestSupplier(TestBase):
 		self.assertFalse(webnotes.conn.exists("Account", "Robert Smith-test_supplier"))
 		
 	def test_supplier_renaming(self):
-		webnotes.model.insert(base_supplier, ignore_fields=1)
+		webnotes.model.insert(base_supplier)
 		
 		from webnotes.model.rename_doc import rename_doc
 		rename_doc("Supplier", "test_supplier", "test_supplier_renamed")

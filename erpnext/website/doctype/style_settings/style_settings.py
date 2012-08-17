@@ -41,7 +41,7 @@ class DocType:
 		from webnotes.session_cache import clear_cache
 		clear_cache('Guest')
 		
-		del self.doc.fields['small_font_size']
+		del self.doc['small_font_size']
 	
 	def on_update(self):
 		"""rebuild pages"""

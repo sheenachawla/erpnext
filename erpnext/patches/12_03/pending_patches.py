@@ -62,6 +62,6 @@ def execute():
 		rs = sql("select fieldname from tabDocField where parent='Features Setup' and fieldname is not null")
 		fs = get_obj('Features Setup', 'Features Setup')
 		for d in rs:
-			fs.doc.fields[d[0]] = 1
+			fs.doc[d[0]] = 1
 		fs.doc.save()
 		fs.validate()

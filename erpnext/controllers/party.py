@@ -30,7 +30,7 @@ class PartyController(DocListController):
 			If exists, do not allow saving because it will conflict in party account
 		"""
 		if get_defaults(global_naming_key) == naming_based_on:
-			party_name = self.doc.fields[naming_based_on.lower().replace(' ', '_')]
+			party_name = self.doc[naming_based_on.lower().replace(' ', '_')]
 			if webnotes.conn.exists(opp_dt, party_name):
 				msgprint("You already have a %s with same name, please change the %s name"
 				 	% (opp_dt, self.doc.doctype.lower()), raise_exception=webnotes.NameError)
@@ -51,7 +51,7 @@ class PartyController(DocListController):
 			set credit_days = %s, credit_limit = %s
 			where %s = %s
 		"""% ('%s', '%s', self.doc.doctype.lower(), '%s'), 
-		(self.doc.credit_days, self.doc.fields.get('credit_limit', 0), self.doc.name))
+		(self.doc.credit_days, self.doc.get('credit_limit', 0), self.doc.name))
 
 	def get_party_group(self, fld):
 		"""Returns Parent Account of customer/supplier from company master"""
@@ -61,22 +61,21 @@ class PartyController(DocListController):
 				self.doc.company, raise_exception=webnotes.MandatoryError)
 		return rg
 		
-	def create_account(self, det):
+	def create_account(self, account_args):
 		""" 
 			create party account head under
 			parent group mentioned in company master
 		"""
-		acc_details = {
-			'account_name':self.doc.name,
-			'group_or_ledger':'Ledger', 
-			'company': self.doc.company
-		}
-		acc_details.update(det)
-		if not webnotes.conn.get_value('Account', 
-			{"account_name": acc_details['account_name'], "company": self.doc.company}):
-			ac = get_obj('GL Control').add_ac(cstr(acc_details))
-			msgprint("Account Head: %s created" % ac)
-			return ac
+		if not webnotes.conn.get_value("Account", 
+			{"account_name": self.doc.name, "company": self.doc.company}):
+			args = {"account_name": self.doc.name, "group_or_ledger": "Ledger",
+				"company": self.doc.company}
+			args.update(account_args)
+
+			import accounts.utils
+			account_head = accounts.utils.add_account(args)
+			webnotes.msgprint("""Account Head: "%s" created""" % account_head.doc.name)
+			return account_head
 
 	def on_trash(self):
 		self.delete_party_address_and_contact()

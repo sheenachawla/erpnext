@@ -56,15 +56,15 @@ class DocType(TransactionBase):
 		else:
 			obj = get_obj('Purchase Common')
 			for doc in self.doclist:
-				if doc.fields.get('item_code'):
+				if doc.get('item_code'):
 					temp = {
-						'item_code': doc.fields.get('item_code'),
-						'warehouse': doc.fields.get('warehouse')
+						'item_code': doc.get('item_code'),
+						'warehouse': doc.get('warehouse')
 					}
 					ret = obj.get_item_details(self, json.dumps(temp))
 					for r in ret:
-						if not doc.fields.get(r):
-							doc.fields[r] = ret[r]
+						if not doc.get(r):
+							doc[r] = ret[r]
 
 
 
@@ -86,7 +86,7 @@ class DocType(TransactionBase):
 					last_purchase_details, last_purchase_date = pcomm.get_last_purchase_details(d.item_code, self.doc.name)
 					if last_purchase_details:
 						conversion_factor = d.conversion_factor or 1.0
-						conversion_rate = self.doc.fields.get('conversion_rate') or 1.0
+						conversion_rate = self.doc.get('conversion_rate') or 1.0
 						d.purchase_ref_rate = last_purchase_details['purchase_ref_rate'] * conversion_factor
 						d.discount_rate = last_purchase_details['discount_rate']
 						d.purchase_rate = last_purchase_details['purchase_rate'] * conversion_factor
@@ -123,7 +123,7 @@ class DocType(TransactionBase):
 	def check_for_stopped_status(self, pc_obj):
 		check_list =[]
 		for d in getlist(self.doclist, 'po_details'):
-			if d.fields.has_key('prevdoc_docname') and d.prevdoc_docname and d.prevdoc_docname not in check_list:
+			if d.has_key('prevdoc_docname') and d.prevdoc_docname and d.prevdoc_docname not in check_list:
 				check_list.append(d.prevdoc_docname)
 				pc_obj.check_for_stopped_status( d.prevdoc_doctype, d.prevdoc_docname)
 

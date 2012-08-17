@@ -57,7 +57,7 @@ class DocType:
     n = Document(node_title)
     for d in arg.keys():
       if d != 'node_title':
-        n.fields[d]=arg[d]
+        n[d]=arg[d]
     n.old_parent = ''      
     n_obj = get_obj(doc=n)
 
@@ -129,7 +129,7 @@ class DocType:
     n_obj = get_obj(nt,nm) 
     for d in arg.keys():
       if d != 'node_title':
-        n_obj.doc.fields[d]=arg[d]
+        n_obj.doc[d]=arg[d]
    
     n_obj.doc.save()
     n_obj.on_update()

@@ -73,7 +73,7 @@ class DocType:
 		arg = eval(arg)
 		p = Document('Profile', session['user'])
 		for k in arg:
-			p.fields[k] = arg[k]
+			p[k] = arg[k]
 		p.save()
 
 	def get_login_url(self):

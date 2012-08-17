@@ -17,6 +17,7 @@
 from __future__ import unicode_literals
 """Global Defaults"""
 import webnotes
+from webnotes.model.controller import DocListController
 
 keydict = {
 	"fiscal_year": "current_fiscal_year",
@@ -40,33 +41,20 @@ keydict = {
 	'maintain_same_rate' : 'maintain_same_rate'
 }
 
-class DocType:
-	def __init__(self, d, dl):
-		self.doc, self.doclist = d, dl
-
-	def get_bal(self,arg):
-		"""get account balance (??)"""
-		from webnotes.utils import fmt_money, flt
-		bal = webnotes.conn.sql("select `tabAccount Balance`.balance,`tabAccount`.debit_or_credit from `tabAccount`,`tabAccount Balance` where `tabAccount Balance`.account=%s and `tabAccount Balance`.period=%s and `tabAccount Balance`.account=`tabAccount`.name ",(arg,self.doc.current_fiscal_year))
-		if bal:
-			return fmt_money(flt(bal[0][0])) + ' ' + bal[0][1]	
-	
+class GlobalDefaultsController(DocListController):
 	def on_update(self):
-		"""update defaults"""
-		
 		for key in keydict:
-			webnotes.conn.set_default(key, self.doc.fields.get(keydict[key], ''))
+			webnotes.conn.set_default(key, self.doc.get(keydict[key], ''))
 			
 		# update year start date and year end date from fiscal_year
-		ysd = webnotes.conn.sql("""select year_start_date from `tabFiscal Year` 
-			where name=%s""", self.doc.current_fiscal_year)
+		ysd, yed = webnotes.conn.get_value('Fiscal Year', self.doc.current_fiscal_year, \
+			['year_start_date', 'year_end_date'])
 			
-		ysd = ysd and ysd[0][0] or ''
 		from webnotes.utils import get_first_day, get_last_day
 		if ysd:
 			webnotes.conn.set_default('year_start_date', ysd.strftime('%Y-%m-%d'))
-			webnotes.conn.set_default('year_end_date', \
-				get_last_day(get_first_day(ysd,0,11)).strftime('%Y-%m-%d'))
+		if yed:
+			webnotes.conn.set_default('year_end_date', yed.strftime('%Y-%m-%d'))
 		
 	def get_defaults(self):
 		return webnotes.conn.get_defaults()

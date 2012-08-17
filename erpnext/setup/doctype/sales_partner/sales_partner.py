@@ -37,8 +37,8 @@ class DocType:
       address =["address_line1", "address_line2", "city", "state", "country", "pincode"]
       comp_address=''
       for d in address:
-        if self.doc.fields[d]:
-          comp_address += self.doc.fields[d] + "\n"
+        if self.doc[d]:
+          comp_address += self.doc[d] + "\n"
       self.doc.address = comp_address
 
   def check_state(self):

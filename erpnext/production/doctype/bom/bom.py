@@ -208,7 +208,7 @@ class DocType:
 			arg = {'item_code': d.item_code, 'qty': d.qty, 'bom_no': d.bom_no}
 			ret = self.get_bom_material_detail(cstr(arg))
 			for k in ret:
-				d.fields[k] = ret[k]
+				d[k] = ret[k]
 
 			d.amount = flt(d.rate) * flt(d.qty)
 			total_rm_cost += d.amount
@@ -322,7 +322,7 @@ class DocType:
 		for d in self.cur_flat_bom_items:
 			ch = addchild(self.doc, 'flat_bom_details', 'BOM Explosion Item', 1, self.doclist)
 			for i in d.keys():
-				ch.fields[i] = d[i]
+				ch[i] = d[i]
 			ch.docstatus = is_submit
 			ch.save(1)
 		self.doc.save()

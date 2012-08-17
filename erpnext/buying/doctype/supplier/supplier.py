@@ -38,7 +38,8 @@ class SupplierController(PartyController):
 	def create_supplier_ledger(self):
 		self.create_account({
 			'parent_account': self.get_parent_account(),
-			'supplier': self.doc.name
+			'supplier': self.doc.name,
+			"debit_or_credit": "Credit"
 		})
 
 	def get_parent_account(self):
@@ -49,6 +50,7 @@ class SupplierController(PartyController):
 		if not self.doc.supplier_type:
 			msgprint("Supplier Type is mandatory", raise_exception=MandatoryError)
 
+		# isn't account name unique? - also, check create_account. It also does get value
 		supp_type_acc = webnotes.conn.get_value('Account', {'account_name': self.doc.supplier_type, \
 			'company': self.doc.company, 'debit_or_credit': 'Credit', 'is_pl_account': 'No'})
 
@@ -59,4 +61,5 @@ class SupplierController(PartyController):
 				'parent_account': self.get_party_group('payables_group'),
 				'group_or_ledger': 'Group'
 			})
+			supp_type_acc = supp_type_acc and supp_type_acc.doc.name or None
 		return supp_type_acc

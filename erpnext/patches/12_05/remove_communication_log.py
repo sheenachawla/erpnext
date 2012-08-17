@@ -76,11 +76,11 @@ def remove_communication_log():
 		
 		for key in comm_log.keys():
 			if key not in webnotes.model.default_fields:
-				d.fields[key] = comm_log[key]
+				d[key] = comm_log[key]
 		
 		parenttype = (comm_log.get('parenttype') or '').lower()
 		if parenttype in field_list:
-			d.fields[parenttype] = comm_log.get('parent')
+			d[parenttype] = comm_log.get('parent')
 		
 		d.naming_series = 'COMM-'
 		d.subject = 'Follow Up'

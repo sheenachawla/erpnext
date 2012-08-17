@@ -220,9 +220,9 @@ class DocType:
 		sql("delete from `tabToDo` where name = %s",nm)
 
 	def notify_assignment(self, d):
-		doc_type = d.fields.get('reference_type')
-		doc_name = d.fields.get('reference_name')
-		assigned_by = d.fields.get('assigned_by')
+		doc_type = d.get('reference_type')
+		doc_name = d.get('reference_name')
+		assigned_by = d.get('assigned_by')
 		if doc_type and doc_name and assigned_by:
 			from webnotes.widgets.form import assign_to
 			assign_to.notify_assignment(assigned_by, d.owner, doc_type, doc_name)
@@ -258,7 +258,7 @@ class DocType:
 		arg = json.loads(arg)
 		d = Document('Event', arg.get('name') or None)
 		for k in arg:
-			d.fields[k] = str(arg[k])
+			d[k] = str(arg[k])
 		d.save(not arg.get('name') and 1 or 0)
 	
 	# -------------------------------------------------------------------------------------------------------

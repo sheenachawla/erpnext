@@ -95,13 +95,13 @@ class DocType(TransactionBase):
 		else:
 			obj = get_obj('Sales Common')
 			for doc in self.doclist:
-				if doc.fields.get('item_code'):
-					arg = {'item_code':doc.fields.get('item_code'), 'income_account':doc.fields.get('income_account'), 
-						'cost_center': doc.fields.get('cost_center'), 'warehouse': doc.fields.get('warehouse')};
+				if doc.get('item_code'):
+					arg = {'item_code':doc.get('item_code'), 'income_account':doc.get('income_account'), 
+						'cost_center': doc.get('cost_center'), 'warehouse': doc.get('warehouse')};
 					ret = obj.get_item_defaults(arg)
 					for r in ret:
-						if not doc.fields.get(r):
-							doc.fields[r] = ret[r]					
+						if not doc.get(r):
+							doc[r] = ret[r]					
 
 	def get_barcode_details(self, barcode):
 		return get_obj('Sales Common').get_barcode_details(barcode)
@@ -264,17 +264,17 @@ class DocType(TransactionBase):
 		"""
 			Validate that if packed qty exists, it should be equal to qty
 		"""
-		if not any([flt(d.fields.get('packed_qty')) for d in self.doclist if
+		if not any([flt(d.get('packed_qty')) for d in self.doclist if
 				d.doctype=='Delivery Note Item']):
 			return
 		packing_error_list = []
 		for d in self.doclist:
 			if d.doctype != 'Delivery Note Item': continue
-			if flt(d.fields.get('qty')) != flt(d.fields.get('packed_qty')):
+			if flt(d.get('qty')) != flt(d.get('packed_qty')):
 				packing_error_list.append([
-					d.fields.get('item_code', ''),
-					d.fields.get('qty', 0),
-					d.fields.get('packed_qty', 0)
+					d.get('item_code', ''),
+					d.get('qty', 0),
+					d.get('packed_qty', 0)
 				])
 		if packing_error_list:
 			from webnotes.utils import cstr

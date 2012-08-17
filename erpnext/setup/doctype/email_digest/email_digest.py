@@ -132,7 +132,7 @@ class DocType:
 		result = {}
 
 		for query in query_dict.keys():
-			if self.doc.fields[query] and query_dict[query]:
+			if self.doc[query] and query_dict[query]:
 				#webnotes.msgprint(query)
 				res = webnotes.conn.sql(query_dict[query], as_dict=1)
 				if query in ['income', 'income_year_to_date']:
@@ -645,7 +645,7 @@ class DocType:
 			return new_section			
 
 		for k in bd_keys:
-			if self.doc.fields[k]:
+			if self.doc[k]:
 				if k in result:
 					if not body_dict[k].get('value') and not new_section:
 						new_section = set_new_section(new_section)

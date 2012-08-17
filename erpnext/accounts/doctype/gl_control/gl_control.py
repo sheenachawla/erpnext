@@ -16,10 +16,11 @@
 
 from __future__ import unicode_literals
 import webnotes
+import webnotes.model.controller
 
 from webnotes.utils import add_days, cint, cstr, date_diff, flt, fmt_money, get_defaults, getdate, now, nowdate, sendmail
 
-from webnotes.model.doc import Document, addchild
+from webnotes.model.doc import Document
 from webnotes.model.controller import getlist, clone
 from webnotes.model.code import get_obj
 from webnotes import form, msgprint
@@ -28,44 +29,10 @@ from webnotes.utils.email_lib import sendmail
 
 from utilities.transaction_base import TransactionBase
 
-class DocType:
-	def __init__(self,d,dl):
-		self.doc, self.doclist = d, dl
+class GLController(webnotes.model.controller.DocListController):
+	def __init__(self, doctype, name=None):
+		super(GLController, self).__init__(doctype, name)
 		self.entries = []
-
-	def get_company_currency(self,arg=''):
-		dcc = TransactionBase().get_company_currency(arg)
-		return dcc
-
-	# Get current balance
-	# --------------------
-	def get_bal(self,arg):
-		ac, fy = arg.split('~~~')
-		det = webnotes.conn.sql("select t1.balance, t2.debit_or_credit from `tabAccount Balance` t1, `tabAccount` t2 where t1.period = %s and t2.name=%s and t1.account = t2.name", (fy, ac))
-		bal = det and flt(det[0][0]) or 0
-		dr_or_cr = det and flt(det[0][1]) or ''
-		return fmt_money(bal) + ' ' + dr_or_cr
-
-	def get_period_balance(self,arg):
-		acc, f, t = arg.split('~~~')
-		c, fy = '', get_defaults()['fiscal_year']
-
-		det = webnotes.conn.sql("select debit_or_credit, lft, rgt, is_pl_account from tabAccount where name=%s", acc)
-		if f: c += (' and t1.posting_date >= "%s"' % f)
-		if t: c += (' and t1.posting_date <= "%s"' % t)
-		bal = webnotes.conn.sql("select sum(ifnull(t1.debit,0))-sum(ifnull(t1.credit,0)) from `tabGL Entry` t1 where t1.account='%s' and ifnull(is_opening, 'No') = 'No' %s" % (acc, c))
-		bal = bal and flt(bal[0][0]) or 0
-
-		if det[0][0] != 'Debit':
-			bal = (-1) * bal
-
-		# add opening for balance sheet accounts
-		if det[0][3] == 'No':
-			opening = flt(webnotes.conn.sql("select opening from `tabAccount Balance` where account=%s and period=%s", (acc, fy))[0][0])
-			bal = bal + opening
-
-		return flt(bal)
-
 
 	def get_period_difference(self,arg, cost_center =''):
 		# used in General Ledger Page Report
@@ -85,68 +52,6 @@ class DocType:
 
 		return flt(bal)
 
-	# Get Children (for tree)
-	# -----------------------
-	def get_cl(self, arg):
-
-		fy = get_defaults()['fiscal_year']
-		parent, parent_acc_name, company, type = arg.split(',')
-
-		# get children account details
-		if type=='Account':
-
-			if parent=='Root Node':
-
-				cl = webnotes.conn.sql("select t1.name, t1.group_or_ledger, t1.debit_or_credit, t2.balance, t1.account_name from tabAccount t1, `tabAccount Balance` t2 where ifnull(t1.parent_account, '') = '' and t1.docstatus != 2 and t1.company=%s and t1.name = t2.account and t2.period = %s order by t1.name asc", (company, fy),as_dict=1)
-			else:
-				cl = webnotes.conn.sql("select t1.name, t1.group_or_ledger, t1.debit_or_credit, t2.balance, t1.account_name from tabAccount t1, `tabAccount Balance` t2 where ifnull(t1.parent_account, '')=%s and t1.docstatus != 2 and t1.company=%s and t1.name = t2.account and t2.period = %s order by t1.name asc",(parent, company, fy) ,as_dict=1)
-
-			# remove Decimals
-			for c in cl: c['balance'] = flt(c['balance'])
-
-		# get children cost center details
-		elif type=='Cost Center':
-			if parent=='Root Node':
-				cl = webnotes.conn.sql("select name,group_or_ledger, cost_center_name from `tabCost Center`	where ifnull(parent_cost_center, '')='' and docstatus != 2 and company_name=%s order by name asc",(company),as_dict=1)
-			else:
-				cl = webnotes.conn.sql("select name,group_or_ledger,cost_center_name from `tabCost Center` where ifnull(parent_cost_center, '')=%s and docstatus != 2 and company_name=%s order by name asc",(parent,company),as_dict=1)
-		return {'parent':parent, 'parent_acc_name':parent_acc_name, 'cl':cl}
-
-	# Add a new account
-	# -----------------
-	def add_ac(self,arg):
-		arg = eval(arg)
-		ac = Document('Account')
-		for d in arg.keys():
-			ac.fields[d] = arg[d]
-		ac.old_parent = ''
-		ac_obj = get_obj(doc=ac)
-		ac_obj.doc.freeze_account='No'
-		ac_obj.validate()
-		ac_obj.doc.save(1)
-		ac_obj.on_update()
-
-		return ac_obj.doc.name
-
-	# Add a new cost center
-	#----------------------
-	def add_cc(self,arg):
-		arg = eval(arg)
-		cc = Document('Cost Center')
-		# map fields
-		for d in arg.keys():
-			cc.fields[d] = arg[d]
-		# map company abbr
-		other_info = webnotes.conn.sql("select company_abbr from `tabCost Center` where name='%s'"%arg['parent_cost_center'])
-		cc.company_abbr = other_info and other_info[0][0] or arg['company_abbr']
-
-		cc_obj = get_obj(doc=cc)
-		cc_obj.validate()
-		cc_obj.doc.save(1)
-		cc_obj.on_update()
-
-		return cc_obj.doc.name
-
 
 	# Get field values from the voucher
 	#------------------------------------------
@@ -154,11 +59,11 @@ class DocType:
 		if not src:
 			return None
 		if src.startswith('parent:'):
-			return parent.fields[src.split(':')[1]]
+			return parent[src.split(':')[1]]
 		elif src.startswith('value:'):
 			return eval(src.split(':')[1])
 		elif src:
-			return d.fields.get(src)
+			return d.get(src)
 
 	def check_if_in_list(self, le):
 		for e in self.entries:
@@ -181,7 +86,7 @@ class DocType:
 			# Create new GL entry object and map values
 			le = Document('GL Entry')
 			for k in flist:
-				le.fields[k] = self.get_val(le_map[k], d, parent)
+				le[k] = self.get_val(le_map[k], d, parent)
 
 			# if there is already an entry in this account then just add it to that entry
 			same_head = self.check_if_in_list(le)
@@ -234,7 +139,7 @@ class DocType:
 			if le_map['table_field']:
 				for d in getlist(doclist,le_map['table_field']):
 					# purchase_tax_details is the table of other charges in purchase cycle
-					if le_map['table_field'] != 'purchase_tax_details' or (le_map['table_field'] == 'purchase_tax_details' and d.fields.get('category') != 'For Valuation'):
+					if le_map['table_field'] != 'purchase_tax_details' or (le_map['table_field'] == 'purchase_tax_details' and d.get('category') != 'For Valuation'):
 						self.make_single_entry(doc,d,le_map,cancel, merge_entries)
 			else:
 				self.make_single_entry(None,doc,le_map,cancel, merge_entries)
@@ -252,35 +157,6 @@ class DocType:
 		if cancel:
 			vt, vn = self.get_val(le_map['voucher_type'],	doc, doc), self.get_val(le_map['voucher_no'],	doc, doc)
 			webnotes.conn.sql("update `tabGL Entry` set is_cancelled='Yes' where voucher_type=%s and voucher_no=%s", (vt, vn))
-
-	# Get account balance on any date
-	# -------------------------------
-	def get_as_on_balance(self, account_name, fiscal_year, as_on, credit_or_debit, lft, rgt):
-		# initialization
-		det = webnotes.conn.sql("select start_date, opening from `tabAccount Balance` where period = %s and account = %s", (fiscal_year, account_name))
-		from_date, opening, debit_bal, credit_bal, closing_bal = det and det[0][0] or getdate(nowdate()), det and flt(det[0][1]) or 0, 0, 0, det and flt(det[0][1]) or 0
-
-		# prev month closing
-		prev_month_det = webnotes.conn.sql("select end_date, debit, credit, balance from `tabAccount Balance` where account = %s and end_date <= %s and fiscal_year = %s order by end_date desc limit 1", (account_name, as_on, fiscal_year))
-		if prev_month_det:
-			from_date = getdate(add_days(prev_month_det[0][0].strftime('%Y-%m-%d'), 1))
-			opening = 0
-			debit_bal = flt(prev_month_det[0][1])
-			credit_bal = flt(prev_month_det[0][2])
-			closing_bal = flt(prev_month_det[0][3])
-
-		# curr month transaction
-		if getdate(as_on) >= from_date:
-			curr_month_bal = webnotes.conn.sql("select SUM(t1.debit), SUM(t1.credit) from `tabGL Entry` t1, `tabAccount` t2 WHERE t1.posting_date >= %s AND t1.posting_date <= %s and ifnull(t1.is_opening, 'No') = 'No' AND t1.account = t2.name AND t2.lft >= %s AND t2.rgt <= %s and ifnull(t1.is_cancelled, 'No') = 'No'", (from_date, as_on, lft, rgt))
-			curr_debit_amt, curr_credit_amt = flt(curr_month_bal[0][0]), flt(curr_month_bal[0][1])
-			debit_bal = curr_month_bal and debit_bal + curr_debit_amt or debit_bal
-			credit_bal = curr_month_bal and credit_bal + curr_credit_amt or credit_bal
-
-			if credit_or_debit == 'Credit':
-				curr_debit_amt, curr_credit_amt = -1*flt(curr_month_bal[0][0]), -1*flt(curr_month_bal[0][1])
-			closing_bal = closing_bal + curr_debit_amt - curr_credit_amt
-
-		return flt(debit_bal), flt(credit_bal), flt(closing_bal)
 
 
 	# ADVANCE ALLOCATION
@@ -360,7 +236,7 @@ class DocType:
 		add.account = account_head
 		add.cost_center = cstr(jvd[0][1])
 		add.balance = cstr(jvd[0][2])
-		add.fields[dr_or_cr] = balance
+		add[dr_or_cr] = balance
 		add.against_account = cstr(jvd[0][3])
 		add.is_advance = 'Yes'
 		add.save(1)
@@ -427,8 +303,8 @@ class DocType:
 			ch.account = d['account']
 			ch.cost_center = cstr(jvd[0][0])
 			ch.balance = cstr(jvd[0][1])
-			ch.fields[d['dr_or_cr']] = flt(d['unadjusted_amt']) - flt(d['allocated_amt'])
-			ch.fields[d['dr_or_cr']== 'debit' and 'credit' or 'debit'] = 0
+			ch[d['dr_or_cr']] = flt(d['unadjusted_amt']) - flt(d['allocated_amt'])
+			ch[d['dr_or_cr']== 'debit' and 'credit' or 'debit'] = 0
 			ch.against_account = cstr(jvd[0][2])
 			ch.is_advance = cstr(jvd[0][3])
 			ch.docstatus = 1
@@ -563,7 +439,6 @@ def assign_task_to_owner(inv, msg, users):
 			'priority'		:	'Urgent'
 		}
 		assign_to.add(args)
-
 
 def create_new_invoice(prev_rv):
 	# clone rv

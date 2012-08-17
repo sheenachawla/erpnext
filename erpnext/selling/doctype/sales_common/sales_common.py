@@ -267,7 +267,7 @@ class DocType(TransactionBase):
 
 				d = addchild(obj.doc, 'other_charges', 'Sales Taxes and Charges', 1,
 						obj.doclist)
-				d.fields.update(other)
+				d.update(other)
 				d.rate = flt(d.rate)
 				d.tax_amount = flt(d.tax_rate)
 				d.included_in_print_rate = cint(d.included_in_print_rate)
@@ -563,9 +563,9 @@ class DocType(TransactionBase):
 	def check_stop_sales_order(self,obj):
 		for d in getlist(obj.doclist,obj.fname):
 			ref_doc_name = ''
-			if d.fields.has_key('prevdoc_docname') and d.prevdoc_docname and d.prevdoc_doctype == 'Sales Order':
+			if d.has_key('prevdoc_docname') and d.prevdoc_docname and d.prevdoc_doctype == 'Sales Order':
 				ref_doc_name = d.prevdoc_docname
-			elif d.fields.has_key('sales_order') and d.sales_order and not d.delivery_note:
+			elif d.has_key('sales_order') and d.sales_order and not d.delivery_note:
 				ref_doc_name = d.sales_order
 			if ref_doc_name:
 				so_status = webnotes.conn.sql("select status from `tabSales Order` where name = %s",ref_doc_name)
@@ -603,14 +603,12 @@ class DocType(TransactionBase):
 			exact_outstanding = flt(tot_outstanding) + flt(grand_total)
 			get_obj('Account',acc_head[0][0]).check_credit_limit(acc_head[0][0], obj.doc.company, exact_outstanding)
 
-	def validate_fiscal_year(self,fiscal_year,transaction_date,dn):
+	def validate_fiscal_year(self,fiscal_year,transaction_date,field_label):
 		fy=webnotes.conn.sql("select year_start_date from `tabFiscal Year` where name='%s'"%fiscal_year)
 		ysd=fy and fy[0][0] or ""
 		yed=add_days(str(ysd),365)
 		if str(transaction_date) < str(ysd) or str(transaction_date) > str(yed):
-			msgprint("%s not within the fiscal year"%(dn))
-			raise Exception
-
+			msgprint("%s not within the fiscal year"%(field_label), raise_exception=webnotes.ValidationError)
 
 	# get against document date	self.prevdoc_date_field
 	#-----------------------------
@@ -747,7 +745,7 @@ class StatusUpdater:
 		# get unique transactions to update
 		for d in self.obj.doclist:
 			if d.doctype == args['source_dt']:
-				args['name'] = d.fields[args['join_field']]
+				args['name'] = d[args['join_field']]
 
 				# get all qty where qty > compare_field
 				item = webnotes.conn.sql("""
@@ -852,7 +850,7 @@ class StatusUpdater:
 		for d in self.obj.doclist:
 			if d.doctype == args['source_dt']:
 				# updates qty in the child table
-				args['detail_id'] = d.fields.get(args['join_field'])
+				args['detail_id'] = d.get(args['join_field'])
 			
 				if args['detail_id']:
 					webnotes.conn.sql("""
@@ -865,7 +863,7 @@ class StatusUpdater:
 					""" % args)			
 		
 		# get unique transactions to update
-		for name in set([d.fields.get(args['percent_join_field']) for d in self.obj.doclist if d.doctype == args['source_dt']]):
+		for name in set([d.get(args['percent_join_field']) for d in self.obj.doclist if d.doctype == args['source_dt']]):
 			if name:
 				args['name'] = name
 				

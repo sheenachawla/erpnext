@@ -136,7 +136,7 @@ class DocType:
 		# Create new GL entry object and map values
 		le = Document('GL Entry')
 		for k in fdict:
-			le.fields[k] = fdict[k]
+			le[k] = fdict[k]
 		
 		le_obj = get_obj(doc=le)
 		# validate except on_cancel

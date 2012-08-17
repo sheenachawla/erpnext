@@ -65,8 +65,8 @@ class DocType:
 				'amend': cint(perm.amend),
 				'match': perm.match
 				} for perm in sorted(doclist,
-					key=lambda d: [d.fields.get('permlevel'),
-						d.fields.get('role')]) if perm.doctype=='DocPerm']
+					key=lambda d: [d.get('permlevel'),
+						d.get('role')]) if perm.doctype=='DocPerm']
 
 		fl = ['', 'owner'] + [d.fieldname for d in doclist \
 				if d.doctype=='DocField' and ((d.fieldtype=='Link' \
@@ -76,7 +76,7 @@ class DocType:
 		return {
 			'perms':ptype,
 			'fields':fl,
-			'is_submittable': doclist[0].fields.get('is_submittable')
+			'is_submittable': doclist[0].get('is_submittable')
 		}
 		
 	# get default values
@@ -123,7 +123,7 @@ class DocType:
 		dv.defkey = defkey
 		dv.defvalue = defvalue
 		dv.save(1)
-		return dv.fields
+		return dv
 
 	# Add Permissions
 	# ----------------------
@@ -177,7 +177,7 @@ class DocType:
 							ch.role = role
 							ch.permlevel = cint(permlevel)
 							for key in pd.keys():
-								ch.fields[key] = pd.get(key, None)
+								ch[key] = pd.get(key, None)
 							ch.save(1)
 	
 						# delete

@@ -115,7 +115,7 @@ class DocType:
 			(from_date <= %(to_date)s and to_date >= %(from_date)s)
 			and employee = %(employee)s
 			and docstatus = 1 
-			and name != %(name)s""", self.doc.fields, as_dict = 1):
+			and name != %(name)s""", self.doc, as_dict = 1):
  
 			msgprint("Employee : %s has already applied for %s between %s and %s on %s. Please refer Leave Application : %s" % (self.doc.employee, cstr(d['leave_type']), formatdate(d['from_date']), formatdate(d['to_date']), formatdate(d['posting_date']), d['name']), raise_exception = 1)
 

@@ -154,15 +154,13 @@ class DocType:
 	# Create account
 	# ---------------------------------------------------
 	def add_acc(self,lst):
-		ac = Document('Account')
+		import accounts.utils
+		ac = {"freeze_account": "No"}
 		for d in self.fld_dict.keys():
-			ac.fields[d] = (d == 'parent_account' and lst[self.fld_dict[d]]) and lst[self.fld_dict[d]] +' - '+ self.doc.abbr or lst[self.fld_dict[d]]
-		ac.old_parent = ''
-		ac_obj = get_obj(doc=ac)
-		ac_obj.doc.freeze_account='No'
-		ac_obj.validate()
-		ac_obj.doc.save(1)
-		ac_obj.on_update()
+			ac[d] = (d == 'parent_account' and lst[self.fld_dict[d]]) and lst[self.fld_dict[d]] +' - '+ self.doc.abbr or lst[self.fld_dict[d]]
+		
+		accounts.utils.add_account(ac)
+
 		sql("commit")
 		sql("start transaction")
 
@@ -192,11 +190,10 @@ class DocType:
 	# Create default cost center
 	# ---------------------------------------------------
 	def create_default_cost_center(self):
-		glc = get_obj('GL Control')
+		import accounts.utils
 		cc_list = [{'cost_center_name':'Root','company_name':self.doc.name,'company_abbr':self.doc.abbr,'group_or_ledger':'Group','parent_cost_center':'','old_parent':''}, {'cost_center_name':'Default CC Ledger','company_name':self.doc.name,'company_abbr':self.doc.abbr,'group_or_ledger':'Ledger','parent_cost_center':'Root - ' + self.doc.abbr,'old_parent':''}]
 		for c in cc_list:
-			glc.add_cc(str(c))
-			
+			accounts.utils.add_cost_center(c)
 			
 	# On update
 	# ---------------------------------------------------
@@ -220,9 +217,6 @@ class DocType:
 		if not rec:
 			# delete gl entry
 			sql("delete from `tabGL Entry` where company = %s", self.doc.name)
-
-			#delete tabAccount Balance
-			sql("delete ab.* from `tabAccount Balance` ab, `tabAccount` a where ab.account = a.name and a.company = %s", self.doc.name)
 
 			#delete tabAccount
 			sql("delete from `tabAccount` where company = %s order by lft desc, rgt desc", self.doc.name)

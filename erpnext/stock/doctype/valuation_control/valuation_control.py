@@ -60,9 +60,9 @@ class TestValuationControl(unittest.TestCase):
 			'item_code':'it',
 			'purchase_rate': 100.0
 		})
-		s2 = Document(fielddata = s1.fields.copy())
-		s3 = Document(fielddata = s1.fields.copy())
-		s4 = Document(fielddata = s1.fields.copy())
+		s2 = Document(fielddata = s1.copy())
+		s3 = Document(fielddata = s1.copy())
+		s4 = Document(fielddata = s1.copy())
 		s1.save(1)
 		s2.purchase_rate = 120.0
 		s2.serial_no = 's2'

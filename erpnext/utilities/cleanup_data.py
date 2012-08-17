@@ -26,9 +26,8 @@ def delete_transactions():
 		'Purchase Invoice','Maintenance Visit','Maintenance Schedule','Leave Application', \
 		'Leave Allocation', 'Lead', 'Journal Voucher', 'Installation Note','Purchase Request', \
 		'GL Entry','Expense Claim','Opportunity','Delivery Note','Customer Issue','Bin', \
-		'Authorization Rule','Attendance','Account Balance', 'C-Form', 'Form 16A', 'Lease Agreement', \
-		'Lease Installment', 'TDS Payment', 'TDS Return Acknowledgement', 'Appraisal', \
-		'Installation Note', 'Communication'
+		'Authorization Rule','Attendance', 'C-Form', 'Form 16A', 'TDS Payment', \
+		'TDS Return Acknowledgement', 'Appraisal', 'Installation Note', 'Communication'
 	]
 	for d in trans:
 		for t in webnotes.conn.sql("select options from tabDocField where parent='%s' and fieldtype='Table'" % d):
@@ -62,7 +61,6 @@ def delete_masters():
 		'Project':'',
 		'Print Heading':'',
 		'Price List':['Default Price List'],
-		'Period':'',
 		'Sales Taxes and Charges Master':'',
 		'Letter Head':'',
 		'Leave Type':['Leave Without Pay', 'Privilege Leave', 'Casual Leave', 'PL', 'CL', 'LWP', 
@@ -157,7 +155,7 @@ def reset_global_defaults():
 	from webnotes.model.code import get_obj
 	gd = get_obj('Global Defaults', 'Global Defaults')
 	for d in flds:
-		gd.doc.fields[d] = flds[d]
+		gd.doc[d] = flds[d]
 	gd.doc.save()
 	
 	webnotes.clear_cache()

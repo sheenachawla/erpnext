@@ -58,8 +58,8 @@ class DocType:
 		
 		cond = ''
 		for f in ['company', 'branch', 'department', 'designation', 'grade']:
-			if self.doc.fields.get(f):
-				cond += " and t1." + f + " = '" + self.doc.fields.get(f) + "'"		
+			if self.doc.get(f):
+				cond += " and t1." + f + " = '" + self.doc.get(f) + "'"		
 		
 		return cond
 
@@ -76,7 +76,7 @@ class DocType:
 		
 	def check_mandatory(self):
 		for f in ['company', 'month', 'fiscal_year']:
-			if not self.doc.fields[f]:
+			if not self.doc[f]:
 				msgprint("Please select %s to proceed" % f, raise_exception=1)
 		
 	

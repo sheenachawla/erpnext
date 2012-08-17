@@ -133,7 +133,7 @@ def get_doc_fields(page_name):
 	if hasattr(obj, 'prepare_template_args'):
 		obj.prepare_template_args()
 		
-	args = obj.doc.fields
+	args = obj.doc
 	args['template'] = template_map[doc_type]
 	
 	return args

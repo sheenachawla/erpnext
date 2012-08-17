@@ -16,16 +16,15 @@
 
 from __future__ import unicode_literals
 import webnotes
+import webnotes.model
 
-from webnotes.utils import cint, cstr, getdate, now, nowdate
-from webnotes.model.doc import Document, addchild
+from webnotes.utils import cint, cstr, getdate, now, nowdate, get_first_day, get_last_day
+from webnotes.model.doc import Document
 from webnotes.model.code import get_obj
 from webnotes import session, form, msgprint
 
-class DocType:
-	def __init__(self, d, dl):
-		self.doc, self.doclist = d, dl
-	
+from webnotes.model.controller import DocListController
+class SetupController(DocListController):
 	# Account Setup
 	# ---------------
 	def setup_account(self, args):
@@ -33,7 +32,7 @@ class DocType:
 		args = json.loads(args)
 		webnotes.conn.begin()
 
-		curr_fiscal_year, fy_start_date, fy_abbr = self.get_fy_details(args.get('fy_start'))
+		curr_fiscal_year, fy_abbr, fy_start_date, fy_end_date = self.get_fy_details(args.get('fy_start'))
 
 		args['name'] = webnotes.session.get('user')
 
@@ -49,7 +48,8 @@ class DocType:
 		master_dict = {
 			'Fiscal Year':{
 				'year': curr_fiscal_year,
-				'year_start_date': fy_start_date
+				'year_start_date': fy_start_date,
+				'year_end_date': fy_end_date
 			}
 		}
 		self.create_records(master_dict)
@@ -169,7 +169,7 @@ class DocType:
 						'expenses_booked', 'invoiced_amount', 'collections',
 						'income', 'bank_balance', 'stock_below_rl',
 						'income_year_to_date', 'enabled']:
-					edigest.fields[f] = 1
+					edigest[f] = 1
 				exists = webnotes.conn.sql("""\
 					SELECT name FROM `tabEmail Digest`
 					WHERE name = %s""", edigest.name)
@@ -185,15 +185,16 @@ class DocType:
 		curr_year = getdate(nowdate()).year
 		if cint(getdate(nowdate()).month) < cint((st[fy_start].split('-'))[0]):
 			curr_year = getdate(nowdate()).year - 1
-		stdt = cstr(curr_year)+'-'+cstr(st[fy_start])
-		#eddt = sql("select DATE_FORMAT(DATE_SUB(DATE_ADD('%s', INTERVAL 1 YEAR), INTERVAL 1 DAY),'%%d-%%m-%%Y')" % (stdt.split('-')[2]+ '-' + stdt.split('-')[1] + '-' + stdt.split('-')[0]))
+		start_date = cstr(curr_year)+'-'+cstr(st[fy_start])
+		end_date = get_last_day(get_first_day(start_date,0,11)).strftime('%Y-%m-%d')
+		
 		if(fy_start == '1st Jan'):
 			fy = cstr(getdate(nowdate()).year)
 			abbr = cstr(fy)[-2:]
 		else:
 			fy = cstr(curr_year) + '-' + cstr(curr_year+1)
 			abbr = cstr(curr_year)[-2:] + '-' + cstr(curr_year+1)[-2:]
-		return fy, stdt, abbr
+		return fy, abbr, start_date, end_date
 
 
 	# Create Company and Fiscal Year
@@ -202,11 +203,11 @@ class DocType:
 		for d in master_dict.keys():
 			rec = Document(d)
 			for fn in master_dict[d].keys():
-				rec.fields[fn] = master_dict[d][fn]
+				rec[fn] = master_dict[d][fn]
 			# add blank fields
-			for fn in rec.fields:
+			for fn in rec:
 				if fn not in master_dict[d].keys()+['name','owner','doctype']:
-					rec.fields[fn] = ''
+					rec[fn] = ''
 			rec_obj = get_obj(doc=rec)
 			rec_obj.doc.save(1)
 			if hasattr(rec_obj, 'on_update'):
@@ -218,7 +219,7 @@ class DocType:
 	def set_defaults(self, def_args):
 		ma_obj = get_obj('Global Defaults','Global Defaults')
 		for d in def_args.keys():
-			ma_obj.doc.fields[d] = def_args[d]
+			ma_obj.doc[d] = def_args[d]
 		ma_obj.doc.save()
 		ma_obj.on_update()
 
@@ -252,7 +253,14 @@ class DocType:
 			'Purchase Manager', 'Purchase User', 'Purchase Master Manager', 'Quality Manager', \
 			'Sales Manager', 'Sales User', 'Sales Master Manager', 'Support Manager', 'Support Team', \
 			'System Manager', 'Website Manager']
+		
+		profile_controller = webnotes.model.get_controller([pr])
+		
 		for r in roles_list:
-			d = addchild(pr, 'userroles', 'UserRole', 1)
-			d.role = r
-			d.save(1)
+			profile_controller.add_child({
+				"doctype": "UserRole",
+				"parentfield": "userroles",
+				"role": r
+			})
+
+		profile_controller.save()
