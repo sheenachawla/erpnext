@@ -106,705 +106,5587 @@ b=x(e,i,b);j[e]||(j[e]=[]);w(e,i,b,!d,a);j[e][d?"unshift":"push"]({callback:c,mo
 /*
  *	lib/js/lib/tag-it/tag-it.js
  */
-(function($){$.widget('ui.tagit',{options:{itemName:'item',fieldName:'tags',availableTags:[],tagSource:null,removeConfirmation:false,caseSensitive:true,placeholderText:null,allowSpaces:false,animate:true,singleField:false,singleFieldDelimiter:',',singleFieldNode:null,tabIndex:null,onTagAdded:null,onTagRemoved:null,onTagClicked:null},_create:function(){var that=this;if(this.element.is('input')){this.tagList=$('<ul></ul>').insertAfter(this.element);this.options.singleField=true;this.options.singleFieldNode=this.element;this.element.css('display','none');}else{this.tagList=this.element.find('ul, ol').andSelf().last();}
-this._tagInput=$('<input type="text" />');if(this.options.tabIndex){this._tagInput.attr('tabindex',this.options.tabIndex);}
-if(this.options.placeholderText){this._tagInput.attr('placeholder',this.options.placeholderText);}
-this.options.tagSource=this.options.tagSource||function(search,showChoices){var filter=search.term.toLowerCase();var choices=$.grep(this.options.availableTags,function(element){return(element.toLowerCase().indexOf(filter)===0);});showChoices(this._subtractArray(choices,this.assignedTags()));};if($.isFunction(this.options.tagSource)){this.options.tagSource=$.proxy(this.options.tagSource,this);}
-this.tagList.addClass('tagit').append($('<li class="tagit-new"></li>').append(this._tagInput)).click(function(e){var target=$(e.target);if(target.hasClass('tagit-label')){that._trigger('onTagClicked',e,target.closest('.tagit-choice'));}else{that._tagInput.focus();}});this.tagList.children('li').each(function(){if(!$(this).hasClass('tagit-new')){that.createTag($(this).html(),$(this).attr('class'));$(this).remove();}});if(this.options.singleField){if(this.options.singleFieldNode){var node=$(this.options.singleFieldNode);var tags=node.val().split(this.options.singleFieldDelimiter);node.val('');$.each(tags,function(index,tag){that.createTag(tag);});}else{this.options.singleFieldNode=this.tagList.after('<input type="hidden" style="display:none;" value="" name="'+this.options.fieldName+'" />');}}
-this._tagInput.keydown(function(event){if(event.which==$.ui.keyCode.BACKSPACE&&that._tagInput.val()===''){var tag=that._lastTag();if(!that.options.removeConfirmation||tag.hasClass('remove')){that.removeTag(tag);}else if(that.options.removeConfirmation){tag.addClass('remove ui-state-highlight');}}else if(that.options.removeConfirmation){that._lastTag().removeClass('remove ui-state-highlight');}
-if(event.which==$.ui.keyCode.COMMA||event.which==$.ui.keyCode.ENTER||(event.which==$.ui.keyCode.TAB&&that._tagInput.val()!=='')||(event.which==$.ui.keyCode.SPACE&&that.options.allowSpaces!==true&&($.trim(that._tagInput.val()).replace(/^s*/,'').charAt(0)!='"'||($.trim(that._tagInput.val()).charAt(0)=='"'&&$.trim(that._tagInput.val()).charAt($.trim(that._tagInput.val()).length-1)=='"'&&$.trim(that._tagInput.val()).length-1!==0)))){event.preventDefault();that.createTag(that._cleanedInput());that._tagInput.autocomplete('close');}}).blur(function(e){that.createTag(that._cleanedInput());});if(this.options.availableTags||this.options.tagSource){this._tagInput.autocomplete({source:this.options.tagSource,select:function(event,ui){if(that._tagInput.val()===''){that.removeTag(that._lastTag(),false);}
-that.createTag(ui.item.value);return false;}});}},_cleanedInput:function(){return $.trim(this._tagInput.val().replace(/^"(.*)"$/,'$1'));},_lastTag:function(){return this.tagList.children('.tagit-choice:last');},assignedTags:function(){var that=this;var tags=[];if(this.options.singleField){tags=$(this.options.singleFieldNode).val().split(this.options.singleFieldDelimiter);if(tags[0]===''){tags=[];}}else{this.tagList.children('.tagit-choice').each(function(){tags.push(that.tagLabel(this));});}
-return tags;},_updateSingleTagsField:function(tags){$(this.options.singleFieldNode).val(tags.join(this.options.singleFieldDelimiter));},_subtractArray:function(a1,a2){var result=[];for(var i=0;i<a1.length;i++){if($.inArray(a1[i],a2)==-1){result.push(a1[i]);}}
-return result;},tagLabel:function(tag){if(this.options.singleField){return $(tag).children('.tagit-label').text();}else{return $(tag).children('input').val();}},_isNew:function(value){var that=this;var isNew=true;this.tagList.children('.tagit-choice').each(function(i){if(that._formatStr(value)==that._formatStr(that.tagLabel(this))){isNew=false;return false;}});return isNew;},_formatStr:function(str){if(this.options.caseSensitive){return str;}
-return $.trim(str.toLowerCase());},createTag:function(value,additionalClass){var that=this;value=$.trim(value);if(!this._isNew(value)||value===''){return false;}
-var label=$(this.options.onTagClicked?'<a class="tagit-label"></a>':'<span class="tagit-label"></span>').text(value);var tag=$('<li></li>').addClass('tagit-choice label label-info').addClass(additionalClass).append(label);var removeTagIcon=$('<span></span>').addClass('ui-icon ui-icon-close');var removeTag=$('<a><span class="text-icon">\xd7</span></a>').addClass('tagit-close').append(removeTagIcon).click(function(e){that.removeTag(tag);});tag.append(removeTag);if(this.options.singleField){var tags=this.assignedTags();tags.push(value);this._updateSingleTagsField(tags);}else{var escapedValue=label.html();tag.append('<input type="hidden" style="display:none;" value="'
-+escapedValue+'" name="'+this.options.itemName
-+'['+this.options.fieldName+'][]" />');}
-this._trigger('onTagAdded',null,tag);this._tagInput.val('');this._tagInput.parent().before(tag);},removeTag:function(tag,animate){animate=animate||this.options.animate;tag=$(tag);this._trigger('onTagRemoved',null,tag);if(this.options.singleField){var tags=this.assignedTags();var removedTagLabel=this.tagLabel(tag);tags=$.grep(tags,function(el){return el!=removedTagLabel;});this._updateSingleTagsField(tags);}
-if(animate){tag.fadeOut('fast').hide('blind',{direction:'horizontal'},'fast',function(){tag.remove();}).dequeue();}else{tag.remove();}},removeAll:function(){var that=this;this.tagList.children('.tagit-choice').each(function(index,tag){that.removeTag(tag,false);});}});})(jQuery);
+/*
+* jQuery UI Tag-it!
+*
+* @version v2.0 (06/2011)
+*
+* Copyright 2011, Levy Carneiro Jr.
+* Released under the MIT license.
+* http://aehlke.github.com/tag-it/LICENSE
+*
+* Homepage:
+*   http://aehlke.github.com/tag-it/
+*
+* Authors:
+*   Levy Carneiro Jr.
+*   Martin Rehfeld
+*   Tobias Schmidt
+*   Skylar Challand
+*   Alex Ehlke
+*
+* Maintainer:
+*   Alex Ehlke - Twitter: @aehlke
+*
+* Dependencies:
+*   jQuery v1.4+
+*   jQuery UI v1.8+
+*/
+(function($) {
+
+    $.widget('ui.tagit', {
+        options: {
+            itemName          : 'item',
+            fieldName         : 'tags',
+            availableTags     : [],
+            tagSource         : null,
+            removeConfirmation: false,
+            caseSensitive     : true,
+            placeholderText   : null,
+
+            // When enabled, quotes are not neccesary
+            // for inputting multi-word tags.
+            allowSpaces: false,
+
+            // Whether to animate tag removals or not.
+            animate: true,
+
+            // The below options are for using a single field instead of several
+            // for our form values.
+            //
+            // When enabled, will use a single hidden field for the form,
+            // rather than one per tag. It will delimit tags in the field
+            // with singleFieldDelimiter.
+            //
+            // The easiest way to use singleField is to just instantiate tag-it
+            // on an INPUT element, in which case singleField is automatically
+            // set to true, and singleFieldNode is set to that element. This 
+            // way, you don't need to fiddle with these options.
+            singleField: false,
+
+            singleFieldDelimiter: ',',
+
+            // Set this to an input DOM node to use an existing form field.
+            // Any text in it will be erased on init. But it will be
+            // populated with the text of tags as they are created,
+            // delimited by singleFieldDelimiter.
+            //
+            // If this is not set, we create an input node for it,
+            // with the name given in settings.fieldName, 
+            // ignoring settings.itemName.
+            singleFieldNode: null,
+
+            // Optionally set a tabindex attribute on the input that gets
+            // created for tag-it.
+            tabIndex: null,
+
+
+            // Event callbacks.
+            onTagAdded  : null,
+            onTagRemoved: null,
+            onTagClicked: null
+        },
+
+
+        _create: function() {
+            // for handling static scoping inside callbacks
+            var that = this;
+
+            // There are 2 kinds of DOM nodes this widget can be instantiated on:
+            //     1. UL, OL, or some element containing either of these.
+            //     2. INPUT, in which case 'singleField' is overridden to true,
+            //        a UL is created and the INPUT is hidden.
+            if (this.element.is('input')) {
+                this.tagList = $('<ul></ul>').insertAfter(this.element);
+                this.options.singleField = true;
+                this.options.singleFieldNode = this.element;
+                this.element.css('display', 'none');
+            } else {
+                this.tagList = this.element.find('ul, ol').andSelf().last();
+            }
+
+            this._tagInput = $('<input type="text" />');
+            if (this.options.tabIndex) {
+                this._tagInput.attr('tabindex', this.options.tabIndex);
+            }
+            if (this.options.placeholderText) {
+                this._tagInput.attr('placeholder', this.options.placeholderText);
+            }
+
+            this.options.tagSource = this.options.tagSource || function(search, showChoices) {
+                var filter = search.term.toLowerCase();
+                var choices = $.grep(this.options.availableTags, function(element) {
+                    // Only match autocomplete options that begin with the search term.
+                    // (Case insensitive.)
+                    return (element.toLowerCase().indexOf(filter) === 0);
+                });
+                showChoices(this._subtractArray(choices, this.assignedTags()));
+            };
+
+            // Bind tagSource callback functions to this context.
+            if ($.isFunction(this.options.tagSource)) {
+                this.options.tagSource = $.proxy(this.options.tagSource, this);
+            }
+
+            this.tagList
+                .addClass('tagit')
+                // Create the input field.
+                .append($('<li class="tagit-new"></li>').append(this._tagInput))
+                .click(function(e) {
+                    var target = $(e.target);
+                    if (target.hasClass('tagit-label')) {
+                        that._trigger('onTagClicked', e, target.closest('.tagit-choice'));
+                    } else {
+                        // Sets the focus() to the input field, if the user
+                        // clicks anywhere inside the UL. This is needed
+                        // because the input field needs to be of a small size.
+                        that._tagInput.focus();
+                    }
+                });
+
+            // Add existing tags from the list, if any.
+            this.tagList.children('li').each(function() {
+                if (!$(this).hasClass('tagit-new')) {
+                    that.createTag($(this).html(), $(this).attr('class'));
+                    $(this).remove();
+                }
+            });
+
+            // Single field support.
+            if (this.options.singleField) {
+                if (this.options.singleFieldNode) {
+                    // Add existing tags from the input field.
+                    var node = $(this.options.singleFieldNode);
+                    var tags = node.val().split(this.options.singleFieldDelimiter);
+                    node.val('');
+                    $.each(tags, function(index, tag) {
+                        that.createTag(tag);
+                    });
+                } else {
+                    // Create our single field input after our list.
+                    this.options.singleFieldNode = this.tagList.after('<input type="hidden" style="display:none;" value="" name="' + this.options.fieldName + '" />');
+                }
+            }
+
+            // Events.
+            this._tagInput
+                .keydown(function(event) {
+                    // Backspace is not detected within a keypress, so it must use keydown.
+                    if (event.which == $.ui.keyCode.BACKSPACE && that._tagInput.val() === '') {
+                        var tag = that._lastTag();
+                        if (!that.options.removeConfirmation || tag.hasClass('remove')) {
+                            // When backspace is pressed, the last tag is deleted.
+                            that.removeTag(tag);
+                        } else if (that.options.removeConfirmation) {
+                            tag.addClass('remove ui-state-highlight');
+                        }
+                    } else if (that.options.removeConfirmation) {
+                        that._lastTag().removeClass('remove ui-state-highlight');
+                    }
+
+                    // Comma/Space/Enter are all valid delimiters for new tags,
+                    // except when there is an open quote or if setting allowSpaces = true.
+                    // Tab will also create a tag, unless the tag input is empty, in which case it isn't caught.
+                    if (
+                        event.which == $.ui.keyCode.COMMA ||
+                        event.which == $.ui.keyCode.ENTER ||
+                        (
+                            event.which == $.ui.keyCode.TAB &&
+                            that._tagInput.val() !== ''
+                        ) ||
+                        (
+                            event.which == $.ui.keyCode.SPACE &&
+                            that.options.allowSpaces !== true &&
+                            (
+                                $.trim(that._tagInput.val()).replace( /^s*/, '' ).charAt(0) != '"' ||
+                                (
+                                    $.trim(that._tagInput.val()).charAt(0) == '"' &&
+                                    $.trim(that._tagInput.val()).charAt($.trim(that._tagInput.val()).length - 1) == '"' &&
+                                    $.trim(that._tagInput.val()).length - 1 !== 0
+                                )
+                            )
+                        )
+                    ) {
+                        event.preventDefault();
+                        that.createTag(that._cleanedInput());
+
+                        // The autocomplete doesn't close automatically when TAB is pressed.
+                        // So let's ensure that it closes.
+                        that._tagInput.autocomplete('close');
+                    }
+                }).blur(function(e){
+                    // Create a tag when the element loses focus (unless it's empty).
+                    that.createTag(that._cleanedInput());
+                });
+                
+
+            // Autocomplete.
+            if (this.options.availableTags || this.options.tagSource) {
+                this._tagInput.autocomplete({
+                    source: this.options.tagSource,
+                    select: function(event, ui) {
+                        // Delete the last tag if we autocomplete something despite the input being empty
+                        // This happens because the input's blur event causes the tag to be created when
+                        // the user clicks an autocomplete item.
+                        // The only artifact of this is that while the user holds down the mouse button
+                        // on the selected autocomplete item, a tag is shown with the pre-autocompleted text,
+                        // and is changed to the autocompleted text upon mouseup.
+                        if (that._tagInput.val() === '') {
+                            that.removeTag(that._lastTag(), false);
+                        }
+                        that.createTag(ui.item.value);
+                        // Preventing the tag input to be updated with the chosen value.
+                        return false;
+                    }
+                });
+            }
+        },
+
+        _cleanedInput: function() {
+            // Returns the contents of the tag input, cleaned and ready to be passed to createTag
+            return $.trim(this._tagInput.val().replace(/^"(.*)"$/, '$1'));
+        },
+
+        _lastTag: function() {
+            return this.tagList.children('.tagit-choice:last');
+        },
+
+        assignedTags: function() {
+            // Returns an array of tag string values
+            var that = this;
+            var tags = [];
+            if (this.options.singleField) {
+                tags = $(this.options.singleFieldNode).val().split(this.options.singleFieldDelimiter);
+                if (tags[0] === '') {
+                    tags = [];
+                }
+            } else {
+                this.tagList.children('.tagit-choice').each(function() {
+                    tags.push(that.tagLabel(this));
+                });
+            }
+            return tags;
+        },
+
+        _updateSingleTagsField: function(tags) {
+            // Takes a list of tag string values, updates this.options.singleFieldNode.val to the tags delimited by this.options.singleFieldDelimiter
+            $(this.options.singleFieldNode).val(tags.join(this.options.singleFieldDelimiter));
+        },
+
+        _subtractArray: function(a1, a2) {
+            var result = [];
+            for (var i = 0; i < a1.length; i++) {
+                if ($.inArray(a1[i], a2) == -1) {
+                    result.push(a1[i]);
+                }
+            }
+            return result;
+        },
+
+        tagLabel: function(tag) {
+            // Returns the tag's string label.
+            if (this.options.singleField) {
+                return $(tag).children('.tagit-label').text();
+            } else {
+                return $(tag).children('input').val();
+            }
+        },
+
+        _isNew: function(value) {
+            var that = this;
+            var isNew = true;
+            this.tagList.children('.tagit-choice').each(function(i) {
+                if (that._formatStr(value) == that._formatStr(that.tagLabel(this))) {
+                    isNew = false;
+                    return false;
+                }
+            });
+            return isNew;
+        },
+
+        _formatStr: function(str) {
+            if (this.options.caseSensitive) {
+                return str;
+            }
+            return $.trim(str.toLowerCase());
+        },
+
+        createTag: function(value, additionalClass) {
+            var that = this;
+            // Automatically trims the value of leading and trailing whitespace.
+            value = $.trim(value);
+
+            if (!this._isNew(value) || value === '') {
+                return false;
+            }
+
+            var label = $(this.options.onTagClicked ? '<a class="tagit-label"></a>' : '<span class="tagit-label"></span>').text(value);
+
+            // Create tag.
+            var tag = $('<li></li>')
+                .addClass('tagit-choice label label-info')
+                .addClass(additionalClass)
+                .append(label);
+
+            // Button for removing the tag.
+            var removeTagIcon = $('<span></span>')
+                .addClass('ui-icon ui-icon-close');
+            var removeTag = $('<a><span class="text-icon">\xd7</span></a>') // \xd7 is an X
+                .addClass('tagit-close')
+                .append(removeTagIcon)
+                .click(function(e) {
+                    // Removes a tag when the little 'x' is clicked.
+                    that.removeTag(tag);
+                });
+            tag.append(removeTag);
+
+            // Unless options.singleField is set, each tag has a hidden input field inline.
+            if (this.options.singleField) {
+                var tags = this.assignedTags();
+                tags.push(value);
+                this._updateSingleTagsField(tags);
+            } else {
+                var escapedValue = label.html();
+                tag.append('<input type="hidden" style="display:none;" value="' 
+					+ escapedValue + '" name="' + this.options.itemName 
+					+ '[' + this.options.fieldName + '][]" />');
+            }
+
+            this._trigger('onTagAdded', null, tag);
+
+            // Cleaning the input.
+            this._tagInput.val('');
+
+            // insert tag
+            this._tagInput.parent().before(tag);
+        },
+        
+        removeTag: function(tag, animate) {
+            animate = animate || this.options.animate;
+
+            tag = $(tag);
+
+            this._trigger('onTagRemoved', null, tag);
+
+            if (this.options.singleField) {
+                var tags = this.assignedTags();
+                var removedTagLabel = this.tagLabel(tag);
+                tags = $.grep(tags, function(el){
+                    return el != removedTagLabel;
+                });
+                this._updateSingleTagsField(tags);
+            }
+            // Animate the removal.
+            if (animate) {
+                tag.fadeOut('fast').hide('blind', {direction: 'horizontal'}, 'fast', function(){
+                    tag.remove();
+                }).dequeue();
+            } else {
+                tag.remove();
+            }
+        },
+
+        removeAll: function() {
+            // Removes all tags.
+            var that = this;
+            this.tagList.children('.tagit-choice').each(function(index, tag) {
+                that.removeTag(tag, false);
+            });
+        }
+
+    });
+
+})(jQuery);
+
+
+
+
 /*
  *	lib/js/lib/sprintf.js
  */
-var sprintf=(function(){function get_type(variable){return Object.prototype.toString.call(variable).slice(8,-1).toLowerCase();}
-function str_repeat(input,multiplier){for(var output=[];multiplier>0;output[--multiplier]=input){}
-return output.join('');}
-var str_format=function(){if(!str_format.cache.hasOwnProperty(arguments[0])){str_format.cache[arguments[0]]=str_format.parse(arguments[0]);}
-return str_format.format.call(null,str_format.cache[arguments[0]],arguments);};str_format.format=function(parse_tree,argv){var cursor=1,tree_length=parse_tree.length,node_type='',arg,output=[],i,k,match,pad,pad_character,pad_length;for(i=0;i<tree_length;i++){node_type=get_type(parse_tree[i]);if(node_type==='string'){output.push(parse_tree[i]);}
-else if(node_type==='array'){match=parse_tree[i];if(match[2]){arg=argv[cursor];for(k=0;k<match[2].length;k++){if(!arg.hasOwnProperty(match[2][k])){arg='';}else{arg=arg[match[2][k]];}}}
-else if(match[1]){arg=argv[match[1]];}
-else{arg=argv[cursor++];}
-if(/[^s]/.test(match[8])&&(get_type(arg)!='number')){throw(sprintf('[sprintf] expecting number but found %s',get_type(arg)));}
-switch(match[8]){case'b':arg=arg.toString(2);break;case'c':arg=String.fromCharCode(arg);break;case'd':arg=parseInt(arg,10);break;case'e':arg=match[7]?arg.toExponential(match[7]):arg.toExponential();break;case'f':arg=match[7]?parseFloat(arg).toFixed(match[7]):parseFloat(arg);break;case'o':arg=arg.toString(8);break;case's':arg=((arg=String(arg))&&match[7]?arg.substring(0,match[7]):arg);break;case'u':arg=Math.abs(arg);break;case'x':arg=arg.toString(16);break;case'X':arg=arg.toString(16).toUpperCase();break;}
-arg=(/[def]/.test(match[8])&&match[3]&&arg>=0?'+'+arg:arg);pad_character=match[4]?match[4]=='0'?'0':match[4].charAt(1):' ';pad_length=match[6]-String(arg).length;pad=match[6]?str_repeat(pad_character,pad_length):'';output.push(match[5]?arg+pad:pad+arg);}}
-return output.join('');};str_format.cache={};str_format.parse=function(fmt){var _fmt=fmt,match=[],parse_tree=[],arg_names=0;while(_fmt){if((match=/^[^\x25]+/.exec(_fmt))!==null){parse_tree.push(match[0]);}
-else if((match=/^\x25{2}/.exec(_fmt))!==null){parse_tree.push('%');}
-else if((match=/^\x25(?:([1-9]\d*)\$|\(([^\)]+)\))?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([b-fosuxX])/.exec(_fmt))!==null){if(match[2]){arg_names|=1;var field_list=[],replacement_field=match[2],field_match=[];if((field_match=/^([a-z_][a-z_\d]*)/i.exec(replacement_field))!==null){field_list.push(field_match[1]);while((replacement_field=replacement_field.substring(field_match[0].length))!==''){if((field_match=/^\.([a-z_][a-z_\d]*)/i.exec(replacement_field))!==null){field_list.push(field_match[1]);}
-else if((field_match=/^\[(\d+)\]/.exec(replacement_field))!==null){field_list.push(field_match[1]);}
-else{throw('[sprintf] huh?');}}}
-else{throw('[sprintf] huh?');}
-match[2]=field_list;}
-else{arg_names|=2;}
-if(arg_names===3){throw('[sprintf] mixing positional and named placeholders is not (yet) supported');}
-parse_tree.push(match);}
-else{throw('[sprintf] huh?');}
-_fmt=_fmt.substring(match[0].length);}
-return parse_tree;};return str_format;})();var vsprintf=function(fmt,argv){argv.unshift(fmt);return sprintf.apply(null,argv);};
+/**
+sprintf() for JavaScript 0.7-beta1
+http://www.diveintojavascript.com/projects/javascript-sprintf
+
+Copyright (c) Alexandru Marasteanu <alexaholic [at) gmail (dot] com>
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+    * Neither the name of sprintf() for JavaScript nor the
+      names of its contributors may be used to endorse or promote products
+      derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL Alexandru Marasteanu BE LIABLE FOR ANY
+DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+Changelog:
+2010.09.06 - 0.7-beta1
+  - features: vsprintf, support for named placeholders
+  - enhancements: format cache, reduced global namespace pollution
+
+2010.05.22 - 0.6:
+ - reverted to 0.4 and fixed the bug regarding the sign of the number 0
+ Note:
+ Thanks to Raphael Pigulla <raph (at] n3rd [dot) org> (http://www.n3rd.org/)
+ who warned me about a bug in 0.5, I discovered that the last update was
+ a regress. I appologize for that.
+
+2010.05.09 - 0.5:
+ - bug fix: 0 is now preceeded with a + sign
+ - bug fix: the sign was not at the right position on padded results (Kamal Abdali)
+ - switched from GPL to BSD license
+
+2007.10.21 - 0.4:
+ - unit test and patch (David Baird)
+
+2007.09.17 - 0.3:
+ - bug fix: no longer throws exception on empty paramenters (Hans Pufal)
+
+2007.09.11 - 0.2:
+ - feature: added argument swapping
+
+2007.04.03 - 0.1:
+ - initial release
+**/
+
+var sprintf = (function() {
+	function get_type(variable) {
+		return Object.prototype.toString.call(variable).slice(8, -1).toLowerCase();
+	}
+	function str_repeat(input, multiplier) {
+		for (var output = []; multiplier > 0; output[--multiplier] = input) {/* do nothing */}
+		return output.join('');
+	}
+
+	var str_format = function() {
+		if (!str_format.cache.hasOwnProperty(arguments[0])) {
+			str_format.cache[arguments[0]] = str_format.parse(arguments[0]);
+		}
+		return str_format.format.call(null, str_format.cache[arguments[0]], arguments);
+	};
+
+	str_format.format = function(parse_tree, argv) {
+		var cursor = 1, tree_length = parse_tree.length, node_type = '', arg, output = [], i, k, match, pad, pad_character, pad_length;
+		for (i = 0; i < tree_length; i++) {
+			node_type = get_type(parse_tree[i]);
+			if (node_type === 'string') {
+				output.push(parse_tree[i]);
+			}
+			else if (node_type === 'array') {
+				match = parse_tree[i]; // convenience purposes only
+				if (match[2]) { // keyword argument
+					arg = argv[cursor];
+					for (k = 0; k < match[2].length; k++) {
+						if (!arg.hasOwnProperty(match[2][k])) {
+							//throw(sprintf('[sprintf] property "%s" does not exist', match[2][k]));
+							arg = '';
+						} else {
+							arg = arg[match[2][k]];							
+						}
+					}
+				}
+				else if (match[1]) { // positional argument (explicit)
+					arg = argv[match[1]];
+				}
+				else { // positional argument (implicit)
+					arg = argv[cursor++];
+				}
+
+				if (/[^s]/.test(match[8]) && (get_type(arg) != 'number')) {
+					throw(sprintf('[sprintf] expecting number but found %s', get_type(arg)));
+				}
+				switch (match[8]) {
+					case 'b': arg = arg.toString(2); break;
+					case 'c': arg = String.fromCharCode(arg); break;
+					case 'd': arg = parseInt(arg, 10); break;
+					case 'e': arg = match[7] ? arg.toExponential(match[7]) : arg.toExponential(); break;
+					case 'f': arg = match[7] ? parseFloat(arg).toFixed(match[7]) : parseFloat(arg); break;
+					case 'o': arg = arg.toString(8); break;
+					case 's': arg = ((arg = String(arg)) && match[7] ? arg.substring(0, match[7]) : arg); break;
+					case 'u': arg = Math.abs(arg); break;
+					case 'x': arg = arg.toString(16); break;
+					case 'X': arg = arg.toString(16).toUpperCase(); break;
+				}
+				arg = (/[def]/.test(match[8]) && match[3] && arg >= 0 ? '+'+ arg : arg);
+				pad_character = match[4] ? match[4] == '0' ? '0' : match[4].charAt(1) : ' ';
+				pad_length = match[6] - String(arg).length;
+				pad = match[6] ? str_repeat(pad_character, pad_length) : '';
+				output.push(match[5] ? arg + pad : pad + arg);
+			}
+		}
+		return output.join('');
+	};
+
+	str_format.cache = {};
+
+	str_format.parse = function(fmt) {
+		var _fmt = fmt, match = [], parse_tree = [], arg_names = 0;
+		while (_fmt) {
+			if ((match = /^[^\x25]+/.exec(_fmt)) !== null) {
+				parse_tree.push(match[0]);
+			}
+			else if ((match = /^\x25{2}/.exec(_fmt)) !== null) {
+				parse_tree.push('%');
+			}
+			else if ((match = /^\x25(?:([1-9]\d*)\$|\(([^\)]+)\))?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([b-fosuxX])/.exec(_fmt)) !== null) {
+				if (match[2]) {
+					arg_names |= 1;
+					var field_list = [], replacement_field = match[2], field_match = [];
+					if ((field_match = /^([a-z_][a-z_\d]*)/i.exec(replacement_field)) !== null) {
+						field_list.push(field_match[1]);
+						while ((replacement_field = replacement_field.substring(field_match[0].length)) !== '') {
+							if ((field_match = /^\.([a-z_][a-z_\d]*)/i.exec(replacement_field)) !== null) {
+								field_list.push(field_match[1]);
+							}
+							else if ((field_match = /^\[(\d+)\]/.exec(replacement_field)) !== null) {
+								field_list.push(field_match[1]);
+							}
+							else {
+								throw('[sprintf] huh?');
+							}
+						}
+					}
+					else {
+						throw('[sprintf] huh?');
+					}
+					match[2] = field_list;
+				}
+				else {
+					arg_names |= 2;
+				}
+				if (arg_names === 3) {
+					throw('[sprintf] mixing positional and named placeholders is not (yet) supported');
+				}
+				parse_tree.push(match);
+			}
+			else {
+				throw('[sprintf] huh?');
+			}
+			_fmt = _fmt.substring(match[0].length);
+		}
+		return parse_tree;
+	};
+
+	return str_format;
+})();
+
+var vsprintf = function(fmt, argv) {
+	argv.unshift(fmt);
+	return sprintf.apply(null, argv);
+};
+
+
 /*
  *	lib/js/core.min.js
  */
 
 /*
  *	lib/js/wn/class.js
- */;(function(){var initializing=false,fnTest=/xyz/.test(function(){xyz;})?/\b_super\b/:/.*/;this.Class=function(){};Class.extend=function(prop){var _super=this.prototype;initializing=true;var prototype=new this();initializing=false;for(var name in prop){prototype[name]=typeof prop[name]=="function"&&typeof _super[name]=="function"&&fnTest.test(prop[name])?(function(name,fn){return function(){var tmp=this._super;this._super=_super[name];var ret=fn.apply(this,arguments);this._super=tmp;return ret;};})(name,prop[name]):prop[name];}
-function Class(){this._observers=new Object();if(!initializing&&this.init)
-this.init.apply(this,arguments);}
-Class.prototype=prototype;Class.prototype.constructor=Class;Class.prototype.on=function(event_name,handle){if(!this._observers[event_name]){this._observers[event_name]=[];}
-this._observers[event_name].push(handle);}
-Class.prototype.trigger=function(event_name){var args=[];if(arguments.lengths>1)args=arguments.splice(1);var observer_list=this._observers[event_name]||[];for(var i=0;i<observer_list.length;i++){observer_list[i].apply(this,args);}}
-Class.extend=arguments.callee;return Class;};})();
+ */
+// Copyright (c) 2012 Web Notes Technologies Pvt Ltd (http://erpnext.com)
+// 
+// MIT License (MIT)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a 
+// copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// 
+
+/*
+
+Inheritence "Class"
+-------------------
+see: http://ejohn.org/blog/simple-javascript-inheritance/
+To subclass, use:
+
+	var MyClass = Class.extend({
+		init: function
+	})
+
+*/
+
+/* Simple JavaScript Inheritance
+ * By John Resig http://ejohn.org/
+ * MIT Licensed.
+ */
+// Inspired by base2 and Prototype
+
+; /* otherwise causes a concat bug? */
+
+(function(){
+	var initializing = false, fnTest = /xyz/.test(function(){xyz;}) ? /\b_super\b/ : /.*/;
+	// The base Class implementation (does nothing)
+	this.Class = function(){};
+	
+	// Create a new Class that inherits from this class
+	Class.extend = function(prop) {
+		var _super = this.prototype;
+		
+		// Instantiate a base class (but only create the instance,
+		// don't run the init constructor)
+		initializing = true;
+		var prototype = new this();
+		initializing = false;
+		
+		// Copy the properties over onto the new prototype
+		for (var name in prop) {
+			// Check if we're overwriting an existing function
+			prototype[name] = typeof prop[name] == "function" && 
+				typeof _super[name] == "function" && fnTest.test(prop[name]) ?
+				(function(name, fn){
+					return function() {
+						var tmp = this._super;
+						
+						// Add a new ._super() method that is the same method
+						// but on the super-class
+						this._super = _super[name];
+						
+						// The method only need to be bound temporarily, so we
+						// remove it when we're done executing
+						var ret = fn.apply(this, arguments);				
+						this._super = tmp;
+						
+						return ret;
+					};
+				})(name, prop[name]) :
+				prop[name];
+		}
+		
+		// The dummy class constructor
+		function Class() {
+			// All construction is actually done in the init method
+			this._observers = new Object();
+			if ( !initializing && this.init )
+				this.init.apply(this, arguments);
+		}
+		
+		// Populate our constructed prototype object
+		Class.prototype = prototype;
+		
+		// Enforce the constructor to be what we expect
+		Class.prototype.constructor = Class;
+
+		// ----------------------------------
+		// add bindable events
+		// added for binding events on classes
+		Class.prototype.on = function(event_name, handle) {
+			if(!this._observers[event_name]) {
+				this._observers[event_name] = [];
+			}
+			this._observers[event_name].push(handle);
+		}
+		Class.prototype.trigger = function(event_name) {
+			var args = [];
+			if(arguments.lengths > 1) args = arguments.splice(1);
+			var observer_list = this._observers[event_name] || [];
+			for(var i=0;i< observer_list.length; i++) {
+				observer_list[i].apply(this, args);
+			}
+		}
+		// ----------------------------------
+
+		// And make this class extendable
+		Class.extend = arguments.callee;
+		
+		return Class;
+	};
+})();
+
+
 /*
  *	lib/js/wn/provide.js
  */
-if(!window.wn)wn={}
-wn.provide=function(namespace){var nsl=namespace.split('.');var l=nsl.length;var parent=window;for(var i=0;i<l;i++){var n=nsl[i];if(!parent[n]){parent[n]={}}
-parent=parent[n];}}
-wn.provide('wn.settings');wn.provide('wn.ui');
+// Copyright (c) 2012 Web Notes Technologies Pvt Ltd (http://erpnext.com)
+// 
+// MIT License (MIT)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a 
+// copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// 
+
+// provide a namespace
+if(!window.wn)wn = {}
+wn.provide = function(namespace) {
+	var nsl = namespace.split('.');
+	var l = nsl.length;
+	var parent = window;
+	for(var i=0; i<l; i++) {
+		var n = nsl[i];
+		if(!parent[n]) {
+			parent[n] = {}
+		}
+		parent = parent[n];
+	}
+}
+
+wn.provide('wn.settings');
+wn.provide('wn.ui');
+
 /*
  *	lib/js/wn/versions.js
  */
-wn.versions={check:function(){if(window.localStorage){var localversion=localStorage._version_number;localStorage.clear();}}}
+// Copyright (c) 2012 Web Notes Technologies Pvt Ltd (http://erpnext.com)
+// 
+// MIT License (MIT)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a 
+// copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// 
+
+// manage app versioning
+// if version is changed or version is -1, clear localStorage
+
+wn.versions = {
+	check: function() {
+		if(window.localStorage) {
+			var localversion = localStorage._version_number;
+			localStorage.clear();
+		}
+	}
+}
+
 /*
  *	lib/js/wn/assets.js
  */
-wn.assets={executed_:{},exists:function(src){if('localStorage'in window&&localStorage.getItem(src))
-return true},add:function(src,txt){if('localStorage'in window){localStorage.setItem(src,txt);}},get:function(src){return localStorage.getItem(src);},extn:function(src){if(src.indexOf('?')!=-1){src=src.split('?').slice(-1)[0];}
-return src.split('.').slice(-1)[0];},load:function(src){var t=src;$.ajax({url:t,data:{q:Math.floor(Math.random()*1000)},dataType:'text',success:function(txt){wn.assets.add(src,txt);},async:false})},execute:function(src){if(wn.assets.executed_[src])
-return;if(!wn.assets.exists(src)){wn.assets.load(src);}
-var type=wn.assets.extn(src);if(wn.assets.handler[type]){wn.assets.handler[type](wn.assets.get(src),src);wn.assets.executed_[src]=1;}},handler:{js:function(txt,src){wn.dom.eval(txt);},css:function(txt,src){wn.dom.set_style(txt);},cgi:function(txt,src){wn.dom.eval(txt)}}}
+// Copyright (c) 2012 Web Notes Technologies Pvt Ltd (http://erpnext.com)
+// 
+// MIT License (MIT)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a 
+// copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// 
+
+// library to mange assets (js, css, models, html) etc in the app.
+// will try and get from localStorge if latest are available
+// depends on wn.versions to manage versioning
+
+wn.assets = {
+	// keep track of executed assets
+	executed_ : {},
+	
+	// check if the asset exists in
+	// localstorage 
+	exists: function(src) {
+		if('localStorage' in window
+			&& localStorage.getItem(src))
+			return true
+	},
+	
+	// add the asset to
+	// localstorage
+	add: function(src, txt) {
+		if('localStorage' in window) {
+			localStorage.setItem(src, txt);
+		}
+	},
+	
+	get: function(src) {
+		return localStorage.getItem(src);
+	},
+	
+	extn: function(src) {
+		if(src.indexOf('?')!=-1) {
+			src = src.split('?').slice(-1)[0];
+		}
+		return src.split('.').slice(-1)[0];
+	},
+	
+	// load an asset via
+	load: function(src) {
+		// this is virtual page load, only get the the source
+		// *without* the template
+		var t = src;
+
+		$.ajax({
+			url: t,
+			data: {
+				q: Math.floor(Math.random()*1000)
+			},
+			dataType: 'text',
+			success: function(txt) {
+				// add it to localstorage
+				wn.assets.add(src, txt);				
+			},
+			async: false
+		})
+	},
+	
+	// pass on to the handler to set
+	execute: function(src) {
+		if(wn.assets.executed_[src])
+			return;
+		if(!wn.assets.exists(src)) {
+			wn.assets.load(src);
+		}
+		var type = wn.assets.extn(src);
+		if(wn.assets.handler[type]) {
+			wn.assets.handler[type](wn.assets.get(src), src);
+			wn.assets.executed_[src] = 1;
+		}
+	},
+	
+	// handle types of assets
+	// and launch them in the
+	// app
+	handler: {
+		js: function(txt, src) {
+			wn.dom.eval(txt);
+		},
+		css: function(txt, src) {
+			wn.dom.set_style(txt);
+		},
+		cgi: function(txt, src) {
+			// dynamic content, will return content as
+			// javascript
+			wn.dom.eval(txt)
+		}
+	}
+}
+
+
 /*
  *	lib/js/wn/require.js
  */
-wn.require=function(items){if(typeof items==="string"){items=[items];}
-var l=items.length;for(var i=0;i<l;i++){var src=items[i];wn.assets.execute(src);}}
-wn.provide('wn.lib');wn.lib.import_slickgrid=function(){wn.require('js/lib/slickgrid/slick.grid.css');wn.require('js/lib/slickgrid/slick-default-theme.css');wn.require('js/slickgrid.bundle.js');wn.dom.set_style('.slick-cell { font-size: 12px; }');}
-wn.lib.import_wysihtml5=function(){wn.require('js/lib/bootstrap-wysihtml5/bootstrap-wysihtml5.css');wn.require('js/lib/wysihtml5/wysihtml5.min.js');wn.require('js/lib/bootstrap-wysihtml5/bootstrap-wysihtml5.min.js');}
+// Copyright (c) 2012 Web Notes Technologies Pvt Ltd (http://erpnext.com)
+// 
+// MIT License (MIT)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a 
+// copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// 
+
+// require js file
+// items to be called by their direct names
+// for handler functions
+// wn.require('index.cgi?cmd=startup')
+
+wn.require = function(items) {
+	if(typeof items === "string") {
+		items = [items];
+	}
+	var l = items.length;
+
+	for(var i=0; i< l; i++) {
+		var src = items[i];
+		wn.assets.execute(src);
+	}
+}
+
+wn.provide('wn.lib');
+wn.lib.import_slickgrid = function() {
+	wn.require('js/lib/slickgrid/slick.grid.css');
+	wn.require('js/lib/slickgrid/slick-default-theme.css');
+	wn.require('js/slickgrid.bundle.js');
+	wn.dom.set_style('.slick-cell { font-size: 12px; }');
+}
+
+wn.lib.import_wysihtml5 = function() {
+	wn.require('js/lib/bootstrap-wysihtml5/bootstrap-wysihtml5.css');
+	wn.require('js/lib/wysihtml5/wysihtml5.min.js');
+	wn.require('js/lib/bootstrap-wysihtml5/bootstrap-wysihtml5.min.js');
+}
+
 /*
  *	lib/js/wn/dom.js
  */
-wn.provide('wn.dom');wn.dom={id_count:0,by_id:function(id){return document.getElementById(id);},set_unique_id:function(ele){var id='unique-'+wn.dom.id_count;if(ele)
-ele.setAttribute('id',id);wn.dom.id_count++;return id;},eval:function(txt){if(!txt)return;var el=document.createElement('script');el.appendChild(document.createTextNode(txt));document.getElementsByTagName('head')[0].appendChild(el);},set_style:function(txt){if(!txt)return;var se=document.createElement('style');se.type="text/css";if(se.styleSheet){se.styleSheet.cssText=txt;}else{se.appendChild(document.createTextNode(txt));}
-document.getElementsByTagName('head')[0].appendChild(se);},add:function(parent,newtag,className,cs,innerHTML,onclick){if(parent&&parent.substr)parent=wn.dom.by_id(parent);var c=document.createElement(newtag);if(parent)
-parent.appendChild(c);if(className){if(newtag.toLowerCase()=='img')
-c.src=className
-else
-c.className=className;}
-if(cs)wn.dom.css(c,cs);if(innerHTML)c.innerHTML=innerHTML;if(onclick)c.onclick=onclick;return c;},css:function(ele,s){if(ele&&s){for(var i in s)ele.style[i]=s[i];};return ele;},placeholder:function(dim,letter){function getsinglecol(){return Math.min(Math.round(Math.random()*9)*Math.round(Math.random()*1)+3,9)}
-function getcol(){return''+getsinglecol()+getsinglecol()+getsinglecol();}
-args={width:Math.round(flt(dim)*0.7)+'px',height:Math.round(flt(dim)*0.7)+'px',padding:Math.round(flt(dim)*0.15)+'px','font-size':Math.round(flt(dim)*0.6)+'px',col1:getcol(),col2:getcol(),letter:letter.substr(0,1).toUpperCase()}
-return repl('<div style="\
-   height: %(height)s; \
-   width: %(width)s; \
-   font-size: %(font-size)s; \
-   color: #fff; \
-   text-align: center; \
-   padding: %(padding)s; \
-   background: -moz-linear-gradient(top,  #%(col1)s 0%, #%(col2)s 99%); /* FF3.6+ */\
-   background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#%(col1)s), color-stop(99%,#%(col2)s)); /* Chrome,Safari4+ */\
-   background: -webkit-linear-gradient(top,  #%(col1)s 0%,#%(col2)s 99%); /* Chrome10+,Safari5.1+ */\
-   background: -o-linear-gradient(top,  #%(col1)s 0%,#%(col2)s 99%); /* Opera 11.10+ */\
-   background: -ms-linear-gradient(top,  #%(col1)s 0%,#%(col2)s 99%); /* IE10+ */\
-   background: linear-gradient(top,  #%(col1)s 0%,#%(col2)s 99%); /* W3C */\
-   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr=\'#%(col1)s\', endColorstr=\'#%(col2)s\',GradientType=0 ); /* IE6-9 */\
-   ">%(letter)s</div>',args);}}
-wn.get_cookie=function(c){var clist=(document.cookie+'').split(';');var cookies={};for(var i=0;i<clist.length;i++){var tmp=clist[i].split('=');cookies[strip(tmp[0])]=strip(tmp[1]);}
-return cookies[c];}
-wn.dom.set_box_shadow=function(ele,spread){$(ele).css('-moz-box-shadow','0px 0px '+spread+'px rgba(0,0,0,0.3);')
-$(ele).css('-webkit-box-shadow','0px 0px '+spread+'px rgba(0,0,0,0.3);')
-$(ele).css('-box-shadow','0px 0px '+spread+'px rgba(0,0,0,0.3);')};(function($){$.fn.add_options=function(options_list){for(var i=0;i<options_list.length;i++){var v=options_list[i];value=v.value||v;label=v.label||v;$('<option>').html(label).attr('value',value).appendTo(this);}
-$(this).val(options_list[0].value||options_list[0]);}
-$.fn.set_working=function(){var ele=this.get(0);$(ele).attr('disabled','disabled');if(ele.loading_img){$(ele.loading_img).toggle(true);}else{ele.loading_img=$('<img src="images/lib/ui/button-load.gif" \
-    style="margin-left: 4px; margin-bottom: -2px; display: inline;" />').insertAfter(ele);}}
-$.fn.done_working=function(){var ele=this.get(0);$(ele).attr('disabled',null);if(ele.loading_img){$(ele.loading_img).toggle(false);};}})(jQuery);
+// Copyright (c) 2012 Web Notes Technologies Pvt Ltd (http://erpnext.com)
+// 
+// MIT License (MIT)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a 
+// copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// 
+
+// add a new dom element
+wn.provide('wn.dom');
+
+wn.dom = {
+	id_count: 0,
+	by_id: function(id) {
+		return document.getElementById(id);
+	},
+	set_unique_id: function(ele) {
+		var id = 'unique-' + wn.dom.id_count;
+		if(ele)
+			ele.setAttribute('id', id);
+		wn.dom.id_count++;
+		return id;
+	},
+	eval: function(txt) {
+		if(!txt) return;
+		var el = document.createElement('script');
+		el.appendChild(document.createTextNode(txt));
+		// execute the script globally
+		document.getElementsByTagName('head')[0].appendChild(el);
+	},
+	set_style: function(txt) {
+		if(!txt) return;
+		var se = document.createElement('style');
+		se.type = "text/css";
+		if (se.styleSheet) {
+			se.styleSheet.cssText = txt;
+		} else {
+			se.appendChild(document.createTextNode(txt));
+		}
+		document.getElementsByTagName('head')[0].appendChild(se);	
+	},
+	add: function(parent, newtag, className, cs, innerHTML, onclick) {
+		if(parent && parent.substr)parent = wn.dom.by_id(parent);
+		var c = document.createElement(newtag);
+		if(parent)
+			parent.appendChild(c);
+
+		// if image, 3rd parameter is source
+		if(className) {
+			if(newtag.toLowerCase()=='img')
+				c.src = className
+			else
+				c.className = className;		
+		}
+		if(cs) wn.dom.css(c,cs);
+		if(innerHTML) c.innerHTML = innerHTML;
+		if(onclick) c.onclick = onclick;
+		return c;
+	},
+	css: function(ele, s) { 
+		if(ele && s) { 
+			for(var i in s) ele.style[i]=s[i]; 
+		}; 
+		return ele;
+	},
+	placeholder: function(dim, letter) {
+		function getsinglecol() {
+			return Math.min(Math.round(Math.random() * 9) * Math.round(Math.random() * 1) + 3, 9)
+		}
+		function getcol() {
+			return '' + getsinglecol() + getsinglecol() + getsinglecol();
+		}
+		args = {
+			width: Math.round(flt(dim) * 0.7) + 'px',
+			height: Math.round(flt(dim) * 0.7) + 'px',
+			padding: Math.round(flt(dim) * 0.15) + 'px',
+			'font-size': Math.round(flt(dim) * 0.6) + 'px',
+			col1: getcol(),
+			col2: getcol(),
+			letter: letter.substr(0,1).toUpperCase()
+		}
+		return repl('<div style="\
+			height: %(height)s; \
+			width: %(width)s; \
+			font-size: %(font-size)s; \
+			color: #fff; \
+			text-align: center; \
+			padding: %(padding)s; \
+			background: -moz-linear-gradient(top,  #%(col1)s 0%, #%(col2)s 99%); /* FF3.6+ */\
+			background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#%(col1)s), color-stop(99%,#%(col2)s)); /* Chrome,Safari4+ */\
+			background: -webkit-linear-gradient(top,  #%(col1)s 0%,#%(col2)s 99%); /* Chrome10+,Safari5.1+ */\
+			background: -o-linear-gradient(top,  #%(col1)s 0%,#%(col2)s 99%); /* Opera 11.10+ */\
+			background: -ms-linear-gradient(top,  #%(col1)s 0%,#%(col2)s 99%); /* IE10+ */\
+			background: linear-gradient(top,  #%(col1)s 0%,#%(col2)s 99%); /* W3C */\
+			filter: progid:DXImageTransform.Microsoft.gradient( startColorstr=\'#%(col1)s\', endColorstr=\'#%(col2)s\',GradientType=0 ); /* IE6-9 */\
+			">%(letter)s</div>', args);
+	}
+}
+
+wn.get_cookie = function(c) {
+	var clist = (document.cookie+'').split(';');
+	var cookies = {};
+	for(var i=0;i<clist.length;i++) {
+		var tmp = clist[i].split('=');
+		cookies[strip(tmp[0])] = strip(tmp[1]);
+	}
+	return cookies[c];
+}
+
+wn.dom.set_box_shadow = function(ele, spread) {
+	$(ele).css('-moz-box-shadow', '0px 0px '+ spread +'px rgba(0,0,0,0.3);')
+	$(ele).css('-webkit-box-shadow', '0px 0px '+ spread +'px rgba(0,0,0,0.3);')
+	$(ele).css('-box-shadow', '0px 0px '+ spread +'px rgba(0,0,0,0.3);')
+	
+};
+
+// add <option> list to <select>
+(function($) {
+	$.fn.add_options = function(options_list) {
+		// create options
+		for(var i=0; i<options_list.length; i++) {
+			var v = options_list[i];
+			value = v.value || v;
+			label = v.label || v;
+			$('<option>').html(label).attr('value', value).appendTo(this);
+		}
+		// select the first option
+		$(this).val(options_list[0].value || options_list[0]);
+	}
+	$.fn.set_working = function() {
+		var ele = this.get(0);
+		$(ele).attr('disabled', 'disabled');
+		if(ele.loading_img) { 
+			$(ele.loading_img).toggle(true);
+		} else {
+			ele.loading_img = $('<img src="images/lib/ui/button-load.gif" \
+				style="margin-left: 4px; margin-bottom: -2px; display: inline;" />')
+				.insertAfter(ele);
+		}		
+	}
+	$.fn.done_working = function() {
+		var ele = this.get(0);
+		$(ele).attr('disabled', null);
+		if(ele.loading_img) { 
+			$(ele.loading_img).toggle(false); 
+		};
+	}
+})(jQuery);
+
+
 /*
  *	lib/js/wn/model.js
  */
-wn.provide('wn.model');wn.provide('wn.docs');wn.provide('wn.doclists');wn.provide('wn.model.local_name_idx');$.extend(wn.model,{no_value_type:['Section Break','Column Break','HTML','Table','Button','Image'],new_names:{},with_doctype:function(doctype,callback){if(wn.model.has('DocType',doctype)){callback();}else{wn.call({method:'webnotes.model.client.get_doctype',args:{doctype:doctype},callback:function(r){wn.model.sync(r.docs);callback(r);}});}},with_doc:function(doctype,name,callback){if(!name)name=doctype;if(wn.model.has(doctype,name)){callback(name);}else{wn.call({method:'webnotes.model.client.get_doclist',args:{doctype:doctype,name:name},callback:function(r){wn.model.sync(r.docs);callback(name,r);}});}},can_delete:function(doctype){if(!doctype)return false;return wn.model.get('DocType',doctype).get('allow_trash')&&wn.boot.profile.can_cancel.indexOf(doctype)!=-1;},sync:function(doclist){for(var i=0,len=doclist.length;i<len;i++){var doc=doclist[i];if(doc.parent){var doclistobj=wn.doclists[doc.parenttype][doc.parent];doclistobj.add(doc);}else{new wn.model.DocList([doc]);}}},get:function(dt,dn){return wn.doclists[dt]&&wn.doclists[dt][dn];},has:function(dt,dn){if(wn.doclists[dt]&&wn.doclists[dt][dn])return true;else return false;},get_value:function(dt,dn,fieldname){var doclist=wn.model.get(dt,dn);if(doclist)return doclist.doc.get(fieldname);else return null;},set_value:function(dt,dn,fieldname,value){wn.model.get(dt,dn).doc.set(fieldname,value);},remove:function(dt,dn){delete wn.doclists[dt][dn];},event_name:function(dt,dn){return'change-'+dt.replace(/ /g,'_')+'-'+dn.replace(/ /g,'_');},insert:function(doc,callback,btn){var doclist=wn.model.create(doc.doctype);$.extend(doclist.doc.fields,doc);doclist.insert(callback,btn);},create:function(dt){var doc=new wn.model.Document({doctype:dt,__islocal:1,owner:user,name:wn.model.new_name(dt)});wn.model.set_defaults(doc);return new wn.model.DocList([doc]);},new_name:function(dt){if(!wn.model.local_name_idx[dt])wn.model.local_name_idx[dt]=1;var n='New '+dt+' '+wn.model.local_name_idx[dt];wn.model.local_name_idx[dt]++;return n;},set_defaults:function(doc){var doctypelist=wn.model.get('DocType',doc.get('doctype'));if(doctypelist){doctypelist.each({doctype:'DocField'},function(df){var def=wn.model.get_default(df);if(def!==null)
-doc.set(df.fieldname,def)});}},get_default:function(df){var def=df['default'];var v=null;if(def=='__user')
-v=user;else if(df.fieldtype=='Date'&&(def=='Today'||def=='__today')){v=get_today();}
-else if(def)
-v=def;else if(user_defaults[df.fieldname])
-v=user_defaults[df.fieldname][0];else if(sys_defaults[df.fieldname])
-v=sys_defaults[df.fieldname];return v;}});wn.model.Document=Class.extend({init:function(fields){this.fields=fields;},get:function(key,ifnull){return this.fields[key]||ifnull;},convert_type:function(key,val){if(val===null)return val;var df=wn.model.get('DocType',this.get('doctype')).get({fieldname:key,doctype:"DocField"});if(df.length){df=df[0]
-if(in_list(["Int","Check"],df.fieldtype)){val=cint(val);}else if(in_list(["Currency","Float"],df.fieldtype)){val=flt(val);}else if(df.fieldtype=='Select'){if(in_list(df.options.split('\n'),val)){throw val+" is not a correct option"}}}
-return val;},set:function(key,val){this.fields[key]=this.convert_type(key,val);$(document).trigger(wn.model.event_name(this.get('doctype'),this.get('name')),[key,this.fields[key]]);}});wn.model.DocList=Class.extend({init:function(doclist){this.doclist=[];if(doclist){for(var i=0,len=doclist.length;i<len;i++){this.add(doclist[i]);}}},add:function(doc){if(!(doc instanceof wn.model.Document)){var doc=new wn.model.Document(doc);}
-doc.doclist=this;this.doclist.push(doc);if(this.doclist.length==1){this.setup(doc);}},setup:function(doc){this.doc=doc;this.doctype=doc.get('doctype');this.name=doc.get('name');wn.provide('wn.doclists.'+this.doctype);wn.doclists[this.doctype][this.name]=this;},reset:function(doclist){var oldname=this.doc.get('name');this.doclist.splice(0,this.doclist.length);for(i in doclist){this.add(doclist[i]);}
-if(oldname!=this.name){delete wn.doclists[this.doctype][oldname];}},each:function(){if(typeof arguments[0]=='function'){var fn=arguments[0];$.each(this.doclist,function(i,doc){fn(doc);})}else if(typeof arguments[1]=='function'){var fn=arguments[1];if(typeof arguments[0]=='string'){$.each(this.get({doctype:arguments[0]}),function(i,doc){fn(doc);});}else{$.each(this.get(arguments[0]),function(i,doc){fn(doc);});}}else{var fn=arguments[2];$.each(this.get(arguments[0],arguments[1]),function(i,doc){fn(doc);});}},get:function(){var me=this;if(typeof arguments[0]=='string'&&typeof arguments[1]=='string'){return this.doc.get(arguments[0],arguments[1]);}else if(typeof arguments[0]=='string'){var filters={};if(arguments[1])
-filters=arguments[1];filters.doctype=arguments[0];}else{var filters=arguments[0];}
-var ret=$.map(this.doclist,function(d){return me.match(filters,d)})
-ret.sort(function(a,b){return a.idx>b.idx;});return ret;},get_value:function(key,def){return this.doc.get(key,def);},match:function(filters,doc){for(key in filters){var fval=filters[key];if(fval instanceof Array){if(!in_list(fval,doc.get(key)))return null;}else{if(doc.get(key)!=filters[key]){return null;}}}
-return doc;},insert:function(callback,btn){var me=this;wn.call({method:'webnotes.model.client.insert',args:{docs:this.get_docs()},callback:function(r){me.reset(r.docs);callback(r);},btn:btn});},save:function(docstatus,callback){var me=this;wn.call({method:'webnotes.model.doclist.save',args:{docs:this.get_docs()},callback:function(r){me.reset(r.docs);callback(r);}});},get_docs:function(){return $.map(this.doclist,function(d){return d.fields;});},rename:function(){this.name=this.doclist[0].get('name');},meta:function(){return wn.model.get('DocType',this.doc.get('doctype'));},add_child:function(parentfield){var docfield=this.meta().get({fieldname:parentfield,doctype:'DocField'})[0];var doc=new wn.model.Document({doctype:docfield.get('options'),name:wn.model.new_name(docfield.get('options')),__islocal:1,owner:user,parent:this.doc.get('name'),parenttype:this.doc.get('doctype'),parentfield:parentfield,idx:this.get({parentfield:docfield.get('fieldname')}).length+1});wn.model.set_defaults(doc);this.add(doc);return doc;},remove_child:function(doc){this.doclist.splice(this.doclist.indexOf(doc),1);this.renum_idx(doc.get('parentfield'));},renum_idx:function(parentfield){$.each(this.get({parentfield:parentfield}),function(i,d){d.set('idx',i+1);});}});
+// Copyright (c) 2012 Web Notes Technologies Pvt Ltd (http://erpnext.com)
+// 
+// MIT License (MIT)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a 
+// copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+
+
+wn.provide('wn.model');
+wn.provide('wn.docs');
+wn.provide('wn.doclists');
+wn.provide('wn.model.local_name_idx');
+
+$.extend(wn.model, {
+	no_value_type: ['Section Break', 'Column Break', 'HTML', 'Table', 
+ 	'Button', 'Image'],
+
+	new_names: {},
+
+	with_doctype: function(doctype, callback) {
+		if(wn.model.has('DocType', doctype)) {
+			callback();
+		} else {
+			wn.call({
+				method:'webnotes.model.client.get_doctype',
+				args: {
+					doctype: doctype
+				},
+				callback: function(r) {
+					wn.model.sync(r.docs);
+					callback(r);
+				}
+			});
+		}
+	},
+	with_doc: function(doctype, name, callback) {
+		if(!name) name = doctype; // single type
+		if(wn.model.has(doctype, name)) {
+			callback(name);
+		} else {
+			wn.call({
+				method:'webnotes.model.client.get_doclist',
+				args: {
+					doctype: doctype,
+					name: name
+				},
+				callback: function(r) {
+					wn.model.sync(r.docs);
+					callback(name, r);
+				}
+			});
+		}
+	},
+	can_delete: function(doctype) {
+		if(!doctype) return false;
+		return wn.model.get('DocType', doctype).get('allow_trash') && 
+			wn.boot.profile.can_cancel.indexOf(doctype)!=-1;
+	},
+	sync: function(doclist) {
+		for(var i=0, len=doclist.length; i<len; i++) {
+			var doc = doclist[i];
+			if(doc.parent) {
+				var doclistobj = wn.doclists[doc.parenttype][doc.parent];
+				doclistobj.add(doc);
+			} else {
+				new wn.model.DocList([doc]);
+			}
+		}
+	},
+	// return doclist
+	get: function(dt, dn) {
+		return wn.doclists[dt] && wn.doclists[dt][dn];
+	},
+	has: function(dt, dn) {
+		if(wn.doclists[dt] && wn.doclists[dt][dn]) return true;
+		else return false;
+	},
+	get_value: function(dt, dn, fieldname) {
+		var doclist = wn.model.get(dt, dn);
+		if(doclist) return doclist.doc.get(fieldname);
+		else return null;
+	},
+	set_value: function(dt, dn, fieldname, value) {
+		wn.model.get(dt, dn).doc.set(fieldname, value);
+	},
+	remove: function(dt, dn) {
+		delete wn.doclists[dt][dn];
+	},
+	// naming style for onchange events
+	event_name: function(dt, dn) {
+		return 'change-'+dt.replace(/ /g, '_')+'-' + dn.replace(/ /g, '_');
+	},
+	insert: function(doc, callback, btn) {
+		var doclist = wn.model.create(doc.doctype);
+		$.extend(doclist.doc.fields, doc);
+		doclist.save(callback, btn);
+	},
+	// create a new local doclist
+	create: function(dt) {
+		// create a new doclist and add defaults
+		var doc = new wn.model.Document({doctype:dt, __islocal:1, owner:user, 
+				name:wn.model.new_name(dt)});
+		wn.model.set_defaults(doc);
+		return new wn.model.DocList([doc]);
+	},
+	new_name: function(dt) {
+		if(!wn.model.local_name_idx[dt]) wn.model.local_name_idx[dt] = 1;
+		var n = 'New '+ dt + ' ' + wn.model.local_name_idx[dt];
+		wn.model.local_name_idx[dt]++;
+		return n;
+	},
+	set_defaults: function(doc) {
+		var doctypelist = wn.model.get('DocType', doc.get('doctype'));
+		if(doctypelist) {
+			doctypelist.each({doctype:'DocField'}, function(df) {
+				var def = wn.model.get_default(df);
+				if(def!==null)
+					doc.set(df.fieldname, def)
+			});			
+		}
+	},
+	get_default: function(df) {
+		var def = df['default'];
+		var v = null;
+		if(def=='__user')
+			v = user;
+		else if(df.fieldtype=='Date' && (def=='Today' || def=='__today')) {
+			v = get_today(); }
+		else if(def)
+			v = def;
+		else if(user_defaults[df.fieldname])
+			v = user_defaults[df.fieldname][0];
+		else if(sys_defaults[df.fieldname])
+			v = sys_defaults[df.fieldname];
+		return v;
+	}	
+});
+
+// document (row) wrapper
+wn.model.Document = Class.extend({
+	init: function(fields) {
+		this.fields = fields;
+	},
+	get: function(key, ifnull) {
+		return this.fields[key] || ifnull;
+	},
+	convert_type: function(key, val) {
+		if(val===null) return val;
+		// check fieldtype and set value
+		var df = wn.model.get('DocType', this.get('doctype'))
+			.get({fieldname:key, doctype:"DocField"});
+			
+		if(df.length) {
+			df = df[0]
+			if(in_list(["Int", "Check"], df.fieldtype)) {
+				val = cint(val);
+			} else if(in_list(["Currency", "Float"], df.fieldtype)) {
+				val = flt(val);
+			} else if(df.fieldtype == 'Select') {
+				if(in_list(df.options.split('\n'), val)) {
+					throw val + " is not a correct option"
+				}
+			}
+		}
+		return val;
+	},
+	set: function(key, val) {
+		this.fields[key] = this.convert_type(key, val);
+		$(document).trigger(wn.model.event_name(this.get('doctype'), this.get('name')), 
+			[key, this.fields[key]]);
+	}
+});
+
+// doclist (collection) wrapper
+wn.model.DocList = Class.extend({
+	init: function(doclist) {
+		this.doclist = [];
+		if(doclist) {
+			for(var i=0, len=doclist.length; i<len; i++) {
+				this.add(doclist[i]);
+			}
+		}
+	},
+	add: function(doc) {
+		if(!(doc instanceof wn.model.Document)) {
+			var doc = new wn.model.Document(doc);
+		}
+		doc.doclist = this;
+		this.doclist.push(doc);
+		if(this.doclist.length==1) {
+			this.setup(doc);
+		}
+	},
+	setup: function(doc) {
+		// first doc, setup and add to dicts
+		this.doc = doc;
+		this.doctype = doc.get('doctype');
+		this.name = doc.get('name');
+		wn.provide('wn.doclists.' + this.doctype);
+		wn.doclists[this.doctype][this.name] = this;
+	},
+	// usage:
+	// doclist.each(doctype, filters, fn)
+	// doclist.each(filters/doctype, fn);
+	// doclist.each(fn);
+	//
+	// example:
+	// doclist.each({"doctype":"DocField", "fieldtype":"Table"}, function(d) {})
+	// doclist.each('DocField', function(d) { })
+	each: function() {
+		if(typeof arguments[0]=='function') {
+			var fn = arguments[0];
+			$.each(this.doclist, function(i, doc) { fn(doc); })
+		} else if(typeof arguments[1]=='function') {
+			var fn = arguments[1];
+			if(typeof arguments[0]=='string') {
+				$.each(this.get({doctype:arguments[0]}), function(i, doc) { fn(doc); });				
+			} else {
+				$.each(this.get(arguments[0]), function(i, doc) { fn(doc); });				
+			}
+		} else {
+			var fn = arguments[2];
+			$.each(this.get(arguments[0], arguments[1]), function(i, doc) { fn(doc); });
+		}
+	},
+	// usage:
+	// doclist.get(doctype, filters) => filtered doclist
+	// doclist.get(filters) => filtered doclist
+	// doclist.get(fieldname) => value of main doc
+	get: function() {
+		var me = this;
+		if(typeof arguments[0]=='string' && typeof arguments[1]=='string') {
+			return this.doc.get(arguments[0], arguments[1]);
+		} else if(typeof arguments[0]=='string') {
+			var filters = {};
+			if(arguments[1])
+				filters = arguments[1];
+			filters.doctype = arguments[0];				
+		} else {
+			var filters = arguments[0];
+		}
+		var ret = $.map(this.doclist, function(d) { return me.match(filters, d) })
+		ret.sort(function(a, b) {
+			return a.idx > b.idx;
+		});
+		return ret;
+	},
+	get_value: function(key, def) {
+		return this.doc.get(key, def);
+	},
+	match: function(filters, doc) {
+		for(key in filters) {
+			var fval = filters[key];
+			if(fval instanceof Array) {
+				// one of
+				if(!in_list(fval, doc.get(key))) return null;
+			} else {
+				// equal
+				if(doc.get(key)!=filters[key]) {
+					return null;
+				}				
+			}
+		}
+		return doc;
+	},
+	save: function(callback, btn) {
+		var me = this;
+		wn.call({
+			method: 'webnotes.model.client.save',
+			args: {
+				docs: this.get_docs()
+			},
+			callback: function(r) {
+				// reset the doclist
+				me.reset(r.docs);
+				callback(r);
+			}
+		});
+	},
+	reset: function(doclist) {
+		// clear
+		var oldname = this.doc.get('name');
+		this.doclist.splice(0, this.doclist.length);
+		for(i in doclist) {
+			this.add(doclist[i]);
+		}
+		if(oldname != this.name) {
+			// remove old reference
+			delete wn.doclists[this.doctype][oldname];
+		}
+	},
+	get_docs: function() {
+		return $.map(this.doclist, function(d) { return d.fields; });
+	},
+	rename: function() {
+		this.name = this.doclist[0].get('name');
+	},
+	meta: function() {
+		return wn.model.get('DocType', this.doc.get('doctype'));
+	},
+	add_child: function(parentfield) {
+		var docfield = this.meta().get({fieldname:parentfield, doctype:'DocField'})[0];
+
+		var doc = new wn.model.Document({
+			doctype: docfield.get('options'), 
+			name: wn.model.new_name(docfield.get('options')),
+			__islocal:1, 
+			owner:user, 
+			parent: this.doc.get('name'),
+			parenttype: this.doc.get('doctype'),
+			parentfield: parentfield,
+			idx: this.get({parentfield: docfield.get('fieldname')}).length + 1
+		});
+
+		wn.model.set_defaults(doc);
+		
+		// append to doclist
+		this.add(doc);
+		
+		return doc;
+	},
+	remove_child: function(doc) {
+		this.doclist.splice(this.doclist.indexOf(doc), 1);
+		this.renum_idx(doc.get('parentfield'));
+	},
+	renum_idx: function(parentfield) {
+		$.each(this.get({parentfield: parentfield}), 
+			function(i, d) { d.set('idx', i+1);
+		});
+	}
+});
+
 /*
  *	lib/js/wn/meta.js
  */
-wn.provide('wn.meta.docfield_map');wn.provide('wn.meta.docfield_list');wn.provide('wn.meta.doctypes');$.extend(wn.meta,{add_field:function(df){wn.provide('wn.meta.docfield_map.'+df.parent);wn.meta.docfield_map[df.parent][df.fieldname||df.label]=df;if(!wn.meta.docfield_list[df.parent])
-wn.meta.docfield_list[df.parent]=[];for(var i in wn.meta.docfield_list[df.parent]){var d=wn.meta.docfield_list[df.parent][i];if(df.fieldname==d.fieldname)
-return;}
-wn.meta.docfield_list[df.parent].push(df);},get_docfield:function(dt,fn,dn){if(dn&&local_dt[dt]&&local_dt[dt][dn]){return local_dt[dt][dn][fn];}else{return wn.meta.docfield_map[dt][fn];}}});
+// Copyright (c) 2012 Web Notes Technologies Pvt Ltd (http://erpnext.com)
+// 
+// MIT License (MIT)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a 
+// copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+
+wn.provide('wn.meta.docfield_map');
+wn.provide('wn.meta.docfield_list');
+wn.provide('wn.meta.doctypes');
+
+$.extend(wn.meta, {
+	// build docfield_map and docfield_list
+	add_field: function(df) {
+		wn.provide('wn.meta.docfield_map.' + df.parent);
+		wn.meta.docfield_map[df.parent][df.fieldname || df.label] = df;
+		
+		if(!wn.meta.docfield_list[df.parent])
+			wn.meta.docfield_list[df.parent] = [];
+			
+		// check for repeat
+		for(var i in wn.meta.docfield_list[df.parent]) {
+			var d = wn.meta.docfield_list[df.parent][i];
+			if(df.fieldname==d.fieldname) 
+				return; // no repeat
+		}
+		wn.meta.docfield_list[df.parent].push(df);
+	},
+	get_docfield: function(dt, fn, dn) {
+		if(dn && local_dt[dt] && local_dt[dt][dn]){
+			return local_dt[dt][dn][fn];
+		} else {
+			return wn.meta.docfield_map[dt][fn];
+		}
+	}
+});
+
 /*
  *	lib/js/wn/misc/tools.js
  */
-wn.markdown=function(txt){if(!wn.md2html){wn.require('js/lib/showdown.js');wn.md2html=new Showdown.converter();}
-return'<div class="markdown">'+wn.md2html.makeHtml(txt)+'</div>';}
-wn.get_or_set=function(obj,key,val){if(typeof obj[key]==='undefined')
-obj[key]=val;return obj[key];}
+wn.markdown = function(txt) {
+	if(!wn.md2html) {
+		wn.require('js/lib/showdown.js');
+		wn.md2html = new Showdown.converter();
+	}
+	return '<div class="markdown">' + wn.md2html.makeHtml(txt) + '</div>';
+}
+
+wn.get_or_set = function(obj, key, val) {
+	if(typeof obj[key] === 'undefined')
+		obj[key] = val;
+	return obj[key];
+}
+
 /*
  *	lib/js/wn/misc/user.js
  */
-wn.user_info=function(uid){var def={'fullname':uid,'image':'images/lib/ui/no_img_m.gif'}
-if(!wn.boot.user_info)return def
-if(!wn.boot.user_info[uid])return def
-if(!wn.boot.user_info[uid].fullname)
-wn.boot.user_info[uid].fullname=uid;if(!wn.boot.user_info[uid].image)
-wn.boot.user_info[uid].image=def.image;return wn.boot.user_info[uid];}
-wn.provide('wn.user');$.extend(wn.user,{name:(wn.boot?wn.boot.profile.name:'Guest'),has_role:function(rl){if(typeof rl=='string')
-rl=[rl];for(var i in rl){if((wn.boot?wn.boot.profile.roles:['Guest']).indexOf(rl[i])!=-1)
-return true;}},is_report_manager:function(){return wn.user.has_role(['Administrator','System Manager','Report Manager']);}})
-wn.session_alive=true;$(document).bind('mousemove',function(){wn.session_alive=true;if(wn.session_alive_timeout)
-clearTimeout(wn.session_alive_timeout);wn.session_alive_timeout=setTimeout('wn.session_alive=false;',30000);})
+// misc user functions
+
+wn.user_info = function(uid) {
+	var def = {
+		'fullname':uid, 
+		'image': 'images/lib/ui/no_img_m.gif'
+	}
+	if(!wn.boot.user_info) return def
+	if(!wn.boot.user_info[uid]) return def
+	if(!wn.boot.user_info[uid].fullname)
+		wn.boot.user_info[uid].fullname = uid;
+	if(!wn.boot.user_info[uid].image)
+		wn.boot.user_info[uid].image = def.image;
+	return wn.boot.user_info[uid];
+}
+
+wn.provide('wn.user');
+
+$.extend(wn.user, {
+	name: (wn.boot ? wn.boot.profile.name : 'Guest'),
+	has_role: function(rl) {
+		if(typeof rl=='string') 
+			rl = [rl];
+		for(var i in rl) {
+			if((wn.boot ? wn.boot.profile.roles : ['Guest']).indexOf(rl[i])!=-1)
+				return true;
+		}
+	},
+	is_report_manager: function() {
+		return wn.user.has_role(['Administrator', 'System Manager', 'Report Manager']);
+	}
+})
+
+// wn.session_alive is true if user shows mouse movement in 30 seconds
+
+wn.session_alive = true;
+$(document).bind('mousemove', function() {
+	wn.session_alive = true;
+	if(wn.session_alive_timeout) 
+		clearTimeout(wn.session_alive_timeout);
+	wn.session_alive_timeout = setTimeout('wn.session_alive=false;', 30000);
+})
+
 /*
  *	lib/js/lib/json2.js
  */
-var JSON;if(!JSON){JSON={};}
-(function(){"use strict";function f(n){return n<10?'0'+n:n;}
-if(typeof Date.prototype.toJSON!=='function'){Date.prototype.toJSON=function(key){return isFinite(this.valueOf())?this.getUTCFullYear()+'-'+
-f(this.getUTCMonth()+1)+'-'+
-f(this.getUTCDate())+'T'+
-f(this.getUTCHours())+':'+
-f(this.getUTCMinutes())+':'+
-f(this.getUTCSeconds())+'Z':null;};String.prototype.toJSON=Number.prototype.toJSON=Boolean.prototype.toJSON=function(key){return this.valueOf();};}
-var cx=/[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,escapable=/[\\\"\x00-\x1f\x7f-\x9f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,gap,indent,meta={'\b':'\\b','\t':'\\t','\n':'\\n','\f':'\\f','\r':'\\r','"':'\\"','\\':'\\\\'},rep;function quote(string){escapable.lastIndex=0;return escapable.test(string)?'"'+string.replace(escapable,function(a){var c=meta[a];return typeof c==='string'?c:'\\u'+('0000'+a.charCodeAt(0).toString(16)).slice(-4);})+'"':'"'+string+'"';}
-function str(key,holder){var i,k,v,length,mind=gap,partial,value=holder[key];if(value&&typeof value==='object'&&typeof value.toJSON==='function'){value=value.toJSON(key);}
-if(typeof rep==='function'){value=rep.call(holder,key,value);}
-switch(typeof value){case'string':return quote(value);case'number':return isFinite(value)?String(value):'null';case'boolean':case'null':return String(value);case'object':if(!value){return'null';}
-gap+=indent;partial=[];if(Object.prototype.toString.apply(value)==='[object Array]'){length=value.length;for(i=0;i<length;i+=1){partial[i]=str(i,value)||'null';}
-v=partial.length===0?'[]':gap?'[\n'+gap+partial.join(',\n'+gap)+'\n'+mind+']':'['+partial.join(',')+']';gap=mind;return v;}
-if(rep&&typeof rep==='object'){length=rep.length;for(i=0;i<length;i+=1){if(typeof rep[i]==='string'){k=rep[i];v=str(k,value);if(v){partial.push(quote(k)+(gap?': ':':')+v);}}}}else{for(k in value){if(Object.prototype.hasOwnProperty.call(value,k)){v=str(k,value);if(v){partial.push(quote(k)+(gap?': ':':')+v);}}}}
-v=partial.length===0?'{}':gap?'{\n'+gap+partial.join(',\n'+gap)+'\n'+mind+'}':'{'+partial.join(',')+'}';gap=mind;return v;}}
-if(typeof JSON.stringify!=='function'){JSON.stringify=function(value,replacer,space){var i;gap='';indent='';if(typeof space==='number'){for(i=0;i<space;i+=1){indent+=' ';}}else if(typeof space==='string'){indent=space;}
-rep=replacer;if(replacer&&typeof replacer!=='function'&&(typeof replacer!=='object'||typeof replacer.length!=='number')){throw new Error('JSON.stringify');}
-return str('',{'':value});};}
-if(typeof JSON.parse!=='function'){JSON.parse=function(text,reviver){var j;function walk(holder,key){var k,v,value=holder[key];if(value&&typeof value==='object'){for(k in value){if(Object.prototype.hasOwnProperty.call(value,k)){v=walk(value,k);if(v!==undefined){value[k]=v;}else{delete value[k];}}}}
-return reviver.call(holder,key,value);}
-text=String(text);cx.lastIndex=0;if(cx.test(text)){text=text.replace(cx,function(a){return'\\u'+
-('0000'+a.charCodeAt(0).toString(16)).slice(-4);});}
-if(/^[\],:{}\s]*$/.test(text.replace(/\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g,'@').replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g,']').replace(/(?:^|:|,)(?:\s*\[)+/g,''))){j=eval('('+text+')');return typeof reviver==='function'?walk({'':j},''):j;}
-throw new SyntaxError('JSON.parse');};}}());
+/*
+    http://www.JSON.org/json2.js
+    2011-02-23
+
+    Public Domain.
+
+    NO WARRANTY EXPRESSED OR IMPLIED. USE AT YOUR OWN RISK.
+
+    See http://www.JSON.org/js.html
+
+
+    This code should be minified before deployment.
+    See http://javascript.crockford.com/jsmin.html
+
+    USE YOUR OWN COPY. IT IS EXTREMELY UNWISE TO LOAD CODE FROM SERVERS YOU DO
+    NOT CONTROL.
+
+
+    This file creates a global JSON object containing two methods: stringify
+    and parse.
+
+        JSON.stringify(value, replacer, space)
+            value       any JavaScript value, usually an object or array.
+
+            replacer    an optional parameter that determines how object
+                        values are stringified for objects. It can be a
+                        function or an array of strings.
+
+            space       an optional parameter that specifies the indentation
+                        of nested structures. If it is omitted, the text will
+                        be packed without extra whitespace. If it is a number,
+                        it will specify the number of spaces to indent at each
+                        level. If it is a string (such as '\t' or '&nbsp;'),
+                        it contains the characters used to indent at each level.
+
+            This method produces a JSON text from a JavaScript value.
+
+            When an object value is found, if the object contains a toJSON
+            method, its toJSON method will be called and the result will be
+            stringified. A toJSON method does not serialize: it returns the
+            value represented by the name/value pair that should be serialized,
+            or undefined if nothing should be serialized. The toJSON method
+            will be passed the key associated with the value, and this will be
+            bound to the value
+
+            For example, this would serialize Dates as ISO strings.
+
+                Date.prototype.toJSON = function (key) {
+                    function f(n) {
+                        // Format integers to have at least two digits.
+                        return n < 10 ? '0' + n : n;
+                    }
+
+                    return this.getUTCFullYear()   + '-' +
+                         f(this.getUTCMonth() + 1) + '-' +
+                         f(this.getUTCDate())      + 'T' +
+                         f(this.getUTCHours())     + ':' +
+                         f(this.getUTCMinutes())   + ':' +
+                         f(this.getUTCSeconds())   + 'Z';
+                };
+
+            You can provide an optional replacer method. It will be passed the
+            key and value of each member, with this bound to the containing
+            object. The value that is returned from your method will be
+            serialized. If your method returns undefined, then the member will
+            be excluded from the serialization.
+
+            If the replacer parameter is an array of strings, then it will be
+            used to select the members to be serialized. It filters the results
+            such that only members with keys listed in the replacer array are
+            stringified.
+
+            Values that do not have JSON representations, such as undefined or
+            functions, will not be serialized. Such values in objects will be
+            dropped; in arrays they will be replaced with null. You can use
+            a replacer function to replace those with JSON values.
+            JSON.stringify(undefined) returns undefined.
+
+            The optional space parameter produces a stringification of the
+            value that is filled with line breaks and indentation to make it
+            easier to read.
+
+            If the space parameter is a non-empty string, then that string will
+            be used for indentation. If the space parameter is a number, then
+            the indentation will be that many spaces.
+
+            Example:
+
+            text = JSON.stringify(['e', {pluribus: 'unum'}]);
+            // text is '["e",{"pluribus":"unum"}]'
+
+
+            text = JSON.stringify(['e', {pluribus: 'unum'}], null, '\t');
+            // text is '[\n\t"e",\n\t{\n\t\t"pluribus": "unum"\n\t}\n]'
+
+            text = JSON.stringify([new Date()], function (key, value) {
+                return this[key] instanceof Date ?
+                    'Date(' + this[key] + ')' : value;
+            });
+            // text is '["Date(---current time---)"]'
+
+
+        JSON.parse(text, reviver)
+            This method parses a JSON text to produce an object or array.
+            It can throw a SyntaxError exception.
+
+            The optional reviver parameter is a function that can filter and
+            transform the results. It receives each of the keys and values,
+            and its return value is used instead of the original value.
+            If it returns what it received, then the structure is not modified.
+            If it returns undefined then the member is deleted.
+
+            Example:
+
+            // Parse the text. Values that look like ISO date strings will
+            // be converted to Date objects.
+
+            myData = JSON.parse(text, function (key, value) {
+                var a;
+                if (typeof value === 'string') {
+                    a =
+/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}(?:\.\d*)?)Z$/.exec(value);
+                    if (a) {
+                        return new Date(Date.UTC(+a[1], +a[2] - 1, +a[3], +a[4],
+                            +a[5], +a[6]));
+                    }
+                }
+                return value;
+            });
+
+            myData = JSON.parse('["Date(09/09/2001)"]', function (key, value) {
+                var d;
+                if (typeof value === 'string' &&
+                        value.slice(0, 5) === 'Date(' &&
+                        value.slice(-1) === ')') {
+                    d = new Date(value.slice(5, -1));
+                    if (d) {
+                        return d;
+                    }
+                }
+                return value;
+            });
+
+
+    This is a reference implementation. You are free to copy, modify, or
+    redistribute.
+*/
+
+/*jslint evil: true, strict: false, regexp: false */
+
+/*members "", "\b", "\t", "\n", "\f", "\r", "\"", JSON, "\\", apply,
+    call, charCodeAt, getUTCDate, getUTCFullYear, getUTCHours,
+    getUTCMinutes, getUTCMonth, getUTCSeconds, hasOwnProperty, join,
+    lastIndex, length, parse, prototype, push, replace, slice, stringify,
+    test, toJSON, toString, valueOf
+*/
+
+
+// Create a JSON object only if one does not already exist. We create the
+// methods in a closure to avoid creating global variables.
+
+var JSON;
+if (!JSON) {
+    JSON = {};
+}
+
+(function () {
+    "use strict";
+
+    function f(n) {
+        // Format integers to have at least two digits.
+        return n < 10 ? '0' + n : n;
+    }
+
+    if (typeof Date.prototype.toJSON !== 'function') {
+
+        Date.prototype.toJSON = function (key) {
+
+            return isFinite(this.valueOf()) ?
+                this.getUTCFullYear()     + '-' +
+                f(this.getUTCMonth() + 1) + '-' +
+                f(this.getUTCDate())      + 'T' +
+                f(this.getUTCHours())     + ':' +
+                f(this.getUTCMinutes())   + ':' +
+                f(this.getUTCSeconds())   + 'Z' : null;
+        };
+
+        String.prototype.toJSON      =
+            Number.prototype.toJSON  =
+            Boolean.prototype.toJSON = function (key) {
+                return this.valueOf();
+            };
+    }
+
+    var cx = /[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,
+        escapable = /[\\\"\x00-\x1f\x7f-\x9f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,
+        gap,
+        indent,
+        meta = {    // table of character substitutions
+            '\b': '\\b',
+            '\t': '\\t',
+            '\n': '\\n',
+            '\f': '\\f',
+            '\r': '\\r',
+            '"' : '\\"',
+            '\\': '\\\\'
+        },
+        rep;
+
+
+    function quote(string) {
+
+// If the string contains no control characters, no quote characters, and no
+// backslash characters, then we can safely slap some quotes around it.
+// Otherwise we must also replace the offending characters with safe escape
+// sequences.
+
+        escapable.lastIndex = 0;
+        return escapable.test(string) ? '"' + string.replace(escapable, function (a) {
+            var c = meta[a];
+            return typeof c === 'string' ? c :
+                '\\u' + ('0000' + a.charCodeAt(0).toString(16)).slice(-4);
+        }) + '"' : '"' + string + '"';
+    }
+
+
+    function str(key, holder) {
+
+// Produce a string from holder[key].
+
+        var i,          // The loop counter.
+            k,          // The member key.
+            v,          // The member value.
+            length,
+            mind = gap,
+            partial,
+            value = holder[key];
+
+// If the value has a toJSON method, call it to obtain a replacement value.
+
+        if (value && typeof value === 'object' &&
+                typeof value.toJSON === 'function') {
+            value = value.toJSON(key);
+        }
+
+// If we were called with a replacer function, then call the replacer to
+// obtain a replacement value.
+
+        if (typeof rep === 'function') {
+            value = rep.call(holder, key, value);
+        }
+
+// What happens next depends on the value's type.
+
+        switch (typeof value) {
+        case 'string':
+            return quote(value);
+
+        case 'number':
+
+// JSON numbers must be finite. Encode non-finite numbers as null.
+
+            return isFinite(value) ? String(value) : 'null';
+
+        case 'boolean':
+        case 'null':
+
+// If the value is a boolean or null, convert it to a string. Note:
+// typeof null does not produce 'null'. The case is included here in
+// the remote chance that this gets fixed someday.
+
+            return String(value);
+
+// If the type is 'object', we might be dealing with an object or an array or
+// null.
+
+        case 'object':
+
+// Due to a specification blunder in ECMAScript, typeof null is 'object',
+// so watch out for that case.
+
+            if (!value) {
+                return 'null';
+            }
+
+// Make an array to hold the partial results of stringifying this object value.
+
+            gap += indent;
+            partial = [];
+
+// Is the value an array?
+
+            if (Object.prototype.toString.apply(value) === '[object Array]') {
+
+// The value is an array. Stringify every element. Use null as a placeholder
+// for non-JSON values.
+
+                length = value.length;
+                for (i = 0; i < length; i += 1) {
+                    partial[i] = str(i, value) || 'null';
+                }
+
+// Join all of the elements together, separated with commas, and wrap them in
+// brackets.
+
+                v = partial.length === 0 ? '[]' : gap ?
+                    '[\n' + gap + partial.join(',\n' + gap) + '\n' + mind + ']' :
+                    '[' + partial.join(',') + ']';
+                gap = mind;
+                return v;
+            }
+
+// If the replacer is an array, use it to select the members to be stringified.
+
+            if (rep && typeof rep === 'object') {
+                length = rep.length;
+                for (i = 0; i < length; i += 1) {
+                    if (typeof rep[i] === 'string') {
+                        k = rep[i];
+                        v = str(k, value);
+                        if (v) {
+                            partial.push(quote(k) + (gap ? ': ' : ':') + v);
+                        }
+                    }
+                }
+            } else {
+
+// Otherwise, iterate through all of the keys in the object.
+
+                for (k in value) {
+                    if (Object.prototype.hasOwnProperty.call(value, k)) {
+                        v = str(k, value);
+                        if (v) {
+                            partial.push(quote(k) + (gap ? ': ' : ':') + v);
+                        }
+                    }
+                }
+            }
+
+// Join all of the member texts together, separated with commas,
+// and wrap them in braces.
+
+            v = partial.length === 0 ? '{}' : gap ?
+                '{\n' + gap + partial.join(',\n' + gap) + '\n' + mind + '}' :
+                '{' + partial.join(',') + '}';
+            gap = mind;
+            return v;
+        }
+    }
+
+// If the JSON object does not yet have a stringify method, give it one.
+
+    if (typeof JSON.stringify !== 'function') {
+        JSON.stringify = function (value, replacer, space) {
+
+// The stringify method takes a value and an optional replacer, and an optional
+// space parameter, and returns a JSON text. The replacer can be a function
+// that can replace values, or an array of strings that will select the keys.
+// A default replacer method can be provided. Use of the space parameter can
+// produce text that is more easily readable.
+
+            var i;
+            gap = '';
+            indent = '';
+
+// If the space parameter is a number, make an indent string containing that
+// many spaces.
+
+            if (typeof space === 'number') {
+                for (i = 0; i < space; i += 1) {
+                    indent += ' ';
+                }
+
+// If the space parameter is a string, it will be used as the indent string.
+
+            } else if (typeof space === 'string') {
+                indent = space;
+            }
+
+// If there is a replacer, it must be a function or an array.
+// Otherwise, throw an error.
+
+            rep = replacer;
+            if (replacer && typeof replacer !== 'function' &&
+                    (typeof replacer !== 'object' ||
+                    typeof replacer.length !== 'number')) {
+                throw new Error('JSON.stringify');
+            }
+
+// Make a fake root object containing our value under the key of ''.
+// Return the result of stringifying the value.
+
+            return str('', {'': value});
+        };
+    }
+
+
+// If the JSON object does not yet have a parse method, give it one.
+
+    if (typeof JSON.parse !== 'function') {
+        JSON.parse = function (text, reviver) {
+
+// The parse method takes a text and an optional reviver function, and returns
+// a JavaScript value if the text is a valid JSON text.
+
+            var j;
+
+            function walk(holder, key) {
+
+// The walk method is used to recursively walk the resulting structure so
+// that modifications can be made.
+
+                var k, v, value = holder[key];
+                if (value && typeof value === 'object') {
+                    for (k in value) {
+                        if (Object.prototype.hasOwnProperty.call(value, k)) {
+                            v = walk(value, k);
+                            if (v !== undefined) {
+                                value[k] = v;
+                            } else {
+                                delete value[k];
+                            }
+                        }
+                    }
+                }
+                return reviver.call(holder, key, value);
+            }
+
+
+// Parsing happens in four stages. In the first stage, we replace certain
+// Unicode characters with escape sequences. JavaScript handles many characters
+// incorrectly, either silently deleting them, or treating them as line endings.
+
+            text = String(text);
+            cx.lastIndex = 0;
+            if (cx.test(text)) {
+                text = text.replace(cx, function (a) {
+                    return '\\u' +
+                        ('0000' + a.charCodeAt(0).toString(16)).slice(-4);
+                });
+            }
+
+// In the second stage, we run the text against regular expressions that look
+// for non-JSON patterns. We are especially concerned with '()' and 'new'
+// because they can cause invocation, and '=' because it can cause mutation.
+// But just to be safe, we want to reject all unexpected forms.
+
+// We split the second stage into 4 regexp operations in order to work around
+// crippling inefficiencies in IE's and Safari's regexp engines. First we
+// replace the JSON backslash pairs with '@' (a non-JSON character). Second, we
+// replace all simple value tokens with ']' characters. Third, we delete all
+// open brackets that follow a colon or comma or that begin the text. Finally,
+// we look to see that the remaining characters are only whitespace or ']' or
+// ',' or ':' or '{' or '}'. If that is so, then the text is safe for eval.
+
+            if (/^[\],:{}\s]*$/
+                    .test(text.replace(/\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g, '@')
+                        .replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']')
+                        .replace(/(?:^|:|,)(?:\s*\[)+/g, ''))) {
+
+// In the third stage we use the eval function to compile the text into a
+// JavaScript structure. The '{' operator is subject to a syntactic ambiguity
+// in JavaScript: it can begin a block or an object literal. We wrap the text
+// in parens to eliminate the ambiguity.
+
+                j = eval('(' + text + ')');
+
+// In the optional fourth stage, we recursively walk the new structure, passing
+// each name/value pair to a reviver function for possible transformation.
+
+                return typeof reviver === 'function' ?
+                    walk({'': j}, '') : j;
+            }
+
+// If the text is not JSON parseable, then a SyntaxError is thrown.
+
+            throw new SyntaxError('JSON.parse');
+        };
+    }
+}());
+
+
 /*
  *	lib/js/wn/router.js
  */
-wn.re_route={}
-wn.route=function(){if(wn.re_route[window.location.hash]){var re_route_val=wn.get_route_str(wn.re_route[window.location.hash]);var cur_route_val=wn.get_route_str(wn._cur_route);if(decodeURIComponent(re_route_val)===decodeURIComponent(cur_route_val)){window.history.back();return;}else{window.location.hash=wn.re_route[window.location.hash];}}
-wn._cur_route=window.location.hash;var page_name=wn.get_route_str();if(wn.contents[page_name]){wn.container.change_to(page_name);return;}
-var route=wn.get_route();switch(route[0]){case"List":wn.views.doclistview.show(route[1]);break;case"Form":if(route.length>3){route[2]=route.splice(2).join('/');}
-wn.views.formview.show(route[1],route[2]);break;case"Report":wn.views.reportview.show(route[1],route[2]);break;case"Report2":wn.views.reportview2.show();break;default:wn.views.pageview.show(route[0]);}}
-wn.get_route=function(route){return $.map(wn.get_route_str(route).split('/'),function(r){return decodeURIComponent(r);});}
-wn.get_route_str=function(route){if(!route)
-route=window.location.hash;if(route.substr(0,1)=='#')route=route.substr(1);if(route.substr(0,1)=='!')route=route.substr(1);if(!route){route=wn.control_panel.home_page;}
-return route;}
-wn.set_route=function(){route=$.map(arguments,function(a){return encodeURIComponent(a)}).join('/');window.location.hash=route;wn.app.set_favicon();}
-wn._cur_route=null;$(window).bind('hashchange',function(){if(location.hash==wn._cur_route)
-return;wn.route();});
+// route urls to their virtual pages
+
+// re-route map (for rename)
+wn.re_route = {
+	
+}
+wn.route = function() {
+	if(wn.re_route[window.location.hash]) {
+		// after saving a doc, for example,
+		// "New DocType 1" and the renamed "TestDocType", both exist in history
+		// now if we try to go back,
+		// it doesn't allow us to go back to the one prior to "New DocType 1"
+		// Hence if this check is true, instead of changing location hash, 
+		// we just do a back to go to the doc previous to the "New DocType 1"
+		var re_route_val = wn.get_route_str(wn.re_route[window.location.hash]);
+		var cur_route_val = wn.get_route_str(wn._cur_route);
+		if (decodeURIComponent(re_route_val) === decodeURIComponent(cur_route_val)) {
+			window.history.back();
+			return;
+		} else {
+			window.location.hash = wn.re_route[window.location.hash];
+		}
+	}
+
+	wn._cur_route = window.location.hash;
+
+	var page_name = wn.get_route_str();
+	
+	if(wn.contents[page_name]) {  // loaded
+		wn.container.change_to(page_name);
+		return;	
+	}
+
+	var route = wn.get_route();	
+			
+	switch (route[0]) {
+		case "List":
+			wn.views.doclistview.show(route[1]);
+			break;
+		case "Form":
+			if(route.length>3) {
+				route[2] = route.splice(2).join('/');
+			}
+			wn.views.formview.show(route[1], route[2]);
+			break;
+		case "Report":
+			wn.views.reportview.show(route[1], route[2]);
+			break;
+		case "Report2":
+			wn.views.reportview2.show();
+			break;
+		default:
+			wn.views.pageview.show(route[0]);
+	}
+}
+
+wn.get_route = function(route) {
+	// route for web [deprecated after cms2]
+	// if(!wn.boot) {
+	// 	return [window.page_name];
+	// }
+	
+	// for app
+	return $.map(wn.get_route_str(route).split('/'), 
+		function(r) { return decodeURIComponent(r); });
+}
+
+wn.get_route_str = function(route) {
+	if(!route)
+		route = window.location.hash;
+
+	if(route.substr(0,1)=='#') route = route.substr(1);
+	if(route.substr(0,1)=='!') route = route.substr(1);
+	
+	if(!route) {
+		route = wn.control_panel.home_page;
+	}
+	
+	return route;	
+}
+
+wn.set_route = function() {
+	route = $.map(arguments, function(a) { return encodeURIComponent(a) }).join('/');
+	window.location.hash = route;
+	
+	// Set favicon (app.js)
+	wn.app.set_favicon();
+}
+
+wn._cur_route = null;
+
+$(window).bind('hashchange', function() {
+	if(location.hash==wn._cur_route)
+		return;	
+	wn.route();
+});
+
 /*
  *	lib/js/wn/ui/listing.js
  */
-wn.provide('wn.ui');wn.ui.Listing=Class.extend({init:function(opts){this.opts=opts||{};this.page_length=20;this.start=0;this.data=[];if(opts){this.make();}},prepare_opts:function(){if(this.opts.new_doctype){if(wn.boot.profile.can_read.indexOf(this.opts.new_doctype)==-1){this.opts.new_doctype=null;}else{this.opts.new_doctype=get_doctype_label(this.opts.new_doctype);}}
-if(!this.opts.no_result_message){this.opts.no_result_message='Nothing to show'}},make:function(opts){if(opts){this.opts=opts;}
-this.prepare_opts();$.extend(this,this.opts);$(this.parent).html(repl('\
-   <div class="wnlist">\
-    <h3 class="title hide">%(title)s</h3>\
-    \
-    <div class="list-filters hide">\
-     <div class="show_filters well">\
-      <div class="filter_area"></div>\
-      <div>\
-       <button class="btn btn-small btn-info search-btn">\
-        <i class="icon-refresh icon-white"></i> Search</button>\
-       <button class="btn btn-small add-filter-btn">\
-        <i class="icon-plus"></i> Add Filter</button>\
-      </div>\
-     </div>\
-    </div>\
-    \
-    <div style="margin-bottom:9px" class="list-toolbar-wrapper">\
-     <div class="list-toolbar" style="display:inline-block; margin-right: 10px;">\
-     </div>\
-     <div style="display:inline-block; width: 24px; margin-left: 4px">\
-      <img src="images/lib/ui/button-load.gif" \
-      class="img-load"/></div>\
-    </div><div style="clear:both"></div>\
-    \
-    <div class="no-result help hide">\
-     %(no_result_message)s\
-    </div>\
-    \
-    <div class="result">\
-     <div class="result-list"></div>\
-    </div>\
-    \
-    <div class="paging-button">\
-     <button class="btn btn-small btn-more hide">More...</div>\
-    </div>\
-   </div>\
-  ',this.opts));this.$w=$(this.parent).find('.wnlist');this.set_events();if(this.appframe){this.$w.find('.list-toolbar-wrapper').toggle(false);}
-if(this.show_filters){this.make_filters();}},add_button:function(label,click,icon){if(this.appframe){return this.appframe.add_button(label,click,icon)}else{$button=$('<button class="btn btn-small"></button>').appendTo(this.$w.find('.list-toolbar'))
-if(icon){$('<i>').addClass(icon).appendTo($button);}
-$button.html(label).click(click);return $button}},show_view:function($btn,$div,$btn_unsel,$div_unsel){$btn_unsel.removeClass('btn-info');$btn_unsel.find('i').removeClass('icon-white');$div_unsel.toggle(false);$btn.addClass('btn-info');$btn.find('i').addClass('icon-white');$div.toggle(true);},set_events:function(){var me=this;this.$w.find('.btn-more').click(function(){me.run({append:true});});if(this.title){this.$w.find('h3').html(this.title).toggle(true);}
-if(!(this.hide_refresh||this.no_refresh)){this.add_button('Refresh',function(){me.run();},'icon-refresh');}
-if(this.new_doctype){this.add_button('New '+this.new_doctype,function(){me.make_new_doc(me.new_doctype);},'icon-plus');}
-if(me.show_filters){this.add_button('Show Filters',function(){me.filter_list.show_filters();},'icon-search').addClass('btn-filter');}
-if(me.no_toolbar||me.hide_toolbar){me.$w.find('.list-toolbar-wrapper').toggle(false);}},make_new_doc:function(new_doctype){new_doc(new_doctype);},make_filters:function(){this.filter_list=new wn.ui.FilterList({listobj:this,$parent:this.$w.find('.list-filters').toggle(true),doctype:this.doctype,filter_fields:this.filter_fields});},clear:function(){this.data=[];this.$w.find('.result-list').empty();this.$w.find('.result').toggle(true);this.$w.find('.no-result').toggle(false);this.start=0;},run:function(){var me=this;var a0=arguments[0];var a1=arguments[1];if(a0&&typeof a0=='function')
-this.onrun=a0;if(a0&&a0.callback)
-this.onrun=a0.callback;if(!a1&&!(a0&&a0.append))
-this.start=0;me.set_working(true);wn.call({method:this.opts.method||'webnotes.widgets.query_builder.runquery',args:this.get_call_args(a0),callback:function(r){me.set_working(false);me.render_results(r)},no_spinner:this.opts.no_loading});},set_working:function(flag){this.$w.find('.img-load').toggle(flag);},get_call_args:function(opts){if(!this.method){var query=this.get_query?this.get_query():this.query;query=this.add_limits(query);var args={query_max:this.query_max,as_dict:1}
-args.simple_query=query;}else{var args={limit_start:this.start,limit_page_length:this.page_length}}
-if(this.args)
-$.extend(args,this.args)
-if(this.get_args){$.extend(args,this.get_args(opts));}
-return args;},render_results:function(r){if(this.start==0)this.clear();this.$w.find('.btn-more').toggle(false);if(r.message)r.values=r.message;if(r.values&&r.values.length){this.data=this.data.concat(r.values);this.render_list(r.values);this.update_paging(r.values);}else{if(this.start==0){this.$w.find('.result').toggle(false);this.$w.find('.no-result').toggle(true);}}
-if(this.onrun)this.onrun();if(this.callback)this.callback(r);},render_list:function(values){var m=Math.min(values.length,this.page_length);for(var i=0;i<m;i++){this.render_row(this.add_row(),values[i],this,i);}},update_paging:function(values){if(values.length>=this.page_length){this.$w.find('.btn-more').toggle(true);this.start+=this.page_length;}},add_row:function(){return $('<div class="list-row">').appendTo(this.$w.find('.result-list')).get(0);},refresh:function(){this.run();},add_limits:function(query){query+=' LIMIT '+this.start+','+(this.page_length+1);return query}});
+// Copyright (c) 2012 Web Notes Technologies Pvt Ltd (http://erpnext.com)
+// 
+// MIT License (MIT)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a 
+// copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// 
+
+// new re-factored Listing object
+// uses FieldGroup for rendering filters
+// removed rarely used functionality
+//
+// opts:
+//   parent
+
+//   method (method to call on server)
+//   args (additional args to method)
+//   get_args (method to return args as dict)
+
+//   show_filters [false]
+//   with_filters (default filters)
+//   doctype
+//   filter_fields (if given, this list is rendered, else built from doctype)
+
+//   query or get_query (will be deprecated)
+//   query_max
+//   buttons_in_frame
+
+//   no_result_message ("No result")
+
+//   page_length (20)
+//   hide_refresh (False)
+//   no_toolbar
+//   new_doctype
+//   [function] render_row(parent, data)
+//   [function] onrun
+//   no_loading (no ajax indicator)
+
+wn.provide('wn.ui');
+wn.ui.Listing = Class.extend({
+	init: function(opts) {
+		this.opts = opts || {};
+		this.page_length = 20;
+		this.start = 0;
+		this.data = [];
+		if(opts) {
+			this.make();
+		}
+	},
+	prepare_opts: function() {
+		if(this.opts.new_doctype) {
+			if(wn.boot.profile.can_read.indexOf(this.opts.new_doctype)==-1) {
+				this.opts.new_doctype = null;
+			} else {
+				this.opts.new_doctype = get_doctype_label(this.opts.new_doctype);				
+			}
+		}
+		if(!this.opts.no_result_message) {
+			this.opts.no_result_message = 'Nothing to show'
+		}
+	},
+	make: function(opts) {
+		if(opts) {
+			this.opts = opts;
+		}
+		this.prepare_opts();
+		$.extend(this, this.opts);
+		
+		$(this.parent).html(repl('\
+			<div class="wnlist">\
+				<h3 class="title hide">%(title)s</h3>\
+				\
+				<div class="list-filters hide">\
+					<div class="show_filters well">\
+						<div class="filter_area"></div>\
+						<div>\
+							<button class="btn btn-small btn-info search-btn">\
+								<i class="icon-refresh icon-white"></i> Search</button>\
+							<button class="btn btn-small add-filter-btn">\
+								<i class="icon-plus"></i> Add Filter</button>\
+						</div>\
+					</div>\
+				</div>\
+				\
+				<div style="margin-bottom:9px" class="list-toolbar-wrapper">\
+					<div class="list-toolbar" style="display:inline-block; margin-right: 10px;">\
+					</div>\
+					<div style="display:inline-block; width: 24px; margin-left: 4px">\
+						<img src="images/lib/ui/button-load.gif" \
+						class="img-load"/></div>\
+				</div><div style="clear:both"></div>\
+				\
+				<div class="no-result help hide">\
+					%(no_result_message)s\
+				</div>\
+				\
+				<div class="result">\
+					<div class="result-list"></div>\
+				</div>\
+				\
+				<div class="paging-button">\
+					<button class="btn btn-small btn-more hide">More...</div>\
+				</div>\
+			</div>\
+		', this.opts));
+		this.$w = $(this.parent).find('.wnlist');
+		this.set_events();
+		
+		if(this.appframe) {
+			this.$w.find('.list-toolbar-wrapper').toggle(false);
+		} 
+		
+		if(this.show_filters) {
+			this.make_filters();			
+		}
+	},
+	add_button: function(label, click, icon) {
+		if(this.appframe) {
+			return this.appframe.add_button(label, click, icon)
+		} else {
+			$button = $('<button class="btn btn-small"></button>')
+				.appendTo(this.$w.find('.list-toolbar'))
+			if(icon) {
+				$('<i>').addClass(icon).appendTo($button);
+			}
+			$button.html(label).click(click);
+			return $button
+		}
+	},
+	show_view: function($btn, $div, $btn_unsel, $div_unsel) {
+		$btn_unsel.removeClass('btn-info');
+		$btn_unsel.find('i').removeClass('icon-white');
+		$div_unsel.toggle(false);
+
+		$btn.addClass('btn-info');
+		$btn.find('i').addClass('icon-white');
+		$div.toggle(true);
+	},
+	set_events: function() {
+		var me = this;
+	
+		// next page
+		this.$w.find('.btn-more').click(function() {
+			me.run({append: true });
+		});
+		
+		// title
+		if(this.title) {
+			this.$w.find('h3').html(this.title).toggle(true);
+		}
+	
+		// hide-refresh
+		if(!(this.hide_refresh || this.no_refresh)) {
+			this.add_button('Refresh', function() {
+				me.run();
+			}, 'icon-refresh');
+			
+		}
+				
+		// new
+		if(this.new_doctype) {
+			this.add_button('New ' + this.new_doctype, function() { 
+				me.make_new_doc(me.new_doctype);
+			}, 'icon-plus');
+		} 
+		
+		// hide-filter
+		if(me.show_filters) {
+			this.add_button('Show Filters', function() {
+				me.filter_list.show_filters();
+			}, 'icon-search').addClass('btn-filter');
+		}
+		
+		if(me.no_toolbar || me.hide_toolbar) {
+			me.$w.find('.list-toolbar-wrapper').toggle(false);
+		}
+	},
+	
+	make_new_doc: function(new_doctype) {
+		new_doc(new_doctype);
+	},
+
+	make_filters: function() {
+		this.filter_list = new wn.ui.FilterList({
+			listobj: this, 
+			$parent: this.$w.find('.list-filters').toggle(true),
+			doctype: this.doctype,
+			filter_fields: this.filter_fields
+		});
+	},
+
+	clear: function() {
+		this.data = [];
+		this.$w.find('.result-list').empty();
+		this.$w.find('.result').toggle(true);
+		this.$w.find('.no-result').toggle(false);
+		this.start = 0;
+	},
+	run: function() {
+		// in old - arguments: 0 = callback, 1 = append
+		var me = this;
+		var a0 = arguments[0]; var a1 = arguments[1];
+		
+		if(a0 && typeof a0=='function')
+			this.onrun = a0;
+		if(a0 && a0.callback)
+			this.onrun = a0.callback;
+		if(!a1 && !(a0 && a0.append)) 
+			this.start = 0;
+
+		me.set_working(true);
+		wn.call({
+			method: this.opts.method || 'webnotes.widgets.query_builder.runquery',
+			args: this.get_call_args(a0),
+			callback: function(r) { 
+				me.set_working(false);
+				me.render_results(r) 
+			},
+			no_spinner: this.opts.no_loading
+		});
+	},
+	set_working: function(flag) {
+		this.$w.find('.img-load').toggle(flag);
+	},
+	get_call_args: function(opts) {
+		// load query
+		if(!this.method) {
+			var query = this.get_query ? this.get_query() : this.query;
+			query = this.add_limits(query);
+			var args={ 
+				query_max: this.query_max,
+				as_dict: 1
+			}
+			args.simple_query = query;
+		} else {
+			var args = {
+				limit_start: this.start,
+				limit_page_length: this.page_length
+			}
+		}
+		
+		// append user-defined arguments
+		if(this.args)
+			$.extend(args, this.args)
+			
+		if(this.get_args) {
+			$.extend(args, this.get_args(opts));
+		}
+		return args;		
+	},
+	render_results: function(r) {
+		if(this.start==0) this.clear();
+		
+		this.$w.find('.btn-more').toggle(false);
+
+		if(r.message) r.values = r.message;
+
+		if(r.values && r.values.length) {
+			this.data = this.data.concat(r.values);
+			this.render_list(r.values);
+			this.update_paging(r.values);
+		} else {
+			if(this.start==0) {
+				this.$w.find('.result').toggle(false);
+				this.$w.find('.no-result').toggle(true);
+			}
+		}
+		
+		// callbacks
+		if(this.onrun) this.onrun();
+		if(this.callback) this.callback(r);
+	},
+
+	render_list: function(values) {		
+		var m = Math.min(values.length, this.page_length);
+		
+		// render the rows
+		for(var i=0; i < m; i++) {
+			this.render_row(this.add_row(), values[i], this, i);
+		}
+	},
+	update_paging: function(values) {
+		if(values.length >= this.page_length) {
+			this.$w.find('.btn-more').toggle(true);			
+			this.start += this.page_length;
+		}
+	},
+	add_row: function() {
+		return $('<div class="list-row">').appendTo(this.$w.find('.result-list')).get(0);
+	},
+	refresh: function() { 
+		this.run(); 
+	},
+	add_limits: function(query) {
+		query += ' LIMIT ' + this.start + ',' + (this.page_length+1);
+		return query
+	}
+});
+
 /*
  *	lib/js/wn/ui/filters.js
  */
-wn.ui.FilterList=Class.extend({init:function(opts){$.extend(this,opts);this.filters=[];this.$w=this.$parent;this.set_events();},set_events:function(){var me=this;this.$w.find('.add-filter-btn').bind('click',function(){me.add_filter();});this.$w.find('.search-btn').bind('click',function(){me.listobj.run();});},show_filters:function(){this.$w.find('.show_filters').toggle();if(!this.filters.length)
-this.add_filter();},add_filter:function(fieldname,condition,value){this.push_new_filter(fieldname,condition,value);if(fieldname){this.$w.find('.show_filters').toggle(true);}},push_new_filter:function(fieldname,condition,value){this.filters.push(new wn.ui.Filter({flist:this,fieldname:fieldname,condition:condition,value:value}));},get_filters:function(){var values=[];$.each(this.filters,function(i,f){if(f.field)
-values.push(f.get_value());})
-return values;},update_filters:function(){var fl=[];$.each(this.filters,function(i,f){if(f.field)fl.push(f);})
-this.filters=fl;},get_filter:function(fieldname){for(var i in this.filters){if(this.filters[i].field.docfield.fieldname==fieldname)
-return this.filters[i];}}});wn.ui.Filter=Class.extend({init:function(opts){$.extend(this,opts);this.doctype=this.flist.doctype;this.make();this.make_select();this.set_events();},make:function(){this.flist.$w.find('.filter_area').append('<div class="list_filter">\
-  <span class="fieldname_select_area"></span>\
-  <select class="condition">\
-   <option value="=">Equals</option>\
-   <option value="like">Like</option>\
-   <option value=">=">Greater or equals</option>\
-   <option value="<=">Less or equals</option>\
-   <option value=">">Greater than</option>\
-   <option value="<">Less than</option>\
-   <option value="in">In</option>\
-   <option value="!=">Not equals</option>\
-  </select>\
-  <span class="filter_field"></span>\
-  <a class="close">&times;</a>\
-  </div>');this.$w=this.flist.$w.find('.list_filter:last-child');},make_select:function(){this.fieldselect=new wn.ui.FieldSelect(this.$w.find('.fieldname_select_area'),this.doctype,this.filter_fields);},set_events:function(){var me=this;this.fieldselect.$select.bind('change',function(){me.set_field(this.value);});this.$w.find('a.close').bind('click',function(){me.$w.css('display','none');var value=me.field.get_value();me.field=null;if(!me.flist.get_filters().length){me.flist.$w.find('.set_filters').toggle(true);me.flist.$w.find('.show_filters').toggle(false);}
-if(value){me.flist.listobj.run();}
-me.flist.update_filters();return false;});me.$w.find('.condition').change(function(){if($(this).val()=='in'){me.set_field(me.field.docfield.fieldname,'Data');if(!me.field.desc_area)
-me.field.desc_area=$a(me.field.wrapper,'span','help',null,'values separated by comma');}else{me.set_field(me.field.docfield.fieldname);}});if(me.fieldname){this.set_values(me.fieldname,me.condition,me.value);}else{me.set_field('name');}},set_values:function(fieldname,condition,value){this.set_field(fieldname);if(condition)this.$w.find('.condition').val(condition).change();if(value)this.field.set_input(value)},set_field:function(fieldname,fieldtype){var me=this;var cur=me.field?{fieldname:me.field.docfield.fieldname,fieldtype:me.field.docfield.fieldtype}:{}
-var df=me.fieldselect.fields_by_name[fieldname];this.set_fieldtype(df,fieldtype);if(me.field&&cur.fieldname==fieldname&&df.fieldtype==cur.fieldtype){return;}
-me.fieldselect.$select.val(fieldname);var field_area=me.$w.find('.filter_field').empty().get(0);me.field=wn.ui.make_control({docfield:df,parent:field_area});me.field.as_inline();me.field.hide_label();this.set_default_condition(df,fieldtype);$(me.field.wrapper).find(':input').keydown(function(ev){if(ev.which==13){me.flist.listobj.run();}})},set_fieldtype:function(df,fieldtype){if(df.original_type)
-df.fieldtype=df.original_type;else
-df.original_type=df.fieldtype;df.description='';df.reqd=0;if(fieldtype){df.fieldtype=fieldtype;return;}
-if(df.fieldtype=='Check'){df.fieldtype='Select';df.options='No\nYes';}else if(['Text','Text Editor','Code','Link'].indexOf(df.fieldtype)!=-1){df.fieldtype='Data';}},set_default_condition:function(df,fieldtype){if(!fieldtype){if(df.fieldtype=='Data'){this.$w.find('.condition').val('like');}else{this.$w.find('.condition').val('=');}}},get_value:function(){var me=this;var val=me.field.get_value();var cond=me.$w.find('.condition').val();if(me.field.docfield.original_type=='Check'){val=(val=='Yes'?1:0);}
-if(cond=='like'){val=val+'%';}
-return[me.fieldselect.$select.find('option:selected').attr('table'),me.field.docfield.fieldname,me.$w.find('.condition').val(),cstr(val)];}});wn.ui.FieldSelect=Class.extend({init:function(parent,doctype,filter_fields,with_blank){this.doctype=doctype;this.fields_by_name={};this.with_blank=with_blank;this.$select=$('<select>').appendTo(parent);if(filter_fields){for(var i in filter_fields)
-this.add_field_option(this.filter_fields[i])}else{this.build_options();}},build_options:function(){var me=this;me.table_fields=[];var std_filters=[{fieldname:'name',fieldtype:'Data',label:'ID',parent:me.doctype},{fieldname:'modified',fieldtype:'Date',label:'Last Modified',parent:me.doctype},{fieldname:'owner',fieldtype:'Data',label:'Created By',parent:me.doctype},{fieldname:'creation',fieldtype:'Date',label:'Created On',parent:me.doctype},{fieldname:'_user_tags',fieldtype:'Data',label:'Tags',parent:me.doctype},{fieldname:'docstatus',fieldtype:'Int',label:'Doc Status',parent:me.doctype},];var doctype_obj=locals['DocType'][me.doctype];if(doctype_obj&&cint(doctype_obj.istable)){std_filters=std_filters.concat([{fieldname:'parent',fieldtype:'Data',label:'Parent',parent:me.doctype}]);}
-if(this.with_blank){this.$select.append($('<option>',{value:''}).text(''));}
-$.each(std_filters.concat(wn.model.get('DocType',me.doctype).get('DocField')),function(i,df){me.add_field_option(df);});$.each(me.table_fields,function(i,table_df){if(table_df.options){$.each(wn.model.get('DocType',me.doctype).get('DocField'),function(i,df){me.add_field_option(df);});}});},add_field_option:function(df){var me=this;if(me.doctype&&df.parent==me.doctype){var label=df.label;var table=me.doctype;if(df.fieldtype=='Table')me.table_fields.push(df);}else{var label=df.label+' ('+df.parent+')';var table=df.parent;}
-if(wn.model.no_value_type.indexOf(df.fieldtype)==-1&&!(me.fields_by_name[df.fieldname]&&me.fields_by_name[df.fieldname]['parent']==df.parent)){this.$select.append($('<option>',{value:df.fieldname,table:table}).text(label));me.fields_by_name[df.fieldname]=df;}}})
+// Copyright (c) 2012 Web Notes Technologies Pvt Ltd (http://erpnext.com)
+// 
+// MIT License (MIT)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a 
+// copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+
+wn.ui.FilterList = Class.extend({
+	init: function(opts) {
+		$.extend(this, opts);
+		this.filters = [];
+		this.$w = this.$parent;
+		this.set_events();
+	},
+	set_events: function() {
+		var me = this;
+		// show filters
+		this.$w.find('.add-filter-btn').bind('click', function() {
+			me.add_filter();
+		});
+		this.$w.find('.search-btn').bind('click', function() {
+			me.listobj.run();
+		});
+	},
+	
+	show_filters: function() {
+		this.$w.find('.show_filters').toggle();
+		if(!this.filters.length)
+			this.add_filter();
+	},
+	
+	add_filter: function(fieldname, condition, value) {		
+		this.push_new_filter(fieldname, condition, value);
+		// list must be expanded
+		if(fieldname) {
+			this.$w.find('.show_filters').toggle(true);
+		}
+	},
+	
+	push_new_filter: function(fieldname, condition, value) {
+		this.filters.push(new wn.ui.Filter({
+			flist: this,
+			fieldname: fieldname,
+			condition: condition,
+			value: value
+        }));
+	},
+	
+	get_filters: function() {
+		// get filter values as dict
+		var values = [];
+		$.each(this.filters, function(i, f) {
+			if(f.field)
+				values.push(f.get_value());
+		})
+		return values;
+	},
+	
+	// remove hidden filters
+	update_filters: function() {
+		var fl = [];
+		$.each(this.filters, function(i, f) {
+			if(f.field) fl.push(f);
+		})
+		this.filters = fl;
+	},
+	
+	get_filter: function(fieldname) {
+		for(var i in this.filters) {
+			if(this.filters[i].field.docfield.fieldname==fieldname)
+				return this.filters[i];
+		}
+	}
+});
+
+wn.ui.Filter = Class.extend({
+	init: function(opts) {
+		$.extend(this, opts);
+
+		this.doctype = this.flist.doctype;
+		this.make();
+		this.make_select();
+		this.set_events();
+	},
+	make: function() {
+		this.flist.$w.find('.filter_area').append('<div class="list_filter">\
+		<span class="fieldname_select_area"></span>\
+		<select class="condition">\
+			<option value="=">Equals</option>\
+			<option value="like">Like</option>\
+			<option value=">=">Greater or equals</option>\
+			<option value="<=">Less or equals</option>\
+			<option value=">">Greater than</option>\
+			<option value="<">Less than</option>\
+			<option value="in">In</option>\
+			<option value="!=">Not equals</option>\
+		</select>\
+		<span class="filter_field"></span>\
+		<a class="close">&times;</a>\
+		</div>');
+		this.$w = this.flist.$w.find('.list_filter:last-child');
+	},
+	make_select: function() {
+		this.fieldselect = new wn.ui.FieldSelect(this.$w.find('.fieldname_select_area'), 
+			this.doctype, this.filter_fields);
+	},
+	set_events: function() {
+		var me = this;
+		
+		// render fields		
+		this.fieldselect.$select.bind('change', function() {
+			me.set_field(this.value);
+		});
+
+		this.$w.find('a.close').bind('click', function() { 
+			me.$w.css('display','none');
+			var value = me.field.get_value();
+			me.field = null;
+			if(!me.flist.get_filters().length) {
+				me.flist.$w.find('.set_filters').toggle(true);
+				me.flist.$w.find('.show_filters').toggle(false);
+			}
+			if(value) {
+				me.flist.listobj.run();
+			}
+			me.flist.update_filters();
+			return false;
+		});
+
+		// add help for "in" codition
+		me.$w.find('.condition').change(function() {
+			if($(this).val()=='in') {
+				me.set_field(me.field.docfield.fieldname, 'Data');
+				if(!me.field.desc_area)
+					me.field.desc_area = $a(me.field.wrapper, 'span', 'help', null,
+						'values separated by comma');				
+			} else {
+				me.set_field(me.field.docfield.fieldname);				
+			}
+		});
+		
+		// set the field
+		if(me.fieldname) {
+			// presents given (could be via tags!)
+			this.set_values(me.fieldname, me.condition, me.value);
+		} else {
+			me.set_field('name');
+		}	
+
+	},
+	
+	set_values: function(fieldname, condition, value) {
+		// presents given (could be via tags!)
+		this.set_field(fieldname);
+		if(condition) this.$w.find('.condition').val(condition).change();
+		if(value) this.field.set_input(value)
+		
+	},
+	
+	set_field: function(fieldname, fieldtype) {
+		var me = this;
+		
+		// set in fieldname (again)
+		var cur = me.field ? {
+			fieldname: me.field.docfield.fieldname,
+			fieldtype: me.field.docfield.fieldtype
+		} : {}
+
+		var df = me.fieldselect.fields_by_name[fieldname];
+		this.set_fieldtype(df, fieldtype);
+			
+		// called when condition is changed, 
+		// don't change if all is well
+		if(me.field && cur.fieldname == fieldname && df.fieldtype == cur.fieldtype) {
+			return;
+		}
+		
+		// clear field area and make field
+		me.fieldselect.$select.val(fieldname);
+		var field_area = me.$w.find('.filter_field').empty().get(0);
+		me.field = wn.ui.make_control({
+			docfield: df,
+			parent: field_area
+		});
+		me.field.as_inline();
+		me.field.hide_label();
+		
+		this.set_default_condition(df, fieldtype);
+		
+		$(me.field.wrapper).find(':input').keydown(function(ev) {
+			if(ev.which==13) {
+				me.flist.listobj.run();
+			}
+		})
+	},
+	
+	set_fieldtype: function(df, fieldtype) {
+		// reset
+		if(df.original_type)
+			df.fieldtype = df.original_type;
+		else
+			df.original_type = df.fieldtype;
+			
+		df.description = ''; df.reqd = 0;
+		
+		// given
+		if(fieldtype) {
+			df.fieldtype = fieldtype;
+			return;
+		} 
+		
+		// scrub
+		if(df.fieldtype=='Check') {
+			df.fieldtype='Select';
+			df.options='No\nYes';
+		} else if(['Text','Text Editor','Code','Link'].indexOf(df.fieldtype)!=-1) {
+			df.fieldtype = 'Data';				
+		}
+	},
+	
+	set_default_condition: function(df, fieldtype) {
+		if(!fieldtype) {
+			// set as "like" for data fields
+			if(df.fieldtype=='Data') {
+				this.$w.find('.condition').val('like');
+			} else {
+				this.$w.find('.condition').val('=');
+			}			
+		}		
+	},
+	
+	get_value: function() {
+		var me = this;
+		var val = me.field.get_value();
+		var cond = me.$w.find('.condition').val();
+		
+		if(me.field.docfield.original_type == 'Check') {
+			val = (val=='Yes' ? 1 :0);
+		}
+		
+		if(cond=='like') {
+			val = val + '%';
+		}
+		
+		return [me.fieldselect.$select.find('option:selected').attr('table'), 
+			me.field.docfield.fieldname, me.$w.find('.condition').val(), cstr(val)];
+	}
+
+});
+
+// <select> widget with all fields of a doctype as options
+wn.ui.FieldSelect = Class.extend({
+	init: function(parent, doctype, filter_fields, with_blank) {
+		this.doctype = doctype;
+		this.fields_by_name = {};
+		this.with_blank = with_blank;
+		this.$select = $('<select>').appendTo(parent);
+		if(filter_fields) {
+			for(var i in filter_fields)
+				this.add_field_option(this.filter_fields[i])			
+		} else {
+			this.build_options();
+		}
+	},
+	build_options: function() {
+		var me = this;
+		me.table_fields = [];
+		var std_filters = [
+			{fieldname:'name', fieldtype:'Data', label:'ID', parent:me.doctype},
+			{fieldname:'modified', fieldtype:'Date', label:'Last Modified',
+				parent:me.doctype},
+			{fieldname:'owner', fieldtype:'Data', label:'Created By',
+				parent:me.doctype},
+			{fieldname:'creation', fieldtype:'Date', label:'Created On',
+				parent:me.doctype},
+			{fieldname:'_user_tags', fieldtype:'Data', label:'Tags',
+				parent:me.doctype},
+			{fieldname:'docstatus', fieldtype:'Int', label:'Doc Status',
+				parent:me.doctype},
+		];
+		
+		// add parenttype column
+		var doctype_obj = locals['DocType'][me.doctype];
+		if(doctype_obj && cint(doctype_obj.istable)) {
+			std_filters = std_filters.concat([{
+				fieldname: 'parent',
+				fieldtype: 'Data',
+				label: 'Parent',
+				parent: me.doctype
+			}]);
+		}
+		
+		// blank
+		if(this.with_blank) {
+			this.$select.append($('<option>', {
+				value: ''
+			}).text(''));
+		}
+
+		// main table
+		$.each(std_filters.concat(wn.model.get('DocType', me.doctype).get('DocField')), 
+		function(i, df) {
+			me.add_field_option(df);
+		});
+
+		// child tables
+		$.each(me.table_fields, function(i,table_df) {
+			if(table_df.options) {
+				$.each(wn.model.get('DocType', me.doctype).get('DocField'), function(i, df) {
+					me.add_field_option(df);
+				});				
+			}
+		});
+	},
+
+	add_field_option: function(df) {
+		var me = this;
+		if(me.doctype && df.parent==me.doctype) {
+			var label = df.label;
+			var table = me.doctype;
+			if(df.fieldtype=='Table') me.table_fields.push(df);					
+		} else {
+			var label = df.label + ' (' + df.parent + ')';
+			var table = df.parent;
+		}
+		if(wn.model.no_value_type.indexOf(df.fieldtype)==-1 && 
+			!(me.fields_by_name[df.fieldname] && me.fields_by_name[df.fieldname]['parent'] == df.parent)) {
+			this.$select.append($('<option>', {
+				value: df.fieldname,
+				table: table
+			}).text(label));
+			me.fields_by_name[df.fieldname] = df;						
+		}
+	}
+})
+
 /*
  *	lib/js/wn/request.js
  */
-wn.provide('wn.request');wn.request.url='server.py';wn.request.prepare=function(opts){if(opts.btn)$(opts.btn).set_working();if(opts.show_spinner)set_loading();if(opts.freeze)freeze();if(!opts.args.cmd){console.log(opts)
-throw"Incomplete Request";}}
-wn.request.cleanup=function(opts,r){if(opts.btn)$(opts.btn).done_working();if(opts.show_spinner)hide_loading();if(opts.freeze)unfreeze();if(wn.boot&&wn.boot.sid&&wn.get_cookie('sid')!=wn.boot.sid){if(!wn.app.logged_out){msgprint('Session Expired. Logging you out');wn.app.logout();}
-return;}
-if(r.server_messages){r.server_messages=JSON.parse(r.server_messages)
-msgprint(r.server_messages);}
-if(r.exc){r.exc=JSON.parse(r.exc);if(r.exc instanceof Array){$.each(r.exc,function(i,v){if(v)console.log(v);})}else{console.log(r.exc);}};if(r['403']){wn.container.change_to('403');}}
-wn.request.call=function(opts){wn.request.prepare(opts);$.ajax({url:opts.url||wn.request.url,data:opts.args,type:opts.type||'POST',dataType:opts.dataType||'json',success:function(r,xhr){wn.request.cleanup(opts,r);opts.success&&opts.success(r,xhr.responseText);},error:function(xhr,textStatus){wn.request.cleanup(opts,{});show_alert('Unable to complete request: '+textStatus)
-opts.error&&opts.error(xhr)}})}
-wn.call=function(opts){var args=$.extend({},opts.args)
-if(opts.module&&opts.page){args.cmd=opts.module+'.page.'+opts.page+'.'+opts.page+'.'+opts.method}else if(opts.method){args.cmd=opts.method;}
-for(key in args){if(args[key]&&typeof args[key]!='string'){args[key]=JSON.stringify(args[key]);}}
-wn.request.call({args:args,success:opts.callback,error:opts.error,btn:opts.btn,freeze:opts.freeze,show_spinner:!opts.no_spinner});}
+// Copyright (c) 2012 Web Notes Technologies Pvt Ltd (http://erpnext.com)
+// 
+// MIT License (MIT)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a 
+// copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+
+// My HTTP Request
+
+wn.provide('wn.request');
+wn.request.url = 'server.py';
+
+// call execute serverside request
+wn.request.prepare = function(opts) {
+	// btn indicator
+	if(opts.btn) $(opts.btn).set_working();
+	
+	// navbar indicator
+	if(opts.show_spinner) set_loading();
+	
+	// freeze page
+	if(opts.freeze) freeze();
+	
+	// no cmd?
+	if(!opts.args.cmd) {
+		console.log(opts)
+		throw "Incomplete Request";
+	}
+}
+
+wn.request.cleanup = function(opts, r) {
+	// stop button indicator
+	if(opts.btn) $(opts.btn).done_working();
+	
+	// hide button indicator
+	if(opts.show_spinner) hide_loading();
+
+	// un-freeze page
+	if(opts.freeze) unfreeze();
+
+	// session expired?
+	if(wn.boot && wn.boot.sid && wn.get_cookie('sid') != wn.boot.sid) { 
+		if(!wn.app.logged_out) {
+			msgprint('Session Expired. Logging you out');
+			wn.app.logout();			
+		}
+		return;
+	}
+	
+	// show messages
+	if(r.server_messages) {
+		r.server_messages = JSON.parse(r.server_messages)
+		msgprint(r.server_messages);
+	}
+	
+	// show errors
+	if(r.exc) { 
+		r.exc = JSON.parse(r.exc);
+		if(r.exc instanceof Array) {
+			$.each(r.exc, function(i, v) {
+				if(v)console.log(v);
+			})
+		} else {
+			console.log(r.exc); 			
+		}
+	};
+	
+	// 403
+	if(r['403']) {
+		wn.container.change_to('403');
+	}
+}
+
+wn.request.call = function(opts) {
+	wn.request.prepare(opts);
+	$.ajax({
+		url: opts.url || wn.request.url,
+		data: opts.args,
+		type: opts.type || 'POST',
+		dataType: opts.dataType || 'json',
+		success: function(r, xhr) {
+			wn.request.cleanup(opts, r);
+			opts.success && opts.success(r, xhr.responseText);
+		},
+		error: function(xhr, textStatus) {
+			wn.request.cleanup(opts, {});
+			show_alert('Unable to complete request: ' + textStatus)
+			opts.error && opts.error(xhr)
+		}
+	})
+}
+
+// generic server call (call page, object)
+wn.call = function(opts) {
+	var args = $.extend({}, opts.args)
+	
+	// cmd
+	if(opts.module && opts.page) {
+		args.cmd = opts.module+'.page.'+opts.page+'.'+opts.page+'.'+opts.method
+	} else if(opts.method) {
+		args.cmd = opts.method;
+	}
+		
+	// stringify args if required
+	for(key in args) {
+		if(args[key] && typeof args[key] != 'string') {
+			args[key] = JSON.stringify(args[key]);
+		}
+	}
+
+	wn.request.call({
+		args: args,
+		success: opts.callback,
+		error: opts.error,
+		btn: opts.btn,
+		freeze: opts.freeze,
+		show_spinner: !opts.no_spinner
+	});
+}
+
+
 /*
  *	lib/js/core.js
  */
-if(!console){var console={log:function(txt){}}}
-$(document).ready(function(){wn.versions.check();wn.provide('wn.app');$.extend(wn.app,new wn.Application());});
+// Copyright (c) 2012 Web Notes Technologies Pvt Ltd (http://erpnext.com)
+// 
+// MIT License (MIT)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a 
+// copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+
+// find files changed since last version
+
+if(!console) {
+	var console = {
+		log: function(txt) {
+			// suppress
+		}
+	}
+}
+
+
+/* start the application */
+$(document).ready(function() {
+	wn.versions.check();
+	wn.provide('wn.app');
+	$.extend(wn.app, new wn.Application());
+});
+
+
 
 /*
  *	lib/js/legacy/globals.js
  */
-wn.provide('wn.widgets.form');wn.provide('wn.widgets.report');wn.provide('wn.utils');wn.provide('wn.model');wn.provide('wn.profile');wn.provide('wn.session');wn.provide('_f');wn.provide('_p');wn.provide('_r');wn.provide('_c');wn.provide('_e');wn.provide('_startup_data')
-wn.settings.no_history=1;var NEWLINE='\n';var profile=null;var user=null;var user_defaults=null;var user_roles=null;var user_fullname=null;var user_email=null;var user_img={};var pscript={};var selector=null;var top_index=91;var _f={};var _p={};var _e={};var _r={};var FILTER_SEP='\1';var frms={};var cur_frm=null;var pscript={};var validated=true;var validation_message='';var tinymce_loaded=null;
+wn.provide('wn.widgets.form');
+wn.provide('wn.widgets.report');
+wn.provide('wn.utils');
+wn.provide('wn.model');
+wn.provide('wn.profile');
+wn.provide('wn.session');
+wn.provide('_f');
+wn.provide('_p');
+wn.provide('_r');
+wn.provide('_c');
+wn.provide('_e');
+wn.provide('_startup_data')
+
+// setup custom binding for history
+wn.settings.no_history = 1;
+
+// constants
+var NEWLINE = '\n';
+
+// user
+var profile=null;
+var user=null;
+var user_defaults=null;
+var user_roles=null;
+var user_fullname=null;
+var user_email=null;
+var user_img = {};
+
+var pscript = {};
+var selector=null; 
+
+// ui
+var top_index=91;
+
+// Name Spaces
+// ============
+
+// form
+var _f = {};
+
+// print
+var _p = {};
+
+// email
+var _e = {};
+
+// report buidler
+var _r = {};
+var FILTER_SEP = '\1';
+
+// API globals
+var frms={};
+var cur_frm=null;
+var pscript = {};
+var validated = true;
+var validation_message = '';
+var tinymce_loaded = null;
+
 /*
  *	lib/js/legacy/utils/datatype.js
  */
-wn.utils.full_name=function(fn,ln){return fn+(ln?' ':'')+(ln?ln:'')}
-function fmt_money(v){if(v==null||v=='')return'0.00';v=(v+'').replace(/,/g,'');v=parseFloat(v);if(isNaN(v)){return'';}else{var val=2;if(wn.boot.sysdefaults.currency_format=='Millions')val=3;v=v.toFixed(2);var delimiter=",";amount=v+'';var a=amount.split('.',2)
-var d=a[1];var i=parseInt(a[0]);if(isNaN(i)){return'';}
-var minus='';if(v<0){minus='-';}
-i=Math.abs(i);var n=new String(i);var a=[];if(n.length>3)
-{var nn=n.substr(n.length-3);a.unshift(nn);n=n.substr(0,n.length-3);while(n.length>val)
-{var nn=n.substr(n.length-val);a.unshift(nn);n=n.substr(0,n.length-val);}}
-if(n.length>0){a.unshift(n);}
-n=a.join(delimiter);if(d.length<1){amount=n;}
-else{amount=n+'.'+d;}
-amount=minus+amount;return amount;}}
-function toTitle(str){var word_in=str.split(" ");var word_out=[];for(w in word_in){word_out[w]=word_in[w].charAt(0).toUpperCase()+word_in[w].slice(1);}
-return word_out.join(" ");}
-function is_null(v){if(v==null){return 1}else if(v==0){if((v+'').length>=1)return 0;else return 1;}else{return 0}}
-function $s(ele,v,ftype,fopt){if(v==null)v='';if(ftype=='Text'||ftype=='Small Text'){ele.innerHTML=v?v.replace(/\n/g,'<br>'):'';}else if(ftype=='Date'){v=dateutil.str_to_user(v);if(v==null)v=''
-ele.innerHTML=v;}else if(ftype=='Link'&&fopt){ele.innerHTML='';doc_link(ele,fopt,v);}else if(ftype=='Currency'){ele.style.textAlign='right';if(is_null(v))
-ele.innerHTML='';else
-ele.innerHTML=fmt_money(v);}else if(ftype=='Int'){ele.style.textAlign='right';ele.innerHTML=v;}else if(ftype=='Check'){if(v)ele.innerHTML='<img src="images/lib/ui/tick.gif">';else ele.innerHTML='';}else{ele.innerHTML=v;}}
-function clean_smart_quotes(s){if(s){s=s.replace(/\u2018/g,"'");s=s.replace(/\u2019/g,"'");s=s.replace(/\u201c/g,'"');s=s.replace(/\u201d/g,'"');s=s.replace(/\u2013/g,'-');s=s.replace(/\u2014/g,'--');}
-return s;}
-function copy_dict(d){var n={};for(var k in d)n[k]=d[k];return n;}
-function $p(ele,top,left){ele.style.position='absolute';ele.style.top=top+'px';ele.style.left=left+'px';}
-function replace_newlines(t){return t?t.replace(/\n/g,'<br>'):'';}
-function cstr(s){if(s==null)return'';return s+'';}
-function nth(number){number=cint(number);var s='th';if((number+'').substr(-1)=='1')s='st';if((number+'').substr(-1)=='2')s='nd';if((number+'').substr(-1)=='3')s='rd';return number+s;}
-function flt(v,decimals){if(v==null||v=='')return 0;v=(v+'').replace(/,/g,'');v=parseFloat(v);if(isNaN(v))
-v=0;if(decimals!=null)
-return parseFloat(v.toFixed(decimals));return v;}
-function esc_quotes(s){if(s==null)s='';return s.replace(/'/,"\'");}
-var crop=function(s,len){if(s.length>len)
-return s.substr(0,len-3)+'...';else
-return s;}
-var strip=function(s,chars){var s=lstrip(s,chars)
-s=rstrip(s,chars);return s;}
-var lstrip=function(s,chars){if(!chars)chars=['\n','\t',' '];var first_char=s.substr(0,1);while(in_list(chars,first_char)){var s=s.substr(1);first_char=s.substr(0,1);}
-return s;}
-var rstrip=function(s,chars){if(!chars)chars=['\n','\t',' '];var last_char=s.substr(s.length-1);while(in_list(chars,last_char)){var s=s.substr(0,s.length-1);last_char=s.substr(s.length-1);}
-return s;}
-function repl_all(s,s1,s2){var idx=s.indexOf(s1);while(idx!=-1){s=s.replace(s1,s2);idx=s.indexOf(s1);}
-return s;}
-function repl(s,dict){if(s==null)return'';for(key in dict)s=repl_all(s,'%('+key+')s',dict[key]);return s;}
-function keys(obj){var mykeys=[];for(key in obj)mykeys[mykeys.length]=key;return mykeys;}
-function values(obj){var myvalues=[];for(key in obj)myvalues[myvalues.length]=obj[key];return myvalues;}
-function in_list(list,item){for(var i=0;i<list.length;i++)
-if(list[i]==item)return true;return false;}
-function has_common(list1,list2){if(!list1||!list2)return false;for(var i=0;i<list1.length;i++){if(in_list(list2,list1[i]))return true;}
-return false;}
-var inList=in_list;function add_lists(l1,l2){var l=[];for(var k in l1)l.push(l1[k]);for(var k in l2)l.push(l2[k]);return l;}
-function docstring(obj){return JSON.stringify(obj);}
-function DocLink(p,doctype,name,onload){var a=$a(p,'span','link_type');a.innerHTML=a.dn=name;a.dt=doctype;a.onclick=function(){loaddoc(this.dt,this.dn,onload)};return a;}
-var doc_link=DocLink;function roundNumber(num,dec){var result=Math.round(num*Math.pow(10,dec))/Math.pow(10,dec);return result;}
+// Copyright (c) 2012 Web Notes Technologies Pvt Ltd (http://erpnext.com)
+// 
+// MIT License (MIT)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a 
+// copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// 
+
+wn.utils.full_name = function(fn, ln) { return fn + (ln ? ' ' : '') + (ln ? ln : '') }
+
+
+function fmt_money(v){
+	if(v==null || v=='')return '0.00'; // no nulls
+	v = (v+'').replace(/,/g, ''); // remove existing commas
+	v = parseFloat(v);
+	if(isNaN(v)) {
+		return ''; // not a number
+	} else {
+		var val = 2; // variable used to differentiate other values from Millions
+		if(wn.boot.sysdefaults.currency_format == 'Millions') val = 3;
+		v = v.toFixed(2);
+		var delimiter = ","; // replace comma if desired
+		amount = v+'';
+		var a = amount.split('.',2)
+		var d = a[1];
+		var i = parseInt(a[0]);
+		if(isNaN(i)) { return ''; }
+		var minus = '';
+		if(v < 0) { minus = '-'; }
+		i = Math.abs(i);
+		var n = new String(i);
+		var a = [];
+		if(n.length > 3)
+		{
+			var nn = n.substr(n.length-3);
+			a.unshift(nn);
+			n = n.substr(0,n.length-3);			
+			while(n.length > val)
+			{
+				var nn = n.substr(n.length-val);
+				a.unshift(nn);
+				n = n.substr(0,n.length-val);
+			}
+		}
+		if(n.length > 0) { a.unshift(n); }
+		n = a.join(delimiter);
+		if(d.length < 1) { amount = n; }
+		else { amount = n + '.' + d; }
+		amount = minus + amount;
+		return amount;
+	}
+}
+
+// to title case
+function toTitle(str){
+	var word_in = str.split(" ");
+	var word_out = [];
+	
+	for(w in word_in){
+		word_out[w] = word_in[w].charAt(0).toUpperCase() + word_in[w].slice(1);
+	}
+	
+	return word_out.join(" ");
+}
+
+function is_null(v) {
+	if(v==null) {
+		return 1
+	} else if(v==0) {
+		if((v+'').length>=1) return 0;
+		else return 1;
+	} else {
+		return 0
+	}
+}
+
+function $s(ele, v, ftype, fopt) { 	
+	if(v==null)v='';
+					
+	if(ftype =='Text'|| ftype =='Small Text') {
+		ele.innerHTML = v?v.replace(/\n/g, '<br>'):'';
+	} else if(ftype =='Date') {
+		v = dateutil.str_to_user(v);
+		if(v==null)v=''
+		ele.innerHTML = v;
+	} else if(ftype =='Link' && fopt) {
+		ele.innerHTML = '';
+		doc_link(ele, fopt, v);
+	} else if(ftype =='Currency') {
+		ele.style.textAlign = 'right';
+		if(is_null(v))
+			ele.innerHTML = '';
+		else
+			ele.innerHTML = fmt_money(v);
+	} else if(ftype =='Int') {
+		ele.style.textAlign = 'right';
+		ele.innerHTML = v;
+	} else if(ftype == 'Check') {
+		if(v) ele.innerHTML = '<img src="images/lib/ui/tick.gif">';
+		else ele.innerHTML = '';
+	} else {
+		ele.innerHTML = v;
+	}
+}
+
+function clean_smart_quotes(s) {
+	if(s) {
+	    s = s.replace( /\u2018/g, "'" );
+	    s = s.replace( /\u2019/g, "'" );
+	    s = s.replace( /\u201c/g, '"' );
+	    s = s.replace( /\u201d/g, '"' );
+	    s = s.replace( /\u2013/g, '-' );
+	    s = s.replace( /\u2014/g, '--' );
+	}
+    return s;
+}
+
+function copy_dict(d) {
+	var n = {};
+	for(var k in d) n[k] = d[k];
+	return n;
+}
+
+function $p(ele,top,left) {
+ ele.style.position = 'absolute';
+ ele.style.top = top+'px';
+ ele.style.left = left+'px';
+}
+function replace_newlines(t) {
+	return t?t.replace(/\n/g, '<br>'):'';
+}
+
+function cstr(s) {
+	if(s==null)return '';
+	return s+'';
+}
+function nth(number) {
+	number = cint(number);
+	var s = 'th';
+	if((number+'').substr(-1)=='1') s = 'st';
+	if((number+'').substr(-1)=='2') s = 'nd';
+	if((number+'').substr(-1)=='3') s = 'rd';
+	return number+s;
+}
+
+function flt(v,decimals) { 
+	if(v==null || v=='')return 0;
+	v=(v+'').replace(/,/g,'');
+
+	v=parseFloat(v); 
+	if(isNaN(v))
+		v=0; 
+	if(decimals!=null)
+		return parseFloat(v.toFixed(decimals));
+	return v; 
+}
+
+function esc_quotes(s) { if(s==null)s=''; return s.replace(/'/, "\'");}
+
+var crop = function(s, len) {
+	if(s.length>len)
+		return s.substr(0, len-3) + '...';
+	else 
+		return s;
+}
+
+var strip = function(s, chars) {
+	var s= lstrip(s, chars)
+	s = rstrip(s, chars);
+	return s;
+}
+
+var lstrip = function(s, chars) {
+	if(!chars) chars = ['\n', '\t', ' '];
+	// strip left
+	var first_char = s.substr(0,1);
+	while(in_list(chars, first_char)) {
+		var s = s.substr(1);
+		first_char = s.substr(0,1);
+	}
+	return s;
+}
+
+var rstrip = function(s, chars) {
+	if(!chars) chars = ['\n', '\t', ' '];
+	var last_char = s.substr(s.length-1);
+	while(in_list(chars, last_char)) {
+		var s = s.substr(0, s.length-1);
+		last_char = s.substr(s.length-1);
+	}
+	return s;
+}
+
+function repl_all(s, s1, s2) {
+	var idx = s.indexOf(s1);
+	while (idx != -1){
+		s = s.replace(s1, s2);
+	 	idx = s.indexOf(s1);
+	}
+	return s;
+}
+function repl(s, dict) {
+	if(s==null)return '';
+	for(key in dict) s = repl_all(s, '%('+key+')s', dict[key]);
+	return s;
+}
+
+///// dict type
+
+function keys(obj) { 
+	var mykeys=[];
+	for (key in obj) mykeys[mykeys.length]=key;
+	return mykeys;
+}
+function values(obj) { 
+	var myvalues=[];
+	for (key in obj) myvalues[myvalues.length]=obj[key];
+	return myvalues;
+}
+
+function in_list(list, item) {
+	for(var i=0; i<list.length; i++)
+		if(list[i]==item) return true;
+	return false;
+}
+function has_common(list1, list2) {
+	if(!list1 || !list2) return false;
+	for(var i=0; i<list1.length; i++) {
+		if(in_list(list2, list1[i]))return true;
+	}
+	return false;
+}
+
+var inList = in_list; // bc
+function add_lists(l1, l2) {
+	var l = [];
+	for(var k in l1) l.push(l1[k]);
+	for(var k in l2) l.push(l2[k]);
+	return l;
+}
+
+function docstring(obj)  {
+	return JSON.stringify(obj);
+}
+
+function DocLink(p, doctype, name, onload) {
+	var a = $a(p,'span','link_type'); a.innerHTML = a.dn = name; a.dt = doctype;
+	a.onclick=function() { loaddoc(this.dt,this.dn,onload) }; return a;
+}
+var doc_link = DocLink;
+
+function roundNumber(num, dec) {
+	var result = Math.round(num*Math.pow(10,dec))/Math.pow(10,dec);
+	return result;
+}
+
+
+
 /*
  *	lib/js/legacy/utils/datetime.js
  */
-function same_day(d1,d2){if(d1.getFullYear()==d2.getFullYear()&&d1.getMonth()==d2.getMonth()&&d1.getDate()==d2.getDate())return true;else return false;}
-var month_list=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];var month_last={1:31,2:28,3:31,4:30,5:31,6:30,7:31,8:31,9:30,10:31,11:30,12:31}
-var month_list_full=['January','February','March','April','May','June','July','August','September','October','November','December'];var week_list=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];var week_list_full=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];function int_to_str(i,len){i=''+i;if(i.length<len)for(c=0;c<(len-i.length);c++)i='0'+i;return i}
-wn.datetime={str_to_obj:function(d){if(typeof d=="object")return d;if(!d)return new Date();var tm=[null,null];if(d.search(' ')!=-1){var tm=d.split(' ')[1].split(':');var d=d.split(' ')[0];}
-if(d.search('-')!=-1){var t=d.split('-');return new Date(t[0],t[1]-1,t[2],tm[0],tm[1]);}else if(d.search('/')!=-1){var t=d.split('/');return new Date(t[0],t[1]-1,t[2],tm[0],tm[1]);}else{return new Date();}},obj_to_str:function(d){if(typeof d=='string')return d;return d.getFullYear()+'-'+int_to_str(d.getMonth()+1,2)+'-'+int_to_str(d.getDate(),2);},obj_to_user:function(d){return dateutil.str_to_user(dateutil.obj_to_str(d));},get_diff:function(d1,d2){if(typeof d1=='string')d1=dateutil.str_to_obj(d1);if(typeof d2=='string')d2=dateutil.str_to_obj(d2);return((d1-d2)/86400000);},get_day_diff:function(d1,d2){return dateutil.get_diff(new Date(d1.getYear(),d1.getMonth(),d1.getDate(),0,0),new Date(d2.getYear(),d2.getMonth(),d2.getDate(),0,0))},add_days:function(d,days){var dt=dateutil.str_to_obj(d);var new_dt=new Date(dt.getTime()+(days*24*60*60*1000));return dateutil.obj_to_str(new_dt);},add_months:function(d,months){dt=dateutil.str_to_obj(d)
-new_dt=new Date(dt.getFullYear(),dt.getMonth()+months,dt.getDate())
-if(new_dt.getDate()!=dt.getDate()){return dateutil.month_end(new Date(dt.getFullYear(),dt.getMonth()+months,1))}
-return dateutil.obj_to_str(new_dt);},month_start:function(){var d=new Date();return d.getFullYear()+'-'+int_to_str(d.getMonth()+1,2)+'-01';},month_end:function(d){if(!d)var d=new Date();var m=d.getMonth()+1;var y=d.getFullYear();last_date=month_last[m];if(m==2&&(y%4)==0&&((y%100)!=0||(y%400)==0))
-last_date=29;return y+'-'+int_to_str(m,2)+'-'+last_date;},get_user_fmt:function(){var t=sys_defaults.date_format;if(!t)t='dd-mm-yyyy';return t;},str_to_user:function(val,no_time_str){var user_fmt=dateutil.get_user_fmt();var time_str='';if(val==null||val=='')return null;if(val.search(':')!=-1){var tmp=val.split(' ');if(tmp[1])
-time_str=' '+tmp[1];var d=tmp[0];}else{var d=val;}
-if(no_time_str)time_str='';d=d.split('-');if(d.length==3){if(user_fmt=='dd-mm-yyyy')
-val=d[2]+'-'+d[1]+'-'+d[0]+time_str;else if(user_fmt=='dd/mm/yyyy')
-val=d[2]+'/'+d[1]+'/'+d[0]+time_str;else if(user_fmt=='yyyy-mm-dd')
-val=d[0]+'-'+d[1]+'-'+d[2]+time_str;else if(user_fmt=='mm/dd/yyyy')
-val=d[1]+'/'+d[2]+'/'+d[0]+time_str;else if(user_fmt=='mm-dd-yyyy')
-val=d[1]+'-'+d[2]+'-'+d[0]+time_str;}
-return val;},full_str:function(){var d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()+' '
-+d.getHours()+':'+d.getMinutes()+':'+d.getSeconds();},user_to_str:function(d){var user_fmt=this.get_user_fmt();if(user_fmt=='dd-mm-yyyy'){var d=d.split('-');return d[2]+'-'+d[1]+'-'+d[0];}
-else if(user_fmt=='dd/mm/yyyy'){var d=d.split('/');return d[2]+'-'+d[1]+'-'+d[0];}
-else if(user_fmt=='yyyy-mm-dd'){return d;}
-else if(user_fmt=='mm/dd/yyyy'){var d=d.split('/');return d[2]+'-'+d[0]+'-'+d[1];}
-else if(user_fmt=='mm-dd-yyyy'){var d=d.split('-');return d[2]+'-'+d[0]+'-'+d[1];}},global_date_format:function(d){if(d.substr)d=this.str_to_obj(d);return nth(d.getDate())+' '+month_list_full[d.getMonth()]+' '+d.getFullYear();},get_today:function(){var today=new Date();var m=(today.getMonth()+1)+'';if(m.length==1)m='0'+m;var d=today.getDate()+'';if(d.length==1)d='0'+d;return today.getFullYear()+'-'+m+'-'+d;},get_cur_time:function(){var d=new Date();var hh=d.getHours()+''
-var mm=cint(d.getMinutes()/5)*5+''
-return(hh.length==1?'0'+hh:hh)+':'+(mm.length==1?'0'+mm:mm);}}
-wn.datetime.only_date=function(val){if(val==null||val=='')return null;if(val.search(':')!=-1){var tmp=val.split(' ');var d=tmp[0].split('-');}else{var d=val.split('-');}
-if(d.length==3)
-val=d[2]+'-'+d[1]+'-'+d[0];return val;}
-wn.datetime.time_to_ampm=function(v){if(!v){var d=new Date();var t=[d.getHours(),cint(d.getMinutes()/5)*5+'']}else{var t=v.split(':');}
-if(t.length!=2){show_alert('[set_time] Incorect time format');return;}
-if(t[1].length==1)t[1]='0'+t[1];if(cint(t[0])==0)var ret=['12',t[1],'AM'];else if(cint(t[0])<12)var ret=[cint(t[0])+'',t[1],'AM'];else if(cint(t[0])==12)var ret=['12',t[1],'PM'];else var ret=[(cint(t[0])-12)+'',t[1],'PM'];return ret;}
-wn.datetime.time_to_hhmm=function(hh,mm,am){if(am=='AM'&&hh=='12'){hh='00';}else if(am=='PM'&&hh!='12'){hh=cint(hh)+12;}
-if(!mm)mm='00';if(!hh)hh='00';return hh+':'+mm;}
-function prettyDate(time){if(!time)return''
-var date=time;if(typeof(time)=="string")
-date=new Date((time||"").replace(/-/g,"/").replace(/[TZ]/g," ").replace(/\.[0-9]*/,""));var diff=(((new Date()).getTime()-date.getTime())/1000),day_diff=Math.floor(diff/86400);if(isNaN(day_diff)||day_diff<0)
-return'';return day_diff==0&&(diff<60&&"just now"||diff<120&&"1 minute ago"||diff<3600&&Math.floor(diff/60)+" minutes ago"||diff<7200&&"1 hour ago"||diff<86400&&Math.floor(diff/3600)+" hours ago")||day_diff==1&&"Yesterday"||day_diff<7&&day_diff+" days ago"||day_diff<31&&Math.ceil(day_diff/7)+" weeks ago"||day_diff<365&&Math.ceil(day_diff/30)+" months ago"||"more than "+Math.floor(day_diff/365)+" year(s) ago";}
-if(typeof jQuery!="undefined")
-jQuery.fn.prettyDate=function(){return this.each(function(){var date=prettyDate(this.title);if(date)
-jQuery(this).text(date);});};var comment_when=prettyDate;wn.datetime.comment_when=prettyDate;var date=dateutil=wn.datetime;var get_today=wn.datetime.get_today
-var time_to_ampm=wn.datetime.time_to_ampm;var time_to_hhmm=wn.datetime.time_to_hhmm;var only_date=wn.datetime.only_date;
+// Copyright (c) 2012 Web Notes Technologies Pvt Ltd (http://erpnext.com)
+// 
+// MIT License (MIT)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a 
+// copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// 
+
+// Date
+
+function same_day(d1, d2) {
+	if(d1.getFullYear()==d2.getFullYear() && d1.getMonth()==d2.getMonth() && d1.getDate()==d2.getDate())return true; else return false;
+}
+var month_list = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+var month_last = {1:31,2:28,3:31,4:30,5:31,6:30,7:31,8:31,9:30,10:31,11:30,12:31}
+var month_list_full = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+var week_list = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+var week_list_full = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+function int_to_str(i, len) {
+	i = ''+i;
+	if(i.length<len)for(c=0;c<(len-i.length);c++)i='0'+i;
+	return i
+}
+
+wn.datetime = {
+	
+	str_to_obj: function(d) { 
+		if(typeof d=="object") return d;
+		if(!d) return new Date(); 
+		var tm = [null, null];
+		if(d.search(' ')!=-1) {
+			var tm = d.split(' ')[1].split(':');
+			var d = d.split(' ')[0];
+		}
+		if(d.search('-')!=-1) {
+			var t = d.split('-'); return new Date(t[0],t[1]-1,t[2],tm[0],tm[1]); 
+		} else if(d.search('/')!=-1) {
+			var t = d.split('/'); return new Date(t[0],t[1]-1,t[2],tm[0],tm[1]); 
+		} else {
+			return new Date();
+		}
+	},
+
+	obj_to_str: function(d) { 
+		if(typeof d=='string') return d;
+		return d.getFullYear() + '-' + int_to_str(d.getMonth()+1,2) + '-' + int_to_str(d.getDate(),2); 
+	},
+	
+	obj_to_user: function(d) { 
+		return dateutil.str_to_user(dateutil.obj_to_str(d)); 
+	},
+	
+	get_diff: function(d1, d2) { 
+		if(typeof d1=='string') d1 = dateutil.str_to_obj(d1);
+		if(typeof d2=='string') d2 = dateutil.str_to_obj(d2);
+		return ((d1-d2) / 86400000); 
+	},
+	
+	get_day_diff: function(d1, d2) {
+		return dateutil.get_diff(new Date(d1.getYear(), d1.getMonth(), d1.getDate(), 0, 0), 
+			new Date(d2.getYear(), d2.getMonth(), d2.getDate(), 0, 0))
+	},
+	
+	add_days: function(d, days) { 
+		var dt = dateutil.str_to_obj(d);
+		var new_dt = new Date(dt.getTime()+(days*24*60*60*1000));
+		return dateutil.obj_to_str(new_dt);
+	},
+	
+	add_months: function(d, months) {
+		dt = dateutil.str_to_obj(d)
+		new_dt = new Date(dt.getFullYear(), dt.getMonth()+months, dt.getDate())
+		if(new_dt.getDate() != dt.getDate()) {
+			// month has changed, go the last date of prev month
+			return dateutil.month_end(new Date(dt.getFullYear(), dt.getMonth()+months, 1))
+		}
+		return dateutil.obj_to_str(new_dt);
+	},
+	
+	month_start: function() { 
+		var d = new Date();
+		return d.getFullYear() + '-' + int_to_str(d.getMonth()+1,2) + '-01';
+	},
+	
+	month_end: function(d) { 
+		if(!d)var d = new Date(); 
+		var m = d.getMonth() + 1; 
+		var y = d.getFullYear();
+		
+		last_date = month_last[m];
+		if(m==2 && (y % 4)==0 && ((y % 100)!=0 || (y % 400)==0)) // leap year test
+			last_date = 29;
+		return y+'-'+int_to_str(m,2)+'-'+last_date;
+	},
+	
+	get_user_fmt: function() {
+		var t = sys_defaults.date_format;
+		if(!t) t = 'dd-mm-yyyy';
+		return t;
+	},
+	
+	str_to_user: function(val, no_time_str) {
+		var user_fmt = dateutil.get_user_fmt();
+		var time_str = '';
+		//alert(user_fmt);
+		
+		
+		if(val==null||val=='')return null;
+		
+		// separate time string if there
+		if(val.search(':')!=-1) {
+			var tmp = val.split(' ');
+			if(tmp[1])
+				time_str = ' ' + tmp[1];
+			var d = tmp[0];
+		} else {
+			var d = val;
+		}
+
+		if(no_time_str)time_str = '';
+
+		// set to user fmt
+		d = d.split('-');
+		if(d.length==3) {
+			if(user_fmt=='dd-mm-yyyy')
+				val =  d[2]+'-'+d[1]+'-'+d[0] + time_str;
+			else if(user_fmt=='dd/mm/yyyy')
+				val =  d[2]+'/'+d[1]+'/'+d[0] + time_str;
+			else if(user_fmt=='yyyy-mm-dd')
+				val =  d[0]+'-'+d[1]+'-'+d[2] + time_str;
+			else if(user_fmt=='mm/dd/yyyy')
+				val =  d[1]+'/'+d[2]+'/'+d[0] + time_str;
+			else if(user_fmt=='mm-dd-yyyy')
+				val =  d[1]+'-'+d[2]+'-'+d[0] + time_str;
+		}
+
+		return val;
+	},
+	
+	full_str: function() { 
+		var d = new Date();
+		return d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate() + ' '
+		+ d.getHours()  + ':' + d.getMinutes()   + ':' + d.getSeconds();
+	},
+	
+	user_to_str: function(d) {
+		var user_fmt = this.get_user_fmt();
+		
+		if(user_fmt=='dd-mm-yyyy') {
+			var d = d.split('-');
+			return  d[2]+'-'+d[1]+'-'+d[0];
+		}
+		else if(user_fmt=='dd/mm/yyyy') {
+			var d = d.split('/');
+			return  d[2]+'-'+d[1]+'-'+d[0];
+		}
+		else if(user_fmt=='yyyy-mm-dd') {
+			return d;
+		}
+		else if(user_fmt=='mm/dd/yyyy') {
+			var d = d.split('/');
+			return  d[2]+'-'+d[0]+'-'+d[1];
+		}
+		else if(user_fmt=='mm-dd-yyyy') {
+			var d = d.split('-');
+			return  d[2]+'-'+d[0]+'-'+d[1];
+		}
+	},
+	
+	global_date_format: function(d) {
+		if(d.substr) d = this.str_to_obj(d);
+		return nth(d.getDate()) + ' ' + month_list_full[d.getMonth()] + ' ' + d.getFullYear();
+	},
+
+	get_today: function() {
+		var today = new Date();
+		var m = (today.getMonth()+1)+'';
+		if(m.length==1)m='0'+m;
+		var d = today.getDate()+'';
+		if(d.length==1)d='0'+d;
+		return today.getFullYear()+'-'+m+'-'+d;
+	},
+
+	get_cur_time: function() {
+		// returns current time in hh:mm string
+		var d = new Date();
+		var hh = d.getHours() + ''
+		var mm = cint(d.getMinutes()/5)*5 + ''
+		
+		return (hh.length==1 ? '0'+hh : hh) + ':' + (mm.length==1 ? '0'+mm : mm);
+	}
+}
+
+wn.datetime.only_date = function(val) {
+	if(val==null||val=='')return null;
+	if(val.search(':')!=-1) {
+		var tmp = val.split(' ');
+		var d = tmp[0].split('-');
+	} else {
+		var d = val.split('-');
+	}
+	if(d.length==3) 
+		val =  d[2]+'-'+d[1]+'-'+d[0];
+	return val;
+}
+
+
+// Time
+
+wn.datetime.time_to_ampm = function(v) {
+	if(!v) {
+		var d = new Date();
+		var t = [d.getHours(), cint(d.getMinutes()/5)*5 + '']
+	} else {
+		var t = v.split(':');
+	}
+
+	if(t.length!=2){
+		show_alert('[set_time] Incorect time format');
+		return;
+	}
+	
+	if(t[1].length==1) t[1]='0' + t[1];
+	
+	if(cint(t[0]) == 0) var ret = ['12', t[1], 'AM'];
+	else if(cint(t[0]) < 12) var ret = [cint(t[0]) + '', t[1], 'AM'];
+	else if(cint(t[0]) == 12) var ret = ['12', t[1], 'PM'];
+	else var ret = [(cint(t[0]) - 12) + '', t[1], 'PM'];
+		
+	return ret;
+}
+
+wn.datetime.time_to_hhmm = function(hh,mm,am) {
+	if(am == 'AM' && hh=='12') {
+		hh = '00';
+	} else if(am == 'PM' && hh!='12') {
+		hh = cint(hh) + 12;
+	}
+	if(!mm) mm='00';
+	if(!hh) hh='00';
+
+	return hh + ':' + mm;
+}
+
+/*
+ * JavaScript Pretty Date
+ * Copyright (c) 2011 John Resig (ejohn.org)
+ * Licensed under the MIT and GPL licenses.
+ */
+
+// Takes an ISO time and returns a string representing how
+// long ago the date represents.
+function prettyDate(time){
+	if(!time) return ''
+	var date = time;
+	if(typeof(time)=="string")
+		date = new Date((time || "").replace(/-/g,"/").replace(/[TZ]/g," ").replace(/\.[0-9]*/, ""));
+	
+	var diff = (((new Date()).getTime() - date.getTime()) / 1000),
+	day_diff = Math.floor(diff / 86400);
+	
+	if ( isNaN(day_diff) || day_diff < 0 )
+		return '';
+			
+	return day_diff == 0 && (
+			diff < 60 && "just now" ||
+			diff < 120 && "1 minute ago" ||
+			diff < 3600 && Math.floor( diff / 60 ) + " minutes ago" ||
+			diff < 7200 && "1 hour ago" ||
+			diff < 86400 && Math.floor( diff / 3600 ) + " hours ago") ||
+		day_diff == 1 && "Yesterday" ||
+		day_diff < 7 && day_diff + " days ago" ||
+		day_diff < 31 && Math.ceil( day_diff / 7 ) + " weeks ago" ||
+		day_diff < 365 && Math.ceil( day_diff / 30) + " months ago" ||
+		"more than " + Math.floor( day_diff / 365 ) + " year(s) ago";
+}
+
+// If jQuery is included in the page, adds a jQuery plugin to handle it as well
+if ( typeof jQuery != "undefined" )
+	jQuery.fn.prettyDate = function(){
+		return this.each(function(){
+			var date = prettyDate(this.title);
+			if ( date )
+				jQuery(this).text( date );
+		});
+	};
+
+var comment_when = prettyDate;
+wn.datetime.comment_when = prettyDate;
+
+// globals (deprecate)
+var date = dateutil = wn.datetime;
+var get_today = wn.datetime.get_today
+var time_to_ampm = wn.datetime.time_to_ampm;
+var time_to_hhmm = wn.datetime.time_to_hhmm;
+var only_date = wn.datetime.only_date;
+
+
 /*
  *	lib/js/legacy/utils/dom.js
  */
-wn.tinymce={add_simple:function(ele,height){if(ele.myid){tinyMCE.execCommand('mceAddControl',true,ele.myid);return;}
-ele.myid=wn.dom.set_unique_id(ele);$(ele).tinymce({script_url:'js/lib/tiny_mce_33/tiny_mce.js',height:height?height:'200px',theme:"advanced",theme_advanced_buttons1:"bold,italic,underline,separator,strikethrough,justifyleft,justifycenter,justifyright,justifyfull,bullist,numlist,outdent,indent,link,unlink,forecolor,backcolor,code,",theme_advanced_buttons2:"",theme_advanced_buttons3:"",theme_advanced_toolbar_location:"top",theme_advanced_toolbar_align:"left",theme_advanced_path:false,theme_advanced_resizing:false});},remove:function(ele){tinyMCE.execCommand('mceRemoveControl',true,ele.myid);},get_value:function(ele){return tinymce.get(ele.myid).getContent();}}
-wn.ele={link:function(args){var span=$a(args.parent,'span','link_type',args.style);span.loading_img=$a(args.parent,'img','',{margin:'0px 4px -2px 4px',display:'none'});span.loading_img.src='images/lib/ui/button-load.gif';span.innerHTML=args.label;span.user_onclick=args.onclick;span.onclick=function(){if(!this.disabled)this.user_onclick(this);}
-span.set_working=function(){this.disabled=1;$di(this.loading_img);}
-span.done_working=function(){this.disabled=0;$dh(this.loading_img);}
-return span;}}
-function $ln(parent,label,onclick,style){return wn.ele.link({parent:parent,label:label,onclick:onclick,style:style})}
-function $btn(parent,label,onclick,style,css_class,is_ajax){if(css_class==='green')css_class='btn-info';return new wn.ui.Button({parent:parent,label:label,onclick:onclick,style:style,is_ajax:is_ajax,css_class:css_class}).btn;}
-$item_normal=function(ele){$y(ele,{padding:'6px 8px',cursor:'pointer',marginRight:'8px',whiteSpace:'nowrap',overflow:'hidden',borderBottom:'1px solid #DDD'});$bg(ele,'#FFF');$fg(ele,'#000');}
-$item_active=function(ele){$bg(ele,'#FE8');$fg(ele,'#000');}
-$item_selected=function(ele){$bg(ele,'#777');$fg(ele,'#FFF');}
-$item_pressed=function(ele){$bg(ele,'#F90');$fg(ele,'#FFF');};function set_opacity(ele,ieop){var op=ieop/100;if(ele.filters){try{ele.filters.item("DXImageTransform.Microsoft.Alpha").opacity=ieop;}catch(e){ele.style.filter='progid:DXImageTransform.Microsoft.Alpha(opacity='+ieop+')';}}else{ele.style.opacity=op;}}
-$br=function(ele,r,corners){if(corners){var cl=['top-left','top-right','bottom-right','bottom-left'];for(var i=0;i<4;i++){if(corners[i]){$(ele).css('-moz-border-radius-'+cl[i].replace('-',''),r).css('-webkit-'+cl[i]+'-border-radius',r);}}}else{$(ele).css('-moz-border-radius',r).css('-webkit-border-radius',r).css('border-radius',r);}}
-$bs=function(ele,r){$(ele).css('-moz-box-shadow',r).css('-webkit-box-shadow',r).css('box-shadow',r);}
-function SelectWidget(parent,options,width,editable,bg_color){var me=this;this.inp=$a(parent,'select');if(options)add_sel_options(this.inp,options);if(width)$y(this.inp,{width:width});this.set_width=function(w){$y(this.inp,{width:w})};this.set_options=function(o){add_sel_options(this.inp,o);}
-this.inp.onchange=function(){if(me.onchange)me.onchange(this);}
-return;}
-function empty_select(s){if(s.custom_select){s.empty();return;}
-if(s.inp)s=s.inp;if(s){var tmplen=s.length;for(var i=0;i<tmplen;i++)s.options[0]=null;}}
-function sel_val(s){if(s.custom_select){return s.inp.value?s.inp.value:'';}
-if(s.inp)s=s.inp;try{if(s.selectedIndex<s.options.length)return s.options[s.selectedIndex].value;else return'';}catch(err){return'';}}
-function add_sel_options(s,list,sel_val,o_style){if(s.custom_select){s.set_options(list)
-if(sel_val)s.inp.value=sel_val;return;}
-if(s.inp)s=s.inp;for(var i=0,len=list.length;i<len;i++){var o=new Option(list[i],list[i],false,(list[i]==sel_val?true:false));if(o_style)$y(o,o_style);s.options[s.options.length]=o;}}
-function cint(v,def){v=v+'';v=lstrip(v,['0']);v=parseInt(v);if(isNaN(v))v=def?def:0;return v;}
-function validate_email(id){if(strip(id.toLowerCase()).search("[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")==-1)return 0;else return 1;}
-function validate_spl_chars(txt){if(txt.search(/^[a-zA-Z0-9_\- ]*$/)==-1)return 1;else return 0;}
-function d2h(d){return cint(d).toString(16);}
-function h2d(h){return parseInt(h,16);}
-var $n='\n';function set_title(t){document.title=(wn.title_prefix?(wn.title_prefix+' - '):'')+t;}
-function $a(parent,newtag,className,cs,innerHTML,onclick){if(parent&&parent.substr)parent=$i(parent);var c=document.createElement(newtag);if(parent)
-parent.appendChild(c);if(className){if(newtag.toLowerCase()=='img')
-c.src=className
-else
-c.className=className;}
-if(cs)$y(c,cs);if(innerHTML)c.innerHTML=innerHTML;if(onclick)c.onclick=onclick;return c;}
-function $a_input(p,in_type,attributes,cs){if(!attributes)attributes={};var $input=$(p).append('<input type="'+in_type+'">').find('input:last');for(key in attributes)
-$input.attr(key,attributes[key]);var input=$input.get(0);if(cs)
-$y(input,cs);return input;}
-function $dh(d){if(d&&d.substr)d=$i(d);if(d&&d.style.display.toLowerCase()!='none')d.style.display='none';}
-function $ds(d){if(d&&d.substr)d=$i(d);var t='block';if(d&&in_list(['span','img','button'],d.tagName.toLowerCase()))
-t='inline'
-if(d&&d.style.display.toLowerCase()!=t)
-d.style.display=t;}
-function $di(d){if(d&&d.substr)d=$i(d);if(d)d.style.display='inline';}
-function $i(id){if(!id)return null;if(id&&id.appendChild)return id;return document.getElementById(id);}
-function $w(e,w){if(e&&e.style&&w)e.style.width=w;}
-function $h(e,h){if(e&&e.style&&h)e.style.height=h;}
-function $bg(e,w){if(e&&e.style&&w)e.style.backgroundColor=w;}
-function $y(ele,s){if(ele&&s){for(var i in s)ele.style[i]=s[i];};return ele;}
-function $yt(tab,r,c,s){var rmin=r;var rmax=r;if(r=='*'){rmin=0;rmax=tab.rows.length-1;}
-if(r.search&&r.search('-')!=-1){r=r.split('-');rmin=cint(r[0]);rmax=cint(r[1]);}
-var cmin=c;var cmax=c;if(c=='*'){cmin=0;cmax=tab.rows[0].cells.length-1;}
-if(c.search&&c.search('-')!=-1){c=c.split('-');rmin=cint(c[0]);rmax=cint(c[1]);}
-for(var ri=rmin;ri<=rmax;ri++){for(var ci=cmin;ci<=cmax;ci++)
-$y($td(tab,ri,ci),s);}}
-function set_style(txt){wn.dom.set_style(txt);}
-function make_table(parent,nr,nc,table_width,widths,cell_style,table_style){var t=$a(parent,'table');t.style.borderCollapse='collapse';if(table_width)t.style.width=table_width;if(cell_style)t.cell_style=cell_style;for(var ri=0;ri<nr;ri++){var r=t.insertRow(ri);for(var ci=0;ci<nc;ci++){var c=r.insertCell(ci);if(ri==0&&widths&&widths[ci]){c.style.width=widths[ci];}
-if(cell_style){for(var s in cell_style)c.style[s]=cell_style[s];}}}
-t.append_row=function(){return append_row(this);}
-if(table_style)$y(t,table_style);return t;}
-function append_row(t,at,style){var r=t.insertRow(at?at:t.rows.length);if(t.rows.length>1){for(var i=0;i<t.rows[0].cells.length;i++){var c=r.insertCell(i);if(style)$y(c,style);}}
-return r}
-function $td(t,r,c){if(r<0)r=t.rows.length+r;if(c<0)c=t.rows[0].cells.length+c;return t.rows[r].cells[c];}
-wn.urllib={get_arg:function(name){name=name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");var regexS="[\\?&]"+name+"=([^&#]*)";var regex=new RegExp(regexS);var results=regex.exec(window.location.href);if(results==null)
-return"";else
-return decodeURIComponent(results[1]);},get_dict:function(){var d={}
-var t=window.location.href.split('?')[1];if(!t)return d;if(t.indexOf('#')!=-1)t=t.split('#')[0];if(!t)return d;t=t.split('&');for(var i=0;i<t.length;i++){var a=t[i].split('=');d[decodeURIComponent(a[0])]=decodeURIComponent(a[1]);}
-return d;},get_base_url:function(){var url=window.location.href.split('#')[0].split('?')[0].split('app.html')[0];if(url.substr(url.length-1,1)=='/')url=url.substr(0,url.length-1)
-return url},get_file_url:function(file_id){return repl('files/%(fn)s',{fn:file_id})}}
-get_url_arg=wn.urllib.get_arg;get_url_dict=wn.urllib.get_dict;
+// Copyright (c) 2012 Web Notes Technologies Pvt Ltd (http://erpnext.com)
+// 
+// MIT License (MIT)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a 
+// copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// 
+
+// short hand functions for setting up
+// rich text editor tinymce
+wn.tinymce = {
+	add_simple: function(ele, height) {
+		if(ele.myid) {
+			tinyMCE.execCommand( 'mceAddControl', true, ele.myid);
+			return;
+		}
+		
+		// no create
+		ele.myid = wn.dom.set_unique_id(ele);
+		$(ele).tinymce({
+			// Location of TinyMCE script
+			script_url : 'js/lib/tiny_mce_33/tiny_mce.js',
+
+			height: height ? height : '200px',
+			
+			// General options
+		    theme : "advanced",
+		    theme_advanced_buttons1 : "bold,italic,underline,separator,strikethrough,justifyleft,justifycenter,justifyright,justifyfull,bullist,numlist,outdent,indent,link,unlink,forecolor,backcolor,code,",
+		    theme_advanced_buttons2 : "",
+		    theme_advanced_buttons3 : "",
+		    theme_advanced_toolbar_location : "top",
+		    theme_advanced_toolbar_align : "left",
+			theme_advanced_path : false,
+			theme_advanced_resizing : false
+		});		
+	},
+	
+	remove: function(ele) {
+		tinyMCE.execCommand( 'mceRemoveControl', true, ele.myid);
+	},
+	
+	get_value: function(ele) {
+		return tinymce.get(ele.myid).getContent();
+	}
+}
+
+wn.ele = {
+	link: function(args) {
+		var span = $a(args.parent, 'span', 'link_type', args.style);
+		span.loading_img = $a(args.parent,'img','',{margin:'0px 4px -2px 4px', display:'none'});
+		span.loading_img.src= 'images/lib/ui/button-load.gif';
+
+		span.innerHTML = args.label;
+		span.user_onclick = args.onclick;
+		span.onclick = function() { if(!this.disabled) this.user_onclick(this); }
+
+		// working
+		span.set_working = function() {
+			this.disabled = 1;
+			$di(this.loading_img);
+		}
+		span.done_working = function() {
+			this.disabled = 0;
+			$dh(this.loading_img);
+		}
+
+		return span;
+	}
+}
+
+function $ln(parent, label, onclick, style) { 
+	return wn.ele.link({parent:parent, label:label, onclick:onclick, style:style})
+}
+
+function $btn(parent, label, onclick, style, css_class, is_ajax) {
+	if(css_class==='green') css_class='btn-info';
+	return new wn.ui.Button(
+		{parent:parent, label:label, onclick:onclick, style:style, is_ajax: is_ajax, css_class: css_class}
+	).btn;
+}
+
+// item (for tabs and triggers)
+// ====================================
+
+$item_normal = function(ele) { 
+	$y(ele, {padding:'6px 8px',cursor:'pointer',marginRight:'8px', whiteSpace:'nowrap',overflow:'hidden',borderBottom:'1px solid #DDD'});
+	$bg(ele,'#FFF'); $fg(ele,'#000');
+}
+$item_active = function(ele) {
+	$bg(ele,'#FE8'); $fg(ele,'#000');
+}
+$item_selected = function(ele) {
+	$bg(ele,'#777'); $fg(ele,'#FFF');
+}
+$item_pressed = function(ele) {
+	$bg(ele,'#F90'); $fg(ele,'#FFF');
+};
+
+// set out of 100
+function set_opacity(ele, ieop) {
+	var op = ieop / 100;
+	if (ele.filters) { // internet explorer
+		try { 
+			ele.filters.item("DXImageTransform.Microsoft.Alpha").opacity = ieop;
+		} catch (e) { 
+			ele.style.filter = 'progid:DXImageTransform.Microsoft.Alpha(opacity='+ieop+')';
+		}
+	} else  { // other browsers 
+		ele.style.opacity = op; 
+	}
+}
+
+// border radius
+// ====================================
+
+$br = function(ele, r, corners) {
+	if(corners) { 
+		var cl = ['top-left', 'top-right', 'bottom-right' , 'bottom-left'];
+		for(var i=0; i<4; i++) {
+			if(corners[i]) {
+				$(ele).css('-moz-border-radius-'+cl[i].replace('-',''),r).css('-webkit-'+cl[i]+'-border-radius',r);
+			}
+		}
+	} else {
+		$(ele).css('-moz-border-radius',r).css('-webkit-border-radius',r).css('border-radius',r); 
+	}
+}
+$bs = function(ele, r) { $(ele).css('-moz-box-shadow',r).css('-webkit-box-shadow',r).css('box-shadow',r); }
+
+// Select
+// ====================================
+
+function SelectWidget(parent, options, width, editable, bg_color) {
+	var me = this;
+	// native select
+	this.inp = $a(parent, 'select');
+	if(options) add_sel_options(this.inp, options);
+	if(width) $y(this.inp, {width:width});
+	this.set_width = function(w) { $y(this.inp, {width:w}) };
+	this.set_options = function(o) { add_sel_options(this.inp, o); }
+	this.inp.onchange = function() {
+		if(me.onchange)me.onchange(this);
+	}
+	return;
+}
+
+function empty_select(s) {
+	if(s.custom_select) { s.empty(); return; }
+	if(s.inp)s = s.inp;
+	if(s) { 
+		var tmplen = s.length; for(var i=0;i<tmplen; i++) s.options[0] = null; 
+	} 
+}
+
+function sel_val(s) { 
+	if(s.custom_select) {
+		return s.inp.value ? s.inp.value : '';
+	}
+	if(s.inp)s = s.inp;
+	try {
+		if(s.selectedIndex<s.options.length) return s.options[s.selectedIndex].value;
+		else return '';
+	} catch(err) { return ''; /* IE fix */ }
+}
+
+function add_sel_options(s, list, sel_val, o_style) {
+	if(s.custom_select) {
+		s.set_options(list)
+		if(sel_val) s.inp.value = sel_val;
+		return;
+	}
+	if(s.inp)s = s.inp;
+	for(var i=0, len=list.length; i<len; i++) {
+		var o = new Option(list[i], list[i], false, (list[i]==sel_val? true : false));
+		if(o_style) $y(o, o_style);
+		s.options[s.options.length] = o;	
+	}
+}
+
+function cint(v, def) { 
+	v=v+''; 
+	v=lstrip(v, ['0']); 
+	v=parseInt(v); 
+	if(isNaN(v))v=def?def:0; return v; 
+}
+function validate_email(id) { 
+	if(strip(id.toLowerCase()).search("[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")==-1) return 0; else return 1; }
+function validate_spl_chars(txt) { 
+	if(txt.search(/^[a-zA-Z0-9_\- ]*$/)==-1) return 1; else return 0; }
+	
+function d2h(d) {return cint(d).toString(16);}
+function h2d(h) {return parseInt(h,16);} 
+
+var $n = '\n';
+function set_title(t) {
+	document.title = (wn.title_prefix ? (wn.title_prefix + ' - ') : '') + t;
+}
+
+function $a(parent, newtag, className, cs, innerHTML, onclick) {
+	if(parent && parent.substr)parent = $i(parent);
+	var c = document.createElement(newtag);
+	if(parent)
+		parent.appendChild(c);
+		
+	// if image, 3rd parameter is source
+	if(className) {
+		if(newtag.toLowerCase()=='img')
+			c.src = className
+		else
+			c.className = className;		
+	}
+	if(cs)$y(c,cs);
+	if(innerHTML) c.innerHTML = innerHTML;
+	if(onclick) c.onclick = onclick;
+	return c;
+}
+function $a_input(p, in_type, attributes, cs) {
+	if(!attributes) attributes = {};
+	
+	var $input = $(p).append('<input type="'+ in_type +'">').find('input:last');
+	for(key in attributes)
+		$input.attr(key, attributes[key]);
+		
+	var input = $input.get(0);
+	if(cs)
+		$y(input,cs);
+	return input;
+}
+
+function $dh(d) { 
+	if(d && d.substr)d=$i(d); 
+	if(d && d.style.display.toLowerCase() != 'none') d.style.display = 'none'; 
+}
+function $ds(d) { 
+	if(d && d.substr)d=$i(d); 
+	var t = 'block';
+	if(d && in_list(['span','img','button'], d.tagName.toLowerCase())) 
+		t = 'inline'
+	if(d && d.style.display.toLowerCase() != t) 
+		d.style.display = t; 
+}
+function $di(d) { if(d && d.substr)d=$i(d); if(d)d.style.display = 'inline'; }
+function $i(id) { 
+	if(!id) return null; 
+	if(id && id.appendChild)return id; // already an element
+	return document.getElementById(id); 
+}
+function $w(e,w) { if(e && e.style && w)e.style.width = w; }
+function $h(e,h) { if(e && e.style && h)e.style.height = h; }
+function $bg(e,w) { if(e && e.style && w)e.style.backgroundColor = w; }
+
+function $y(ele, s) { 
+	if(ele && s) { 
+		for(var i in s) ele.style[i]=s[i]; 
+	}; 
+	return ele;
+}
+
+function $yt(tab, r, c, s) { /// set style on tables with wildcards
+	var rmin = r; var rmax = r;
+	if(r=='*') { rmin = 0; rmax = tab.rows.length-1; }
+	if(r.search && r.search('-')!= -1) {
+	  r = r.split('-');
+	  rmin = cint(r[0]); rmax = cint(r[1]);
+	}
+
+	var cmin = c; var cmax = c;
+	if(c=='*') { cmin = 0; cmax = tab.rows[0].cells.length-1; }
+	if(c.search && c.search('-')!= -1) {
+	  c = c.split('-');
+	  rmin = cint(c[0]); rmax = cint(c[1]);
+	}
+	
+	for(var ri = rmin; ri<=rmax; ri++) {
+		for(var ci = cmin; ci<=cmax; ci++)
+			$y($td(tab,ri,ci),s);
+	}
+}
+
+// add css classes etc
+
+function set_style(txt) {
+	wn.dom.set_style(txt);
+}
+
+// Make table
+
+function make_table(parent, nr, nc, table_width, widths, cell_style, table_style) {
+	var t = $a(parent, 'table');
+	t.style.borderCollapse = 'collapse';
+	if(table_width) t.style.width = table_width;
+	if(cell_style) t.cell_style=cell_style;
+	for(var ri=0;ri<nr;ri++) {
+		var r = t.insertRow(ri);
+		for(var ci=0;ci<nc;ci++) {
+			var c = r.insertCell(ci);
+			if(ri==0 && widths && widths[ci]) {
+				// set widths
+				c.style.width = widths[ci];
+			}
+			if(cell_style) {
+			  for(var s in cell_style) c.style[s] = cell_style[s];
+			}
+		}
+	}
+	t.append_row = function() { return append_row(this); }
+	if(table_style) $y(t, table_style);
+	return t;
+}
+
+function append_row(t, at, style) {
+	var r = t.insertRow(at ? at : t.rows.length);
+	if(t.rows.length>1) {
+		for(var i=0;i<t.rows[0].cells.length;i++) {
+			var c = r.insertCell(i);
+			if(style) $y(c, style);
+		}
+	}
+	return r
+}
+
+function $td(t,r,c) { 
+	if(r<0)r=t.rows.length+r;
+	if(c<0)c=t.rows[0].cells.length+c;
+	return t.rows[r].cells[c]; 
+}
+
+// URL utilities
+
+wn.urllib = {
+	
+	// get argument from url
+	get_arg: function(name) {
+		name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+		var regexS = "[\\?&]"+name+"=([^&#]*)";
+		var regex = new RegExp( regexS );
+		var results = regex.exec( window.location.href );
+		if( results == null )
+			return "";
+		else
+			return decodeURIComponent(results[1]);		
+	},
+	
+	// returns url dictionary
+	get_dict: function() {
+		var d = {}
+		var t = window.location.href.split('?')[1];
+		if(!t) return d;
+
+		if(t.indexOf('#')!=-1) t = t.split('#')[0];
+		if(!t) return d;
+
+		t = t.split('&');
+		for(var i=0; i<t.length; i++) {
+			var a = t[i].split('=');
+			d[decodeURIComponent(a[0])] = decodeURIComponent(a[1]);
+		}
+		return d;		
+	},
+	
+	// returns the base url with http + domain + path (-index.cgi or # or ?)
+	get_base_url: function() {
+		var url= window.location.href.split('#')[0].split('?')[0].split('app.html')[0];
+		if(url.substr(url.length-1, 1)=='/') url = url.substr(0, url.length-1)
+		return url
+	},
+	
+	// return the relative http url for
+	// a file upload / attachment
+	// by file id / name
+	get_file_url: function(file_id) {
+		return repl('files/%(fn)s', {fn:file_id})
+	}	
+}
+
+get_url_arg = wn.urllib.get_arg;
+get_url_dict = wn.urllib.get_dict;
+
+
 /*
  *	lib/js/legacy/utils/handler.js
  */
-function $c(command,args,callback,error,no_spinner,freeze_msg,btn){wn.request.call({args:$.extend(args,{cmd:command}),success:callback,error:error,btn:btn,freeze:freeze_msg,show_spinner:!no_spinner})}
-function $c_obj(doclist,method,arg,callback,no_spinner,freeze_msg,btn){if(arg&&typeof arg!='string')arg=JSON.stringify(arg);args={cmd:'runserverobj',arg:arg,method:method};if(typeof doclist=='string')
-args.doctype=doclist;else
-args.docs=compress_doclist(doclist)
-wn.request.call({args:args,success:callback,btn:btn,freeze:freeze_msg,show_spinner:!no_spinner});}
-function $c_page(module,page,method,arg,callback,no_spinner,freeze_msg,btn){if(arg&&typeof arg!='string')arg=JSON.stringify(arg);wn.request.call({args:{cmd:module+'.page.'+page+'.'+page+'.'+method,arg:arg,method:method},success:callback,btn:btn,freeze:freeze_msg,show_spinner:!no_spinner});}
-function $c_obj_csv(doclist,method,arg){var args={}
-args.cmd='runserverobj';args.as_csv=1;args.method=method;args.arg=arg;if(doclist.substr)
-args.doctype=doclist;else
-args.docs=compress_doclist(doclist);open_url_post(wn.request.url,args);}
-function open_url_post(URL,PARAMS,new_window){var temp=document.createElement("form");temp.action=URL;temp.method="POST";temp.style.display="none";if(new_window){temp.target='_blank';}
-for(var x in PARAMS){var opt=document.createElement("textarea");opt.name=x;var val=PARAMS[x];if(typeof val!='string')
-val=JSON.stringify(val);opt.value=val;temp.appendChild(opt);}
-document.body.appendChild(temp);temp.submit();return temp;}
+// Copyright (c) 2012 Web Notes Technologies Pvt Ltd (http://erpnext.com)
+// 
+// MIT License (MIT)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a 
+// copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// 
+
+function $c(command, args, callback, error, no_spinner, freeze_msg, btn) {
+	wn.request.call({
+		args: $.extend(args, {cmd: command}),
+		success: callback,
+		error: error,
+		btn: btn,
+		freeze: freeze_msg,
+		show_spinner: !no_spinner
+	})
+}
+
+// For calling an object
+function $c_obj(doclist, method, arg, callback, no_spinner, freeze_msg, btn) {
+	if(arg && typeof arg!='string') arg = JSON.stringify(arg);
+		
+	args = {
+		cmd:'runserverobj',
+		arg: arg,
+		method: method
+	};
+	
+	if(typeof doclist=='string') 
+		args.doctype = doclist; 
+	else 
+		args.docs = compress_doclist(doclist)
+	
+	wn.request.call({
+		args: args,
+		success: callback,
+		btn: btn,
+		freeze: freeze_msg,
+		show_spinner: !no_spinner
+	});
+}
+
+// For call a page metho
+function $c_page(module, page, method, arg, callback, no_spinner, freeze_msg, btn) {
+	if(arg && typeof arg!='string') arg = JSON.stringify(arg);
+	wn.request.call({
+		args: {
+			cmd: module+'.page.'+page+'.'+page+'.'+method,
+			arg: arg,
+			method: method
+		},
+		success: callback,
+		btn: btn,
+		freeze: freeze_msg,
+		show_spinner: !no_spinner
+	});
+}
+
+// For calling an for output as csv
+function $c_obj_csv(doclist, method, arg) {
+	// single
+	
+	var args = {}
+	args.cmd = 'runserverobj';
+	args.as_csv = 1;
+	args.method = method;
+	args.arg = arg;
+	
+	if(doclist.substr)
+		args.doctype = doclist;		
+	else
+		args.docs = compress_doclist(doclist);
+
+	// open
+	open_url_post(wn.request.url, args);
+}
+
+// call a url as POST
+function open_url_post(URL, PARAMS, new_window) {
+	var temp=document.createElement("form");
+	temp.action=URL;
+	temp.method="POST";
+	temp.style.display="none";
+	if(new_window){
+		temp.target = '_blank';
+	}
+	for(var x in PARAMS) {
+		var opt=document.createElement("textarea");
+		opt.name=x;
+		var val = PARAMS[x];
+		if(typeof val!='string') 
+			val = JSON.stringify(val);
+		opt.value=val;
+		temp.appendChild(opt);
+	}
+	document.body.appendChild(temp);
+	temp.submit();
+	return temp;
+}
+
 /*
  *	lib/js/legacy/utils/msgprint.js
  */
-var msg_dialog;function msgprint(msg,title){if(!msg)return;if(msg instanceof Array){$.each(msg,function(i,v){if(v)msgprint(v);})
-return;}
-if(typeof(msg)!='string')
-msg=JSON.stringify(msg);if(msg.substr(0,8)=='__small:'){show_alert(msg.substr(8));return;}
-if(!msg_dialog){msg_dialog=new wn.ui.Dialog({title:"Message",onhide:function(){msg_dialog.msg_area.empty();}});msg_dialog.msg_area=$('<div class="msgprint">').appendTo(msg_dialog.body);}
-if(msg.search(/<br>|<p>|<li>/)==-1)
-msg=replace_newlines(msg);msg_dialog.set_title(title||'Message')
-msg_dialog.msg_area.append('<p>'+msg+'</p>');msg_dialog.show();}
-var growl_area;function show_alert(txt,id){if(!growl_area){if(!$('#dialog-container').length){$('<div id="dialog-container">').appendTo('body');}
-growl_area=$a($i('dialog-container'),'div','',{position:'fixed',bottom:'8px',right:'8px',width:'320px',zIndex:10});}
-var wrapper=$a(growl_area,'div','',{position:'relative'});var body=$a(wrapper,'div','notice');var c=$a(body,'i','icon-remove-sign',{cssFloat:'right',cursor:'pointer'});$(c).click(function(){$dh(this.wrapper)});c.wrapper=wrapper;var t=$a(body,'div','',{color:'#FFF'});$(t).html(txt);if(id){$(t).attr('id',id);}
-$(wrapper).hide().fadeIn(1000);}
+// Copyright (c) 2012 Web Notes Technologies Pvt Ltd (http://erpnext.com)
+// 
+// MIT License (MIT)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a 
+// copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// 
+
+var msg_dialog;
+
+function msgprint(msg, title) {
+	if(!msg) return;
+	
+	if(msg instanceof Array) {
+		$.each(msg, function(i,v) {
+			if(v)msgprint(v);
+		})
+		return;
+	}
+	
+	if(typeof(msg)!='string')
+		msg = JSON.stringify(msg);
+
+	// small message
+	if(msg.substr(0,8)=='__small:') {
+		show_alert(msg.substr(8)); return;
+	}
+
+	if(!msg_dialog) {
+		msg_dialog = new wn.ui.Dialog({
+			title:"Message",
+			onhide: function() {
+				msg_dialog.msg_area.empty();
+			}
+		});
+		msg_dialog.msg_area = $('<div class="msgprint">')
+			.appendTo(msg_dialog.body);
+	}
+
+	if(msg.search(/<br>|<p>|<li>/)==-1)
+		msg = replace_newlines(msg);
+
+	msg_dialog.set_title(title || 'Message')
+	msg_dialog.msg_area.append('<p>'+msg+'</p>');
+	msg_dialog.show();
+	
+}
+
+// Floating Message
+var growl_area;
+function show_alert(txt, id) {
+	if(!growl_area) {
+		if(!$('#dialog-container').length) {
+			$('<div id="dialog-container">').appendTo('body');
+		}
+		growl_area = $a($i('dialog-container'), 'div', '', {position:'fixed', bottom:'8px', right:'8px', width: '320px', zIndex:10});
+	}
+	var wrapper = $a(growl_area, 'div', '', {position:'relative'});
+	var body = $a(wrapper, 'div', 'notice');
+	
+	// close
+	var c = $a(body, 'i', 'icon-remove-sign', {cssFloat:'right', cursor: 'pointer'});
+	$(c).click(function() { $dh(this.wrapper) });
+	c.wrapper = wrapper;
+	
+	// text
+	var t = $a(body, 'div', '', { color:'#FFF' });
+	$(t).html(txt);
+	if(id) { $(t).attr('id', id); }
+	$(wrapper).hide().fadeIn(1000);
+}
+
+
 /*
  *	lib/js/legacy/utils/printElement.js
- */;(function(window,undefined){var document=window["document"];var $=window["jQuery"];$.fn["printElement"]=function(options){var mainOptions=$.extend({},$.fn["printElement"]["defaults"],options);if(mainOptions["printMode"]=='iframe'){if($.browser.opera||(/chrome/.test(navigator.userAgent.toLowerCase())))
-mainOptions["printMode"]='popup';}
-$("[id^='printElement_']").remove();return this.each(function(){var opts=$.meta?$.extend({},mainOptions,$(this).data()):mainOptions;_printElement($(this),opts);});};$.fn["printElement"]["defaults"]={"printMode":'iframe',"pageTitle":'',"overrideElementCSS":null,"printBodyOptions":{"styleToAdd":'padding:10px;margin:10px;',"classNameToAdd":''},"leaveOpen":false,"iframeElementOptions":{"styleToAdd":'border:none;position:absolute;width:0px;height:0px;bottom:0px;left:0px;',"classNameToAdd":''}};$.fn["printElement"]["cssElement"]={"href":'',"media":''};function _printElement(element,opts){var html=_getMarkup(element,opts);var popupOrIframe=null;var documentToWriteTo=null;if(opts["printMode"].toLowerCase()=='popup'){popupOrIframe=window.open('about:blank','printElementWindow','width=650,height=440,scrollbars=yes');documentToWriteTo=popupOrIframe.document;}
-else{var printElementID="printElement_"+(Math.round(Math.random()*99999)).toString();var iframe=document.createElement('IFRAME');$(iframe).attr({style:opts["iframeElementOptions"]["styleToAdd"],id:printElementID,className:opts["iframeElementOptions"]["classNameToAdd"],frameBorder:0,scrolling:'no',src:'about:blank'});document.body.appendChild(iframe);documentToWriteTo=(iframe.contentWindow||iframe.contentDocument);if(documentToWriteTo.document)
-documentToWriteTo=documentToWriteTo.document;iframe=document.frames?document.frames[printElementID]:document.getElementById(printElementID);popupOrIframe=iframe.contentWindow||iframe;}
-focus();documentToWriteTo.open();documentToWriteTo.write(html);documentToWriteTo.close();_callPrint(popupOrIframe);};function _callPrint(element){if(element&&element["printPage"])
-element["printPage"]();else
-setTimeout(function(){_callPrint(element);},50);}
-function _getElementHTMLIncludingFormElements(element){var $element=$(element);var elementHtml=$('<div></div>').append($element.clone()).html();return elementHtml;}
-function _getBaseHref(){var port=(window.location.port)?':'+window.location.port:'';return window.location.protocol+'//'+window.location.hostname+port+window.location.pathname;}
-function _getMarkup(element,opts){var $element=$(element);var elementHtml=_getElementHTMLIncludingFormElements(element);var html=new Array();html.push('<html><head><title>'+opts["pageTitle"]+'</title>');if(opts["overrideElementCSS"]){if(opts["overrideElementCSS"].length>0){for(var x=0;x<opts["overrideElementCSS"].length;x++){var current=opts["overrideElementCSS"][x];if(typeof(current)=='string')
-html.push('<link type="text/css" rel="stylesheet" href="'+current+'" >');else
-html.push('<link type="text/css" rel="stylesheet" href="'+current["href"]+'" media="'+current["media"]+'" >');}}}
-else{$("link",document).filter(function(){return $(this).attr("rel").toLowerCase()=="stylesheet";}).each(function(){html.push('<link type="text/css" rel="stylesheet" href="'+$(this).attr("href")+'" media="'+$(this).attr('media')+'" >');});}
-html.push('<base href="'+_getBaseHref()+'" />');html.push('</head><body style="'+opts["printBodyOptions"]["styleToAdd"]+'" class="'+opts["printBodyOptions"]["classNameToAdd"]+'">');html.push('<div class="'+$element.attr('class')+'">'+elementHtml+'</div>');html.push('<script type="text/javascript">function printPage(){focus();print();'+((!$.browser.opera&&!opts["leaveOpen"]&&opts["printMode"].toLowerCase()=='popup')?'close();':'')+'}</script>');html.push('</body></html>');return html.join('');};})(window);
+ */
+/// <reference path="http://code.jquery.com/jquery-1.4.1-vsdoc.js" />
+/*
+* Print Element Plugin 1.2
+*
+* Copyright (c) 2010 Erik Zaadi
+*
+* Inspired by PrintArea (http://plugins.jquery.com/project/PrintArea) and
+* http://stackoverflow.com/questions/472951/how-do-i-print-an-iframe-from-javascript-in-safari-chrome
+*
+* Home Page : http://projects.erikzaadi/jQueryPlugins/jQuery.printElement
+* Issues (bug reporting) : http://github.com/erikzaadi/jQueryPlugins/issues/labels/printElement
+* jQuery plugin page : http://plugins.jquery.com/project/printElement
+*
+* Thanks to David B (http://github.com/ungenio) and icgJohn (http://www.blogger.com/profile/11881116857076484100)
+* For their great contributions!
+*
+* Dual licensed under the MIT and GPL licenses:
+* http://www.opensource.org/licenses/mit-license.php
+* http://www.gnu.org/licenses/gpl.html
+*
+* Note, Iframe Printing is not supported in Opera and Chrome 3.0, a popup window will be shown instead
+*/
+; (function (window, undefined) {
+    var document = window["document"];
+    var $ = window["jQuery"];
+    $.fn["printElement"] = function (options) {
+        var mainOptions = $.extend({}, $.fn["printElement"]["defaults"], options);
+        //iframe mode is not supported for opera and chrome 3.0 (it prints the entire page).
+        //http://www.google.com/support/forum/p/Webmasters/thread?tid=2cb0f08dce8821c3&hl=en
+        if (mainOptions["printMode"] == 'iframe') {
+            if ($.browser.opera || (/chrome/.test(navigator.userAgent.toLowerCase())))
+                mainOptions["printMode"] = 'popup';
+        }
+        //Remove previously printed iframe if exists
+        $("[id^='printElement_']").remove();
+
+        return this.each(function () {
+            //Support Metadata Plug-in if available
+            var opts = $.meta ? $.extend({}, mainOptions, $(this).data()) : mainOptions;
+            _printElement($(this), opts);
+        });
+    };
+    $.fn["printElement"]["defaults"] = {
+        "printMode": 'iframe', //Usage : iframe / popup
+        "pageTitle": '', //Print Page Title
+        "overrideElementCSS": null,
+        /* Can be one of the following 3 options:
+* 1 : boolean (pass true for stripping all css linked)
+* 2 : array of $.fn.printElement.cssElement (s)
+* 3 : array of strings with paths to alternate css files (optimized for print)
+*/
+        "printBodyOptions": {
+            "styleToAdd": 'padding:10px;margin:10px;', //style attributes to add to the body of print document
+            "classNameToAdd": '' //css class to add to the body of print document
+        },
+        "leaveOpen": false, // in case of popup, leave the print page open or not
+        "iframeElementOptions": {
+            "styleToAdd": 'border:none;position:absolute;width:0px;height:0px;bottom:0px;left:0px;', //style attributes to add to the iframe element
+            "classNameToAdd": '' //css class to add to the iframe element
+        }
+    };
+    $.fn["printElement"]["cssElement"] = {
+        "href": '',
+        "media": ''
+    };
+    function _printElement(element, opts) {
+        //Create markup to be printed
+        var html = _getMarkup(element, opts);
+
+        var popupOrIframe = null;
+        var documentToWriteTo = null;
+        if (opts["printMode"].toLowerCase() == 'popup') {
+            popupOrIframe = window.open('about:blank', 'printElementWindow', 'width=650,height=440,scrollbars=yes');
+            documentToWriteTo = popupOrIframe.document;
+        }
+        else {
+            //The random ID is to overcome a safari bug http://www.cjboco.com.sharedcopy.com/post.cfm/442dc92cd1c0ca10a5c35210b8166882.html
+            var printElementID = "printElement_" + (Math.round(Math.random() * 99999)).toString();
+            //Native creation of the element is faster..
+            var iframe = document.createElement('IFRAME');
+            $(iframe).attr({
+                style: opts["iframeElementOptions"]["styleToAdd"],
+                id: printElementID,
+                className: opts["iframeElementOptions"]["classNameToAdd"],
+                frameBorder: 0,
+                scrolling: 'no',
+                src: 'about:blank'
+            });
+            document.body.appendChild(iframe);
+            documentToWriteTo = (iframe.contentWindow || iframe.contentDocument);
+            if (documentToWriteTo.document)
+                documentToWriteTo = documentToWriteTo.document;
+            iframe = document.frames ? document.frames[printElementID] : document.getElementById(printElementID);
+            popupOrIframe = iframe.contentWindow || iframe;
+        }
+        focus();
+        documentToWriteTo.open();
+        documentToWriteTo.write(html);
+        documentToWriteTo.close();
+        _callPrint(popupOrIframe);
+    };
+
+    function _callPrint(element) {
+        if (element && element["printPage"])
+            element["printPage"]();
+        else
+            setTimeout(function () {
+                _callPrint(element);
+            }, 50);
+    }
+
+    function _getElementHTMLIncludingFormElements(element) {
+        var $element = $(element);
+        //Radiobuttons and checkboxes
+        /*$(":checked", $element).each(function () {
+            this.setAttribute('checked', 'checked');
+        });
+        //simple text inputs
+        $("input[type='text']", $element).each(function () {
+            this.setAttribute('value', $(this).val());
+        });
+        $("select", $element).each(function () {
+            var $select = $(this);
+            $("option", $select).each(function () {
+                if ($select.val() == $(this).val())
+                    this.setAttribute('selected', 'selected');
+            });
+        });
+        $("textarea", $element).each(function () {
+            //Thanks http://blog.ekini.net/2009/02/24/jquery-getting-the-latest-textvalue-inside-a-textarea/
+            var value = $(this).attr('value');
+            //fix for issue 7 (http://plugins.jquery.com/node/13503 and http://github.com/erikzaadi/jQueryPlugins/issues#issue/7)
+            if ($.browser.mozilla && this.firstChild)
+                this.firstChild.textContent = value;
+            else
+                this.innerHTML = value;
+        });*/
+        //http://dbj.org/dbj/?p=91
+        var elementHtml = $('<div></div>').append($element.clone()).html();
+        return elementHtml;
+    }
+
+    function _getBaseHref() {
+        var port = (window.location.port) ? ':' + window.location.port : '';
+        return window.location.protocol + '//' + window.location.hostname + port + window.location.pathname;
+    }
+
+    function _getMarkup(element, opts) {
+        var $element = $(element);
+        var elementHtml = _getElementHTMLIncludingFormElements(element);
+
+        var html = new Array();
+        html.push('<html><head><title>' + opts["pageTitle"] + '</title>');
+        if (opts["overrideElementCSS"]) {
+            if (opts["overrideElementCSS"].length > 0) {
+                for (var x = 0; x < opts["overrideElementCSS"].length; x++) {
+                    var current = opts["overrideElementCSS"][x];
+                    if (typeof (current) == 'string')
+                        html.push('<link type="text/css" rel="stylesheet" href="' + current + '" >');
+                    else
+                        html.push('<link type="text/css" rel="stylesheet" href="' + current["href"] + '" media="' + current["media"] + '" >');
+                }
+            }
+        }
+        else {
+            $("link", document).filter(function () {
+                return $(this).attr("rel").toLowerCase() == "stylesheet";
+            }).each(function () {
+                html.push('<link type="text/css" rel="stylesheet" href="' + $(this).attr("href") + '" media="' + $(this).attr('media') + '" >');
+            });
+        }
+        //Ensure that relative links work
+        html.push('<base href="' + _getBaseHref() + '" />');
+        html.push('</head><body style="' + opts["printBodyOptions"]["styleToAdd"] + '" class="' + opts["printBodyOptions"]["classNameToAdd"] + '">');
+        html.push('<div class="' + $element.attr('class') + '">' + elementHtml + '</div>');
+        html.push('<script type="text/javascript">function printPage(){focus();print();' + ((!$.browser.opera && !opts["leaveOpen"] && opts["printMode"].toLowerCase() == 'popup') ? 'close();' : '') + '}</script>');
+        html.push('</body></html>');
+
+        return html.join('');
+    };
+})(window);
+
 /*
  *	lib/js/wn/ui/appframe.js
  */
-wn.ui.AppFrame=Class.extend({init:function(parent,title){this.buttons={};this.$w=$('<div></div>').appendTo(parent);this.$titlebar=$('<div class="appframe-titlebar">\
-   <span class="appframe-title"></span>\
-   <span class="close" style="line-height: 28px;">&times;</span>\
-  </div>').appendTo(this.$w);this.$w.find('.close').click(function(){window.history.back();})
-if(title)this.title(title);},title:function(txt){this.clear_breadcrumbs();this.add_breadcrumb(txt);},make_toolbar:function(){if(!this.$w.find('.appframe-toolbar').length)
-this.$w.append('<div class="appframe-toolbar btn-toolbar"></div>');},add_button:function(label,click,icon){this.make_toolbar();args={label:label,icon:''};if(icon){args.icon='<i class="icon '+icon+'"></i>';}
-this.buttons[label]=$(repl('<button class="btn btn-small">\
-   %(icon)s %(label)s</button>',args)).click(click).appendTo(this.new_btn_group());return this.buttons[label];},new_btn_group:function(){return $('<div class="btn-group">').appendTo(this.$w.find('.appframe-toolbar'));},add_help_button:function(txt){this.make_toolbar();$('<button class="btn btn-small" style="float:right;" button-type="help">\
-   <b>?</b></button>').data('help-text',txt).click(function(){msgprint($(this).data('help-text'),'Help');}).appendTo(this.new_btn_group().css('float','right'));},add_inverse_button:function(label,click){$('<button class="btn btn-small btn-inverse"></button>').on('click',click).html(label).appendTo(this.new_btn_group().css('float','right'));},clear_buttons:function(){this.$w.find('.appframe-toolbar').empty();},add_breadcrumb:function(html){if(!this.$breadcrumbs)
-this.$breadcrumbs=$('</span>\
-    <span class="breadcrumb-area"></span>').appendTo(this.$titlebar);var crumb=$('<span>').html(html);if(!this.$breadcrumbs.find('span').length){crumb.addClass('appframe-title');}
-crumb.appendTo(this.$breadcrumbs);},clear_breadcrumbs:function(){this.$breadcrumbs&&this.$breadcrumbs.empty();}});wn.ui.make_app_page=function(opts){if(opts.single_column){$(opts.parent).html('<div class="layout-wrapper layout-wrapper-appframe">\
-   <div class="layout-appframe"></div>\
-   <div class="layout-main"></div>\
-  </div>');}else{$(opts.parent).html('<div class="layout-wrapper layout-wrapper-background">\
-   <div class="layout-appframe"></div>\
-   <div class="layout-main-section"></div>\
-   <div class="layout-side-section"></div>\
-   <div class="clear"></div>\
-  </div>');}
-opts.parent.appframe=new wn.ui.AppFrame($(opts.parent).find('.layout-appframe'));if(opts.title)opts.parent.appframe.title(opts.title);}
+wn.ui.AppFrame = Class.extend({
+	init: function(parent, title) {
+		this.buttons = {};
+		this.$w = $('<div></div>').appendTo(parent);
+		
+		this.$titlebar = $('<div class="appframe-titlebar">\
+			<span class="appframe-title"></span>\
+			<span class="close" style="line-height: 28px;">&times;</span>\
+		</div>').appendTo(this.$w);
+
+		this.$w.find('.close').click(function() {
+			window.history.back();
+		})
+		
+		if(title) this.title(title);
+
+	},
+	title: function(txt) {
+		this.clear_breadcrumbs();
+		this.add_breadcrumb(txt);
+	},
+	make_toolbar: function() {
+		if(!this.$w.find('.appframe-toolbar').length)
+			this.$w.append('<div class="appframe-toolbar btn-toolbar"></div>');	
+	},
+	add_button: function(label, click, icon) {
+		this.make_toolbar();
+		args = { label: label, icon:'' };
+		if(icon) {
+			args.icon = '<i class="icon '+icon+'"></i>';
+		}
+		this.buttons[label] = $(repl('<button class="btn btn-small">\
+			%(icon)s %(label)s</button>', args))
+			.click(click)
+			.appendTo(this.new_btn_group());
+		return this.buttons[label];
+	},
+	new_btn_group: function() {
+		return $('<div class="btn-group">').appendTo(this.$w.find('.appframe-toolbar'));
+	},
+	add_help_button: function(txt) {
+		this.make_toolbar();
+		$('<button class="btn btn-small" style="float:right;" button-type="help">\
+			<b>?</b></button>')
+			.data('help-text', txt)
+			.click(function() { msgprint($(this).data('help-text'), 'Help'); })
+			.appendTo(this.new_btn_group().css('float', 'right'));			
+	},
+	add_inverse_button: function(label, click) {
+		$('<button class="btn btn-small btn-inverse"></button>')
+			.on('click', click)
+			.html(label)
+			.appendTo(this.new_btn_group().css('float', 'right'));		
+	},
+	clear_buttons: function() {
+		this.$w.find('.appframe-toolbar').empty();
+	},
+	add_breadcrumb: function(html) {
+		if(!this.$breadcrumbs)
+			this.$breadcrumbs = $('</span>\
+				<span class="breadcrumb-area"></span>').appendTo(this.$titlebar);
+		
+		var crumb = $('<span>').html(html);
+		
+		// first breadcrumb is a title
+		if(!this.$breadcrumbs.find('span').length) {
+			crumb.addClass('appframe-title');
+		}
+		crumb.appendTo(this.$breadcrumbs);
+	},
+	clear_breadcrumbs: function() {
+		this.$breadcrumbs && this.$breadcrumbs.empty();
+	}
+});
+
+// parent, title, single_column
+// standard page with appframe
+
+wn.ui.make_app_page = function(opts) {
+	if(opts.single_column) {
+		$(opts.parent).html('<div class="layout-wrapper layout-wrapper-appframe">\
+			<div class="layout-appframe"></div>\
+			<div class="layout-main"></div>\
+		</div>');			
+	} else {
+		$(opts.parent).html('<div class="layout-wrapper layout-wrapper-background">\
+			<div class="layout-appframe"></div>\
+			<div class="layout-main-section"></div>\
+			<div class="layout-side-section"></div>\
+			<div class="clear"></div>\
+		</div>');			
+	}
+	opts.parent.appframe = new wn.ui.AppFrame($(opts.parent).find('.layout-appframe'));
+	if(opts.title) opts.parent.appframe.title(opts.title);
+}
+
 /*
  *	lib/js/wn/ui/button.js
  */
-wn.ui.Button=function(args){var me=this;$.extend(this,{make:function(){me.btn=wn.dom.add(args.parent,'button','btn btn-small '+(args.css_class||''));me.btn.args=args;me.loading_img=wn.dom.add(me.btn.args.parent,'img','',{margin:'0px 4px -2px 4px',display:'none'});me.loading_img.src='images/lib/ui/button-load.gif';me.btn.innerHTML=args.label;me.btn.user_onclick=args.onclick;$(me.btn).bind('click',function(){if(!this.disabled&&this.user_onclick)
-this.user_onclick(this);})
-me.btn.set_working=me.set_working;me.btn.done_working=me.done_working;if(me.btn.args.style)
-wn.dom.css(me.btn,args.style);},set_working:function(){me.btn.disabled='disabled';$(me.loading_img).css('display','inline');},done_working:function(){me.btn.disabled=false;$(me.loading_img).toggle(false);}});this.make();}
+// Copyright (c) 2012 Web Notes Technologies Pvt Ltd (http://erpnext.com)
+// 
+// MIT License (MIT)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a 
+// copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// 
+
+wn.ui.Button = function(args) {
+	var me = this;
+	$.extend(this, {
+		make: function() {
+			me.btn = wn.dom.add(args.parent, 'button', 'btn btn-small ' + (args.css_class || ''));
+			me.btn.args = args;
+
+			// ajax loading
+			me.loading_img = wn.dom.add(me.btn.args.parent,'img','',{margin:'0px 4px -2px 4px', display:'none'});
+			me.loading_img.src= 'images/lib/ui/button-load.gif';
+
+			// label
+			me.btn.innerHTML = args.label;
+
+			// onclick
+			me.btn.user_onclick = args.onclick; 
+			$(me.btn).bind('click', function() { 
+				if(!this.disabled && this.user_onclick) 
+					this.user_onclick(this); 
+			})
+			
+			// bc
+			me.btn.set_working = me.set_working;
+			me.btn.done_working = me.done_working;
+			
+			// style
+			if(me.btn.args.style) 
+				wn.dom.css(me.btn, args.style);
+		},
+
+		set_working: function() {
+			me.btn.disabled = 'disabled';
+			$(me.loading_img).css('display','inline');
+		},
+		
+		done_working: function() {
+			me.btn.disabled = false;
+			$(me.loading_img).toggle(false);
+		}
+	});
+	this.make();
+}
+
+
 /*
  *	lib/js/wn/ui/dialog.js
  */
-wn.ui.Dialog=Class.extend({init:function(opts){$.extend(this,opts);this.display=false;if(!this.width)this.width=640;if(!$('#dialog-container').length){$('<div id="dialog-container">').appendTo('body');}
-this.wrapper=$('<div class="dialog_wrapper">').appendTo('#dialog-container').get(0);this.wrapper.style.width=this.width+'px';this.make_head();this.body=$('<div class="dialog_body">').appendTo(this.wrapper).get(0);},make_head:function(){var me=this;this.appframe=new wn.ui.AppFrame(this.wrapper);this.appframe.$titlebar.find('.close').unbind('click').click(function(){if(me.oncancel)me.oncancel();me.hide();});this.set_title(this.title);},set_title:function(t){this.appframe.$titlebar.find('.appframe-title').html(t||'');},set_postion:function(){this.wrapper.style.left=(($(window).width()-parseInt(this.wrapper.style.width))/2)+'px';this.wrapper.style.top=($(window).scrollTop()+60)+'px';top_index++;$(this.wrapper).css('z-index',top_index);},show:function(){if(this.display)return;this.set_postion()
-$(this.wrapper).toggle(true);freeze();this.display=true;wn.ui.cur_dialog=this;if(this.onshow)this.onshow();},hide:function(){if(this.onhide)this.onhide();unfreeze();$(this.wrapper).toggle(false);this.display=false;wn.ui.cur_dialog=null;},no_cancel:function(){this.appframe.$titlebar.find('.close').toggle(false);}});wn.ui.cur_dialog=null;$(document).bind('keydown',function(e){if(wn.ui.cur_dialog&&!wn.ui.cur_dialog.no_cancel_flag&&e.which==27){wn.ui.cur_dialog.hide();}});
+// Copyright (c) 2012 Web Notes Technologies Pvt Ltd (http://erpnext.com)
+// 
+// MIT License (MIT)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a 
+// copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// 
+
+// opts { width, height, title, fields (like docfields) }
+
+wn.ui.Dialog = Class.extend({
+	init: function(opts) {
+		$.extend(this, opts);
+		this.display = false;
+
+		if(!this.width) this.width = 640;
+		
+		if(!$('#dialog-container').length) {
+			$('<div id="dialog-container">').appendTo('body');
+		}
+						
+		this.wrapper = $('<div class="dialog_wrapper">').appendTo('#dialog-container').get(0);
+		this.wrapper.style.width = this.width + 'px';
+
+		this.make_head();
+		this.body = $('<div class="dialog_body">').appendTo(this.wrapper).get(0);
+	},
+	
+	make_head: function() {
+		var me = this;
+		this.appframe = new wn.ui.AppFrame(this.wrapper);
+		this.appframe.$titlebar.find('.close').unbind('click').click(function() {
+			if(me.oncancel)me.oncancel(); me.hide();
+		});
+		this.set_title(this.title);
+	},
+	
+	set_title: function(t) {
+		this.appframe.$titlebar.find('.appframe-title').html(t || '');
+	},
+	
+	set_postion: function() {
+		// place it at the center
+		this.wrapper.style.left  = (($(window).width() - parseInt(this.wrapper.style.width))/2) + 'px';
+        this.wrapper.style.top = ($(window).scrollTop() + 60) + 'px';
+
+		// place it on top
+		top_index++;
+		$(this.wrapper).css('z-index', top_index);	
+	},
+	
+	/** show the dialog */
+	show: function() {
+		// already live, do nothing
+		if(this.display) return;
+
+		// set position
+		this.set_postion()
+
+		// show it
+		$(this.wrapper).toggle(true);
+
+		// hide background
+		freeze();
+
+		this.display = true;
+		wn.ui.cur_dialog = this;
+
+		// call onshow
+		if(this.onshow)this.onshow();
+	},
+
+	hide: function() {
+		// call onhide
+		if(this.onhide) this.onhide();
+
+		// hide
+		unfreeze();
+		$(this.wrapper).toggle(false);
+
+		// flags
+		this.display = false;
+		wn.ui.cur_dialog = null;
+	},
+		
+	no_cancel: function() {
+		this.appframe.$titlebar.find('.close').toggle(false);
+	}
+});
+
+wn.ui.cur_dialog = null;
+
+// close open dialogs on ESC
+$(document).bind('keydown', function(e) {
+	if(wn.ui.cur_dialog && !wn.ui.cur_dialog.no_cancel_flag && e.which==27) {
+		wn.ui.cur_dialog.hide();
+	}
+});
+
 /*
  *	lib/js/wn/ui/filters.js
  */
-wn.ui.FilterList=Class.extend({init:function(opts){$.extend(this,opts);this.filters=[];this.$w=this.$parent;this.set_events();},set_events:function(){var me=this;this.$w.find('.add-filter-btn').bind('click',function(){me.add_filter();});this.$w.find('.search-btn').bind('click',function(){me.listobj.run();});},show_filters:function(){this.$w.find('.show_filters').toggle();if(!this.filters.length)
-this.add_filter();},add_filter:function(fieldname,condition,value){this.push_new_filter(fieldname,condition,value);if(fieldname){this.$w.find('.show_filters').toggle(true);}},push_new_filter:function(fieldname,condition,value){this.filters.push(new wn.ui.Filter({flist:this,fieldname:fieldname,condition:condition,value:value}));},get_filters:function(){var values=[];$.each(this.filters,function(i,f){if(f.field)
-values.push(f.get_value());})
-return values;},update_filters:function(){var fl=[];$.each(this.filters,function(i,f){if(f.field)fl.push(f);})
-this.filters=fl;},get_filter:function(fieldname){for(var i in this.filters){if(this.filters[i].field.docfield.fieldname==fieldname)
-return this.filters[i];}}});wn.ui.Filter=Class.extend({init:function(opts){$.extend(this,opts);this.doctype=this.flist.doctype;this.make();this.make_select();this.set_events();},make:function(){this.flist.$w.find('.filter_area').append('<div class="list_filter">\
-  <span class="fieldname_select_area"></span>\
-  <select class="condition">\
-   <option value="=">Equals</option>\
-   <option value="like">Like</option>\
-   <option value=">=">Greater or equals</option>\
-   <option value="<=">Less or equals</option>\
-   <option value=">">Greater than</option>\
-   <option value="<">Less than</option>\
-   <option value="in">In</option>\
-   <option value="!=">Not equals</option>\
-  </select>\
-  <span class="filter_field"></span>\
-  <a class="close">&times;</a>\
-  </div>');this.$w=this.flist.$w.find('.list_filter:last-child');},make_select:function(){this.fieldselect=new wn.ui.FieldSelect(this.$w.find('.fieldname_select_area'),this.doctype,this.filter_fields);},set_events:function(){var me=this;this.fieldselect.$select.bind('change',function(){me.set_field(this.value);});this.$w.find('a.close').bind('click',function(){me.$w.css('display','none');var value=me.field.get_value();me.field=null;if(!me.flist.get_filters().length){me.flist.$w.find('.set_filters').toggle(true);me.flist.$w.find('.show_filters').toggle(false);}
-if(value){me.flist.listobj.run();}
-me.flist.update_filters();return false;});me.$w.find('.condition').change(function(){if($(this).val()=='in'){me.set_field(me.field.docfield.fieldname,'Data');if(!me.field.desc_area)
-me.field.desc_area=$a(me.field.wrapper,'span','help',null,'values separated by comma');}else{me.set_field(me.field.docfield.fieldname);}});if(me.fieldname){this.set_values(me.fieldname,me.condition,me.value);}else{me.set_field('name');}},set_values:function(fieldname,condition,value){this.set_field(fieldname);if(condition)this.$w.find('.condition').val(condition).change();if(value)this.field.set_input(value)},set_field:function(fieldname,fieldtype){var me=this;var cur=me.field?{fieldname:me.field.docfield.fieldname,fieldtype:me.field.docfield.fieldtype}:{}
-var df=me.fieldselect.fields_by_name[fieldname];this.set_fieldtype(df,fieldtype);if(me.field&&cur.fieldname==fieldname&&df.fieldtype==cur.fieldtype){return;}
-me.fieldselect.$select.val(fieldname);var field_area=me.$w.find('.filter_field').empty().get(0);me.field=wn.ui.make_control({docfield:df,parent:field_area});me.field.as_inline();me.field.hide_label();this.set_default_condition(df,fieldtype);$(me.field.wrapper).find(':input').keydown(function(ev){if(ev.which==13){me.flist.listobj.run();}})},set_fieldtype:function(df,fieldtype){if(df.original_type)
-df.fieldtype=df.original_type;else
-df.original_type=df.fieldtype;df.description='';df.reqd=0;if(fieldtype){df.fieldtype=fieldtype;return;}
-if(df.fieldtype=='Check'){df.fieldtype='Select';df.options='No\nYes';}else if(['Text','Text Editor','Code','Link'].indexOf(df.fieldtype)!=-1){df.fieldtype='Data';}},set_default_condition:function(df,fieldtype){if(!fieldtype){if(df.fieldtype=='Data'){this.$w.find('.condition').val('like');}else{this.$w.find('.condition').val('=');}}},get_value:function(){var me=this;var val=me.field.get_value();var cond=me.$w.find('.condition').val();if(me.field.docfield.original_type=='Check'){val=(val=='Yes'?1:0);}
-if(cond=='like'){val=val+'%';}
-return[me.fieldselect.$select.find('option:selected').attr('table'),me.field.docfield.fieldname,me.$w.find('.condition').val(),cstr(val)];}});wn.ui.FieldSelect=Class.extend({init:function(parent,doctype,filter_fields,with_blank){this.doctype=doctype;this.fields_by_name={};this.with_blank=with_blank;this.$select=$('<select>').appendTo(parent);if(filter_fields){for(var i in filter_fields)
-this.add_field_option(this.filter_fields[i])}else{this.build_options();}},build_options:function(){var me=this;me.table_fields=[];var std_filters=[{fieldname:'name',fieldtype:'Data',label:'ID',parent:me.doctype},{fieldname:'modified',fieldtype:'Date',label:'Last Modified',parent:me.doctype},{fieldname:'owner',fieldtype:'Data',label:'Created By',parent:me.doctype},{fieldname:'creation',fieldtype:'Date',label:'Created On',parent:me.doctype},{fieldname:'_user_tags',fieldtype:'Data',label:'Tags',parent:me.doctype},{fieldname:'docstatus',fieldtype:'Int',label:'Doc Status',parent:me.doctype},];var doctype_obj=locals['DocType'][me.doctype];if(doctype_obj&&cint(doctype_obj.istable)){std_filters=std_filters.concat([{fieldname:'parent',fieldtype:'Data',label:'Parent',parent:me.doctype}]);}
-if(this.with_blank){this.$select.append($('<option>',{value:''}).text(''));}
-$.each(std_filters.concat(wn.model.get('DocType',me.doctype).get('DocField')),function(i,df){me.add_field_option(df);});$.each(me.table_fields,function(i,table_df){if(table_df.options){$.each(wn.model.get('DocType',me.doctype).get('DocField'),function(i,df){me.add_field_option(df);});}});},add_field_option:function(df){var me=this;if(me.doctype&&df.parent==me.doctype){var label=df.label;var table=me.doctype;if(df.fieldtype=='Table')me.table_fields.push(df);}else{var label=df.label+' ('+df.parent+')';var table=df.parent;}
-if(wn.model.no_value_type.indexOf(df.fieldtype)==-1&&!(me.fields_by_name[df.fieldname]&&me.fields_by_name[df.fieldname]['parent']==df.parent)){this.$select.append($('<option>',{value:df.fieldname,table:table}).text(label));me.fields_by_name[df.fieldname]=df;}}})
+// Copyright (c) 2012 Web Notes Technologies Pvt Ltd (http://erpnext.com)
+// 
+// MIT License (MIT)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a 
+// copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+
+wn.ui.FilterList = Class.extend({
+	init: function(opts) {
+		$.extend(this, opts);
+		this.filters = [];
+		this.$w = this.$parent;
+		this.set_events();
+	},
+	set_events: function() {
+		var me = this;
+		// show filters
+		this.$w.find('.add-filter-btn').bind('click', function() {
+			me.add_filter();
+		});
+		this.$w.find('.search-btn').bind('click', function() {
+			me.listobj.run();
+		});
+	},
+	
+	show_filters: function() {
+		this.$w.find('.show_filters').toggle();
+		if(!this.filters.length)
+			this.add_filter();
+	},
+	
+	add_filter: function(fieldname, condition, value) {		
+		this.push_new_filter(fieldname, condition, value);
+		// list must be expanded
+		if(fieldname) {
+			this.$w.find('.show_filters').toggle(true);
+		}
+	},
+	
+	push_new_filter: function(fieldname, condition, value) {
+		this.filters.push(new wn.ui.Filter({
+			flist: this,
+			fieldname: fieldname,
+			condition: condition,
+			value: value
+        }));
+	},
+	
+	get_filters: function() {
+		// get filter values as dict
+		var values = [];
+		$.each(this.filters, function(i, f) {
+			if(f.field)
+				values.push(f.get_value());
+		})
+		return values;
+	},
+	
+	// remove hidden filters
+	update_filters: function() {
+		var fl = [];
+		$.each(this.filters, function(i, f) {
+			if(f.field) fl.push(f);
+		})
+		this.filters = fl;
+	},
+	
+	get_filter: function(fieldname) {
+		for(var i in this.filters) {
+			if(this.filters[i].field.docfield.fieldname==fieldname)
+				return this.filters[i];
+		}
+	}
+});
+
+wn.ui.Filter = Class.extend({
+	init: function(opts) {
+		$.extend(this, opts);
+
+		this.doctype = this.flist.doctype;
+		this.make();
+		this.make_select();
+		this.set_events();
+	},
+	make: function() {
+		this.flist.$w.find('.filter_area').append('<div class="list_filter">\
+		<span class="fieldname_select_area"></span>\
+		<select class="condition">\
+			<option value="=">Equals</option>\
+			<option value="like">Like</option>\
+			<option value=">=">Greater or equals</option>\
+			<option value="<=">Less or equals</option>\
+			<option value=">">Greater than</option>\
+			<option value="<">Less than</option>\
+			<option value="in">In</option>\
+			<option value="!=">Not equals</option>\
+		</select>\
+		<span class="filter_field"></span>\
+		<a class="close">&times;</a>\
+		</div>');
+		this.$w = this.flist.$w.find('.list_filter:last-child');
+	},
+	make_select: function() {
+		this.fieldselect = new wn.ui.FieldSelect(this.$w.find('.fieldname_select_area'), 
+			this.doctype, this.filter_fields);
+	},
+	set_events: function() {
+		var me = this;
+		
+		// render fields		
+		this.fieldselect.$select.bind('change', function() {
+			me.set_field(this.value);
+		});
+
+		this.$w.find('a.close').bind('click', function() { 
+			me.$w.css('display','none');
+			var value = me.field.get_value();
+			me.field = null;
+			if(!me.flist.get_filters().length) {
+				me.flist.$w.find('.set_filters').toggle(true);
+				me.flist.$w.find('.show_filters').toggle(false);
+			}
+			if(value) {
+				me.flist.listobj.run();
+			}
+			me.flist.update_filters();
+			return false;
+		});
+
+		// add help for "in" codition
+		me.$w.find('.condition').change(function() {
+			if($(this).val()=='in') {
+				me.set_field(me.field.docfield.fieldname, 'Data');
+				if(!me.field.desc_area)
+					me.field.desc_area = $a(me.field.wrapper, 'span', 'help', null,
+						'values separated by comma');				
+			} else {
+				me.set_field(me.field.docfield.fieldname);				
+			}
+		});
+		
+		// set the field
+		if(me.fieldname) {
+			// presents given (could be via tags!)
+			this.set_values(me.fieldname, me.condition, me.value);
+		} else {
+			me.set_field('name');
+		}	
+
+	},
+	
+	set_values: function(fieldname, condition, value) {
+		// presents given (could be via tags!)
+		this.set_field(fieldname);
+		if(condition) this.$w.find('.condition').val(condition).change();
+		if(value) this.field.set_input(value)
+		
+	},
+	
+	set_field: function(fieldname, fieldtype) {
+		var me = this;
+		
+		// set in fieldname (again)
+		var cur = me.field ? {
+			fieldname: me.field.docfield.fieldname,
+			fieldtype: me.field.docfield.fieldtype
+		} : {}
+
+		var df = me.fieldselect.fields_by_name[fieldname];
+		this.set_fieldtype(df, fieldtype);
+			
+		// called when condition is changed, 
+		// don't change if all is well
+		if(me.field && cur.fieldname == fieldname && df.fieldtype == cur.fieldtype) {
+			return;
+		}
+		
+		// clear field area and make field
+		me.fieldselect.$select.val(fieldname);
+		var field_area = me.$w.find('.filter_field').empty().get(0);
+		me.field = wn.ui.make_control({
+			docfield: df,
+			parent: field_area
+		});
+		me.field.as_inline();
+		me.field.hide_label();
+		
+		this.set_default_condition(df, fieldtype);
+		
+		$(me.field.wrapper).find(':input').keydown(function(ev) {
+			if(ev.which==13) {
+				me.flist.listobj.run();
+			}
+		})
+	},
+	
+	set_fieldtype: function(df, fieldtype) {
+		// reset
+		if(df.original_type)
+			df.fieldtype = df.original_type;
+		else
+			df.original_type = df.fieldtype;
+			
+		df.description = ''; df.reqd = 0;
+		
+		// given
+		if(fieldtype) {
+			df.fieldtype = fieldtype;
+			return;
+		} 
+		
+		// scrub
+		if(df.fieldtype=='Check') {
+			df.fieldtype='Select';
+			df.options='No\nYes';
+		} else if(['Text','Text Editor','Code','Link'].indexOf(df.fieldtype)!=-1) {
+			df.fieldtype = 'Data';				
+		}
+	},
+	
+	set_default_condition: function(df, fieldtype) {
+		if(!fieldtype) {
+			// set as "like" for data fields
+			if(df.fieldtype=='Data') {
+				this.$w.find('.condition').val('like');
+			} else {
+				this.$w.find('.condition').val('=');
+			}			
+		}		
+	},
+	
+	get_value: function() {
+		var me = this;
+		var val = me.field.get_value();
+		var cond = me.$w.find('.condition').val();
+		
+		if(me.field.docfield.original_type == 'Check') {
+			val = (val=='Yes' ? 1 :0);
+		}
+		
+		if(cond=='like') {
+			val = val + '%';
+		}
+		
+		return [me.fieldselect.$select.find('option:selected').attr('table'), 
+			me.field.docfield.fieldname, me.$w.find('.condition').val(), cstr(val)];
+	}
+
+});
+
+// <select> widget with all fields of a doctype as options
+wn.ui.FieldSelect = Class.extend({
+	init: function(parent, doctype, filter_fields, with_blank) {
+		this.doctype = doctype;
+		this.fields_by_name = {};
+		this.with_blank = with_blank;
+		this.$select = $('<select>').appendTo(parent);
+		if(filter_fields) {
+			for(var i in filter_fields)
+				this.add_field_option(this.filter_fields[i])			
+		} else {
+			this.build_options();
+		}
+	},
+	build_options: function() {
+		var me = this;
+		me.table_fields = [];
+		var std_filters = [
+			{fieldname:'name', fieldtype:'Data', label:'ID', parent:me.doctype},
+			{fieldname:'modified', fieldtype:'Date', label:'Last Modified',
+				parent:me.doctype},
+			{fieldname:'owner', fieldtype:'Data', label:'Created By',
+				parent:me.doctype},
+			{fieldname:'creation', fieldtype:'Date', label:'Created On',
+				parent:me.doctype},
+			{fieldname:'_user_tags', fieldtype:'Data', label:'Tags',
+				parent:me.doctype},
+			{fieldname:'docstatus', fieldtype:'Int', label:'Doc Status',
+				parent:me.doctype},
+		];
+		
+		// add parenttype column
+		var doctype_obj = locals['DocType'][me.doctype];
+		if(doctype_obj && cint(doctype_obj.istable)) {
+			std_filters = std_filters.concat([{
+				fieldname: 'parent',
+				fieldtype: 'Data',
+				label: 'Parent',
+				parent: me.doctype
+			}]);
+		}
+		
+		// blank
+		if(this.with_blank) {
+			this.$select.append($('<option>', {
+				value: ''
+			}).text(''));
+		}
+
+		// main table
+		$.each(std_filters.concat(wn.model.get('DocType', me.doctype).get('DocField')), 
+		function(i, df) {
+			me.add_field_option(df);
+		});
+
+		// child tables
+		$.each(me.table_fields, function(i,table_df) {
+			if(table_df.options) {
+				$.each(wn.model.get('DocType', me.doctype).get('DocField'), function(i, df) {
+					me.add_field_option(df);
+				});				
+			}
+		});
+	},
+
+	add_field_option: function(df) {
+		var me = this;
+		if(me.doctype && df.parent==me.doctype) {
+			var label = df.label;
+			var table = me.doctype;
+			if(df.fieldtype=='Table') me.table_fields.push(df);					
+		} else {
+			var label = df.label + ' (' + df.parent + ')';
+			var table = df.parent;
+		}
+		if(wn.model.no_value_type.indexOf(df.fieldtype)==-1 && 
+			!(me.fields_by_name[df.fieldname] && me.fields_by_name[df.fieldname]['parent'] == df.parent)) {
+			this.$select.append($('<option>', {
+				value: df.fieldname,
+				table: table
+			}).text(label));
+			me.fields_by_name[df.fieldname] = df;						
+		}
+	}
+})
+
 /*
  *	lib/js/wn/ui/listing.js
  */
-wn.provide('wn.ui');wn.ui.Listing=Class.extend({init:function(opts){this.opts=opts||{};this.page_length=20;this.start=0;this.data=[];if(opts){this.make();}},prepare_opts:function(){if(this.opts.new_doctype){if(wn.boot.profile.can_read.indexOf(this.opts.new_doctype)==-1){this.opts.new_doctype=null;}else{this.opts.new_doctype=get_doctype_label(this.opts.new_doctype);}}
-if(!this.opts.no_result_message){this.opts.no_result_message='Nothing to show'}},make:function(opts){if(opts){this.opts=opts;}
-this.prepare_opts();$.extend(this,this.opts);$(this.parent).html(repl('\
-   <div class="wnlist">\
-    <h3 class="title hide">%(title)s</h3>\
-    \
-    <div class="list-filters hide">\
-     <div class="show_filters well">\
-      <div class="filter_area"></div>\
-      <div>\
-       <button class="btn btn-small btn-info search-btn">\
-        <i class="icon-refresh icon-white"></i> Search</button>\
-       <button class="btn btn-small add-filter-btn">\
-        <i class="icon-plus"></i> Add Filter</button>\
-      </div>\
-     </div>\
-    </div>\
-    \
-    <div style="margin-bottom:9px" class="list-toolbar-wrapper">\
-     <div class="list-toolbar" style="display:inline-block; margin-right: 10px;">\
-     </div>\
-     <div style="display:inline-block; width: 24px; margin-left: 4px">\
-      <img src="images/lib/ui/button-load.gif" \
-      class="img-load"/></div>\
-    </div><div style="clear:both"></div>\
-    \
-    <div class="no-result help hide">\
-     %(no_result_message)s\
-    </div>\
-    \
-    <div class="result">\
-     <div class="result-list"></div>\
-    </div>\
-    \
-    <div class="paging-button">\
-     <button class="btn btn-small btn-more hide">More...</div>\
-    </div>\
-   </div>\
-  ',this.opts));this.$w=$(this.parent).find('.wnlist');this.set_events();if(this.appframe){this.$w.find('.list-toolbar-wrapper').toggle(false);}
-if(this.show_filters){this.make_filters();}},add_button:function(label,click,icon){if(this.appframe){return this.appframe.add_button(label,click,icon)}else{$button=$('<button class="btn btn-small"></button>').appendTo(this.$w.find('.list-toolbar'))
-if(icon){$('<i>').addClass(icon).appendTo($button);}
-$button.html(label).click(click);return $button}},show_view:function($btn,$div,$btn_unsel,$div_unsel){$btn_unsel.removeClass('btn-info');$btn_unsel.find('i').removeClass('icon-white');$div_unsel.toggle(false);$btn.addClass('btn-info');$btn.find('i').addClass('icon-white');$div.toggle(true);},set_events:function(){var me=this;this.$w.find('.btn-more').click(function(){me.run({append:true});});if(this.title){this.$w.find('h3').html(this.title).toggle(true);}
-if(!(this.hide_refresh||this.no_refresh)){this.add_button('Refresh',function(){me.run();},'icon-refresh');}
-if(this.new_doctype){this.add_button('New '+this.new_doctype,function(){me.make_new_doc(me.new_doctype);},'icon-plus');}
-if(me.show_filters){this.add_button('Show Filters',function(){me.filter_list.show_filters();},'icon-search').addClass('btn-filter');}
-if(me.no_toolbar||me.hide_toolbar){me.$w.find('.list-toolbar-wrapper').toggle(false);}},make_new_doc:function(new_doctype){new_doc(new_doctype);},make_filters:function(){this.filter_list=new wn.ui.FilterList({listobj:this,$parent:this.$w.find('.list-filters').toggle(true),doctype:this.doctype,filter_fields:this.filter_fields});},clear:function(){this.data=[];this.$w.find('.result-list').empty();this.$w.find('.result').toggle(true);this.$w.find('.no-result').toggle(false);this.start=0;},run:function(){var me=this;var a0=arguments[0];var a1=arguments[1];if(a0&&typeof a0=='function')
-this.onrun=a0;if(a0&&a0.callback)
-this.onrun=a0.callback;if(!a1&&!(a0&&a0.append))
-this.start=0;me.set_working(true);wn.call({method:this.opts.method||'webnotes.widgets.query_builder.runquery',args:this.get_call_args(a0),callback:function(r){me.set_working(false);me.render_results(r)},no_spinner:this.opts.no_loading});},set_working:function(flag){this.$w.find('.img-load').toggle(flag);},get_call_args:function(opts){if(!this.method){var query=this.get_query?this.get_query():this.query;query=this.add_limits(query);var args={query_max:this.query_max,as_dict:1}
-args.simple_query=query;}else{var args={limit_start:this.start,limit_page_length:this.page_length}}
-if(this.args)
-$.extend(args,this.args)
-if(this.get_args){$.extend(args,this.get_args(opts));}
-return args;},render_results:function(r){if(this.start==0)this.clear();this.$w.find('.btn-more').toggle(false);if(r.message)r.values=r.message;if(r.values&&r.values.length){this.data=this.data.concat(r.values);this.render_list(r.values);this.update_paging(r.values);}else{if(this.start==0){this.$w.find('.result').toggle(false);this.$w.find('.no-result').toggle(true);}}
-if(this.onrun)this.onrun();if(this.callback)this.callback(r);},render_list:function(values){var m=Math.min(values.length,this.page_length);for(var i=0;i<m;i++){this.render_row(this.add_row(),values[i],this,i);}},update_paging:function(values){if(values.length>=this.page_length){this.$w.find('.btn-more').toggle(true);this.start+=this.page_length;}},add_row:function(){return $('<div class="list-row">').appendTo(this.$w.find('.result-list')).get(0);},refresh:function(){this.run();},add_limits:function(query){query+=' LIMIT '+this.start+','+(this.page_length+1);return query}});
+// Copyright (c) 2012 Web Notes Technologies Pvt Ltd (http://erpnext.com)
+// 
+// MIT License (MIT)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a 
+// copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// 
+
+// new re-factored Listing object
+// uses FieldGroup for rendering filters
+// removed rarely used functionality
+//
+// opts:
+//   parent
+
+//   method (method to call on server)
+//   args (additional args to method)
+//   get_args (method to return args as dict)
+
+//   show_filters [false]
+//   with_filters (default filters)
+//   doctype
+//   filter_fields (if given, this list is rendered, else built from doctype)
+
+//   query or get_query (will be deprecated)
+//   query_max
+//   buttons_in_frame
+
+//   no_result_message ("No result")
+
+//   page_length (20)
+//   hide_refresh (False)
+//   no_toolbar
+//   new_doctype
+//   [function] render_row(parent, data)
+//   [function] onrun
+//   no_loading (no ajax indicator)
+
+wn.provide('wn.ui');
+wn.ui.Listing = Class.extend({
+	init: function(opts) {
+		this.opts = opts || {};
+		this.page_length = 20;
+		this.start = 0;
+		this.data = [];
+		if(opts) {
+			this.make();
+		}
+	},
+	prepare_opts: function() {
+		if(this.opts.new_doctype) {
+			if(wn.boot.profile.can_read.indexOf(this.opts.new_doctype)==-1) {
+				this.opts.new_doctype = null;
+			} else {
+				this.opts.new_doctype = get_doctype_label(this.opts.new_doctype);				
+			}
+		}
+		if(!this.opts.no_result_message) {
+			this.opts.no_result_message = 'Nothing to show'
+		}
+	},
+	make: function(opts) {
+		if(opts) {
+			this.opts = opts;
+		}
+		this.prepare_opts();
+		$.extend(this, this.opts);
+		
+		$(this.parent).html(repl('\
+			<div class="wnlist">\
+				<h3 class="title hide">%(title)s</h3>\
+				\
+				<div class="list-filters hide">\
+					<div class="show_filters well">\
+						<div class="filter_area"></div>\
+						<div>\
+							<button class="btn btn-small btn-info search-btn">\
+								<i class="icon-refresh icon-white"></i> Search</button>\
+							<button class="btn btn-small add-filter-btn">\
+								<i class="icon-plus"></i> Add Filter</button>\
+						</div>\
+					</div>\
+				</div>\
+				\
+				<div style="margin-bottom:9px" class="list-toolbar-wrapper">\
+					<div class="list-toolbar" style="display:inline-block; margin-right: 10px;">\
+					</div>\
+					<div style="display:inline-block; width: 24px; margin-left: 4px">\
+						<img src="images/lib/ui/button-load.gif" \
+						class="img-load"/></div>\
+				</div><div style="clear:both"></div>\
+				\
+				<div class="no-result help hide">\
+					%(no_result_message)s\
+				</div>\
+				\
+				<div class="result">\
+					<div class="result-list"></div>\
+				</div>\
+				\
+				<div class="paging-button">\
+					<button class="btn btn-small btn-more hide">More...</div>\
+				</div>\
+			</div>\
+		', this.opts));
+		this.$w = $(this.parent).find('.wnlist');
+		this.set_events();
+		
+		if(this.appframe) {
+			this.$w.find('.list-toolbar-wrapper').toggle(false);
+		} 
+		
+		if(this.show_filters) {
+			this.make_filters();			
+		}
+	},
+	add_button: function(label, click, icon) {
+		if(this.appframe) {
+			return this.appframe.add_button(label, click, icon)
+		} else {
+			$button = $('<button class="btn btn-small"></button>')
+				.appendTo(this.$w.find('.list-toolbar'))
+			if(icon) {
+				$('<i>').addClass(icon).appendTo($button);
+			}
+			$button.html(label).click(click);
+			return $button
+		}
+	},
+	show_view: function($btn, $div, $btn_unsel, $div_unsel) {
+		$btn_unsel.removeClass('btn-info');
+		$btn_unsel.find('i').removeClass('icon-white');
+		$div_unsel.toggle(false);
+
+		$btn.addClass('btn-info');
+		$btn.find('i').addClass('icon-white');
+		$div.toggle(true);
+	},
+	set_events: function() {
+		var me = this;
+	
+		// next page
+		this.$w.find('.btn-more').click(function() {
+			me.run({append: true });
+		});
+		
+		// title
+		if(this.title) {
+			this.$w.find('h3').html(this.title).toggle(true);
+		}
+	
+		// hide-refresh
+		if(!(this.hide_refresh || this.no_refresh)) {
+			this.add_button('Refresh', function() {
+				me.run();
+			}, 'icon-refresh');
+			
+		}
+				
+		// new
+		if(this.new_doctype) {
+			this.add_button('New ' + this.new_doctype, function() { 
+				me.make_new_doc(me.new_doctype);
+			}, 'icon-plus');
+		} 
+		
+		// hide-filter
+		if(me.show_filters) {
+			this.add_button('Show Filters', function() {
+				me.filter_list.show_filters();
+			}, 'icon-search').addClass('btn-filter');
+		}
+		
+		if(me.no_toolbar || me.hide_toolbar) {
+			me.$w.find('.list-toolbar-wrapper').toggle(false);
+		}
+	},
+	
+	make_new_doc: function(new_doctype) {
+		new_doc(new_doctype);
+	},
+
+	make_filters: function() {
+		this.filter_list = new wn.ui.FilterList({
+			listobj: this, 
+			$parent: this.$w.find('.list-filters').toggle(true),
+			doctype: this.doctype,
+			filter_fields: this.filter_fields
+		});
+	},
+
+	clear: function() {
+		this.data = [];
+		this.$w.find('.result-list').empty();
+		this.$w.find('.result').toggle(true);
+		this.$w.find('.no-result').toggle(false);
+		this.start = 0;
+	},
+	run: function() {
+		// in old - arguments: 0 = callback, 1 = append
+		var me = this;
+		var a0 = arguments[0]; var a1 = arguments[1];
+		
+		if(a0 && typeof a0=='function')
+			this.onrun = a0;
+		if(a0 && a0.callback)
+			this.onrun = a0.callback;
+		if(!a1 && !(a0 && a0.append)) 
+			this.start = 0;
+
+		me.set_working(true);
+		wn.call({
+			method: this.opts.method || 'webnotes.widgets.query_builder.runquery',
+			args: this.get_call_args(a0),
+			callback: function(r) { 
+				me.set_working(false);
+				me.render_results(r) 
+			},
+			no_spinner: this.opts.no_loading
+		});
+	},
+	set_working: function(flag) {
+		this.$w.find('.img-load').toggle(flag);
+	},
+	get_call_args: function(opts) {
+		// load query
+		if(!this.method) {
+			var query = this.get_query ? this.get_query() : this.query;
+			query = this.add_limits(query);
+			var args={ 
+				query_max: this.query_max,
+				as_dict: 1
+			}
+			args.simple_query = query;
+		} else {
+			var args = {
+				limit_start: this.start,
+				limit_page_length: this.page_length
+			}
+		}
+		
+		// append user-defined arguments
+		if(this.args)
+			$.extend(args, this.args)
+			
+		if(this.get_args) {
+			$.extend(args, this.get_args(opts));
+		}
+		return args;		
+	},
+	render_results: function(r) {
+		if(this.start==0) this.clear();
+		
+		this.$w.find('.btn-more').toggle(false);
+
+		if(r.message) r.values = r.message;
+
+		if(r.values && r.values.length) {
+			this.data = this.data.concat(r.values);
+			this.render_list(r.values);
+			this.update_paging(r.values);
+		} else {
+			if(this.start==0) {
+				this.$w.find('.result').toggle(false);
+				this.$w.find('.no-result').toggle(true);
+			}
+		}
+		
+		// callbacks
+		if(this.onrun) this.onrun();
+		if(this.callback) this.callback(r);
+	},
+
+	render_list: function(values) {		
+		var m = Math.min(values.length, this.page_length);
+		
+		// render the rows
+		for(var i=0; i < m; i++) {
+			this.render_row(this.add_row(), values[i], this, i);
+		}
+	},
+	update_paging: function(values) {
+		if(values.length >= this.page_length) {
+			this.$w.find('.btn-more').toggle(true);			
+			this.start += this.page_length;
+		}
+	},
+	add_row: function() {
+		return $('<div class="list-row">').appendTo(this.$w.find('.result-list')).get(0);
+	},
+	refresh: function() { 
+		this.run(); 
+	},
+	add_limits: function(query) {
+		query += ' LIMIT ' + this.start + ',' + (this.page_length+1);
+		return query
+	}
+});
+
 /*
  *	lib/js/wn/ui/overlay.js
  */
-wn.ui.Overlay=function(ele){wn.require('lib/css/ui/overlay.css');var me=this;$.extend(this,{render:function(){me.wrap=wn.dom.add(wn.dom.add(wn.dom.add($('body').get(0),'div','overlay'),'div','wrap-outer'),'div','wrap');me.wrap.appendChild(ele);$('body').addClass('overlaid');},hide:function(){wn.dom.hide(me.wrap);$('body').removeClass('overlaid');}});me.render();}
+// Copyright (c) 2012 Web Notes Technologies Pvt Ltd (http://erpnext.com)
+// 
+// MIT License (MIT)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a 
+// copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// 
+
+// overlay an element
+// http://blog.learnboost.com/blog/a-css3-overlay-system/
+
+wn.ui.Overlay = function(ele) {
+	wn.require('lib/css/ui/overlay.css');
+
+	var me = this;
+	$.extend(this, {
+		render: function() {
+			me.wrap = wn.dom.add(
+				wn.dom.add(
+					wn.dom.add($('body').get(0), 'div', 'overlay')
+				, 'div', 'wrap-outer')
+			, 'div', 'wrap');
+			me.wrap.appendChild(ele);
+			$('body').addClass('overlaid');
+		},
+		hide: function() {
+			wn.dom.hide(me.wrap);
+			$('body').removeClass('overlaid');
+		}
+	});
+	me.render();	
+}
+
 /*
  *	lib/js/wn/ui/search.js
  */
-wn.ui.Search=Class.extend({init:function(opts){$.extend(this,opts);var me=this;wn.model.with_doctype(this.doctype,function(r){me.make();me.dialog.show();me.list.$w.find('.list-filters input[type="text"]').focus();});},make:function(){var me=this;this.dialog=new wn.ui.Dialog({title:this.doctype+' Search',width:500});if(this.with_filters&&this.with_filters.length){this.msg_area=$('<div class="help-box">\
-    <div><b>Results containing: </b></div>\
-    </div>').appendTo(this.dialog.body);$.each(this.with_filters,function(i,f){var label=wn.model.get('DocType',me.doctype).get({fieldname:f[1],doctype:'DocField'}).label;$('<div>"'+label+'" '+
-f[2]+' "'+f[3]+'"</div>').appendTo(me.msg_area);})}
-this.list=new wn.ui.Listing({parent:$('<div>').appendTo(this.dialog.body),appframe:this.dialog.appframe,new_doctype:this.doctype,doctype:this.doctype,method:'webnotes.widgets.doclistview.get',show_filters:true,style:'compact',get_args:function(){if(me.query){me.page_length=50;return{query:me.query}}else{var filters=me.list.filter_list.get_filters()||[];if(me.with_filters){filters=filters.concat(me.with_filters);}
-me.search_fields=cstr(wn.model.get("DocType",me.doctype).doc.get('search_fields')).split(",");return{doctype:me.doctype,fields:$.map(["name"].concat(me.search_fields),function(v){return"`tab"+me.doctype+"`."+strip(v);}),filters:filters,docstatus:['0','1']}}},render_row:function(parent,data){$(parent).append($(repl("<a style=\"cursor: pointer;\" data-name=\"%(name)s\">%(name)s</a>",data)).click(function(){var val=$(this).attr('data-name');me.dialog.hide();if(me.callback)
-me.callback(val);else
-wn.set_route('Form',me.doctype,val);}));if(me.search_fields){$(parent).append(repl("<div class=\"help small\" style=\"margin-top: 5px;\">%(info)s</div>",{"info":$.map(me.search_fields,function(v){return data[v];}).join(", ")}));}}});this.list.filter_list.add_filter('name','like');if(this.txt)
-this.list.$w.find('.list-filters input[type="text"]').val(this.txt)
-this.list.run();}})
+// search widget
+
+// options: doctype, callback, txt, query (if applicable)
+wn.ui.Search = Class.extend({
+	init: function(opts) {
+		$.extend(this, opts);
+		var me = this;
+		wn.model.with_doctype(this.doctype, function(r) {
+			me.make();
+			me.dialog.show();
+			me.list.$w.find('.list-filters input[type="text"]').focus();
+		});
+	},
+	make: function() {
+		var me = this;
+		this.dialog = new wn.ui.Dialog({
+			title: this.doctype + ' Search',
+			width: 500
+		});
+		
+		if(this.with_filters && this.with_filters.length) {
+			this.msg_area = $('<div class="help-box">\
+				<div><b>Results containing: </b></div>\
+				</div>').appendTo(this.dialog.body);			
+			$.each(this.with_filters, function(i, f) {
+				var label = wn.model.get('DocType', me.doctype)
+					.get({fieldname:f[1], doctype:'DocField'}).label;
+				$('<div>"' + label + '" ' + 
+					f[2] + ' "'+ f[3]+'"</div>').appendTo(me.msg_area);
+			})
+		}
+		
+		this.list = new wn.ui.Listing({
+			parent: $('<div>').appendTo(this.dialog.body),
+			appframe: this.dialog.appframe,
+			new_doctype: this.doctype,
+			doctype: this.doctype,
+			method: 'webnotes.widgets.doclistview.get',
+			show_filters: true,
+			style: 'compact',
+			get_args: function() {
+				if(me.query) {
+					me.page_length = 50; // there has to be a better way :(
+					return {
+						query: me.query
+					}
+				} else {
+					var filters = me.list.filter_list.get_filters() || [];
+					if(me.with_filters) {
+						filters = filters.concat(me.with_filters);
+					}
+					
+					me.search_fields = cstr(wn.model.get("DocType", me.doctype).doc.get('search_fields'))
+						.split(",");
+					
+					return {
+						doctype: me.doctype,
+						fields: $.map(["name"].concat(me.search_fields), function(v) {
+							return "`tab" + me.doctype + "`." + strip(v);
+						}),
+						filters: filters,
+						docstatus: ['0','1']
+					}					
+				}
+			},
+			render_row: function(parent, data) {
+				$(parent).append(
+					$(repl("<a style=\"cursor: pointer;\" data-name=\"%(name)s\">%(name)s</a>", data))
+						.click(function() {
+							var val = $(this).attr('data-name');
+							me.dialog.hide(); 
+							if(me.callback)
+								me.callback(val);
+							else 
+								wn.set_route('Form', me.doctype, val);
+						})
+				);
+				
+				// append search fields content
+				if (me.search_fields) {
+					$(parent).append(repl("<div class=\"help small\" style=\"margin-top: 5px;\">%(info)s</div>", {
+						"info": $.map(me.search_fields, function(v) { return data[v]; }).join(", ")
+					}));
+				}
+			}
+		});
+		this.list.filter_list.add_filter('name', 'like');
+		// preset text
+		if(this.txt)
+			this.list.$w.find('.list-filters input[type="text"]').val(this.txt)
+		this.list.run();
+	}
+})
+
 /*
  *	lib/js/wn/ui/toolbar.min.js
  */
@@ -812,727 +5694,5459 @@ this.list.run();}})
 /*
  *	lib/js/wn/ui/toolbar/selector_dialog.js
  */
-wn.provide('wn.ui.toolbar');wn.ui.toolbar.SelectorDialog=Class.extend({init:function(opts){this.opts=opts;try{this.make_dialog();}catch(e){console.log(e);}
-this.bind_events();},make_dialog:function(){this.dialog=new wn.views.FormDialog({title:this.opts.title,width:480,fields:[{fieldtype:'Select',fieldname:'doctype',options:'Select...',label:'Select Type'},{fieldtype:'Button',label:'Go',fieldname:'go'}]});},bind_events:function(){var me=this;this.dialog.form.controls.go.$input.click(function(){if(!me.dialog.display)return;me.dialog.hide();me.opts.execute(me.dialog.form.controls.doctype.get_value());});this.dialog.form.controls.doctype.$input.change(function(){me.dialog.form.controls.go.$input.click();}).keypress(function(ev){if(ev.which==13){me.dialog.form.controls.go.$input.click();}});},show:function(){this.dialog.show();this.dialog.form.controls.doctype.$input.focus();return false;},set_values:function(lst){var $sel=this.dialog.form.controls.doctype.$input;$sel.empty().add_options(lst.sort());}})
+// Copyright (c) 2012 Web Notes Technologies Pvt Ltd (http://erpnext.com)
+// 
+// MIT License (MIT)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a 
+// copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// 
+
+wn.provide('wn.ui.toolbar');
+
+wn.ui.toolbar.SelectorDialog = Class.extend({
+	init: function(opts) {
+		this.opts = opts;
+		try{
+			this.make_dialog();			
+		} catch(e) {
+			console.log(e);
+		}
+		this.bind_events();
+	},
+	make_dialog: function() {
+		this.dialog = new wn.views.FormDialog({
+			title: this.opts.title,
+			width: 480,
+			fields: [
+				{fieldtype:'Select', fieldname:'doctype', options:'Select...', label:'Select Type'},
+				{fieldtype:'Button', label:'Go', fieldname:'go'}
+			]
+		});
+	},
+	bind_events: function() {
+		var me = this;
+		
+		// on go
+		this.dialog.form.controls.go.$input.click(function() {
+			if(!me.dialog.display) return;
+			me.dialog.hide();
+			me.opts.execute(me.dialog.form.controls.doctype.get_value());
+		});
+		
+		// on change
+		this.dialog.form.controls.doctype.$input.change(function() {
+			me.dialog.form.controls.go.$input.click();
+		}).keypress(function(ev) {
+			if(ev.which==13) {
+				me.dialog.form.controls.go.$input.click();				
+			}
+		});
+		
+		
+	},
+	show: function() {
+		this.dialog.show();
+		this.dialog.form.controls.doctype.$input.focus();
+		return false;
+	},
+	set_values: function(lst) {
+		// set values
+		var $sel = this.dialog.form.controls.doctype.$input;
+		$sel.empty().add_options(lst.sort());	
+	}
+})
+
 /*
  *	lib/js/wn/ui/toolbar/new.js
  */
-wn.ui.toolbar.NewDialog=wn.ui.toolbar.SelectorDialog.extend({init:function(){this._super({title:"New Record",execute:function(val){new_doc(val);},});this.set_values(profile.can_create.join(',').split(','));}});
+// Copyright (c) 2012 Web Notes Technologies Pvt Ltd (http://erpnext.com)
+// 
+// MIT License (MIT)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a 
+// copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// 
+
+wn.ui.toolbar.NewDialog = wn.ui.toolbar.SelectorDialog.extend({
+	init: function() {
+		this._super({
+			title: "New Record",
+			execute: function(val) {
+				new_doc(val);
+			},
+		});
+		
+		// get new types
+		this.set_values(profile.can_create.join(',').split(','));
+	}
+});
+
+
 /*
  *	lib/js/wn/ui/toolbar/search.js
  */
-wn.ui.toolbar.Search=wn.ui.toolbar.SelectorDialog.extend({init:function(){this._super({title:"Search",execute:function(val){new wn.ui.Search({doctype:val});},});this.set_values(wn.boot.profile.can_search.join(',').split(','));}});
+// Copyright (c) 2012 Web Notes Technologies Pvt Ltd (http://erpnext.com)
+// 
+// Copyright (c) 2012 Web Notes Technologies Pvt Ltd (http://erpnext.com)
+// 
+// MIT License (MIT)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a 
+// copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// 
+
+wn.ui.toolbar.Search = wn.ui.toolbar.SelectorDialog.extend({
+	init: function() {
+		this._super({
+			title: "Search",
+			execute: function(val) {
+				new wn.ui.Search({doctype:val});
+			},
+		});
+		
+		// get new types
+		this.set_values(wn.boot.profile.can_search.join(',').split(','));
+	}
+});
+
+
 /*
  *	lib/js/wn/ui/toolbar/report.js
  */
-wn.ui.toolbar.Report=wn.ui.toolbar.SelectorDialog.extend({init:function(){this._super({title:"Start Report For",execute:function(val){wn.set_route('Report2',val);},});this.set_values(profile.can_get_report.join(',').split(','));}});
+// Copyright (c) 2012 Web Notes Technologies Pvt Ltd (http://erpnext.com)
+// 
+// MIT License (MIT)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a 
+// copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// 
+
+wn.ui.toolbar.Report = wn.ui.toolbar.SelectorDialog.extend({
+	init: function() {
+		this._super({
+			title: "Start Report For",
+			execute: function(val) {
+				wn.set_route('Report2', val);
+			},
+		});
+		
+		// get new types
+		this.set_values(profile.can_get_report.join(',').split(','));
+	}
+});
+
+
+
 /*
  *	lib/js/wn/ui/toolbar/recent.js
  */
-wn.ui.toolbar.RecentDocs=Class.extend({init:function(){$('.navbar .nav:first').append('<li class="dropdown">\
-   <a class="dropdown-toggle" data-toggle="dropdown" href="#" \
-    onclick="return false;">Recent<b class="caret"></b></a>\
-   <ul class="dropdown-menu" id="toolbar-recent"></ul>\
-  </li>');this.setup();this.bind_events();},bind_events:function(){var me=this;$(document).bind('rename',function(event,dt,old_name,new_name){me.rename_notify(dt,old_name,new_name)});},rename_notify:function(dt,old,name){this.remove(dt,old);this.add(dt,name,1);},add:function(dt,dn,on_top){if(this.istable(dt))return;this.remove(dt,dn);var html=repl('<li data-docref="%(dt)s/%(dn)s">\
-   <a href="#Form/%(dt)s/%(dn)s">\
-    %(dn)s <span style="font-size: 10px">(%(dt)s)</span>\
-   </a></li>',{dt:dt,dn:dn});if(on_top){$('#toolbar-recent').prepend(html);}else{$('#toolbar-recent').append(html);}},istable:function(dt){var dtl=wn.model.get('DocType',dt);return dtl?dtl.doc.get('istable'):false;},remove:function(dt,dn){$(repl('#toolbar-recent li[data-docref="%(dt)s/%(dn)s"]',{dt:dt,dn:dn})).remove();},setup:function(){var rlist=JSON.parse(profile.recent||"[]");var m=rlist.length;if(m>15)m=15;for(var i=0;i<m;i++){var rd=rlist[i]
-if(rd[1]){var dt=rd[0];var dn=rd[1];this.add(dt,dn,0);}}}});
+// Copyright (c) 2012 Web Notes Technologies Pvt Ltd (http://erpnext.com)
+// 
+// MIT License (MIT)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a 
+// copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// 
+
+// recent document list
+wn.ui.toolbar.RecentDocs = Class.extend({
+	init:function() {
+		$('.navbar .nav:first').append('<li class="dropdown">\
+			<a class="dropdown-toggle" data-toggle="dropdown" href="#" \
+				onclick="return false;">Recent<b class="caret"></b></a>\
+			<ul class="dropdown-menu" id="toolbar-recent"></ul>\
+		</li>');
+		this.setup();
+		this.bind_events();
+	},
+	bind_events: function() {		
+		// notify on rename
+		var me = this;
+		$(document).bind('rename', function(event, dt, old_name, new_name) {
+			me.rename_notify(dt, old_name, new_name)
+		});
+	},
+	rename_notify: function(dt, old, name) {
+		this.remove(dt, old);
+		this.add(dt, name, 1);
+	},
+	add: function(dt, dn, on_top) {
+		if(this.istable(dt)) return;
+		
+		this.remove(dt, dn);
+		var html = repl('<li data-docref="%(dt)s/%(dn)s">\
+			<a href="#Form/%(dt)s/%(dn)s">\
+				%(dn)s <span style="font-size: 10px">(%(dt)s)</span>\
+			</a></li>', 
+			{dt:dt, dn:dn});
+		if(on_top) {
+			$('#toolbar-recent').prepend(html);
+		} else {
+			$('#toolbar-recent').append(html);
+		}
+	},
+	istable: function(dt) {
+		var dtl = wn.model.get('DocType', dt);
+		return dtl ? dtl.doc.get('istable') : false;
+	},
+	remove: function(dt, dn) {
+		$(repl('#toolbar-recent li[data-docref="%(dt)s/%(dn)s"]', {dt:dt, dn:dn})).remove();
+	},
+	setup: function() {
+		// add menu items
+		var rlist = JSON.parse(profile.recent||"[]");
+		
+		var m = rlist.length;
+		if(m>15)m=15;
+		for (var i=0;i<m;i++) {
+			var rd = rlist[i]
+			if(rd[1]) {
+				var dt = rd[0]; var dn = rd[1];
+				this.add(dt, dn, 0);
+			}
+		}		
+	}
+});
+
 /*
  *	lib/js/wn/ui/toolbar/toolbar.js
  */
-wn.ui.toolbar.Toolbar=Class.extend({init:function(){this.make();this.make_home();this.make_document();wn.ui.toolbar.recent=new wn.ui.toolbar.RecentDocs();this.make_tools();this.set_user_name();this.make_logout();$('.dropdown-toggle').dropdown();$(document).trigger('toolbar_setup');},make:function(){$('header').append('<div class="navbar navbar-fixed-top">\
-   <div class="navbar-inner">\
-   <div class="container">\
-    <a class="brand"></a>\
-    <ul class="nav">\
-    </ul>\
-    <img src="images/lib/ui/spinner.gif" id="spinner"/>\
-    <ul class="nav pull-right">\
-     <li class="dropdown">\
-      <a class="dropdown-toggle" data-toggle="dropdown" href="#" \
-       onclick="return false;" id="toolbar-user-link"></a>\
-      <ul class="dropdown-menu" id="toolbar-user">\
-      </ul>\
-     </li>\
-    </ul>\
-   </div>\
-   </div>\
-   </div>');},make_home:function(){$('.navbar .brand').attr('href',"#");},make_document:function(){wn.ui.toolbar.new_dialog=new wn.ui.toolbar.NewDialog();wn.ui.toolbar.search=new wn.ui.toolbar.Search();wn.ui.toolbar.report=new wn.ui.toolbar.Report();$('.navbar .nav:first').append('<li class="dropdown">\
-   <a class="dropdown-toggle" href="#"  data-toggle="dropdown"\
-    onclick="return false;">Document<b class="caret"></b></a>\
-   <ul class="dropdown-menu" id="toolbar-document">\
-    <li><a href="#" onclick="return wn.ui.toolbar.new_dialog.show();">\
-     <i class="icon-plus"></i> New</a></li>\
-    <li><a href="#" onclick="return wn.ui.toolbar.search.show();">\
-     <i class="icon-search"></i> Search</a></li>\
-    <li><a href="#" onclick="return wn.ui.toolbar.report.show();">\
-     <i class="icon-list"></i> Report</a></li>\
-   </ul>\
-  </li>');},make_tools:function(){$('.navbar .nav:first').append('<li class="dropdown">\
-   <a class="dropdown-toggle" data-toggle="dropdown" href="#" \
-    onclick="return false;">Tools<b class="caret"></b></a>\
-   <ul class="dropdown-menu" id="toolbar-tools">\
-    <li><a href="#" onclick="return wn.ui.toolbar.clear_cache();">Clear Cache & Refresh</a></li>\
-    <li><a href="#" onclick="return wn.ui.toolbar.show_about();">About</a></li>\
-   </ul>\
-  </li>');if(has_common(user_roles,['Administrator','System Manager'])){$('#toolbar-tools').append('<li><a href="#" \
-    onclick="return wn.ui.toolbar.download_backup();">\
-    Download Backup</a></li>');}},set_user_name:function(){var fn=user_fullname;if(fn.length>15)fn=fn.substr(0,12)+'...';$('#toolbar-user-link').html(fn+'<b class="caret"></b>');},make_logout:function(){$('#toolbar-user').append('<li><a href="#" onclick="return wn.app.logout();">Logout</a></li>');}});wn.ui.toolbar.clear_cache=function(){localStorage&&localStorage.clear();$c('webnotes.session_cache.clear',{},function(r,rt){if(!r.exc){show_alert(r.message);location.reload();}});return false;}
-wn.ui.toolbar.download_backup=function(){$c('webnotes.utils.backups.get_backup',{},function(r,rt){});return false;}
-wn.ui.toolbar.show_about=function(){try{wn.ui.misc.about();}catch(e){console.log(e);}
-return false;}
+// Copyright (c) 2012 Web Notes Technologies Pvt Ltd (http://erpnext.com)
+// 
+// MIT License (MIT)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a 
+// copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// 
+
+
+wn.ui.toolbar.Toolbar = Class.extend({
+	init: function() {
+		this.make();
+		this.make_home();
+		this.make_document();
+		wn.ui.toolbar.recent = new wn.ui.toolbar.RecentDocs();
+		this.make_tools();
+		this.set_user_name();
+		this.make_logout();
+		$('.dropdown-toggle').dropdown();
+		
+		$(document).trigger('toolbar_setup');
+	},
+	make: function() {
+		$('header').append('<div class="navbar navbar-fixed-top">\
+			<div class="navbar-inner">\
+			<div class="container">\
+				<a class="brand"></a>\
+				<ul class="nav">\
+				</ul>\
+				<img src="images/lib/ui/spinner.gif" id="spinner"/>\
+				<ul class="nav pull-right">\
+					<li class="dropdown">\
+						<a class="dropdown-toggle" data-toggle="dropdown" href="#" \
+							onclick="return false;" id="toolbar-user-link"></a>\
+						<ul class="dropdown-menu" id="toolbar-user">\
+						</ul>\
+					</li>\
+				</ul>\
+			</div>\
+			</div>\
+			</div>');		
+	},
+	make_home: function() {
+		$('.navbar .brand').attr('href', "#");
+	},
+
+	make_document: function() {
+		wn.ui.toolbar.new_dialog = new wn.ui.toolbar.NewDialog();
+		wn.ui.toolbar.search = new wn.ui.toolbar.Search();
+		wn.ui.toolbar.report = new wn.ui.toolbar.Report();
+		$('.navbar .nav:first').append('<li class="dropdown">\
+			<a class="dropdown-toggle" href="#"  data-toggle="dropdown"\
+				onclick="return false;">Document<b class="caret"></b></a>\
+			<ul class="dropdown-menu" id="toolbar-document">\
+				<li><a href="#" onclick="return wn.ui.toolbar.new_dialog.show();">\
+					<i class="icon-plus"></i> New</a></li>\
+				<li><a href="#" onclick="return wn.ui.toolbar.search.show();">\
+					<i class="icon-search"></i> Search</a></li>\
+				<li><a href="#" onclick="return wn.ui.toolbar.report.show();">\
+					<i class="icon-list"></i> Report</a></li>\
+			</ul>\
+		</li>');
+	},
+
+	make_tools: function() {
+		$('.navbar .nav:first').append('<li class="dropdown">\
+			<a class="dropdown-toggle" data-toggle="dropdown" href="#" \
+				onclick="return false;">Tools<b class="caret"></b></a>\
+			<ul class="dropdown-menu" id="toolbar-tools">\
+				<li><a href="#" onclick="return wn.ui.toolbar.clear_cache();">Clear Cache & Refresh</a></li>\
+				<li><a href="#" onclick="return wn.ui.toolbar.show_about();">About</a></li>\
+			</ul>\
+		</li>');
+		
+		if(has_common(user_roles,['Administrator','System Manager'])) {
+			$('#toolbar-tools').append('<li><a href="#" \
+				onclick="return wn.ui.toolbar.download_backup();">\
+				Download Backup</a></li>');
+		}
+	},
+	set_user_name: function() {
+		var fn = user_fullname;
+		if(fn.length > 15) fn = fn.substr(0,12) + '...';
+		$('#toolbar-user-link').html(fn + '<b class="caret"></b>');
+	},
+
+	make_logout: function() {
+		// logout
+		$('#toolbar-user').append('<li><a href="#" onclick="return wn.app.logout();">Logout</a></li>');
+	}
+});
+
+wn.ui.toolbar.clear_cache = function() {
+	localStorage && localStorage.clear();
+	$c('webnotes.session_cache.clear',{},function(r,rt){ 
+		if(!r.exc) {
+			show_alert(r.message);
+			location.reload();
+		}
+	});
+	return false;
+}
+
+wn.ui.toolbar.download_backup = function() {
+	$c('webnotes.utils.backups.get_backup',{},function(r,rt) {});
+	return false;
+}
+
+wn.ui.toolbar.show_about = function() {
+	try {
+		wn.ui.misc.about();		
+	} catch(e) {
+		console.log(e);
+	}
+	return false;
+}
+
+
 
 /*
  *	lib/js/wn/ui/tree.js
  */
-wn.ui.Tree=Class.extend({init:function(args){$.extend(this,args);this.nodes={};this.$w=$('<div class="tree">').appendTo(this.parent);this.rootnode=new wn.ui.TreeNode({tree:this,parent:this.$w,label:this.label,expandable:true});this.set_style();},set_style:function(){wn.dom.set_style("\
-   .tree li { list-style: none; }\
-   .tree ul { margin-top: 2px; }\
-   .tree-link { cursor: pointer; }\
-  ")}})
-wn.ui.TreeNode=Class.extend({init:function(args){var me=this;$.extend(this,args);this.loaded=false;this.expanded=false;this.tree.nodes[this.label]=this;this.$a=$('<a class="tree-link">').click(function(){if(me.expandable&&me.tree.method&&!me.loaded){me.load()}else{me.selectnode();}
-if(me.tree.click)me.tree.click(this);}).bind('reload',function(){me.reload();}).data('label',this.label).appendTo(this.parent);if(this.expandable){this.$a.append('<i class="icon-folder-close"></i> '+this.label);}else{this.$a.append('<i class="icon-file"></i> '+this.label);}
-if(this.tree.onrender){this.tree.onrender(this);}},selectnode:function(){if(this.$ul){this.$ul.toggle();this.$a.find('i').removeClass();if(this.$ul.css('display').toLowerCase()=='block'){this.$a.find('i').addClass('icon-folder-open');}else{this.$a.find('i').addClass('icon-folder-close');}}
-this.tree.$w.find('a.selected').removeClass('selected');this.$a.toggleClass('selected');this.expanded=!this.expanded;},reload:function(){if(this.expanded){this.$a.click();}
-if(this.$ul){this.$ul.empty();}
-this.load();},addnode:function(data){if(!this.$ul){this.$ul=$('<ul>').toggle(false).appendTo(this.parent);}
-return new wn.ui.TreeNode({tree:this.tree,parent:$('<li>').appendTo(this.$ul),label:data.value,expandable:data.expandable,data:data});},load:function(){var me=this;args=$.extend(this.tree.args,{parent:this.label});$(me.$a).set_working();wn.call({method:this.tree.method,args:args,callback:function(r){$(me.$a).done_working();$.each(r.message,function(i,v){node=me.addnode(v);node.$a.data('node-data',v);});me.loaded=true;me.selectnode();}})}})
+// Copyright (c) 2012 Web Notes Technologies Pvt Ltd (http://erpnext.com)
+// 
+// MIT License (MIT)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a 
+// copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+
+// tree with expand on ajax
+// constructor: parent, label, method, args
+wn.ui.Tree = Class.extend({
+	init: function(args) {
+		$.extend(this, args);
+		this.nodes = {};
+		this.$w = $('<div class="tree">').appendTo(this.parent);
+		this.rootnode = new wn.ui.TreeNode({
+			tree: this, 
+			parent: this.$w, 
+			label: this.label, 
+			expandable: true
+		});
+		this.set_style();
+	},
+	set_style: function() {
+		wn.dom.set_style("\
+			.tree li { list-style: none; }\
+			.tree ul { margin-top: 2px; }\
+			.tree-link { cursor: pointer; }\
+		")
+	}
+})
+
+wn.ui.TreeNode = Class.extend({
+	init: function(args) {
+		var me = this;
+		$.extend(this, args);
+		this.loaded = false;
+		this.expanded = false;
+		this.tree.nodes[this.label] = this;
+		this.$a = $('<a class="tree-link">')
+			.click(function() { 
+				if(me.expandable && me.tree.method && !me.loaded) {
+					me.load()
+				} else {
+					me.selectnode();
+				}
+				if(me.tree.click) me.tree.click(this);
+			})
+			.bind('reload', function() { me.reload(); })
+			.data('label', this.label)
+			.appendTo(this.parent);
+		
+		// label with icon
+		if(this.expandable) {
+			this.$a.append('<i class="icon-folder-close"></i> ' + this.label);
+		} else {
+			this.$a.append('<i class="icon-file"></i> ' + this.label);
+		}
+		
+		if(this.tree.onrender) {
+			this.tree.onrender(this);
+		}
+	},
+	selectnode: function() {
+		// expand children
+		if(this.$ul) {
+			this.$ul.toggle();
+			
+			// open close icon
+			this.$a.find('i').removeClass();
+			if(this.$ul.css('display').toLowerCase()=='block') {
+				this.$a.find('i').addClass('icon-folder-open');
+			} else {
+				this.$a.find('i').addClass('icon-folder-close');				
+			}
+		}
+		
+		// select this link
+		this.tree.$w.find('a.selected')
+			.removeClass('selected');
+		this.$a.toggleClass('selected');
+		this.expanded = !this.expanded;
+	},
+	reload: function() {
+		if(this.expanded) {
+			this.$a.click(); // collapse			
+		}
+		if(this.$ul) {
+			this.$ul.empty();
+		}
+		this.load();
+	},
+	addnode: function(data) {
+		if(!this.$ul) {
+			this.$ul = $('<ul>').toggle(false).appendTo(this.parent);
+		}
+		return new wn.ui.TreeNode({
+			tree:this.tree, 
+			parent: $('<li>').appendTo(this.$ul), 
+			label: data.value, 
+			expandable: data.expandable,
+			data: data
+		});
+	},
+	load: function() {
+		var me = this;
+		args = $.extend(this.tree.args, {
+			parent: this.label
+		});
+
+		$(me.$a).set_working();
+
+		wn.call({
+			method: this.tree.method,
+			args: args,
+			callback: function(r) {
+				$(me.$a).done_working();
+
+				$.each(r.message, function(i, v) {
+					node = me.addnode(v);
+					node.$a.data('node-data', v);
+				});
+				
+				me.loaded = true;
+				
+				// expand
+				me.selectnode();
+			}
+		})
+	}	
+})
+
 /*
  *	lib/js/wn/upload.js
  */
-wn.upload={make:function(opts){var id=wn.dom.set_unique_id();$(opts.parent).append(repl('<iframe id="%(id)s" name="%(id)s" src="blank.html" \
-    style="width:0px; height:0px; border:0px"></iframe>\
-   <form method="POST" enctype="multipart/form-data" \
-    action="%(action)s" target="%(id)s">\
-    <input type="file" name="filedata" /><br><br>\
-    <input type="submit" class="btn btn-small" value="Upload" />\
-   </form>',{id:id,action:wn.request.url}));opts.args.cmd='uploadfile';opts.args._id=id;for(key in opts.args){if(opts.args[key]){$('<input type="hidden">').attr('name',key).attr('value',opts.args[key]).appendTo($(opts.parent).find('form'));}}
-$('#'+id).get(0).callback=opts.callback},callback:function(id,file_id,args){$('#'+id).get(0).callback(file_id,args);}}
+// parent, args, callback
+wn.upload = {
+	make: function(opts) {
+		var id = wn.dom.set_unique_id();
+		$(opts.parent).append(repl('<iframe id="%(id)s" name="%(id)s" src="blank.html" \
+				style="width:0px; height:0px; border:0px"></iframe>\
+			<form method="POST" enctype="multipart/form-data" \
+				action="%(action)s" target="%(id)s">\
+				<input type="file" name="filedata" /><br><br>\
+				<input type="submit" class="btn btn-small" value="Upload" />\
+			</form>', {
+				id: id,
+				action: wn.request.url
+			}));
+	
+		opts.args.cmd = 'uploadfile';
+		opts.args._id = id;
+			
+		// add request parameters
+		for(key in opts.args) {
+			if(opts.args[key]) {
+				$('<input type="hidden">')
+					.attr('name', key)
+					.attr('value', opts.args[key])
+					.appendTo($(opts.parent).find('form'));				
+			}
+		}
+		
+		$('#' + id).get(0).callback = opts.callback
+	},
+	callback: function(id, file_id, args) {
+		$('#' + id).get(0).callback(file_id, args);
+	}
+}
+
 /*
  *	lib/js/wn/misc/about.js
  */
-wn.provide('wn.ui.misc');wn.ui.misc.about=function(){if(!wn.ui.misc.about_dialog){var d=new wn.ui.Dialog({title:'About wnframework'})
-$(d.body).html(repl("<div style='padding: 20px'<p><b>Application Name:</b> %(name)s</p>\
-  <p><b>Version:</b> %(version)s</p>\
-  <p><b>License:</b> %(license)s</p>\
-  <p><b>Source Code:</b> %(source)s</p>\
-  <p><b>Publisher:</b> %(publisher)s</p>\
-  <p><b>Copyright:</b> %(copyright)s</p></div>",wn.app));wn.ui.misc.about_dialog=d;}
-wn.ui.misc.about_dialog.show();}
+// Copyright (c) 2012 Web Notes Technologies Pvt Ltd (http://erpnext.com)
+// 
+// MIT License (MIT)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a 
+// copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// 
+
+// ABOUT
+
+wn.provide('wn.ui.misc');
+wn.ui.misc.about = function() {
+	if(!wn.ui.misc.about_dialog) {
+		var d = new wn.ui.Dialog({title:'About wnframework'})
+	
+		$(d.body).html(repl("<div style='padding: 20px'<p><b>Application Name:</b> %(name)s</p>\
+		<p><b>Version:</b> %(version)s</p>\
+		<p><b>License:</b> %(license)s</p>\
+		<p><b>Source Code:</b> %(source)s</p>\
+		<p><b>Publisher:</b> %(publisher)s</p>\
+		<p><b>Copyright:</b> %(copyright)s</p></div>", wn.app));
+	
+		wn.ui.misc.about_dialog = d;		
+	}
+	
+	wn.ui.misc.about_dialog.show();
+}
+
+
 /*
  *	lib/js/wn/views/breadcrumbs.js
  */
-wn.provide('wn.views');wn.views.breadcrumbs=function(appframe,module,doctype,name){appframe.clear_breadcrumbs();if(name){appframe.add_breadcrumb(name);}else if(doctype){appframe.add_breadcrumb(doctype+' List');}else if(module){appframe.add_breadcrumb(module);}
-if(name&&doctype&&(!wn.model.get('DocType',doctype).issingle)){appframe.add_breadcrumb(repl(' in <a href="#!List/%(doctype)s">%(doctype)s List</a>',{doctype:doctype}))};if(doctype&&module&&wn.modules&&wn.modules[module]){appframe.add_breadcrumb(repl(' in <a href="#!%(module_page)s">%(module)s</a>',{module:module,module_page:wn.modules[module]}))}}
+wn.provide('wn.views');
+wn.views.breadcrumbs = function(appframe, module, doctype, name) {
+	appframe.clear_breadcrumbs();
+
+	if(name) {
+		appframe.add_breadcrumb(name);
+	} else if(doctype) {
+		appframe.add_breadcrumb(doctype + ' List');
+	} else if(module) {
+		appframe.add_breadcrumb(module);
+	}
+
+	if(name && doctype && (!wn.model.get('DocType', doctype).issingle)) {
+		appframe.add_breadcrumb(repl(' in <a href="#!List/%(doctype)s">%(doctype)s List</a>',
+			{doctype: doctype}))
+	};
+	
+	if(doctype && module && wn.modules && wn.modules[module]) {
+		appframe.add_breadcrumb(repl(' in <a href="#!%(module_page)s">%(module)s</a>',
+			{module: module, module_page: wn.modules[module] }))
+	}
+}
+
 /*
  *	lib/js/wn/views/container.js
  */
-wn.provide('wn.views');wn.provide('wn.contents');wn.views.Container=Class.extend({init:function(){this.container=$('#body_div').get(0);this.page=null;this.pagewidth=$('#body_div').width();this.pagemargin=50;},add_page:function(label,onshow,onhide){var page=$('<div class="content"></div>').attr('id',"page-"+label).appendTo(this.container).get(0);if(onshow)
-$(page).bind('show',onshow);if(onshow)
-$(page).bind('hide',onhide);page.label=label;wn.contents[label]=page;return page;},change_to:function(label){if(this.page&&this.page.label==label){return;}
-var me=this;if(label.tagName){var page=label;}else{var page=wn.contents[label];}
-if(!page){console.log('Page not found '+label);return;}
-if(this.page){$(this.page).toggle(false);$(this.page).trigger('hide');}
-this.page=page;$(this.page).fadeIn();$(this.page).trigger('show');this.page._route=window.location.hash;document.title=this.page.label;scroll(0,0);return this.page;}});wn.views.add_module_btn=function(parent,module){$(parent).append(repl('<span class="label" style="margin-right: 8px; cursor: pointer;"\
-     onclick="wn.set_route(\'%(module_small)s-home\')">\
-     <i class="icon-home icon-white"></i> %(module)s Home\
-    </span>',{module:module,module_small:module.toLowerCase()}));}
-wn.views.add_list_btn=function(parent,doctype){$(parent).append(repl('<span class="label" style="margin-right: 8px; cursor: pointer;"\
-     onclick="wn.set_route(\'List\', \'%(doctype)s\')">\
-     <i class="icon-list icon-white"></i> %(doctype)s List\
-    </span>',{doctype:doctype}));}
+// Copyright (c) 2012 Web Notes Technologies Pvt Ltd (http://erpnext.com)
+// 
+// MIT License (MIT)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a 
+// copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+
+// page container
+wn.provide('wn.views');
+wn.provide('wn.contents');
+
+wn.views.Container = Class.extend({
+	init: function() {
+		this.container = $('#body_div').get(0);
+		this.page = null; // current page
+		this.pagewidth = $('#body_div').width();
+		this.pagemargin = 50;		
+	},
+	add_page: function(label, onshow, onhide) {
+		var page = $('<div class="content"></div>')
+			.attr('id', "page-" + label)
+			.appendTo(this.container).get(0);
+		if(onshow)
+			$(page).bind('show', onshow);
+		if(onshow)
+			$(page).bind('hide', onhide);
+		page.label = label;
+		wn.contents[label] = page;
+		return page;
+	},
+	change_to: function(label) {
+		if(this.page && this.page.label == label) {
+			// don't trigger double events
+			return;
+		}
+		
+		var me = this;
+		if(label.tagName) {
+			// if sent the div, get the table
+			var page = label;
+		} else {
+			var page = wn.contents[label];			
+		}
+		if(!page) {
+			console.log('Page not found ' + label);
+			return;
+		}
+		
+		// hide current
+		if(this.page) {
+			$(this.page).toggle(false);
+			$(this.page).trigger('hide');
+		}
+		
+		// show new
+		this.page = page;
+		$(this.page).fadeIn();
+		$(this.page).trigger('show');
+		this.page._route = window.location.hash;
+		document.title = this.page.label;
+		scroll(0,0);
+				
+		return this.page;
+	}
+});
+
+wn.views.add_module_btn = function(parent, module) {
+	$(parent).append(
+		repl('<span class="label" style="margin-right: 8px; cursor: pointer;"\
+					onclick="wn.set_route(\'%(module_small)s-home\')">\
+					<i class="icon-home icon-white"></i> %(module)s Home\
+				</span>', {module: module, module_small: module.toLowerCase()}));	
+}
+
+wn.views.add_list_btn = function(parent, doctype) {
+	$(parent).append(
+		repl('<span class="label" style="margin-right: 8px; cursor: pointer;"\
+					onclick="wn.set_route(\'List\', \'%(doctype)s\')">\
+					<i class="icon-list icon-white"></i> %(doctype)s List\
+				</span>', {doctype: doctype}));	
+}
+
+
 /*
  *	lib/js/wn/views/doclistview.js
  */
-wn.provide('wn.views.doclistview');wn.provide('wn.doclistviews');wn.views.doclistview.show=function(doctype){var page_name=wn.get_route_str();if(wn.pages[page_name]){wn.container.change_to(wn.pages[page_name]);}else{var route=wn.get_route();if(route[1]){wn.model.with_doctype(route[1],function(r){if(r&&r['403']){return;}
-new wn.views.DocListView(route[1]);});}}}
-wn.views.DocListView=wn.ui.Listing.extend({init:function(doctype){this.doctype=doctype;this.label=get_doctype_label(doctype);this.label=(this.label.toLowerCase().substr(-4)=='list')?this.label:(this.label+' List');this.meta=wn.model.get('DocType',this.doctype).doc;this.make_page();this.setup();},make_page:function(){var me=this;var page_name=wn.get_route_str();var page=wn.container.add_page(page_name);wn.container.change_to(page_name);this.$page=$(page);this.$page.html('<div class="layout-wrapper layout-wrapper-background">\
-   <div class="appframe-area"></div>\
-   <div class="layout-main-section">\
-    <div class="wnlist-area"><div class="help">Loading...</div></div>\
-   </div>\
-   <div class="layout-side-section">\
-    <div class="show-docstatus hide" style="margin-bottom: 19px">\
-     <h4>Show</h4>\
-     <div><input data-docstatus="0" type="checkbox" checked="checked" /> Drafts</div>\
-     <div><input data-docstatus="1" type="checkbox" checked="checked" /> Submitted</div>\
-     <div><input data-docstatus="2" type="checkbox" /> Cancelled</div>\
-    </div>\
-   </div>\
-   <div style="clear: both"></div>\
-  </div>');this.appframe=new wn.ui.AppFrame(this.$page.find('.appframe-area'));wn.views.breadcrumbs(this.appframe,this.meta.get('module'),this.doctype);},setup:function(){var me=this;me.can_delete=wn.model.can_delete(me.doctype);me.$page.find('.wnlist-area').empty(),me.setup_docstatus_filter();me.setup_listview();me.init_list();me.init_stats();me.make_report_button();me.add_delete_option();me.make_help();},make_report_button:function(){var me=this;if(wn.boot.profile.can_get_report.indexOf(this.doctype)!=-1){this.appframe.add_button('Build Report',function(){wn.set_route('Report2',me.doctype);},'icon-th')}},make_help:function(){if(this.meta.get('description')){this.appframe.add_help_button(wn.markdown('## '+this.meta.get('name')+'\n\n'
-+this.meta.get('description')));}},setup_docstatus_filter:function(){var me=this;this.can_submit=wn.model.get('DocType',me.doctype).doc.get('is_submittable');if(this.can_submit){this.$page.find('.show-docstatus').removeClass('hide');this.$page.find('.show-docstatus input').click(function(){me.run();})}},setup_listview:function(){if(this.meta.get('__listjs')){eval(this.meta.get('__listjs'));this.listview=new wn.doclistviews[this.doctype](this);}else{this.listview=new wn.views.ListView(this);}
-this.listview.parent=this;this.wrapper=this.$page.find('.wnlist-area');this.page_length=20;this.allow_delete=true;},init_list:function(auto_run){var me=this;this.make({method:'webnotes.widgets.doclistview.get',get_args:this.get_args,parent:this.wrapper,start:0,page_length:this.page_length,show_filters:true,show_grid:true,new_doctype:this.doctype,allow_delete:this.allow_delete,no_result_message:this.make_no_result(),columns:this.listview.fields});$(this.wrapper).find('button[list_view_doc="'+me.doctype+'"]').click(function(){me.make_new_doc(me.doctype);});if((auto_run!==false)&&(auto_run!==0))this.run();},make_no_result:function(){var no_result_message=repl('<div class="well">\
-  <p>No %(doctype_label)s found</p>\
-  <hr>\
-  <p><button class="btn btn-info btn-small" list_view_doc="%(doctype)s">\
-   Make a new %(doctype_label)s</button>\
-  </p></div>',{doctype_label:get_doctype_label(this.doctype),doctype:this.doctype});return no_result_message;},render_row:function(row,data){data.doctype=this.doctype;this.listview.render(row,data,this);},get_query_fields:function(){return this.listview.fields;},get_args:function(){return{doctype:this.doctype,fields:this.get_query_fields(),filters:this.filter_list.get_filters(),docstatus:this.can_submit?$.map(this.$page.find('.show-docstatus :checked'),function(inp){return $(inp).attr('data-docstatus')}):[],order_by:this.listview.order_by||undefined,group_by:this.listview.group_by||undefined,}},add_delete_option:function(){var me=this;if(this.can_delete){this.add_button('Delete',function(){me.delete_items();},'icon-remove');$('<div style="padding: 4px"><input type="checkbox" name="select-all" />\
-     Select all</div>').insertBefore(this.$page.find('.result-list'));this.$page.find('[name="select-all"]').click(function(){me.$page.find('.list-delete').attr('checked',$(this).attr('checked')||false);})}},delete_items:function(){var me=this;var dl=$.map(me.$page.find('.list-delete:checked'),function(e){return $(e).data('name');});if(!dl.length)
-return;if(!confirm('This is PERMANENT action and you cannot undo. Continue?')){return;}
-me.set_working(true);wn.call({method:'webnotes.widgets.doclistview.delete_items',args:{items:dl,doctype:me.doctype},callback:function(){me.set_working(false);me.refresh();}})},init_stats:function(){var me=this
-wn.call({method:'webnotes.widgets.doclistview.get_stats',args:{stats:me.listview.stats,doctype:me.doctype},callback:function(r){$.each(me.listview.stats,function(i,v){me.render_stat(v,r.message[v]);});if(me.listview.stats.length){$('<button class="btn btn-small"><i class="refresh"></i> Refresh</button>').click(function(){me.reload_stats();}).appendTo($('<div class="stat-wrapper">').appendTo(me.$page.find('.layout-side-section')))}}});},render_stat:function(field,stat){var me=this;if(!stat||!stat.length){if(field=='_user_tags'){this.$page.find('.layout-side-section').append('<div class="stat-wrapper"><h4>Tags</h4>\
-      <div class="help small"><i>No records tagged.</i><br><br> \
-      To add a tag, open the document and click on \
-      "Add Tag" on the sidebar</div></div>');}
-return;}
-var docfield=wn.model.get('DocType',this.doctype).get({fieldname:field});var label=docfield.length?docfield[0].get('label'):field;if(label=='_user_tags')label='Tags';var $w=$('<div class="stat-wrapper">\
-   <h4>'+label+'</h4>\
-   <div class="stat-grid">\
-   </div>\
-  </div>');stat=stat.sort(function(a,b){return b[1]-a[1]});var sum=0;$.each(stat,function(i,v){sum=sum+v[1];})
-$.each(stat,function(i,v){me.render_stat_item(i,v,sum,field).appendTo($w.find('.stat-grid'));});$w.appendTo(this.$page.find('.layout-side-section'));},render_stat_item:function(i,v,max,field){var me=this;var args={}
-args.label=v[0];args.width=flt(v[1])/max*100;args.count=v[1];args.field=field;$item=$(repl('<div class="stat-item">\
-   <div class="stat-bar" style="width: %(width)s%"></div>\
-   <div class="stat-label">\
-    <a href="#" data-label="%(label)s" data-field="%(field)s">\
-     %(label)s</a> \
-    (%(count)s)</div>\
-  </div>',args));this.setup_stat_item_click($item);return $item;},reload_stats:function(){this.$page.find('.layout-side-section .stat-wrapper').remove();this.init_stats();},setup_stat_item_click:function($item){var me=this;$item.find('a').click(function(){var fieldname=$(this).attr('data-field');var label=$(this).attr('data-label');me.set_filter(fieldname,label);return false;});},set_filter:function(fieldname,label){var filter=this.filter_list.get_filter(fieldname);if(filter){var v=filter.field.get_value();if(v.indexOf(label)!=-1){return false;}else{if(fieldname=='_user_tags'){this.filter_list.add_filter(fieldname,'like','%'+label);}else{filter.set_values(fieldname,'in',v+', '+label);}}}else{if(fieldname=='_user_tags'){this.filter_list.add_filter(fieldname,'like','%'+label);}else{this.filter_list.add_filter(fieldname,'=',label);}}
-this.run();}});wn.views.ListView=Class.extend({init:function(doclistview){this.doclistview=doclistview;this.doctype=doclistview.doctype;var t="`tab"+this.doctype+"`.";this.fields=[t+'name',t+'owner',t+'docstatus',t+'_user_tags',t+'modified'];this.stats=['_user_tags'];this.show_hide_check_column();},columns:[{width:'3%',content:'check'},{width:'4%',content:'avatar'},{width:'3%',content:'docstatus',css:{"text-align":"center"}},{width:'35%',content:'name'},{width:'40%',content:'tags',css:{'color':'#aaa'}},{width:'15%',content:'modified',css:{'text-align':'right','color':'#222'}}],render_column:function(data,parent,opts){var me=this;if(opts.css){$.each(opts.css,function(k,v){$(parent).css(k,v)});}
-if(opts.content.indexOf&&opts.content.indexOf('+')!=-1){$.map(opts.content.split('+'),function(v){me.render_column(data,parent,{content:v});});return;}
-if(typeof opts.content=='function'){opts.content(parent,data,me);}
-else if(opts.content=='name'){$(parent).append(repl('<a href="#!Form/%(doctype)s/%(name)s">%(name)s</a>',data));}
-else if(opts.content=='avatar'){$(parent).append(repl('<span class="avatar-small"><img src="%(avatar)s" \
-    title="%(fullname)s"/></span>',data));}
-else if(opts.content=='check'){$(parent).append('<input class="list-delete" type="checkbox">');$(parent).find('input').data('name',data.name);}
-else if(opts.content=='docstatus'){$(parent).append(repl('<span class="docstatus"><i class="%(docstatus_icon)s" \
-    title="%(docstatus_title)s"></i></span>',data));}
-else if(opts.content=='tags'){this.add_user_tags(parent,data);}
-else if(opts.content=='modified'){$(parent).append(data.when);}
-else if(opts.type=='bar-graph'){this.render_bar_graph(parent,data,opts.content,opts.label);}
-else if(opts.type=='link'&&opts.doctype){$(parent).append(repl('<a href="#!Form/'+opts.doctype+'/'
-+data[opts.content]+'">'+data[opts.content]+'</a>',data));}
-else if(opts.template){$(parent).append(repl(opts.template,data));}
-else if(data[opts.content]){$(parent).append(' '+data[opts.content]);}},render:function(row,data){var me=this;this.prepare_data(data);rowhtml='';$.each(this.columns,function(i,v){rowhtml+=repl('<td style="width: %(width)s"></td>',v);});var tr=$(row).html('<table><tbody><tr>'+rowhtml+'</tr></tbody></table>').find('tr').get(0);$.each(this.columns,function(i,v){me.render_column(data,tr.cells[i],v);});},prepare_data:function(data){data.fullname=wn.user_info(data.owner).fullname;data.avatar=wn.user_info(data.owner).image;this.prepare_when(data,data.modified);if(data.docstatus==0||data.docstatus==null){data.docstatus_icon='icon-pencil';data.docstatus_title='Editable';}else if(data.docstatus==1){data.docstatus_icon='icon-lock';data.docstatus_title='Submitted';}else if(data.docstatus==2){data.docstatus_icon='icon-remove';data.docstatus_title='Cancelled';}
-for(key in data){if(data[key]==null){data[key]='';}}},prepare_when:function(data,date_str){if(!date_str)date_str=data.modified;data.when=dateutil.str_to_user(date_str).split(' ')[0];var diff=dateutil.get_diff(dateutil.get_today(),date_str.split(' ')[0]);if(diff==0){data.when=dateutil.comment_when(date_str);}
-if(diff==1){data.when='Yesterday'}
-if(diff==2){data.when='2 days ago'}},add_user_tags:function(parent,data){var me=this;if(data._user_tags){if($(parent).html().length>0){$(parent).append('<br />');}
-$.each(data._user_tags.split(','),function(i,t){if(t){$('<span class="label label-info" style="cursor: pointer; line-height: 200%">'
-+strip(t)+'</span>').click(function(){me.doclistview.set_filter('_user_tags',$(this).text())}).appendTo(parent);}});}},show_hide_check_column:function(){if(!this.doclistview.can_delete){this.columns=$.map(this.columns,function(v,i){if(v.content!='check')return v});}},render_bar_graph:function(parent,data,field,label){var args={percent:data[field],fully_delivered:(data[field]>99?'bar-complete':''),label:label}
-$(parent).append(repl('<span class="bar-outer" style="width: 30px; float: right" \
-   title="%(percent)s% %(label)s">\
-   <span class="bar-inner %(fully_delivered)s" \
-    style="width: %(percent)s%;"></span>\
-  </span>',args));},render_icon:function(parent,icon_class,label){var icon_html="<i class='%(icon_class)s' title='%(label)s'></i>";$(parent).append(repl(icon_html,{icon_class:icon_class,label:label||''}));}});wn.provide('wn.views.RecordListView');wn.views.RecordListView=wn.views.DocListView.extend({init:function(doctype,wrapper,ListView){this.doctype=doctype;this.wrapper=wrapper;this.listview=new ListView(this);this.listview.parent=this;this.setup();},setup:function(){var me=this;me.page_length=10;$(me.wrapper).empty();me.init_list();},get_args:function(){var args=this._super();$.each((this.default_filters||[]),function(i,f){args.filters.push(f);});args.docstatus=args.docstatus.concat((this.default_docstatus||[]));return args;},});
+// Copyright (c) 2012 Web Notes Technologies Pvt Ltd (http://erpnext.com)
+// 
+// MIT License (MIT)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a 
+// copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// 
+
+wn.provide('wn.views.doclistview');
+wn.provide('wn.doclistviews');
+
+wn.views.doclistview.show = function(doctype) {
+	var page_name = wn.get_route_str();
+	if(wn.pages[page_name]) {
+		wn.container.change_to(wn.pages[page_name]);
+	} else {
+		var route = wn.get_route();
+		if(route[1]) {
+			wn.model.with_doctype(route[1], function(r) {
+				if(r && r['403']) {
+					return;
+				}
+				new wn.views.DocListView(route[1]);
+			});
+		}
+	}
+}
+
+wn.views.DocListView = wn.ui.Listing.extend({
+	init: function(doctype) {
+		this.doctype = doctype;
+		this.label = get_doctype_label(doctype);
+		this.label = (this.label.toLowerCase().substr(-4) == 'list') ?
+		 	this.label : (this.label + ' List');
+		this.meta = wn.model.get('DocType', this.doctype).doc;
+		this.make_page();
+		this.setup();
+	},
+	
+	make_page: function() {
+		var me = this;
+		var page_name = wn.get_route_str();
+		var page = wn.container.add_page(page_name);
+		wn.container.change_to(page_name);
+		this.$page = $(page);
+		
+		this.$page.html('<div class="layout-wrapper layout-wrapper-background">\
+			<div class="appframe-area"></div>\
+			<div class="layout-main-section">\
+				<div class="wnlist-area"><div class="help">Loading...</div></div>\
+			</div>\
+			<div class="layout-side-section">\
+				<div class="show-docstatus hide" style="margin-bottom: 19px">\
+					<h4>Show</h4>\
+					<div><input data-docstatus="0" type="checkbox" checked="checked" /> Drafts</div>\
+					<div><input data-docstatus="1" type="checkbox" checked="checked" /> Submitted</div>\
+					<div><input data-docstatus="2" type="checkbox" /> Cancelled</div>\
+				</div>\
+			</div>\
+			<div style="clear: both"></div>\
+		</div>');
+		
+		this.appframe = new wn.ui.AppFrame(this.$page.find('.appframe-area'));
+		wn.views.breadcrumbs(this.appframe, this.meta.get('module'), this.doctype);
+	},
+
+	setup: function() {
+		var me = this;
+		me.can_delete = wn.model.can_delete(me.doctype);
+		me.$page.find('.wnlist-area').empty(),
+		me.setup_docstatus_filter();
+		me.setup_listview();
+		me.init_list();
+		me.init_stats();
+		me.make_report_button();
+		me.add_delete_option();
+		me.make_help();
+	},
+	make_report_button: function() {
+		var me = this;
+		if(wn.boot.profile.can_get_report.indexOf(this.doctype)!=-1) {
+			this.appframe.add_button('Build Report', function() {
+				wn.set_route('Report2', me.doctype);
+			}, 'icon-th')
+		}
+	},
+	make_help: function() {
+		// Help
+		if(this.meta.get('description')) {
+			this.appframe.add_help_button(wn.markdown('## ' + this.meta.get('name') + '\n\n'
+				+ this.meta.get('description')));
+		}
+	},
+	setup_docstatus_filter: function() {
+		var me = this;
+		this.can_submit = wn.model.get('DocType', me.doctype).doc.get('is_submittable');
+		if(this.can_submit) {
+			this.$page.find('.show-docstatus').removeClass('hide');
+			this.$page.find('.show-docstatus input').click(function() {
+				me.run();
+			})
+		}
+	},
+	setup_listview: function() {
+		if(this.meta.get('__listjs')) {
+			eval(this.meta.get('__listjs'));
+			this.listview = new wn.doclistviews[this.doctype](this);
+		} else {
+			this.listview = new wn.views.ListView(this);
+		}
+		this.listview.parent = this;
+		this.wrapper = this.$page.find('.wnlist-area');
+		this.page_length = 20;
+		this.allow_delete = true;
+	},
+	init_list: function(auto_run) {
+		var me = this;
+		// init list
+		this.make({
+			method: 'webnotes.widgets.doclistview.get',
+			get_args: this.get_args,
+			parent: this.wrapper,
+			start: 0,
+			page_length: this.page_length,
+			show_filters: true,
+			show_grid: true,
+			new_doctype: this.doctype,
+			allow_delete: this.allow_delete,
+			no_result_message: this.make_no_result(),
+			columns: this.listview.fields
+		});
+		
+		// make_new_doc can be overridden so that default values can be prefilled
+		// for example - communication list in customer
+		$(this.wrapper).find('button[list_view_doc="'+me.doctype+'"]').click(function(){
+			me.make_new_doc(me.doctype);
+		});
+		
+		if((auto_run !== false) && (auto_run !== 0)) this.run();
+	},
+	
+	make_no_result: function() {
+		var no_result_message = repl('<div class="well">\
+		<p>No %(doctype_label)s found</p>\
+		<hr>\
+		<p><button class="btn btn-info btn-small" list_view_doc="%(doctype)s">\
+			Make a new %(doctype_label)s</button>\
+		</p></div>', {
+			doctype_label: get_doctype_label(this.doctype),
+			doctype: this.doctype
+		});
+		
+		return no_result_message;
+	},
+	render_row: function(row, data) {
+		data.doctype = this.doctype;
+		this.listview.render(row, data, this);
+	},	
+	get_query_fields: function() {
+		return this.listview.fields;
+	},
+	get_args: function() {
+		return {
+			doctype: this.doctype,
+			fields: this.get_query_fields(),
+			filters: this.filter_list.get_filters(),
+			docstatus: this.can_submit ? $.map(this.$page.find('.show-docstatus :checked'), 
+				function(inp) { return $(inp).attr('data-docstatus') }) : [],
+			order_by: this.listview.order_by || undefined,
+			group_by: this.listview.group_by || undefined,
+		}
+	},
+	add_delete_option: function() {
+		var me = this;
+		if(this.can_delete) {
+			this.add_button('Delete', function() { me.delete_items(); }, 'icon-remove');
+			$('<div style="padding: 4px"><input type="checkbox" name="select-all" />\
+			 	Select all</div>').insertBefore(this.$page.find('.result-list'));
+			this.$page.find('[name="select-all"]').click(function() {
+				me.$page.find('.list-delete').attr('checked', $(this).attr('checked') || false);
+			})
+		}
+	},
+	delete_items: function() {
+		var me = this;				
+		var dl = $.map(me.$page.find('.list-delete:checked'), function(e) {
+			return $(e).data('name');
+		});
+		if(!dl.length) 
+			return;
+		if(!confirm('This is PERMANENT action and you cannot undo. Continue?')) {
+			return;
+		}
+		
+		me.set_working(true);
+		wn.call({
+			method: 'webnotes.widgets.doclistview.delete_items',
+			args: {
+				items: dl,
+				doctype: me.doctype
+			},
+			callback: function() {
+				me.set_working(false);
+				me.refresh();
+			}
+		})
+	},
+	init_stats: function() {
+		var me = this
+		wn.call({
+			method: 'webnotes.widgets.doclistview.get_stats',
+			args: {
+				stats: me.listview.stats,
+				doctype: me.doctype
+			},
+			callback: function(r) {
+				// This gives a predictable stats order
+				$.each(me.listview.stats, function(i, v) {
+					me.render_stat(v, r.message[v]);
+				});
+				
+				// reload button at the end
+				if(me.listview.stats.length) {
+					$('<button class="btn btn-small"><i class="refresh"></i> Refresh</button>')
+						.click(function() {
+							me.reload_stats();
+						}).appendTo($('<div class="stat-wrapper">')
+							.appendTo(me.$page.find('.layout-side-section')))					
+				}
+				
+			}
+		});
+	},
+	render_stat: function(field, stat) {
+		var me = this;
+		
+		if(!stat || !stat.length) {
+			if(field=='_user_tags') {
+				this.$page.find('.layout-side-section')
+					.append('<div class="stat-wrapper"><h4>Tags</h4>\
+						<div class="help small"><i>No records tagged.</i><br><br> \
+						To add a tag, open the document and click on \
+						"Add Tag" on the sidebar</div></div>');
+			}
+			return;
+		}
+		
+		var docfield = wn.model.get('DocType', this.doctype).get({fieldname:field});
+		var label = docfield.length ? docfield[0].get('label') : field;
+		if(label=='_user_tags') label = 'Tags';
+		
+		// grid
+		var $w = $('<div class="stat-wrapper">\
+			<h4>'+ label +'</h4>\
+			<div class="stat-grid">\
+			</div>\
+		</div>');
+		
+		// sort items
+		stat = stat.sort(function(a, b) { return b[1] - a[1] });
+		var sum = 0;
+		$.each(stat, function(i,v) { sum = sum + v[1]; })
+		
+		// render items
+		$.each(stat, function(i, v) { 
+			me.render_stat_item(i, v, sum, field).appendTo($w.find('.stat-grid'));
+		});
+		
+		$w.appendTo(this.$page.find('.layout-side-section'));
+	},
+	render_stat_item: function(i, v, max, field) {
+		var me = this;
+		var args = {}
+		args.label = v[0];
+		args.width = flt(v[1]) / max * 100;
+		args.count = v[1];
+		args.field = field;
+		
+		$item = $(repl('<div class="stat-item">\
+			<div class="stat-bar" style="width: %(width)s%"></div>\
+			<div class="stat-label">\
+				<a href="#" data-label="%(label)s" data-field="%(field)s">\
+					%(label)s</a> \
+				(%(count)s)</div>\
+		</div>', args));
+		
+		this.setup_stat_item_click($item);
+		return $item;
+	},
+	reload_stats: function() {
+		this.$page.find('.layout-side-section .stat-wrapper').remove();
+		this.init_stats();
+	},
+	setup_stat_item_click: function($item) {
+		var me = this;
+		$item.find('a').click(function() {
+			var fieldname = $(this).attr('data-field');
+			var label = $(this).attr('data-label');
+			me.set_filter(fieldname, label);
+			return false;
+		});		
+	},
+	set_filter: function(fieldname, label) {
+		var filter = this.filter_list.get_filter(fieldname);
+		if(filter) {
+			var v = filter.field.get_value();
+			if(v.indexOf(label)!=-1) {
+				// already set
+				return false;
+			} else {
+				// second filter set for this field
+				if(fieldname=='_user_tags') {
+					// and for tags
+					this.filter_list.add_filter(fieldname, 'like', '%' + label);
+				} else {
+					// or for rest using "in"
+					filter.set_values(fieldname, 'in', v + ', ' + label);
+				}
+			}
+		} else {
+			// no filter for this item,
+			// setup one
+			if(fieldname=='_user_tags') {
+				this.filter_list.add_filter(fieldname, 'like', '%' + label);					
+			} else {
+				this.filter_list.add_filter(fieldname, '=', label);					
+			}
+		}
+		this.run();
+	}
+});
+
+wn.views.ListView = Class.extend({
+	init: function(doclistview) {
+		this.doclistview = doclistview;
+		this.doctype = doclistview.doctype;
+		
+		var t = "`tab"+this.doctype+"`.";
+		this.fields = [t + 'name', t + 'owner', t + 'docstatus', 
+			t + '_user_tags', t + 'modified'];
+		this.stats = ['_user_tags'];
+		this.show_hide_check_column();
+
+	},
+	columns: [
+		{width: '3%', content:'check'},
+		{width: '4%', content:'avatar'},
+		{width: '3%', content:'docstatus', css: {"text-align": "center"}},
+		{width: '35%', content:'name'},
+		{width: '40%', content:'tags', css: {'color':'#aaa'}},
+		{width: '15%', content:'modified', css: {'text-align': 'right', 'color':'#222'}}		
+	],
+	render_column: function(data, parent, opts) {
+		var me = this;
+		
+		// style
+		if(opts.css) {
+			$.each(opts.css, function(k, v) { $(parent).css(k, v)});
+		}
+		
+		// multiple content
+		if(opts.content.indexOf && opts.content.indexOf('+')!=-1) {
+			$.map(opts.content.split('+'), function(v) {
+				me.render_column(data, parent, {content:v});
+			});
+			return;
+		}
+		
+		// content
+		if(typeof opts.content=='function') {
+			opts.content(parent, data, me);
+		}
+		else if(opts.content=='name') {
+			$(parent).append(repl('<a href="#!Form/%(doctype)s/%(name)s">%(name)s</a>', data));
+		} 
+		else if(opts.content=='avatar') {
+			$(parent).append(repl('<span class="avatar-small"><img src="%(avatar)s" \
+				title="%(fullname)s"/></span>', 
+				data));			
+		}
+		else if(opts.content=='check') {
+			$(parent).append('<input class="list-delete" type="checkbox">');
+			$(parent).find('input').data('name', data.name);			
+		}
+		else if(opts.content=='docstatus') {
+			$(parent).append(repl('<span class="docstatus"><i class="%(docstatus_icon)s" \
+				title="%(docstatus_title)s"></i></span>', data));			
+		}
+		else if(opts.content=='tags') {
+			this.add_user_tags(parent, data);
+		}
+		else if(opts.content=='modified') {
+			$(parent).append(data.when);			
+		}
+		else if(opts.type=='bar-graph') {
+			this.render_bar_graph(parent, data, opts.content, opts.label);
+		}
+		else if(opts.type=='link' && opts.doctype) {
+			$(parent).append(repl('<a href="#!Form/'+opts.doctype+'/'
+				+data[opts.content]+'">'+data[opts.content]+'</a>', data));
+		}
+		else if(opts.template) {
+			$(parent).append(repl(opts.template, data));
+		}
+		else if(data[opts.content]) {
+			$(parent).append(' ' + data[opts.content]);
+		}
+		
+	},
+	render: function(row, data) {
+		var me = this;
+		this.prepare_data(data);
+		rowhtml = '';
+				
+		// make table
+		$.each(this.columns, function(i, v) {
+			rowhtml += repl('<td style="width: %(width)s"></td>', v);
+		});
+		var tr = $(row).html('<table><tbody><tr>' + rowhtml + '</tr></tbody></table>').find('tr').get(0);
+		
+		// render cells
+		$.each(this.columns, function(i, v) {
+			me.render_column(data, tr.cells[i], v);
+		});
+	},
+	prepare_data: function(data) {
+		data.fullname = wn.user_info(data.owner).fullname;
+		data.avatar = wn.user_info(data.owner).image;
+		
+		this.prepare_when(data, data.modified);
+		
+		// docstatus
+		if(data.docstatus==0 || data.docstatus==null) {
+			data.docstatus_icon = 'icon-pencil';
+			data.docstatus_title = 'Editable';
+		} else if(data.docstatus==1) {
+			data.docstatus_icon = 'icon-lock';			
+			data.docstatus_title = 'Submitted';
+		} else if(data.docstatus==2) {
+			data.docstatus_icon = 'icon-remove';			
+			data.docstatus_title = 'Cancelled';
+		}
+		
+		// nulls as strings
+		for(key in data) {
+			if(data[key]==null) {
+				data[key]='';
+			}
+		}
+	},
+	
+	prepare_when: function(data, date_str) {
+		if (!date_str) date_str = data.modified;
+		// when
+		data.when = dateutil.str_to_user(date_str).split(' ')[0];
+		var diff = dateutil.get_diff(dateutil.get_today(), date_str.split(' ')[0]);
+		if(diff==0) {
+			data.when = dateutil.comment_when(date_str);
+		}
+		if(diff == 1) {
+			data.when = 'Yesterday'
+		}
+		if(diff == 2) {
+			data.when = '2 days ago'
+		}
+	},
+	
+	add_user_tags: function(parent, data) {
+		var me = this;
+		if(data._user_tags) {
+			if($(parent).html().length > 0) {
+				$(parent).append('<br />');
+			}
+			$.each(data._user_tags.split(','), function(i, t) {
+				if(t) {
+					$('<span class="label label-info" style="cursor: pointer; line-height: 200%">' 
+						+ strip(t) + '</span>')
+						.click(function() {
+							me.doclistview.set_filter('_user_tags', $(this).text())
+						})
+						.appendTo(parent);
+				}
+			});
+		}		
+	},
+	show_hide_check_column: function() {
+		if(!this.doclistview.can_delete) {
+			this.columns = $.map(this.columns, function(v, i) { if(v.content!='check') return v });
+		}
+	},
+	render_bar_graph: function(parent, data, field, label) {
+		var args = {
+			percent: data[field],
+			fully_delivered: (data[field] > 99 ? 'bar-complete' : ''),
+			label: label
+		}
+		$(parent).append(repl('<span class="bar-outer" style="width: 30px; float: right" \
+			title="%(percent)s% %(label)s">\
+			<span class="bar-inner %(fully_delivered)s" \
+				style="width: %(percent)s%;"></span>\
+		</span>', args));
+	},
+	render_icon: function(parent, icon_class, label) {
+		var icon_html = "<i class='%(icon_class)s' title='%(label)s'></i>";
+		$(parent).append(repl(icon_html, {icon_class: icon_class, label: label || ''}));
+	}
+});
+
+wn.provide('wn.views.RecordListView');
+wn.views.RecordListView = wn.views.DocListView.extend({
+	init: function(doctype, wrapper, ListView) {
+		this.doctype = doctype;
+		this.wrapper = wrapper;
+		this.listview = new ListView(this);
+		this.listview.parent = this;
+		this.setup();
+	},
+
+	setup: function() {
+		var me = this;
+		me.page_length = 10;
+
+		$(me.wrapper).empty();
+
+		me.init_list();
+	},
+
+	get_args: function() {
+		var args = this._super();
+		$.each((this.default_filters || []), function(i, f) {
+		      args.filters.push(f);
+		});
+		args.docstatus = args.docstatus.concat((this.default_docstatus || []));
+		return args;
+	},
+});
+
 /*
  *	lib/js/wn/views/formview.js
  */
-wn.provide('wn.views.formview');wn.provide('wn.forms');wn.views.formview={show:function(dt,dn){wn.model.with_doctype(dt,function(){wn.model.with_doc(dt,dn,function(dn,r){if(r&&r['403'])return;if(!(wn.model.get(dt,dn))){wn.container.change_to('404');return;}
-if(wn.model.get('DocType',dt).get_value('in_dialog')){var form_dialog=new wn.views.FormDialog({doc:wn.model.get(dt,dn).doc});form_dialog.show();}else{var page_name=wn.get_route_str();if(wn.contents[page_name]){wn.container.change_to(page_name);}else{wn.get_or_set(wn.forms,dt,{})[dn]=new wn.views.FormPage(dt,dn);}}});})},create:function(dt){var newdoclist=wn.model.create(dt);wn.set_route('Form',dt,newdoclist.doc.get('name'));}}
+// Copyright (c) 2012 Web Notes Technologies Pvt Ltd (http://erpnext.com)
+// 
+// MIT License (MIT)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a 
+// copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+// render formview
+
+wn.provide('wn.views.formview');
+wn.provide('wn.forms');
+wn.views.formview = {
+	show: function(dt, dn) {
+		// show doctype
+		wn.model.with_doctype(dt, function() {
+			wn.model.with_doc(dt, dn, function(dn, r) {
+				if(r && r['403']) return; // not permitted
+				
+				if(!(wn.model.get(dt, dn))) {
+					wn.container.change_to('404');
+					return;
+				}
+				
+				if(wn.model.get('DocType', dt).get_value('in_dialog')) {
+					// dialog
+					var form_dialog = new wn.views.FormDialog({
+						doc: wn.model.get(dt, dn).doc
+					});
+					
+					form_dialog.show();
+				} else {
+					// page
+					var page_name = wn.get_route_str();
+					if(wn.contents[page_name]) {
+						wn.container.change_to(page_name);
+					} else {
+						wn.get_or_set(wn.forms, dt, {})[dn] = new wn.views.FormPage(dt, dn);					
+					}
+				}
+				
+			});
+		})
+	},
+	create: function(dt) {
+		var newdoclist = wn.model.create(dt);
+		wn.set_route('Form', dt, newdoclist.doc.get('name'));
+	}
+}
+
 /*
  *	lib/js/wn/views/pageview.js
  */
-wn.provide('wn.views.pageview');wn.provide('wn.pages');wn.views.pageview={with_page:function(name,callback){if(!wn.model.has('Page',name)){wn.call({method:'webnotes.widgets.page.getpage',args:{'name':name},callback:function(r){wn.model.sync(r.docs);callback();}});}else{callback();}},show:function(name){if(!name)
-name=(wn.boot?wn.boot.home_page:window.page_name);wn.views.pageview.with_page(name,function(r){if(r&&r.exc){if(!r['403'])wn.container.change_to('404');}else if(!wn.pages[name]){new wn.views.Page(name);}
-wn.container.change_to(name);});}}
-wn.views.Page=Class.extend({init:function(name,wrapper){this.name=name;var me=this;wn.pages[name]=this;if(name==window.page_name){this.wrapper=$('#page-'+name).get(0);this.wrapper.label=document.title||window.page_name;this.wrapper.page_name=window.page_name;wn.contents[window.page_name]=this.wrapper;}else{this.pagedoc=wn.model.get('Page',this.name).doc;this.wrapper=wn.container.add_page(this.name);this.wrapper.label=this.pagedoc.get('title')||this.pagedoc.get('name');this.wrapper.page_name=this.pagedoc.get('name');this.wrapper.innerHTML=this.pagedoc.get('content');wn.dom.eval(this.pagedoc.get('script',''));wn.dom.set_style(this.pagedoc.get('style',''));this.trigger('load');}
-$(this.wrapper).bind('show',function(){cur_frm=null;me.trigger('show');me.trigger('refresh');});}})
-wn.views.make_404=function(){var page=wn.container.add_page('404');$(page).html('<div class="layout-wrapper">\
-  <h1>Not Found</h1><br>\
-  <p>Sorry we were unable to find what you were looking for.</p>\
-  <p><a href="#">Go back to home</a></p>\
-  </div>').toggle(false);};wn.views.make_403=function(){var page=wn.container.add_page('403');$(page).html('<div class="layout-wrapper">\
-  <h1>Not Permitted</h1><br>\
-  <p>Sorry you are not permitted to view this page.</p>\
-  <p><a href="#">Go back to home</a></p>\
-  </div>').toggle(false);};
+// Copyright (c) 2012 Web Notes Technologies Pvt Ltd (http://erpnext.com)
+// 
+// MIT License (MIT)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a 
+// copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+
+wn.provide('wn.views.pageview');
+wn.provide('wn.pages');
+
+wn.views.pageview = {
+	with_page: function(name, callback) {
+		if(!wn.model.has('Page', name)) {
+			wn.call({
+				method: 'webnotes.widgets.page.getpage', 
+				args: {'name':name },
+				callback: function(r) {
+					wn.model.sync(r.docs);
+					callback();
+				}
+			});
+		} else {
+			callback();
+		}
+	},
+	show: function(name) {
+		if(!name) 
+			name = (wn.boot ? wn.boot.home_page : window.page_name);
+		wn.views.pageview.with_page(name, function(r) {
+			if(r && r.exc) {
+				if(!r['403'])wn.container.change_to('404');
+			} else if(!wn.pages[name]) {
+				new wn.views.Page(name);
+			}
+			wn.container.change_to(name);			
+		});
+	}
+}
+
+wn.views.Page = Class.extend({
+	init: function(name, wrapper) {
+		this.name = name;
+		var me = this;
+
+		wn.pages[name] = this;
+
+		// web home page
+		if(name==window.page_name) {
+			this.wrapper = $('#page-' + name).get(0);
+			this.wrapper.label = document.title || window.page_name;
+			this.wrapper.page_name = window.page_name;
+			wn.contents[window.page_name] = this.wrapper;
+			
+			// onload called in script
+		} else {
+			this.pagedoc = wn.model.get('Page', this.name).doc;
+			this.wrapper = wn.container.add_page(this.name);
+			this.wrapper.label = this.pagedoc.get('title') || this.pagedoc.get('name');
+			this.wrapper.page_name = this.pagedoc.get('name');
+		
+			// set content, script and style
+			this.wrapper.innerHTML = this.pagedoc.get('content');
+			wn.dom.eval(this.pagedoc.get('script', ''));
+			wn.dom.set_style(this.pagedoc.get('style', ''));
+
+			this.trigger('load');
+		}
+		
+		// set events
+		$(this.wrapper).bind('show', function() {
+			cur_frm = null;
+			me.trigger('show');
+			me.trigger('refresh');
+		});
+	}
+})
+
+
+
+wn.views.make_404 = function() {
+	var page = wn.container.add_page('404');
+	$(page).html('<div class="layout-wrapper">\
+		<h1>Not Found</h1><br>\
+		<p>Sorry we were unable to find what you were looking for.</p>\
+		<p><a href="#">Go back to home</a></p>\
+		</div>').toggle(false);
+};
+
+wn.views.make_403 = function() {
+	var page = wn.container.add_page('403');
+	$(page).html('<div class="layout-wrapper">\
+		<h1>Not Permitted</h1><br>\
+		<p>Sorry you are not permitted to view this page.</p>\
+		<p><a href="#">Go back to home</a></p>\
+		</div>').toggle(false);
+};
+
 /*
  *	lib/js/wn/views/reportview.js
  */
-wn.views.reportview={show:function(dt,rep_name){wn.require('js/report-legacy.js');dt=get_label_doctype(dt);if(!_r.rb_con){_r.rb_con=new _r.ReportContainer();}
-_r.rb_con.set_dt(dt,function(rb){if(rep_name){var route_changed=(rb.current_route!=wn.get_route_str())
-rb.load_criteria(rep_name);if(rb.dt&&route_changed){rb.dt.run();}}
-if(!rb.forbidden){wn.container.change_to('Report Builder');}});}}
-wn.views.reportview2={show:function(dt){var page_name=wn.get_route_str();if(wn.pages[page_name]){wn.container.change_to(wn.pages[page_name]);}else{var route=wn.get_route();if(route[1]){new wn.views.ReportViewPage(route[1],route[2]);}else{wn.set_route('404');}}}}
-wn.views.ReportViewPage=Class.extend({init:function(doctype,docname){this.doctype=doctype;this.docname=docname;this.page_name=wn.get_route_str();this.make_page();var me=this;wn.model.with_doctype(doctype,function(){me.make_report_view();if(docname){wn.model.with_doc('Report',docname,function(r){me.reportview.set_columns_and_filters(JSON.parse(locals['Report'][docname].json));me.reportview.run();});}else{me.reportview.run();}});},make_page:function(){this.page=wn.container.add_page(this.page_name);wn.ui.make_app_page({parent:this.page,single_column:true});wn.container.change_to(this.page_name);},make_report_view:function(){this.page.appframe.add_breadcrumb(locals.DocType[this.doctype].module);this.reportview=new wn.views.ReportView(this.doctype,this.docname,this.page)}})
-wn.views.ReportView=wn.ui.Listing.extend({init:function(doctype,docname,page){var me=this;$(page).find('.layout-main').html('Loading Report...');wn.lib.import_slickgrid();$(page).find('.layout-main').empty();this.doctype=doctype;this.docname=docname;this.page=page;this.tab_name='`tab'+doctype+'`';this.setup();},set_init_columns:function(){var columns=[['name'],['owner']];$.each(wn.meta.docfield_list[this.doctype],function(i,df){if(df.in_filter&&df.fieldname!='naming_series'&&df.fieldtype!='Table'){columns.push([df.fieldname]);}});this.columns=columns;},setup:function(){var me=this;this.make({title:'Report: '+(this.docname?(this.doctype+' - '+this.docname):this.doctype),appframe:this.page.appframe,method:'webnotes.widgets.doclistview.get',get_args:this.get_args,parent:$(this.page).find('.layout-main'),start:0,page_length:20,show_filters:true,new_doctype:this.doctype,allow_delete:true,});this.make_column_picker();this.make_sorter();this.make_export();this.set_init_columns();this.make_save();},set_columns_and_filters:function(opts){var me=this;if(opts.columns)this.columns=opts.columns;if(opts.filters)$.each(opts.filters,function(i,f){me.filter_list.add_filter(f[1],f[2],f[3]);});if(opts.sort_by)this.sort_by_select.val(opts.sort_by);if(opts.sort_order)this.sort_order_select.val(opts.sort_order);if(opts.sort_by_next)this.sort_by_next_select.val(opts.sort_by_next);if(opts.sort_order_next)this.sort_order_next_select.val(opts.sort_order_next);},get_args:function(){var me=this;return{doctype:this.doctype,fields:$.map(this.columns,function(v){return me.get_full_column_name(v)}),order_by:this.get_order_by(),filters:this.filter_list.get_filters(),docstatus:['0','1','2']}},get_order_by:function(){var order_by=this.get_selected_table_and_column(this.sort_by_select)
-+' '+this.sort_order_select.val()
-if(this.sort_by_next_select.val()){order_by+=', '+this.get_selected_table_and_column(this.sort_by_next_select)
-+' '+this.sort_order_next_select.val()}
-return order_by;},get_selected_table_and_column:function($select){return this.get_full_column_name([$select.val(),$select.find('option:selected').attr('table')])},get_full_column_name:function(v){return(v[1]?('`tab'+v[1]+'`'):this.tab_name)+'.'+v[0];},build_columns:function(){var me=this;return $.map(this.columns,function(c){var docfield=wn.meta.docfield_map[c[1]||me.doctype][c[0]];coldef={id:c[0],field:c[0],docfield:docfield,name:(docfield?docfield.label:toTitle(c[0])),width:(docfield?cint(docfield.width):120)||120}
-if(c[0]=='name'){coldef.formatter=function(row,cell,value,columnDef,dataContext){return repl("<a href='#!Form/%(doctype)s/%(name)s'>%(name)s</a>",{doctype:me.doctype,name:value});}}else if(docfield&&docfield.fieldtype=='Link'){coldef.formatter=function(row,cell,value,columnDef,dataContext){if(value){return repl("<a href='#!Form/%(doctype)s/%(name)s'>%(name)s</a>",{doctype:columnDef.docfield.options,name:value});}else{return'';}}}
-return coldef;});},render_list:function(){var me=this;var columns=[{id:'_idx',field:'_idx',name:'Sr.',width:40}].concat(this.build_columns());$.each(this.data,function(i,v){v._idx=i+1;});var options={enableCellNavigation:true,enableColumnReorder:false};var grid=new Slick.Grid(this.$w.find('.result-list').css('border','1px solid grey').css('height','500px').get(0),this.data,columns,options);},make_column_picker:function(){var me=this;this.column_picker=new wn.ui.ColumnPicker(this);this.page.appframe.add_button('Pick Columns',function(){me.column_picker.show(me.columns);},'icon-th-list');},make_sorter:function(){var me=this;this.sort_dialog=new wn.ui.Dialog({title:'Sorting Preferences'});$(this.sort_dialog.body).html('<p class="help">Sort By</p>\
-   <div class="sort-column"></div>\
-   <div><select class="sort-order" style="margin-top: 10px; width: 60%;">\
-    <option value="asc">Ascending</option>\
-    <option value="desc">Descending</option>\
-   </select></div>\
-   <hr><p class="help">Then By (optional)</p>\
-   <div class="sort-column-1"></div>\
-   <div><select class="sort-order-1" style="margin-top: 10px; width: 60%;">\
-    <option value="asc">Ascending</option>\
-    <option value="desc">Descending</option>\
-   </select></div><hr>\
-   <div><button class="btn btn-small btn-info">Update</div>');this.sort_by_select=new wn.ui.FieldSelect($(this.sort_dialog.body).find('.sort-column'),this.doctype).$select;this.sort_by_select.css('width','60%');this.sort_order_select=$(this.sort_dialog.body).find('.sort-order');this.sort_by_next_select=new wn.ui.FieldSelect($(this.sort_dialog.body).find('.sort-column-1'),this.doctype,null,true).$select;this.sort_by_next_select.css('width','60%');this.sort_order_next_select=$(this.sort_dialog.body).find('.sort-order-1');this.sort_by_select.val('modified');this.sort_order_select.val('desc');this.sort_by_next_select.val('');this.sort_order_next_select.val('desc');this.page.appframe.add_button('Sort By',function(){me.sort_dialog.show();},'icon-arrow-down');$(this.sort_dialog.body).find('.btn-info').click(function(){me.sort_dialog.hide();me.run();});},make_export:function(){var me=this;if(wn.user.is_report_manager()){this.page.appframe.add_button('Export',function(){var args=me.get_args();args.cmd='webnotes.widgets.doclistview.export_query'
-open_url_post(wn.request.url,args);},'icon-download-alt');}},make_save:function(){var me=this;if(wn.user.is_report_manager()){this.page.appframe.add_button('Save',function(){if(me.docname){var name=me.docname}else{var name=prompt('Select Report Name');if(!name){return;}}
-wn.call({method:'webnotes.widgets.doclistview.save_report',args:{name:name,doctype:me.doctype,json:JSON.stringify({filters:me.filter_list.get_filters(),columns:me.columns,sort_by:me.sort_by_select.val(),sort_order:me.sort_order_select.val(),sort_by_next:me.sort_by_next_select.val(),sort_order_next:me.sort_order_next_select.val()})},callback:function(r){if(r.exc)return;if(r.message!=me.docname)
-wn.set_route('Report2',me.doctype,r.message);}});},'icon-upload');}}});wn.ui.ColumnPicker=Class.extend({init:function(list){this.list=list;this.doctype=list.doctype;this.selects={};},show:function(columns){wn.require('js/lib/jquery/jquery.ui.sortable.js');var me=this;if(!this.dialog){this.dialog=new wn.ui.Dialog({title:'Pick Columns',width:'400'});}
-$(this.dialog.body).html('<div class="help">Drag to sort columns</div>\
-   <div class="column-list"></div>\
-   <div><button class="btn btn-small btn-add"><i class="icon-plus"></i>\
-    Add Column</button></div>\
-   <hr>\
-   <div><button class="btn btn-small btn-info">Update</div>');$.each(columns,function(i,c){me.add_column(c);});$(this.dialog.body).find('.column-list').sortable();$(this.dialog.body).find('.btn-add').click(function(){me.add_column('name');});$(this.dialog.body).find('.btn-info').click(function(){me.dialog.hide();me.list.columns=[];$(me.dialog.body).find('select').each(function(){me.list.columns.push([$(this).val(),$(this).find('option:selected').attr('table')]);})
-me.list.run();});this.dialog.show();},add_column:function(c){var w=$('<div style="padding: 5px 5px 5px 35px; background-color: #eee; width: 70%; \
-   margin-bottom: 10px; border-radius: 3px; cursor: move;">\
-   <a class="close" style="margin-top: 5px;">&times</a>\
-   </div>').appendTo($(this.dialog.body).find('.column-list'));var fieldselect=new wn.ui.FieldSelect(w,this.doctype);fieldselect.$select.css('width','90%').val(c);w.find('.close').click(function(){$(this).parent().remove();});}});
+// Copyright (c) 2012 Web Notes Technologies Pvt Ltd (http://erpnext.com)
+// 
+// MIT License (MIT)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a 
+// copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+
+wn.views.reportview = {
+	show: function(dt, rep_name) {
+		wn.require('js/report-legacy.js');
+		dt = get_label_doctype(dt);
+
+		if(!_r.rb_con) {
+			// first load
+			_r.rb_con = new _r.ReportContainer();
+		}
+
+		_r.rb_con.set_dt(dt, function(rb) { 
+			if(rep_name) {
+				var route_changed = (rb.current_route != wn.get_route_str())
+				rb.load_criteria(rep_name);
+
+				// if loaded, then run				
+				if(rb.dt && route_changed) {
+					rb.dt.run();
+				}
+			}
+
+			// show
+			if(!rb.forbidden) {
+				wn.container.change_to('Report Builder');
+			}
+		} );
+	}
+}
+
+// Routing Rules
+// --------------
+// `Report` shows list of all pages from which you can start a report + all saved reports
+// (module wise)
+// `Report/[doctype]` shows report for that doctype
+// `Report/[doctype]/[report_name]` loads report with that name
+
+wn.views.reportview2 = {
+	show: function(dt) {
+		var page_name = wn.get_route_str();
+		if(wn.pages[page_name]) {
+			wn.container.change_to(wn.pages[page_name]);
+		} else {
+			var route = wn.get_route();
+			if(route[1]) {
+				new wn.views.ReportViewPage(route[1], route[2]);				
+			} else {
+				wn.set_route('404');
+			}
+		}
+	}
+}
+
+wn.views.ReportViewPage = Class.extend({
+	init: function(doctype, docname) {
+		this.doctype = doctype;
+		this.docname = docname;
+		this.page_name = wn.get_route_str();
+		this.make_page();
+
+		var me = this;
+		wn.model.with_doctype(doctype, function() {
+			me.make_report_view();
+			if(docname) {
+				wn.model.with_doc('Report', docname, function(r) {
+					me.reportview.set_columns_and_filters(JSON.parse(locals['Report'][docname].json));
+					me.reportview.run();
+				});
+			} else {
+				me.reportview.run();
+			}
+		});
+
+	},
+	make_page: function() {
+		this.page = wn.container.add_page(this.page_name);
+		wn.ui.make_app_page({parent:this.page, 
+			single_column:true});
+		wn.container.change_to(this.page_name);
+	},
+	make_report_view: function() {
+		// add breadcrumbs
+		this.page.appframe.add_breadcrumb(locals.DocType[this.doctype].module);
+			
+		this.reportview = new wn.views.ReportView(this.doctype, this.docname, this.page)
+	}
+})
+
+wn.views.ReportView = wn.ui.Listing.extend({
+	init: function(doctype, docname, page) {
+		var me = this;
+		$(page).find('.layout-main').html('Loading Report...');
+		wn.lib.import_slickgrid();
+		$(page).find('.layout-main').empty();
+		this.doctype = doctype;
+		this.docname = docname;
+		this.page = page;
+		this.tab_name = '`tab'+doctype+'`';
+		this.setup();
+	},
+	set_init_columns: function() {
+		// pre-select mandatory columns
+		var columns = [['name'], ['owner']];
+		$.each(wn.meta.docfield_list[this.doctype], function(i, df) {
+			if(df.in_filter && df.fieldname!='naming_series' && df.fieldtype!='Table') {
+				columns.push([df.fieldname]);
+			}
+		});
+		this.columns = columns;
+	},
+	setup: function() {
+		var me = this;
+		this.make({
+			title: 'Report: ' + (this.docname ? (this.doctype + ' - ' + this.docname) : this.doctype),
+			appframe: this.page.appframe,
+			method: 'webnotes.widgets.doclistview.get',
+			get_args: this.get_args,
+			parent: $(this.page).find('.layout-main'),
+			start: 0,
+			page_length: 20,
+			show_filters: true,
+			new_doctype: this.doctype,
+			allow_delete: true,
+		});
+		this.make_column_picker();
+		this.make_sorter();
+		this.make_export();
+		this.set_init_columns();
+		this.make_save();
+	},
+	
+	// preset columns and filters from saved info
+	set_columns_and_filters: function(opts) {
+		var me = this;
+		if(opts.columns) this.columns = opts.columns;
+		if(opts.filters) $.each(opts.filters, function(i, f) {
+			// fieldname, condition, value
+			me.filter_list.add_filter(f[1], f[2], f[3]);
+		});
+		
+		// first sort
+		if(opts.sort_by) this.sort_by_select.val(opts.sort_by);
+		if(opts.sort_order) this.sort_order_select.val(opts.sort_order);
+		
+		// second sort
+		if(opts.sort_by_next) this.sort_by_next_select.val(opts.sort_by_next);
+		if(opts.sort_order_next) this.sort_order_next_select.val(opts.sort_order_next);
+	},
+	
+	// build args for query
+	get_args: function() {
+		var me = this;
+		return {
+			doctype: this.doctype,
+			fields: $.map(this.columns, function(v) { return me.get_full_column_name(v) }),
+			order_by: this.get_order_by(),
+			filters: this.filter_list.get_filters(),
+			docstatus: ['0','1','2']
+		}
+	},
+	
+	get_order_by: function() {
+		// first 
+		var order_by = this.get_selected_table_and_column(this.sort_by_select) 
+			+ ' ' + this.sort_order_select.val()
+			
+		// second
+		if(this.sort_by_next_select.val()) {
+			order_by += ', ' + this.get_selected_table_and_column(this.sort_by_next_select) 
+				+ ' ' + this.sort_order_next_select.val()
+		}
+		
+		return order_by;
+	},
+	get_selected_table_and_column: function($select) {
+		return this.get_full_column_name([$select.val(), 
+			$select.find('option:selected').attr('table')]) 
+	},
+	
+	// get table_name.column_name
+	get_full_column_name: function(v) {
+		return (v[1] ? ('`tab' + v[1] + '`') : this.tab_name) + '.' + v[0];
+	},
+
+	// build columns for slickgrid
+	build_columns: function() {
+		var me = this;
+		return $.map(this.columns, function(c) {
+			var docfield = wn.meta.docfield_map[c[1] || me.doctype][c[0]];
+			coldef = {
+				id: c[0],
+				field: c[0],
+				docfield: docfield,
+				name: (docfield ? docfield.label : toTitle(c[0])),
+				width: (docfield ? cint(docfield.width) : 120) || 120
+			}
+						
+			if(c[0]=='name') {
+				coldef.formatter = function(row, cell, value, columnDef, dataContext) {
+					return repl("<a href='#!Form/%(doctype)s/%(name)s'>%(name)s</a>", {
+						doctype: me.doctype,
+						name: value
+					});
+				}
+			} else if(docfield && docfield.fieldtype=='Link') {
+				coldef.formatter = function(row, cell, value, columnDef, dataContext) {
+					if(value) {
+						return repl("<a href='#!Form/%(doctype)s/%(name)s'>%(name)s</a>", {
+							doctype: columnDef.docfield.options,
+							name: value
+						});						
+					} else {
+						return '';
+					}
+				}				
+			}
+			
+			return coldef;
+		});
+	},
+	
+	// render data
+	render_list: function() {
+		var me = this;
+		//this.gridid = wn.dom.set_unique_id()
+		var columns = [{id:'_idx', field:'_idx', name: 'Sr.', width: 40}].concat(this.build_columns());
+
+		// add sr in data
+		$.each(this.data, function(i, v) {
+			// add index
+			v._idx = i+1;
+		});
+
+		var options = {
+			enableCellNavigation: true,
+			enableColumnReorder: false
+		};
+		
+		var grid = new Slick.Grid(this.$w.find('.result-list')
+			.css('border', '1px solid grey')
+			.css('height', '500px')
+			.get(0), this.data, 
+			columns, options);
+	},
+	
+	// setup column picker
+	make_column_picker: function() {
+		var me = this;
+		this.column_picker = new wn.ui.ColumnPicker(this);
+		this.page.appframe.add_button('Pick Columns', function() {
+			me.column_picker.show(me.columns);
+		}, 'icon-th-list');
+	},
+	
+	// setup sorter
+	make_sorter: function() {
+		var me = this;
+		this.sort_dialog = new wn.ui.Dialog({title:'Sorting Preferences'});
+		$(this.sort_dialog.body).html('<p class="help">Sort By</p>\
+			<div class="sort-column"></div>\
+			<div><select class="sort-order" style="margin-top: 10px; width: 60%;">\
+				<option value="asc">Ascending</option>\
+				<option value="desc">Descending</option>\
+			</select></div>\
+			<hr><p class="help">Then By (optional)</p>\
+			<div class="sort-column-1"></div>\
+			<div><select class="sort-order-1" style="margin-top: 10px; width: 60%;">\
+				<option value="asc">Ascending</option>\
+				<option value="desc">Descending</option>\
+			</select></div><hr>\
+			<div><button class="btn btn-small btn-info">Update</div>');
+		
+		// first
+		this.sort_by_select = new wn.ui.FieldSelect($(this.sort_dialog.body).find('.sort-column'), 
+			this.doctype).$select;
+		this.sort_by_select.css('width', '60%');
+		this.sort_order_select = $(this.sort_dialog.body).find('.sort-order');
+		
+		// second
+		this.sort_by_next_select = new wn.ui.FieldSelect($(this.sort_dialog.body).find('.sort-column-1'), 
+			this.doctype, null, true).$select;
+		this.sort_by_next_select.css('width', '60%');
+		this.sort_order_next_select = $(this.sort_dialog.body).find('.sort-order-1');
+		
+		// initial values
+		this.sort_by_select.val('modified');
+		this.sort_order_select.val('desc');
+		
+		this.sort_by_next_select.val('');
+		this.sort_order_next_select.val('desc');
+		
+		// button actions
+		this.page.appframe.add_button('Sort By', function() {
+			me.sort_dialog.show();
+		}, 'icon-arrow-down');
+		
+		$(this.sort_dialog.body).find('.btn-info').click(function() { 
+			me.sort_dialog.hide();
+			me.run();
+		});
+	},
+	
+	// setup export
+	make_export: function() {
+		var me = this;
+		if(wn.user.is_report_manager()) {
+			this.page.appframe.add_button('Export', function() {
+				var args = me.get_args();
+				args.cmd = 'webnotes.widgets.doclistview.export_query'
+				open_url_post(wn.request.url, args);
+			}, 'icon-download-alt');
+		}
+	},
+	
+	// save
+	make_save: function() {
+		var me = this;
+		if(wn.user.is_report_manager()) {
+			this.page.appframe.add_button('Save', function() {
+				// name
+				if(me.docname) {
+					var name = me.docname
+				} else {
+					var name = prompt('Select Report Name');
+					if(!name) {
+						return;
+					}
+				}
+				
+				// callback
+				wn.call({
+					method: 'webnotes.widgets.doclistview.save_report',
+					args: {
+						name: name,
+						doctype: me.doctype,
+						json: JSON.stringify({
+							filters: me.filter_list.get_filters(),
+							columns: me.columns,
+							sort_by: me.sort_by_select.val(),
+							sort_order: me.sort_order_select.val(),
+							sort_by_next: me.sort_by_next_select.val(),
+							sort_order_next: me.sort_order_next_select.val()							
+						})
+					},
+					callback: function(r) {
+						if(r.exc) return;
+						if(r.message != me.docname)
+							wn.set_route('Report2', me.doctype, r.message);
+					}
+				});
+			}, 'icon-upload');
+		}
+	}
+});
+
+wn.ui.ColumnPicker = Class.extend({
+	init: function(list) {
+		this.list = list;
+		this.doctype = list.doctype;
+		this.selects = {};
+	},
+	show: function(columns) {
+		wn.require('js/lib/jquery/jquery.ui.sortable.js');
+		var me = this;
+		if(!this.dialog) {
+			this.dialog = new wn.ui.Dialog({
+				title: 'Pick Columns',
+				width: '400'
+			});
+		}
+		$(this.dialog.body).html('<div class="help">Drag to sort columns</div>\
+			<div class="column-list"></div>\
+			<div><button class="btn btn-small btn-add"><i class="icon-plus"></i>\
+				Add Column</button></div>\
+			<hr>\
+			<div><button class="btn btn-small btn-info">Update</div>');
+		
+		// show existing	
+		$.each(columns, function(i, c) {
+			me.add_column(c);
+		});
+		
+		$(this.dialog.body).find('.column-list').sortable();
+		
+		// add column
+		$(this.dialog.body).find('.btn-add').click(function() {
+			me.add_column('name');
+		});
+		
+		// update
+		$(this.dialog.body).find('.btn-info').click(function() {
+			me.dialog.hide();
+			// selected columns as list of [column_name, table_name]
+			me.list.columns = [];
+			$(me.dialog.body).find('select').each(function() {
+				me.list.columns.push([$(this).val(), 
+					$(this).find('option:selected').attr('table')]);
+			})
+			me.list.run();
+		});
+		
+		this.dialog.show();
+	},
+	add_column: function(c) {
+		var w = $('<div style="padding: 5px 5px 5px 35px; background-color: #eee; width: 70%; \
+			margin-bottom: 10px; border-radius: 3px; cursor: move;">\
+			<a class="close" style="margin-top: 5px;">&times</a>\
+			</div>')
+			.appendTo($(this.dialog.body).find('.column-list'));
+		var fieldselect = new wn.ui.FieldSelect(w, this.doctype);
+		fieldselect.$select.css('width', '90%').val(c);
+		w.find('.close').click(function() {
+			$(this).parent().remove();
+		});
+	}
+});
+
 /*
  *	lib/js/wn/form/control.js
  */
-wn.ui.make_control=function(opts){control_map={'Check':wn.ui.CheckControl,'Data':wn.ui.Control,'Int':wn.ui.IntControl,'Float':wn.ui.FloatControl,'Currency':wn.ui.CurrencyControl,'Link':wn.ui.LinkControl,'Select':wn.ui.SelectControl,'Table':wn.ui.GridControl,'Text':wn.ui.TextControl,'Text Editor':wn.ui.RichTextControl,'Button':wn.ui.ButtonControl}
-if(control_map[opts.docfield.fieldtype]){return new control_map[opts.docfield.fieldtype](opts);}else{return null;}}
-wn.ui.Control=Class.extend({init:function(opts){$.extend(this,opts);this.make();this.set_events();this.apply_hidden();this.apply_mandatory();this.set_init_value();this.set_change_event();},make:function(){if(this.docfield.vertical){this.make_body_vertical();}else{this.make_body();}
-this.make_input();this.make_label();},make_label:function(){if(this.docfield.label)
-this.$w.find('label:first').text(this.docfield.label);if(this.no_label){this.hide_label();}else{if(this.docfield.description){this.help_block(this.docfield.description);}}},set_change_event:function(){var me=this;if(this.$input)
-this.$input.change(function(){var val=$(this).val();if(me.validate){val=me.validate(val);$(this).val(val);}
-if(me.doc)me.doc.fields[me.docfield.fieldname]=val;})},set_events:function(){var me=this;this.$w.find('.control-static').click(function(){me.toggle_editable(true);});},toggle_editable:function(editable){if(this.docfield.reqd)
-editable=true;if(editable===undefined)
-editable=!this.editable
-this.toggle_input(editable);this.$w.find('.control-static').toggle(!editable);this.editable=editable;},toggle_input:function(show){this.$input&&this.$input.toggle(show);},set_init_value:function(){if(this.doc){this.set_input(this.doc.get(this.docfield.fieldname));}},hide_label:function(){this.$w.find('.control-label').toggle(false);},set_input:function(val){this.$input.val(val).change();this.set_static(val);},as_inline:function(){this.$w.css('display','inline');this.$w.find('div').css('display','inline');},set_static:function(val){this.$w.find('.control-static').html(val||'<i style="color: #888">Click to set</i>');},set:function(val){if(this.doc){this.doc.set(this.docfield.fieldname,val);}else{this.set_input(val);}},get:function(){return this.$input.val();},get_value:function(){return this.get();},make_input:function(){this.$input=$('<input type="text">').appendTo(this.$w.find('.controls'));},make_body:function(){this.$w=$('<div class="control-group">\
-   <label class="control-label"></label>\
-   <div class="controls">\
-    <div class="control-static" style="display: none"></div>\
-   </div>\
-   </div>').appendTo(this.parent);},make_body_vertical:function(){this.$w=$('<div class="control-group">\
-   <div class="vertical-label"><label></label></div>\
-   <div class="controls" style="margin-left: 0px;">\
-    <div class="control-static" style="display: none"></div>\
-   </div>\
-   </div>').appendTo(this.parent);if(!this.docfield.label){this.$w.find('.vertical-label').toggle(false);}},help_block:function(text){if(!text)return;if(!this.$w.find('.help-block').length){this.$w.find('.controls').append('<div class="help-block">');}
-this.$w.find('.help-block').text(text);},apply_hidden:function(){this.$w.toggle(!this.docfield.hidden);},apply_mandatory:function(){var me=this;if(this.docfield.reqd){this.$input.change(function(){$(me.$w).toggleClass('error',!$(this).val())});}}});
+// Copyright (c) 2012 Web Notes Technologies Pvt Ltd (http://erpnext.com)
+// 
+// MIT License (MIT)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a 
+// copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+
+wn.ui.make_control = function(opts) {
+	control_map = {
+		'Check': wn.ui.CheckControl,
+		'Data': wn.ui.Control,
+		'Int': wn.ui.IntControl,
+		'Float': wn.ui.FloatControl,
+		'Currency': wn.ui.CurrencyControl,
+		'Link': wn.ui.LinkControl,
+		'Select': wn.ui.SelectControl,
+		'Table': wn.ui.GridControl,
+		'Text': wn.ui.TextControl,
+		'Text Editor': wn.ui.RichTextControl,
+		'Button': wn.ui.ButtonControl
+	}
+	if(control_map[opts.docfield.fieldtype]) {
+		return new control_map[opts.docfield.fieldtype](opts);
+	} else {
+		return null;		
+	}
+}
+
+wn.ui.Control = Class.extend({
+	init: function(opts) {
+		$.extend(this, opts);
+		this.make();
+		this.set_events();
+		this.apply_hidden();
+		this.apply_mandatory();
+		this.set_init_value();
+		this.set_change_event();
+		//if(this.doc)
+		//	this.toggle_editable(false);
+	},
+	make: function() {
+		if(this.docfield.vertical) {
+			this.make_body_vertical();			
+		} else {
+			this.make_body();			
+		}
+		this.make_input();
+		this.make_label();
+	},
+	make_label: function() {
+		// label and description
+		if(this.docfield.label)
+			this.$w.find('label:first').text(this.docfield.label);
+		if(this.no_label) {
+			this.hide_label();
+		} else {
+			if(this.docfield.description) {
+				this.help_block(this.docfield.description);
+			}
+		}		
+	},
+	set_change_event: function() {
+		var me = this;
+		if(this.$input) 
+			this.$input.change(function() {
+				var val = $(this).val();
+				if(me.validate) {
+					val = me.validate(val);
+					$(this).val(val);
+				}
+				if(me.doc) me.doc.fields[me.docfield.fieldname] = val;
+			})		
+	},
+	set_events: function() {
+		var me = this;
+		this.$w.find('.control-static').click(function() {
+			me.toggle_editable(true);
+		});
+	},
+	toggle_editable: function(editable) {
+		if(this.docfield.reqd) 
+			editable = true;
+		if(editable===undefined)
+			editable = !this.editable
+		this.toggle_input(editable);
+		this.$w.find('.control-static').toggle(!editable);
+		this.editable = editable;
+	},
+	toggle_input: function(show) {
+		this.$input && this.$input.toggle(show);
+	},
+	set_init_value: function() {
+		if(this.doc) {
+			this.set_input(this.doc.get(this.docfield.fieldname));
+		}
+	},
+	hide_label: function() {
+		this.$w.find('.control-label').toggle(false);		
+	},
+	set_input: function(val) {
+		this.$input.val(val).change();
+		this.set_static(val);
+	},
+	as_inline: function() {
+		this.$w.css('display', 'inline');
+		this.$w.find('div').css('display', 'inline');
+	},
+	set_static: function(val) {
+		this.$w.find('.control-static').html(val || '<i style="color: #888">Click to set</i>');		
+	},
+	set: function(val) {
+		if(this.doc) {
+			this.doc.set(this.docfield.fieldname, val);
+		} else {
+			this.set_input(val);
+		}		
+	},
+	get: function() {
+		return this.$input.val();
+	},
+	get_value: function() {
+		return this.get();
+	},
+	make_input: function() {
+		this.$input = $('<input type="text">').appendTo(this.$w.find('.controls'));
+	},
+	make_body: function() {
+		this.$w = $('<div class="control-group">\
+			<label class="control-label"></label>\
+			<div class="controls">\
+				<div class="control-static" style="display: none"></div>\
+			</div>\
+			</div>').appendTo(this.parent);
+	},
+	make_body_vertical: function() {
+		this.$w = $('<div class="control-group">\
+			<div class="vertical-label"><label></label></div>\
+			<div class="controls" style="margin-left: 0px;">\
+				<div class="control-static" style="display: none"></div>\
+			</div>\
+			</div>').appendTo(this.parent);
+		
+		// if no label, remove whitespace
+		if(!this.docfield.label) {
+			this.$w.find('.vertical-label').toggle(false);
+		}
+	},
+	help_block: function(text) {
+		if(!text) return;
+		if(!this.$w.find('.help-block').length) {
+			this.$w.find('.controls').append('<div class="help-block">');
+		}
+		this.$w.find('.help-block').text(text);
+	},
+	apply_hidden: function() {
+		this.$w.toggle(!this.docfield.hidden);
+	},
+	apply_mandatory: function() {
+		var me = this;
+		if(this.docfield.reqd) {
+			this.$input.change(function() {
+				$(me.$w).toggleClass('error', !$(this).val())
+			});
+		}
+	}
+});
+
+
 /*
  *	lib/js/wn/form/control_grid.js
  */
-wn.ui.GridControl=wn.ui.Control.extend({init:function(opts){opts.docfield.vertical=true;this.tabletype=opts.docfield.options;this._super(opts);},make_input:function(){var me=this;wn.lib.import_slickgrid();var width=$(this.parent).parent('form:first').width();this.$input_wrapper=$('<div style="height: 300px; border: 1px solid grey;"></div>').appendTo(this.$w.find('.controls')).css('width',width);var options={enableCellNavigation:true,enableColumnReorder:false,enableRowReordering:true,rowHeight:32,editable:false};this.grid=new Slick.Grid(this.$input_wrapper.get(0),[],this.get_columns(),options);this.setup_drag_and_drop();this.make_add_row_button();this.set_edit_on_double_click();this.$w.find('.vertical-label').toggle(false);},set_edit_on_double_click:function(){var me=this;this.grid.onClick.subscribe(function(e,args){if(me.selected_row==args.row){me.edit_row(me.doc.doclist.get({parentfield:me.docfield.fieldname,idx:args.row+1})[0]);}
-me.selected_row=args.row;return false;});},get_columns:function(){var columns=$.map(wn.model.get('DocType',this.tabletype).get({doctype:'DocField'}),function(d){if(!d.get('hidden')){return{id:d.get('fieldname'),field:d.get('fieldname'),name:d.get('label'),width:cint(d.get('width'))||100}}else{return null;}});function EditButtonFormatter(row,cell,value,columnDef,data){return repl('<button class="btn btn-small grid-edit" \
-    data-parentfield="%(parentfield)s" data-name="%(name)s">Edit</button>',data);}
-return[{id:"#",name:"",width:40,behavior:"selectAndMove",selectable:false,resizable:false,cssClass:"cell-reorder dnd"},{id:'idx',field:'idx',name:'Sr',width:40}].concat(columns);},make_add_row_button:function(){var me=this;this.add_row_button=$('<button class="btn btn-small" style="margin-top: 5px;">\
-   <i class="icon-plus"></i>\
-   Add Row</button>').click(function(){wn.model.get(me.doc.get('doctype'),me.doc.get('name')).add_child(me.docfield.fieldname);me.set();return false;}).appendTo(this.$w.find('.controls'));},toggle_editable:function(){this.$w.find('.control-static').toggle(false);},set_init_value:function(){this.set();},get_data:function(){var data=this.doc.doclist.get({parentfield:this.docfield.fieldname});data=$.map(data,function(d){return d.fields;});data.sort(function(a,b){return a.idx>b.idx;});return data;},set:function(){this.grid.setData(this.get_data());this.grid.render();},set_edit_button:function(){var me=this;this.$input_wrapper.find('.grid-edit').on('click',function(){var d=me.doc.doclist.get({parentfield:$(this).attr('data-parentfield'),name:$(this).attr('data-name'),})[0];me.edit_row(d);return false;});},edit_row:function(d){var form_dialog=new wn.views.RowEditFormDialog({title:d.get('doctype')+' in row #'+d.get('idx'),doc:d,control_grid:this});form_dialog.show();},setup_drag_and_drop:function(){var grid=this.grid;var me=this;grid.setSelectionModel(new Slick.RowSelectionModel());var moveRowsPlugin=new Slick.RowMoveManager();moveRowsPlugin.onBeforeMoveRows.subscribe(function(e,data){for(var i=0;i<data.rows.length;i++){if(data.rows[i]==data.insertBefore||data.rows[i]==data.insertBefore-1){e.stopPropagation();return false;}}
-return true;});moveRowsPlugin.onMoveRows.subscribe(function(e,args){var extractedRows=[],left,right;var rows=args.rows;var insertBefore=args.insertBefore;var data=me.get_data();left=data.slice(0,insertBefore);right=data.slice(insertBefore,data.length);rows.sort(function(a,b){return a-b;});for(var i=0;i<rows.length;i++){extractedRows.push(data[rows[i]]);}
-rows.reverse();for(var i=0;i<rows.length;i++){var row=rows[i];if(row<insertBefore){left.splice(row,1);}else{right.splice(row-insertBefore,1);}}
-data=left.concat(extractedRows.concat(right));var selectedRows=[];for(var i=0;i<rows.length;i++)
-selectedRows.push(left.length+i);$.each(data,function(idx,row){row.idx=idx+1});grid.resetActiveCell();grid.setData(data);grid.setSelectedRows(selectedRows);grid.render();});grid.registerPlugin(moveRowsPlugin);grid.onDragInit.subscribe(function(e,dd){e.stopImmediatePropagation();});grid.onDragStart.subscribe(function(e,dd){var cell=grid.getCellFromEvent(e);if(!cell){return;}
-dd.row=cell.row;if(!data[dd.row]){return;}
-if(Slick.GlobalEditorLock.isActive()){return;}
-e.stopImmediatePropagation();dd.mode="recycle";var selectedRows=grid.getSelectedRows();if(!selectedRows.length||$.inArray(dd.row,selectedRows)==-1){selectedRows=[dd.row];grid.setSelectedRows(selectedRows);}
-dd.rows=selectedRows;dd.count=selectedRows.length;var proxy=$("<span></span>").css({position:"absolute",display:"inline-block",padding:"4px 10px",background:"#e0e0e0",border:"1px solid gray","z-index":99999,"-moz-border-radius":"8px","-moz-box-shadow":"2px 2px 6px silver"}).text("Drag to Recycle Bin to delete "+dd.count+" selected row(s)").appendTo("body");dd.helper=proxy;$(dd.available).css("background","pink");});}});
+// Copyright (c) 2012 Web Notes Technologies Pvt Ltd (http://erpnext.com)
+// 
+// MIT License (MIT)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a 
+// copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+
+wn.ui.GridControl = wn.ui.Control.extend({
+	init: function(opts) {
+		opts.docfield.vertical = true;
+		this.tabletype = opts.docfield.options;
+		this._super(opts);
+	},
+	make_input: function() {
+		var me = this;
+		wn.lib.import_slickgrid();
+		var width = $(this.parent).parent('form:first').width();
+		this.$input_wrapper = $('<div style="height: 300px; border: 1px solid grey;"></div>')
+			.appendTo(this.$w.find('.controls'))
+			.css('width', width);
+			
+		var options = {
+			enableCellNavigation: true,
+			enableColumnReorder: false,
+			enableRowReordering: true,
+			rowHeight: 32,
+			editable: false
+		};
+		
+		this.grid = new Slick.Grid(this.$input_wrapper.get(0), [], 
+			this.get_columns(), options);
+		this.setup_drag_and_drop();
+		this.make_add_row_button();
+		this.set_edit_on_double_click();
+		this.$w.find('.vertical-label').toggle(false);
+	},
+	set_edit_on_double_click: function() {
+		var me = this;
+		this.grid.onClick.subscribe(function(e, args) {
+			if(me.selected_row == args.row) {
+				me.edit_row(me.doc.doclist.get({parentfield:me.docfield.fieldname, 
+					idx: args.row + 1})[0]);
+			}
+			me.selected_row = args.row;
+			return false;
+		});
+	},
+	get_columns: function() {
+		var columns = $.map(wn.model.get('DocType', this.tabletype).get({doctype:'DocField'}), 
+			function(d) {
+				if(!d.get('hidden')) {
+					return {
+						id: d.get('fieldname'),
+						field: d.get('fieldname'),
+						name: d.get('label'),
+						width: cint(d.get('width')) || 100
+					}
+				} else {
+					return null;
+				}
+			}
+		);
+		
+		function EditButtonFormatter(row, cell, value, columnDef, data) {
+			return repl('<button class="btn btn-small grid-edit" \
+				data-parentfield="%(parentfield)s" data-name="%(name)s">Edit</button>', data);
+	  	}
+		
+		return [
+			{id: "#", name: "", width: 40, behavior: "selectAndMove", selectable: false,
+				resizable: false, cssClass: "cell-reorder dnd" },
+			//{id:'_edit', field:'_edit', name:'', width: 55, 
+			//	formatter:EditButtonFormatter},
+			{id:'idx', field:'idx', name:'Sr', width: 40}
+		].concat(columns);
+	},
+	make_add_row_button: function() {
+		var me = this;
+		this.add_row_button = $('<button class="btn btn-small" style="margin-top: 5px;">\
+			<i class="icon-plus"></i>\
+			Add Row</button>').click(function() {
+				wn.model.get(me.doc.get('doctype'), me.doc.get('name'))
+					.add_child(me.docfield.fieldname);
+				me.set();
+				return false;
+			}).appendTo(this.$w.find('.controls'));
+	},
+	toggle_editable: function() {
+		// no toggle for this
+		this.$w.find('.control-static').toggle(false);
+	},
+	set_init_value: function() {
+		this.set();
+	},
+	get_data: function() {
+		var data = this.doc.doclist.get({parentfield:this.docfield.fieldname});
+		
+		data = $.map(data, function(d) { return d.fields;  });
+		data.sort(function(a, b) { return a.idx > b.idx; });
+		return data;
+	},
+	set: function() {
+		// refresh values from doclist
+		this.grid.setData(this.get_data());
+		this.grid.render();
+		//this.set_edit_button();
+	},
+	set_edit_button: function() {
+		var me = this;
+		this.$input_wrapper.find('.grid-edit').on('click', function() {
+			var d = me.doc.doclist.get({
+					parentfield:$(this).attr('data-parentfield'),
+					name:$(this).attr('data-name'),
+				})[0];
+			me.edit_row(d);
+			return false;
+		});
+	},
+	edit_row: function(d) {
+		var form_dialog = new wn.views.RowEditFormDialog({
+			title: d.get('doctype') + ' in row #' + d.get('idx'),
+			doc: d,
+			control_grid: this
+		});
+		form_dialog.show();		
+	},
+	setup_drag_and_drop: function() {
+		// via http://mleibman.github.com/SlickGrid/examples/example9-row-reordering.html
+		var grid = this.grid;
+		var me = this;
+		grid.setSelectionModel(new Slick.RowSelectionModel());
+
+		var moveRowsPlugin = new Slick.RowMoveManager();
+
+		moveRowsPlugin.onBeforeMoveRows.subscribe(function (e, data) {
+			for (var i = 0; i < data.rows.length; i++) {
+				// no point in moving before or after itself
+				if (data.rows[i] == data.insertBefore || data.rows[i] == data.insertBefore - 1) {
+					e.stopPropagation();
+					return false;
+				}
+			}
+			return true;
+		});
+
+		moveRowsPlugin.onMoveRows.subscribe(function (e, args) {
+			var extractedRows = [], left, right;
+			var rows = args.rows;
+			var insertBefore = args.insertBefore;
+			var data = me.get_data();
+			
+			left = data.slice(0, insertBefore);
+			right = data.slice(insertBefore, data.length);
+
+			rows.sort(function(a,b) { return a-b; });
+
+			for (var i = 0; i < rows.length; i++) {
+				extractedRows.push(data[rows[i]]);
+			}
+
+			rows.reverse();
+
+			for (var i = 0; i < rows.length; i++) {
+				var row = rows[i];
+				if (row < insertBefore) {
+					left.splice(row, 1);
+				} else {
+					right.splice(row - insertBefore, 1);
+				}
+			}
+
+			data = left.concat(extractedRows.concat(right));
+
+			var selectedRows = [];
+			for (var i = 0; i < rows.length; i++)
+			selectedRows.push(left.length + i);
+
+			// reset idx
+			$.each(data, function(idx, row) {
+				row.idx = idx+1
+			});
+
+			grid.resetActiveCell();
+			grid.setData(data);
+			grid.setSelectedRows(selectedRows);
+			grid.render();
+		});
+
+	  	grid.registerPlugin(moveRowsPlugin);
+
+		grid.onDragInit.subscribe(function (e, dd) {
+			// prevent the grid from cancelling drag'n'drop by default
+			e.stopImmediatePropagation();
+		});
+
+		grid.onDragStart.subscribe(function (e, dd) {
+			var cell = grid.getCellFromEvent(e);
+			if (!cell) {
+				return;
+			}
+
+			dd.row = cell.row;
+			if (!data[dd.row]) {
+				return;
+			}
+
+			if (Slick.GlobalEditorLock.isActive()) {
+				return;
+			}
+
+			e.stopImmediatePropagation();
+			dd.mode = "recycle";
+
+			var selectedRows = grid.getSelectedRows();
+
+			if (!selectedRows.length || $.inArray(dd.row, selectedRows) == -1) {
+				selectedRows = [dd.row];
+				grid.setSelectedRows(selectedRows);
+			}
+
+			dd.rows = selectedRows;
+			dd.count = selectedRows.length;
+
+			var proxy = $("<span></span>")
+			.css({
+				position: "absolute",
+				display: "inline-block",
+				padding: "4px 10px",
+				background: "#e0e0e0",
+				border: "1px solid gray",
+				"z-index": 99999,
+				"-moz-border-radius": "8px",
+				"-moz-box-shadow": "2px 2px 6px silver"
+			})
+			.text("Drag to Recycle Bin to delete " + dd.count + " selected row(s)")
+			.appendTo("body");
+
+			dd.helper = proxy;
+
+			$(dd.available).css("background", "pink");
+
+		});
+	}
+});
+
+
+
 /*
  *	lib/js/wn/form/control_input.js
  */
-wn.ui.IntControl=wn.ui.Control.extend({validate:function(val){return cint(val);}});wn.ui.FloatControl=wn.ui.Control.extend({validate:function(val){if(val===null)val=0;return parseFloat(val).toFixed(6);}});wn.ui.CurrencyControl=wn.ui.Control.extend({validate:function(val){if(val===null)val=0;return parseFloat(val).toFixed(6);}});wn.ui.CheckControl=wn.ui.Control.extend({make_input:function(){this.$input=$('<input type="checkbox">').appendTo(this.$w.find('.controls'));},toggle_editable:function(){},set_static:function(){}});wn.ui.TextControl=wn.ui.Control.extend({make_input:function(){this.$input=$('<textarea type="text" rows="5">').appendTo(this.$w.find('.controls'));},set_static:function(val){if(val)
-this._super(wn.markdown(val));}});wn.ui.SelectControl=wn.ui.Control.extend({make_input:function(){this.$input=$('<select>').appendTo(this.$w.find('.controls'));this.$input.add_options(this.docfield.options.split('\n'));}});wn.ui.ButtonControl=wn.ui.Control.extend({make_input:function(){this.hide_label();this.$input=$('<button class="btn btn-small">').html(this.docfield.label).appendTo(this.$w.find('.controls'));},get_value:function(){return null;},toggle_editable:function(){},set_static:function(){},});
+// Copyright (c) 2012 Web Notes Technologies Pvt Ltd (http://erpnext.com)
+// 
+// MIT License (MIT)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a 
+// copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+
+wn.ui.IntControl = wn.ui.Control.extend({
+	validate: function(val) {
+		return cint(val);
+	}
+});
+
+wn.ui.FloatControl = wn.ui.Control.extend({
+	validate: function(val) {
+		if(val===null) val=0;
+		return parseFloat(val).toFixed(6);
+	}
+});
+
+wn.ui.CurrencyControl = wn.ui.Control.extend({
+	validate: function(val) {
+		if(val===null) val=0;
+		return parseFloat(val).toFixed(6);
+	}
+});
+
+wn.ui.CheckControl = wn.ui.Control.extend({
+	make_input: function() {
+		this.$input = $('<input type="checkbox">').appendTo(this.$w.find('.controls'));
+	},
+	toggle_editable: function() { },
+	set_static: function() { }
+});
+
+wn.ui.TextControl = wn.ui.Control.extend({
+	make_input: function() {
+		this.$input = $('<textarea type="text" rows="5">').appendTo(this.$w.find('.controls'));		
+	},
+	set_static: function(val) {
+		if(val)
+			this._super(wn.markdown(val));
+	}
+});
+
+wn.ui.SelectControl = wn.ui.Control.extend({
+	make_input: function() {
+		this.$input = $('<select>').appendTo(this.$w.find('.controls'));
+		this.$input.add_options(this.docfield.options.split('\n'));
+	}
+});
+
+wn.ui.ButtonControl = wn.ui.Control.extend({
+	make_input: function() {
+		this.hide_label();
+		this.$input = $('<button class="btn btn-small">')
+			.html(this.docfield.label)
+			.appendTo(this.$w.find('.controls'));
+	},
+	get_value: function() {
+		return null;
+	},
+	toggle_editable: function() { },
+	set_static: function() { },
+});
+
+
 /*
  *	lib/js/wn/form/control_link.js
  */
-wn.ui.LinkControl=wn.ui.Control.extend({make_input:function(){var me=this;this.$input_wrap=$('<div class="input-append">').appendTo(this.$w.find('.controls'));this.$input=$('<input type="text" size="16"/>').appendTo(this.$input_wrap);this.$button=$('<button class="btn"><i class="icon-search"></i></button>').appendTo(this.$input_wrap).click(function(){me.search_dialog=new wn.ui.Search({doctype:me.docfield.options,txt:me.$input.val(),with_filters:me.filters,df:me.docfield,callback:function(val){me.set(val);}});return false;});},toggle_input:function(show){this.$input_wrap.toggle(show);}});
+// Copyright (c) 2012 Web Notes Technologies Pvt Ltd (http://erpnext.com)
+// 
+// MIT License (MIT)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a 
+// copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+
+wn.ui.LinkControl = wn.ui.Control.extend({
+	make_input: function() {
+		var me = this;
+		this.$input_wrap = $('<div class="input-append">').appendTo(this.$w.find('.controls'));
+		this.$input = $('<input type="text" size="16"/>').appendTo(this.$input_wrap);
+		this.$button = $('<button class="btn"><i class="icon-search"></i></button>')
+			.appendTo(this.$input_wrap)
+			.click(function() {
+				
+				me.search_dialog = new wn.ui.Search({
+					doctype: me.docfield.options, 
+					txt: me.$input.val(),
+					with_filters: me.filters,
+					df: me.docfield,
+					callback: function(val) {
+						me.set(val);
+					}});				
+				
+				return false;
+			});
+	},
+	toggle_input: function(show) {
+		this.$input_wrap.toggle(show);
+	}
+});
+
 /*
  *	lib/js/wn/form/control_richtext.js
  */
-wn.ui.RichTextControl=wn.ui.Control.extend({init:function(opts){opts.docfield.vertical=true;this._super(opts);},make_input:function(){var me=this;this.$input_wrap=$('<div>').appendTo(this.$w.find('.controls'));this.$input=$('<textarea>').css('font-size','12px').css('height','300px').appendTo(this.$input_wrap);this.myid=wn.dom.set_unique_id(this.$input.get(0));wn.lib.import_wysihtml5();this.$input.wysihtml5();},toggle_input:function(show){this.$input_wrap.toggle(show);}});
+// Copyright (c) 2012 Web Notes Technologies Pvt Ltd (http://erpnext.com)
+// 
+// MIT License (MIT)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a 
+// copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+
+wn.ui.RichTextControl = wn.ui.Control.extend({
+	init: function(opts) {
+		opts.docfield.vertical = true;
+		this._super(opts);
+	},
+	make_input: function() {
+		var me = this;
+		this.$input_wrap = $('<div>').appendTo(this.$w.find('.controls'));
+		this.$input = $('<textarea>').css('font-size','12px').css('height', '300px')
+			.appendTo(this.$input_wrap);
+		
+		this.myid = wn.dom.set_unique_id(this.$input.get(0));
+			
+		wn.lib.import_wysihtml5();
+		this.$input.wysihtml5();
+	},
+	toggle_input: function(show) {
+		this.$input_wrap.toggle(show);
+	}
+});
+
+
 /*
  *	lib/js/wn/form/form.js
  */
-wn.ui.Form=Class.extend({init:function(opts){$.extend(this,opts);this.controls={};if(this.doc){this.meta=wn.model.get('DocType',this.doc.get('doctype'));this.fields=$.map(this.meta.get('DocField',{}),function(d){return d.fields;});}
-this.make_form();this.listen();},make_form:function(){var me=this;this.$form=$('<form class="form-horizontal" style="clear: both;">').appendTo(this.parent);if(this.fields[0].fieldtype!='Section Break'){me.make_fieldset('_first_section');}
-$.each(this.fields,function(i,df){if(df.fieldtype=='Section Break'){me.make_fieldset(df.fieldname,df.label);}else{me.controls[df.fieldname]=wn.ui.make_control({docfield:df,parent:me.last_fieldset,doc:me.doc});}});},make_fieldset:function(name,legend){var $fset=$('<fieldset data-name="'+name+'"></fieldset>').appendTo(this.$form);if(legend){$('<legend>').text(legend).appendTo($fset);}
-this.last_fieldset=$fset;},listen:function(){var me=this;if(this.doc){$(document).bind(wn.model.event_name(this.doc.get('doctype'),this.doc.get('name')),function(ev,key,val){if(me.controls[key])me.controls[key].set_input(val);});}}});
+// Copyright (c) 2012 Web Notes Technologies Pvt Ltd (http://erpnext.com)
+// 
+// MIT License (MIT)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a 
+// copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+
+wn.ui.Form = Class.extend({
+	init: function(opts) {
+		$.extend(this, opts);
+		this.controls = {};
+
+		if(this.doc) {
+			this.meta = wn.model.get('DocType', this.doc.get('doctype'));
+			this.fields = $.map(this.meta.get('DocField', {}), function(d) { return d.fields; });			
+		}
+		this.make_form();
+		this.listen();
+	},
+
+	make_form: function() {
+		// form
+		var me = this;
+		this.$form = $('<form class="form-horizontal" style="clear: both;">').appendTo(this.parent);
+		
+		if(this.fields[0].fieldtype!='Section Break') {
+			me.make_fieldset('_first_section');
+		}
+				
+		// controls
+		$.each(this.fields, function(i, df) {
+			// change section
+			if(df.fieldtype=='Section Break') {
+				me.make_fieldset(df.fieldname, df.label);
+			} else {
+				// make control 
+				me.controls[df.fieldname] = wn.ui.make_control({
+					docfield: df,
+					parent: me.last_fieldset,
+					doc: me.doc
+				});
+			}
+		});
+	},
+	make_fieldset: function(name, legend) {
+		var $fset = $('<fieldset data-name="'+name+'"></fieldset>').appendTo(this.$form);
+		if(legend) {
+			$('<legend>').text(legend).appendTo($fset);
+		}
+		this.last_fieldset = $fset;
+	},
+	// listen for changes in model
+	listen: function() {
+		var me = this;
+		if(this.doc) {
+			$(document).bind(wn.model.event_name(this.doc.get('doctype'), this.doc.get('name')), 
+				function(ev, key, val) {
+					if(me.controls[key]) me.controls[key].set_input(val);
+				});
+		}
+	}
+});
+
+
 /*
  *	lib/js/wn/form/form_assign.js
  */
-wn.ui.AssignTo=Class.extend({init:function(opts){$.extend(this,opts);this.make_button();this.make_dropdown();if(this.form_page.doclist.doc.get('__assigned_to')){this.set_assign_button_text(wn.boot.user_info[this.form_page.doclist.doc.get('__assigned_to')]);}},make_button:function(){this.$w=$('<div class="btn-group">\
-   <span class="label dropdown-toggle" \
-    style="width: 180px; overflow: hidden; text-align: left; display: inline-block;" \
-    data-toggle="dropdown">Not Assigned</span>\
-   <ul class="dropdown-menu">\
-   </ul>\
-  </div>').appendTo(this.form_page.$sidebar);},make_dropdown:function(){this.assign_btn=this.$w.find('.dropdown-toggle');var ul=this.$w.find('ul');var me=this;$.each(keys(wn.boot.user_info).sort().concat(''),function(i,v){if(v!='Guest'){if(v){var ui=$.extend(wn.boot.user_info[v],{id:v});}else{var ui={fullname:'Not Assigned',id:null};$('<li class="divider"></li>').appendTo(ul);}
-$('<a></a>').html(ui.fullname).data('user-info',ui).appendTo($('<li>').appendTo(ul)).click(function(){me.assign($(this).data('user-info'));});}});this.assign_btn.dropdown();},assign:function(user_info){this.assign_btn.attr('disabled','disabled').text('Updating...');var me=this;if(user_info.id){wn.model.insert({doctype:'ToDo',reference_name:this.form_page.doclist.doc.get('name'),reference_type:this.form_page.doclist.doc.get('doctype'),owner:user_info.id,description:'You have been assigned this.',assigned_by:user},function(r){me.set_assign_button_text(user_info);})}else{wn.call({method:'core.doctype.todo.todo.remove_todo',args:{reference_name:this.form_page.doclist.doc.get('name'),reference_type:this.form_page.doclist.doc.get('doctype')},callback:function(r){me.set_assign_button_text(user_info);}});}},set_assign_button_text:function(user_info){if(user_info.id){this.assign_btn.text(user_info.fullname).addClass('label-success',user_info.id);}else{this.assign_btn.text(user_info.fullname).removeClass('label-success',user_info.id);}
-this.assign_btn.attr('disabled',null);this.assign_to=user_info.id;},})
+// assign to
+wn.ui.AssignTo = Class.extend({
+	init: function(opts) {
+		$.extend(this, opts);
+		this.make_button();
+		this.make_dropdown();
+		if(this.form_page.doclist.doc.get('__assigned_to')) {
+			this.set_assign_button_text(wn.boot.user_info[
+				this.form_page.doclist.doc.get('__assigned_to')]);
+		}
+	},
+	make_button: function() {
+		this.$w = $('<div class="btn-group">\
+			<span class="label dropdown-toggle" \
+				style="width: 180px; overflow: hidden; text-align: left; display: inline-block;" \
+				data-toggle="dropdown">Not Assigned</span>\
+			<ul class="dropdown-menu">\
+			</ul>\
+		</div>').appendTo(this.form_page.$sidebar);		
+	},
+	make_dropdown: function() {
+		this.assign_btn = this.$w.find('.dropdown-toggle');
+		var ul = this.$w.find('ul');
+		var me = this;
+		
+		$.each(keys(wn.boot.user_info).sort().concat(''), function(i, v) {
+			if(v!='Guest') {
+				if(v) {
+					var ui = $.extend(wn.boot.user_info[v], {id: v});
+				} else {
+					var ui = {fullname:'Not Assigned', id: null};
+					$('<li class="divider"></li>').appendTo(ul);
+				}
+	
+				$('<a></a>').html(ui.fullname).data('user-info', ui)
+					.appendTo($('<li>').appendTo(ul)).click(function() {
+						me.assign($(this).data('user-info'));
+					});
+			}
+		});
+		
+		this.assign_btn.dropdown();		
+	},
+	assign: function(user_info) {
+		this.assign_btn.attr('disabled', 'disabled').text('Updating...');
+		var me = this;
+		if(user_info.id) {
+			wn.model.insert({
+				doctype: 'ToDo',
+				reference_name: this.form_page.doclist.doc.get('name'),
+				reference_type: this.form_page.doclist.doc.get('doctype'),
+				owner: user_info.id,
+				description: 'You have been assigned this.',
+				assigned_by: user
+			}, function(r) {
+				me.set_assign_button_text(user_info);
+			})
+		} else {
+			wn.call({
+				method: 'core.doctype.todo.todo.remove_todo',
+				args: {
+					reference_name: this.form_page.doclist.doc.get('name'),
+					reference_type: this.form_page.doclist.doc.get('doctype')					
+				},
+				callback: function(r) {
+					me.set_assign_button_text(user_info);
+				}
+			});
+		}
+	},
+	set_assign_button_text: function(user_info) {
+		if(user_info.id) {
+			this.assign_btn.text(user_info.fullname).addClass('label-success', user_info.id);			
+		} else {
+			this.assign_btn.text(user_info.fullname).removeClass('label-success', user_info.id);			
+		}
+		this.assign_btn.attr('disabled', null);
+		this.assign_to = user_info.id;
+	},
+	
+})
+
+
 /*
  *	lib/js/wn/form/form_comments.js
  */
-wn.ui.Comments=Class.extend({init:function(opts){$.extend(this,opts);this.make_body();var me=this;$.each(this.form_page.doclist.doc.get('__comments'),function(i,v){me.render_comment(v);})},make_body:function(){var me=this;this.$w=$('<div class="comments-area"><br>\
-   <b>Comments:</b><br>\
-   <textarea style="width: 190px; height: 36px;" \
-    class="comment comment-text"></textarea>\
-   <button class="btn btn-small">Add Comment</button>\
-   <div class="comment-list" style="margin-top: 17px;"></div>\
-   </div>').appendTo(this.form_page.$sidebar);this.$w.find('.btn').click(function(){me.add_comment(me.$w.find('textarea').val());})},add_comment:function(comment){var me=this;wn.model.insert({doctype:'Comment',comment:comment,comment_doctype:this.form_page.doclist.doc.get('name'),comment_docname:this.form_page.doclist.doc.get('doctype'),comment_by:user,comment_by_fullname:wn.boot.user_info[user].fullname},function(r){me.$w.find('textarea').val('');me.render_comment(r.message);},this.$w.find('.btn'))},render_comment:function(comment){comment.date=prettyDate(comment.creation)
-$(repl('<div style="margin-bottom: 7px; border-bottom: 1px dashed #888; \
-   padding-bottom: 7px;">\
-   <p class="comment">%(comment)s<br>\
-   <div style="font-size: 80%">\
-    <span style="color: #888;">%(date)s</span>\
-    <span style="float: right; color: #888;">- %(comment_by_fullname)s</span>\
-   </div>\
-   </p></div>',comment)).prependTo(this.$w.find('.comment-list'));}})
+// comments
+wn.ui.Comments = Class.extend({
+	init: function(opts) {
+		$.extend(this, opts);
+		this.make_body();
+		// render existing
+		var me = this;
+		$.each(this.form_page.doclist.doc.get('__comments'), function(i, v) {
+			me.render_comment(v);
+		})
+	},
+	make_body: function() {
+		var me = this;
+		this.$w = $('<div class="comments-area"><br>\
+			<b>Comments:</b><br>\
+			<textarea style="width: 190px; height: 36px;" \
+				class="comment comment-text"></textarea>\
+			<button class="btn btn-small">Add Comment</button>\
+			<div class="comment-list" style="margin-top: 17px;"></div>\
+			</div>').appendTo(this.form_page.$sidebar);
+		this.$w.find('.btn').click(function() {
+			me.add_comment(me.$w.find('textarea').val());
+		})
+	},
+	add_comment: function(comment) {
+		var me = this;
+		
+		wn.model.insert({
+			doctype: 'Comment',
+			comment: comment,
+			parenttype: this.form_page.doclist.doc.get('doctype'),
+			parent: this.form_page.doclist.doc.get('name'),
+			parentfield: 'comments',
+			comment_by: user,
+		}, function(r) {
+			me.$w.find('textarea').val('');
+			me.render_comment(r.docs[0]);
+		}, this.$w.find('.btn'))
+
+	},
+	render_comment: function(comment) {
+		comment.date = prettyDate(comment.creation);
+		comment.comment_by_fullname = wn.boot.user_info[comment.comment_by].fullname;
+		$(repl('<div style="margin-bottom: 7px; border-bottom: 1px dashed #888; \
+			padding-bottom: 7px;">\
+				<div class="comment">%(comment)s</div>\
+				<div style="font-size: 80%">\
+					<span style="color: #888;">%(date)s</span>\
+					<span style="float: right; color: #888;">- %(comment_by_fullname)s</span>\
+				</div>\
+			</div>', comment))
+				.prependTo(this.$w.find('.comment-list'));
+	}
+})
+
+
+
 /*
  *	lib/js/wn/form/form_dialog.js
  */
-wn.views.FormDialog=wn.ui.Dialog.extend({init:function(opts){$.extend(this,opts);wn.get_or_set(this,'width',600);wn.get_or_set(this,'title',this.name);wn.get_or_set(this,'form_class',wn.ui.Form);this._super();opts.parent=this.body;opts.dialog=this;opts.appframe=this.appframe;this.form=new this.form_class(opts);}})
-wn.views.RowEditFormDialog=wn.views.FormDialog.extend({init:function(opts){opts.form_class=wn.ui.RowEditForm;this._super(opts);this.make_toolbar();},make_toolbar:function(){var me=this;var save_btn=this.appframe.add_button('Close',function(){me.control_grid.set();me.hide();});var delete_btn=this.appframe.add_button('Delete',function(){me.control_grid.doc.doclist.remove_child(me.doc);me.control_grid.set();me.hide();});delete_btn.addClass('btn-danger').parent().css('float','right');}});
+// Copyright (c) 2012 Web Notes Technologies Pvt Ltd (http://erpnext.com)
+// 
+// MIT License (MIT)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a 
+// copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+
+wn.views.FormDialog = wn.ui.Dialog.extend({
+	init: function(opts) {
+		$.extend(this, opts);
+		wn.get_or_set(this, 'width', 600);
+		wn.get_or_set(this, 'title', this.name);
+		wn.get_or_set(this, 'form_class', wn.ui.Form);
+
+		// init dialog
+		this._super();
+		
+		// options for form
+		opts.parent = this.body;
+		opts.dialog = this;
+		opts.appframe = this.appframe;
+		
+		this.form = new this.form_class(opts);		
+	}
+})
+
+wn.views.RowEditFormDialog = wn.views.FormDialog.extend({
+	init: function(opts) {
+		opts.form_class = wn.ui.RowEditForm;
+		this._super(opts);
+		this.make_toolbar();
+	},
+	make_toolbar: function() {
+		var me = this;
+		var save_btn = this.appframe.add_button('Close', function() { 
+			me.control_grid.set(); // reset grid
+			me.hide();
+		});
+		
+		var delete_btn = this.appframe.add_button('Delete', function() { 
+			// remove row from doclist
+			me.control_grid.doc.doclist.remove_child(me.doc);
+			me.control_grid.set(); // reset grid
+			
+			me.hide();
+		});
+		delete_btn.addClass('btn-danger').parent().css('float', 'right');
+	}
+});
+
+
 /*
  *	lib/js/wn/form/form_page.js
  */
-wn.views.FormPage=Class.extend({init:function(doctype,name){this.doclist=wn.model.get(doctype,name);this.make_page();this.set_breadcrumbs(doctype,name);this.form=new wn.ui.Form({doclist:this.doclist,doc:this.doclist.doc,parent:this.$w,appframe:this.page.appframe});this.make_toolbar(doctype,name);},set_breadcrumbs:function(doctype,name){wn.views.breadcrumbs(this.page.appframe,wn.model.get_value('DocType',doctype,'module'),doctype,name);},make_page:function(){var page_name=wn.get_route_str();this.page=wn.container.add_page(page_name);wn.ui.make_app_page({parent:this.page});wn.container.change_to(page_name);this.$w=$(this.page).find('.layout-main-section');this.$sidebar=$(this.page).find('.layout-side-section');},make_toolbar:function(){var me=this;this.page.appframe.add_button('Save',function(){var btn=this;$(this).html('Saving...').attr('disabled','disabled');me.form.doclist.save(0,function(){$(this).attr('disabled',false).html('Save');});});if(!this.doclist.doc.get('__islocal')){this.make_action_buttons();this.assign_to=new wn.ui.AssignTo({form_page:this});this.comments=new wn.ui.Comments({form_page:this});this.tags=new wn.ui.TagEditor({form_page:this});}
-this.make_help_buttons();},make_action_buttons:function(){this.action_btn_group=$('<div class="btn-group">\
-  <button class="btn dropdown-toggle btn-small" data-toggle="dropdown">\
-   Actions\
-   <span class="caret"></span>\
-  </button>\
-  <ul class="dropdown-menu">\
-   <li><a href="#" class="action-new"><i class="icon icon-plus"></i> New</a></li>\
-   <li><a href="#" class="action-print"><i class="icon icon-print"></i> Print...</a></li>\
-   <li><a href="#" class="action-print"><i class="icon icon-envelope"></i> Email...</a></li>\
-   <li><a href="#" class="action-copy"><i class="icon icon-file"></i> Copy</a></li>\
-   <li><a href="#" class="action-refresh"><i class="icon icon-refresh"></i> Refresh</a></li>\
-  </ul>\
-  </div>').appendTo(this.page.appframe.$w.find('.appframe-toolbar'));this.action_btn_group.find('.dropdown-toggle').dropdown();},make_help_buttons:function(){var meta=this.form.meta.doc;if(meta.get('description'))
-this.page.appframe.add_help_button(meta.get('description'));this.page.appframe.add_inverse_button(meta.get('name'),function(){})},});
+// Copyright (c) 2012 Web Notes Technologies Pvt Ltd (http://erpnext.com)
+// 
+// MIT License (MIT)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a 
+// copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+
+// form in a page
+
+wn.views.FormPage = Class.extend({
+	init: function(doctype, name) {
+		this.doclist = wn.model.get(doctype, name);
+		this.make_page();
+		this.set_breadcrumbs(doctype, name);
+		this.form = new wn.ui.Form({
+			doclist: this.doclist,
+			doc: this.doclist.doc,
+			parent: this.$w,
+			appframe: this.page.appframe
+		});
+		this.make_toolbar(doctype, name);
+	},
+	set_breadcrumbs: function(doctype, name) {
+		wn.views.breadcrumbs(this.page.appframe, 
+			wn.model.get_value('DocType', doctype, 'module'), doctype, name);
+	},
+	make_page: function() {
+		var page_name = wn.get_route_str();
+		this.page = wn.container.add_page(page_name);
+		wn.ui.make_app_page({parent:this.page});
+		wn.container.change_to(page_name);
+		this.$w = $(this.page).find('.layout-main-section');
+		this.$sidebar = $(this.page).find('.layout-side-section');
+	},
+	make_toolbar: function() {
+		var me = this;
+		this.page.appframe.add_button('Save', function() { 
+			var btn = this;
+			$(this).html('Saving...').attr('disabled', 'disabled');
+			freeze();
+			me.form.doclist.save(function() {
+				unfreeze();
+				$(btn).attr('disabled', false).html('Save').attr('saving', 1)
+					.addClass('btn-success');
+				setTimeout('$(".btn[saving]").removeClass("btn-success").attr("saving",null)', 2000);
+				
+			});
+		});
+		
+		if(!this.doclist.doc.get('__islocal')) {
+			this.make_action_buttons();
+			this.assign_to = new wn.ui.AssignTo({form_page: this});
+			this.comments = new wn.ui.Comments({form_page: this});
+			this.tags = new wn.ui.TagEditor({form_page: this});	
+		}
+
+		this.make_help_buttons();
+	},
+
+	make_action_buttons: function() {
+		this.action_btn_group = $('<div class="btn-group">\
+		<button class="btn dropdown-toggle btn-small" data-toggle="dropdown">\
+			Actions\
+			<span class="caret"></span>\
+		</button>\
+		<ul class="dropdown-menu">\
+			<li><a href="#" class="action-new"><i class="icon icon-plus"></i> New</a></li>\
+			<li><a href="#" class="action-print"><i class="icon icon-print"></i> Print...</a></li>\
+			<li><a href="#" class="action-print"><i class="icon icon-envelope"></i> Email...</a></li>\
+			<li><a href="#" class="action-copy"><i class="icon icon-file"></i> Copy</a></li>\
+			<li><a href="#" class="action-refresh"><i class="icon icon-refresh"></i> Refresh</a></li>\
+		</ul>\
+		</div>').appendTo(this.page.appframe.$w.find('.appframe-toolbar'));
+		this.action_btn_group.find('.dropdown-toggle').dropdown();
+		
+	},
+	make_help_buttons: function() {
+		var meta = this.form.meta.doc;
+		if(meta.get('description'))
+			this.page.appframe.add_help_button(meta.get('description'));
+		this.page.appframe.add_inverse_button(meta.get('name'), function() {
+			
+		})
+	},	
+});
+
+
+
 /*
  *	lib/js/wn/form/form_tags.js
  */
-wn.ui.TagEditor=Class.extend({init:function(opts){$.extend(this,opts);var me=this;this.$w=$('<div class="tag-line">').prependTo(this.form_page.$w)
-this.$tags=$('<ul>').prependTo(this.$w).tagit({placeholderText:'Add Tag',onTagAdded:function(ev,tag){wn.call({method:'webnotes.widgets.tags.add_tag',args:me.get_args(tag.find('.tagit-label').text())});},onTagRemoved:function(ev,tag){wn.call({method:'webnotes.widgets.tags.remove_tag',args:me.get_args(tag.find('.tagit-label').text())});}});this.render();},get_args:function(tag){return{tag:tag,dt:this.form_page.doclist.doc.get('doctype'),dn:this.form_page.doclist.doc.get('name'),}},render:function(){var me=this;var user_tags=this.form_page.doclist.doc.get('_user_tags');if(user_tags){$.each(user_tags.split(','),function(i,v){me.$tags.tagit("createTag",v);});}}})
+wn.ui.TagEditor = Class.extend({
+	init: function(opts) {
+		$.extend(this, opts);
+		var me = this;
+		this.$w = $('<div class="tag-line">').prependTo(this.form_page.$w)
+		this.$tags = $('<ul>').prependTo(this.$w).tagit({
+			placeholderText: 'Add Tag',
+			onTagAdded: function(ev, tag) {
+				wn.call({
+					method: 'webnotes.widgets.tags.add_tag',
+					args: me.get_args(tag.find('.tagit-label').text())
+				});
+			},
+			onTagRemoved: function(ev, tag) {
+				wn.call({
+					method: 'webnotes.widgets.tags.remove_tag',
+					args: me.get_args(tag.find('.tagit-label').text())
+				});
+			}
+		});	
+		this.render();
+	},
+	get_args: function(tag) {
+		return {
+			tag: tag,
+			dt: this.form_page.doclist.doc.get('doctype'),
+			dn: this.form_page.doclist.doc.get('name'),
+		}
+	},
+	render: function() {
+		// render from user tags
+		var me = this;
+		var user_tags = this.form_page.doclist.doc.get('_user_tags');
+		if(user_tags) {
+			$.each(user_tags.split(','), function(i, v) {
+				me.$tags.tagit("createTag", v);
+			});
+		}
+	}
+})
+
 /*
  *	lib/js/legacy/widgets/layout.js
  */
-function Layout(parent,width){if(parent&&parent.substr){parent=$i(parent);}
-this.wrapper=$a(parent,'div','',{display:'none'});if(width){this.width=this.wrapper.style.width;}
-this.myrows=[];}
-Layout.prototype.addrow=function(){this.cur_row=new LayoutRow(this,this.wrapper);this.myrows[this.myrows.length]=this.cur_row;return this.cur_row}
-Layout.prototype.addsubrow=function(){this.cur_row=new LayoutRow(this,this.cur_row.main_body);this.myrows[this.myrows.length]=this.cur_row;return this.cur_row}
-Layout.prototype.addcell=function(width){return this.cur_row.addCell(width);}
-Layout.prototype.setcolour=function(col){$bg(cc,col);}
-Layout.prototype.show=function(){$ds(this.wrapper);}
-Layout.prototype.hide=function(){$dh(this.wrapper);}
-Layout.prototype.close_borders=function(){if(this.with_border){this.myrows[this.myrows.length-1].wrapper.style.borderBottom='1px solid #000';}}
-function LayoutRow(layout,parent){this.layout=layout;this.wrapper=$a(parent,'div','form-layout-row');this.main_head=$a(this.wrapper,'div');this.main_body=$a(this.wrapper,'div');if(layout.with_border){this.wrapper.style.border='1px solid #000';this.wrapper.style.borderBottom='0px';}
-this.header=$a(this.main_body,'div','',{padding:(layout.with_border?'0px 8px':'0px')});this.body=$a(this.main_body,'div');this.table=$a(this.body,'table','',{width:'100%',borderCollapse:'collapse',tableLayout:'fixed'});this.row=this.table.insertRow(0);this.mycells=[];}
-LayoutRow.prototype.hide=function(){$dh(this.wrapper);}
-LayoutRow.prototype.show=function(){$ds(this.wrapper);}
-LayoutRow.prototype.addCell=function(wid){var lc=new LayoutCell(this.layout,this,wid);this.mycells[this.mycells.length]=lc;return lc;}
-function LayoutCell(layout,layoutRow,width){if(width){var w=width+'';if(w.substr(w.length-2,2)!='px'){if(w.substr(w.length-1,1)!="%"){width=width+'%'};}}
-this.width=width;this.layout=layout;var cidx=layoutRow.row.cells.length;this.cell=layoutRow.row.insertCell(cidx);this.cell.style.verticalAlign='top';this.set_width(layoutRow.row,width);var h=$a(this.cell,'div','',{padding:(layout.with_border?'0px 8px':'0px')});this.wrapper=$a(this.cell,'div','',{padding:(layout.with_border?'8px':'0px')});layout.cur_cell=this.wrapper;layout.cur_cell.header=h;}
-LayoutCell.prototype.set_width=function(row,width){var w=100;var n_cells=row.cells.length;var cells_with_no_width=n_cells;if(width){$y(row.cells[n_cells-1],{width:cint(width)+'%'})}else{row.cells[n_cells-1].estimated_width=1;}
-for(var i=0;i<n_cells;i++){if(!row.cells[i].estimated_width){w=w-cint(row.cells[i].style.width);cells_with_no_width--;}}
-for(var i=0;i<n_cells;i++){if(row.cells[i].estimated_width)
-$y(row.cells[i],{width:cint(w/cells_with_no_width)+'%'})}}
-LayoutCell.prototype.show=function(){$ds(this.wrapper);}
-LayoutCell.prototype.hide=function(){$dh(this.wrapper);}
+// Copyright (c) 2012 Web Notes Technologies Pvt Ltd (http://erpnext.com)
+// 
+// MIT License (MIT)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a 
+// copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// 
+
+/*
++ Layout
+	+ wrapper
+		+ LayoutRow
+			+ main_head
+			+ main_body
+				+ header
+				+ body
+				..
+				..
+				+ subrows
+
+*/
+function Layout(parent, width) { 
+	if(parent&&parent.substr) { parent = $i(parent); }
+
+	this.wrapper = $a(parent, 'div', '', {display:'none'});
+
+
+	if(width) {
+		this.width = this.wrapper.style.width;
+	}
+	
+	this.myrows = [];
+}
+
+Layout.prototype.addrow = function() {
+	this.cur_row = new LayoutRow(this, this.wrapper);
+	this.myrows[this.myrows.length] = this.cur_row;
+	return this.cur_row
+}
+
+Layout.prototype.addsubrow = function() {
+	this.cur_row = new LayoutRow(this, this.cur_row.main_body);
+	this.myrows[this.myrows.length] = this.cur_row;
+	return this.cur_row
+}
+
+Layout.prototype.addcell = function(width) {
+	return this.cur_row.addCell(width);
+}
+
+Layout.prototype.setcolour = function(col) { $bg(cc,col); }
+
+Layout.prototype.show = function() { $ds(this.wrapper); }
+Layout.prototype.hide = function() { $dh(this.wrapper); }
+Layout.prototype.close_borders = function() {
+	if(this.with_border) {
+		this.myrows[this.myrows.length-1].wrapper.style.borderBottom = '1px solid #000';
+	}
+}
+
+function LayoutRow(layout, parent) {
+	this.layout = layout;
+	this.wrapper = $a(parent,'div','form-layout-row');
+	
+	// main head
+	this.main_head = $a(this.wrapper, 'div');
+
+	// main head
+	this.main_body = $a(this.wrapper, 'div');
+
+	if(layout.with_border) {
+		this.wrapper.style.border = '1px solid #000';
+		this.wrapper.style.borderBottom = '0px';
+	}
+	
+	this.header = $a(this.main_body, 'div','',{padding:(layout.with_border ? '0px 8px' : '0px')});
+	this.body = $a(this.main_body,'div');
+	this.table = $a(this.body, 'table', '', {width:'100%', borderCollapse: 'collapse', tableLayout:'fixed'});
+	this.row = this.table.insertRow(0);
+	
+	this.mycells = [];
+}
+
+LayoutRow.prototype.hide = function() { $dh(this.wrapper); }
+LayoutRow.prototype.show = function() { $ds(this.wrapper); }
+
+LayoutRow.prototype.addCell = function(wid) {
+	var lc = new LayoutCell(this.layout, this, wid);
+	this.mycells[this.mycells.length] = lc;
+	return lc;
+}
+
+function LayoutCell(layout, layoutRow, width) {
+	if(width) { // add '%' if user has forgotten
+		var w = width + '';
+		if(w.substr(w.length-2, 2) != 'px') {
+			if(w.substr(w.length-1, 1) != "%") {width = width + '%'};
+		}
+	}
+
+	this.width = width;
+	this.layout = layout;
+	var cidx = layoutRow.row.cells.length;
+	this.cell = layoutRow.row.insertCell(cidx);
+
+	this.cell.style.verticalAlign = 'top';
+	this.set_width(layoutRow.row, width);
+	
+	var h = $a(this.cell, 'div','',{padding:(layout.with_border ? '0px 8px' : '0px')});	
+
+	this.wrapper = $a(this.cell, 'div','',{padding:(layout.with_border ? '8px' : '0px')}); 
+	
+	layout.cur_cell = this.wrapper;
+	layout.cur_cell.header = h;
+}
+
+// evenly distribute columns
+LayoutCell.prototype.set_width = function(row, width) {
+	var w = 100;
+	var n_cells = row.cells.length;
+	var cells_with_no_width = n_cells;
+	
+	// current cell
+	if(width) {
+		$y(row.cells[n_cells-1], {width: cint(width) + '%'})
+	} else {
+		row.cells[n_cells-1].estimated_width = 1;
+	}
+	
+	// get user specified width
+	for(var i=0; i<n_cells; i++) {
+		if(!row.cells[i].estimated_width) {
+			w = w - cint(row.cells[i].style.width);
+			cells_with_no_width--; 
+		}
+	}
+	
+	// evenly distribute all
+	for(var i=0; i<n_cells; i++) {
+		if(row.cells[i].estimated_width)
+			$y(row.cells[i], {width:cint(w/cells_with_no_width) + '%'})
+	}
+	
+}
+
+LayoutCell.prototype.show = function() { $ds(this.wrapper); }
+LayoutCell.prototype.hide = function() { $dh(this.wrapper); }
+
+
 /*
  *	lib/js/legacy/widgets/tabbedpage.js
  */
-function TabbedPage(parent,only_labels){this.tabs={};this.items=this.tabs
-this.cur_tab=null;this.label_wrapper=$a(parent,'div','box_label_wrapper',{marginTop:'16px'});this.label_body=$a(this.label_wrapper,'div','box_label_body');this.label_area=$a(this.label_body,'ul','box_tabs');if(!only_labels)this.body_area=$a(parent,'div','',{backgroundColor:'#FFF'});else this.body_area=null;this.add_item=function(label,onclick,no_body,with_heading){this.add_tab(label,onclick,no_body,with_heading);return this.items[label];}}
-TabbedPage.prototype.add_tab=function(n,onshow,no_body,with_heading){var tab=$a(this.label_area,'li');tab.label=$a(tab,'a');tab.label.innerHTML=n;if(this.body_area&&!no_body){tab.tab_body=$a(this.body_area,'div');$dh(tab.tab_body);tab.body=tab.tab_body;}else{tab.tab_body=null;}
-tab.onshow=onshow;var me=this;tab.collapse=function(){if(this.tab_body)$dh(this.tab_body);this.className='';}
-tab.set_selected=function(){if(me.cur_tab)me.cur_tab.collapse();this.className='box_tab_selected';$(this).css('opacity',1);me.cur_tab=this;}
-tab.expand=function(arg){this.set_selected();if(this.tab_body)$ds(this.tab_body);if(this.onshow)this.onshow(arg);}
-tab.onmouseover=function(){if(me.cur_tab!=this)this.className='box_tab_mouseover';}
-tab.onmouseout=function(){if(me.cur_tab!=this)this.className=''}
-tab.hide=function(){this.collapse();$dh(this);}
-tab.show=function(){$ds(this);}
-tab.onclick=function(){this.expand();}
-this.tabs[n]=tab;return tab;}
-function TrayPage(parent,height,width,width_body){var me=this;if(!width)width=(100/8)+'%';this.body_style={margin:'4px 8px'}
-this.cur_item=null;this.items={};this.tabs=this.items
-this.tab=make_table($a(parent,'div'),1,2,'100%',[width,width_body]);$y($td(this.tab,0,0),{backgroundColor:this.tray_bg,width:width});this.body=$a($td(this.tab,0,1),'div');if(height){$y(this.body,{height:height,overflow:'auto'});}
-this.add_item=function(label,onclick,no_body,with_heading){this.items[label]=new TrayItem(me,label,onclick,no_body,with_heading);return this.items[label];}}
-function TrayItem(tray,label,onclick,no_body,with_heading){this.label=label;this.onclick=onclick;var me=this;this.ldiv=$a($td(tray.tab,0,0),'div');$item_normal(this.ldiv);if(!no_body){this.wrapper=$a(tray.body,'div','',tray.body_style);if(with_heading){this.header=$a(this.wrapper,'div','sectionHeading',{marginBottom:'16px',paddingBottom:'0px'});this.header.innerHTML=label;}
-this.body=$a(this.wrapper,'div');this.tab_body=this.body;$dh(this.wrapper);}
-$(this.ldiv).html(label).hover(function(){if(tray.cur_item.label!=this.label)$item_active(this);},function(){if(tray.cur_item.label!=this.label)$item_normal(this);}).click(function(){me.expand();})
-this.ldiv.label=label;this.ldiv.setAttribute('title',label);this.ldiv.onmousedown=function(){$item_pressed(this);}
-this.ldiv.onmouseup=function(){$item_selected(this);}
-this.expand=function(){if(tray.cur_item)tray.cur_item.collapse();if(me.wrapper)$ds(me.wrapper);if(me.onclick)me.onclick(me.label);me.show_as_expanded();}
-this.show_as_expanded=function(){$item_selected(me.ldiv);tray.cur_item=me;}
-this.collapse=function(){if(me.wrapper)$dh(me.wrapper);$item_normal(me.ldiv);}
-this.hide=function(){me.collapse();$dh(me.ldiv);}
-this.show=function(){$ds(me.ldiv);}}
+// Copyright (c) 2012 Web Notes Technologies Pvt Ltd (http://erpnext.com)
+// 
+// MIT License (MIT)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a 
+// copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// 
+
+// Tabbed Page
+
+function TabbedPage(parent, only_labels) { 
+	this.tabs = {};
+	this.items = this.tabs // bc
+	this.cur_tab = null;
+
+	this.label_wrapper = $a(parent, 'div','box_label_wrapper', {marginTop:'16px'}); // for border
+	this.label_body = $a(this.label_wrapper, 'div', 'box_label_body'); // for height
+	this.label_area = $a(this.label_body, 'ul', 'box_tabs');
+	if(!only_labels)this.body_area = $a(parent, 'div', '', {backgroundColor:'#FFF'});
+	else this.body_area = null;
+
+	this.add_item = function(label, onclick, no_body, with_heading) {
+		this.add_tab(label, onclick, no_body, with_heading);
+		return this.items[label];
+	}
+}
+
+TabbedPage.prototype.add_tab = function(n, onshow, no_body, with_heading) { 
+
+	var tab = $a(this.label_area, 'li');
+	tab.label = $a(tab,'a');
+	tab.label.innerHTML = n;
+	
+	if(this.body_area && !no_body){
+		tab.tab_body = $a(this.body_area, 'div');
+		$dh(tab.tab_body);
+		tab.body = tab.tab_body; // bc
+	} else { 
+		tab.tab_body = null; 
+	}
+	tab.onshow = onshow;
+	var me = this;
+
+	tab.collapse = function() { 
+		if(this.tab_body)$dh(this.tab_body); this.className = '';
+	}
+	tab.set_selected = function() { 
+		if(me.cur_tab) me.cur_tab.collapse();
+		this.className = 'box_tab_selected';
+		$(this).css('opacity', 1);
+		me.cur_tab = this;
+	}
+	tab.expand = function(arg) { 
+		this.set_selected(); 
+		if(this.tab_body) $ds(this.tab_body);
+		if(this.onshow)this.onshow(arg); 
+	}
+	tab.onmouseover = function() { 
+		if(me.cur_tab!=this) this.className = 'box_tab_mouseover';
+	}
+	tab.onmouseout = function() {
+		if(me.cur_tab!=this) this.className = ''
+	}
+	tab.hide = function() {
+		this.collapse();
+		$dh(this);
+	}
+	tab.show = function() {
+		$ds(this);
+	}
+	tab.onclick = function() { this.expand(); }
+	this.tabs[n] = tab;
+	return tab;
+}
+
+
+
+
+// =================================================================================
+
+function TrayPage(parent, height, width, width_body) {
+	var me = this;
+	if(!width) width=(100/8)+'%';
+
+	this.body_style = {margin: '4px 8px'}
+	
+	this.cur_item = null;
+	
+	this.items = {};
+	this.tabs = this.items // for tabs
+	this.tab = make_table($a(parent, 'div'), 1, 2, '100%', [width, width_body]);
+	
+	// tray style
+	$y($td(this.tab, 0, 0),{
+		backgroundColor: this.tray_bg
+		//,borderRight:'1px solid ' + this.tray_fg
+		,width: width
+	});
+
+	// body style
+	this.body = $a($td(this.tab, 0, 1), 'div');
+	if(height) {
+		$y(this.body, {height: height, overflow: 'auto'});
+	}
+	
+	this.add_item = function(label, onclick, no_body, with_heading) {
+		this.items[label] = new TrayItem(me, label, onclick, no_body, with_heading);
+		return this.items[label];
+	}
+}
+
+function TrayItem(tray, label, onclick, no_body, with_heading) {
+	this.label = label;
+	this.onclick = onclick;
+	var me = this;
+	
+	this.ldiv = $a($td(tray.tab, 0, 0), 'div');
+	$item_normal(this.ldiv);
+	
+	if(!no_body) {
+		this.wrapper = $a(tray.body, 'div', '', tray.body_style);
+		if(with_heading) {
+			this.header = $a(this.wrapper, 'div', 'sectionHeading', {marginBottom:'16px', paddingBottom:'0px'});
+			this.header.innerHTML = label;
+		}
+		this.body = $a(this.wrapper, 'div');
+		this.tab_body = this.body; // for sync with tabs
+		
+		$dh(this.wrapper);
+	}
+
+	$(this.ldiv).html(label)
+		.hover(
+			function() { if(tray.cur_item.label != this.label) $item_active(this); },
+			function() { if(tray.cur_item.label != this.label) $item_normal(this); }
+		)
+		.click(
+			function() { me.expand(); }
+		)
+
+	this.ldiv.label = label;
+	this.ldiv.setAttribute('title',label);
+	this.ldiv.onmousedown = function() { $item_pressed(this); }
+	this.ldiv.onmouseup = function() { $item_selected(this); }
+
+	this.expand = function() {
+		if(tray.cur_item) tray.cur_item.collapse();
+		if(me.wrapper) $ds(me.wrapper);
+		if(me.onclick) me.onclick(me.label);
+		me.show_as_expanded();
+	}
+	
+	this.show_as_expanded = function() {
+		$item_selected(me.ldiv);
+		tray.cur_item = me;
+	}
+	
+	this.collapse = function() {
+		if(me.wrapper)$dh(me.wrapper);
+		$item_normal(me.ldiv);
+	}
+	this.hide = function() {
+		me.collapse();
+		$dh(me.ldiv);
+	}
+	this.show = function() {
+		$ds(me.ldiv);
+	}	
+}
+
 /*
  *	lib/js/legacy/webpage/page_header.js
  */
-var def_ph_style={wrapper:{marginBottom:'16px',backgroundColor:'#EEE'},main_heading:{},sub_heading:{marginBottom:'8px',color:'#555',display:'none'},separator:{borderTop:'1px solid #ddd'},toolbar_area:{padding:'3px 0px',display:'none',borderBottom:'1px solid #ddd'}}
-function PageHeader(parent,main_text,sub_text){this.wrapper=$a(parent,'div','page_header');this.close_btn=$a(this.wrapper,'a','close',{},'&times;');this.close_btn.onclick=function(){window.history.back();};this.breadcrumbs=$a(this.wrapper,'div','breadcrumbs-area');this.main_head=$a(this.wrapper,'h1','',def_ph_style.main_heading);this.sub_head=$a(this.wrapper,'h4','',def_ph_style.sub_heading);this.separator=$a(this.wrapper,'div','',def_ph_style.separator);this.toolbar_area=$a(this.wrapper,'div','',def_ph_style.toolbar_area);this.padding_area=$a(this.wrapper,'div','',{padding:'3px'});if(main_text)this.main_head.innerHTML=main_text;if(sub_text)this.sub_head.innerHTML=sub_text;this.buttons={};this.buttons2={};}
-PageHeader.prototype.add_button=function(label,fn,bold,icon,green){var tb=this.toolbar_area;if(this.buttons[label])return;iconhtml=icon?('<i class="'+icon+'"></i> '):'';var $button=$('<button class="btn btn-small">'+iconhtml+label+'</button>').click(fn).appendTo(tb);if(green){$button.addClass('btn-info');$button.find('i').addClass('icon-white');}
-if(bold)$button.css('font-weight','bold');this.buttons[label]=$button.get(0);$ds(this.toolbar_area);return this.buttons[label];}
-PageHeader.prototype.clear_toolbar=function(){this.toolbar_area.innerHTML='';this.buttons={};}
-PageHeader.prototype.make_buttonset=function(){$(this.toolbar_area).buttonset();}
+// Copyright (c) 2012 Web Notes Technologies Pvt Ltd (http://erpnext.com)
+// 
+// MIT License (MIT)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a 
+// copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// 
+
+/* standard page header
+
+	+ wrapper
+		+ [table]
+			+ [r1c1] 
+				+ main_head
+				+ sub_head
+			+ [r1c2] 
+				+ close_btn
+		+ toolbar_area
+		+ tag_area
+		+ seperator
+*/
+
+var def_ph_style = {
+	wrapper: {marginBottom:'16px', backgroundColor:'#EEE'}
+	,main_heading: { }
+	,sub_heading: { marginBottom:'8px', color:'#555', display:'none' }
+	,separator: { borderTop:'1px solid #ddd' } // show this when there is no toolbar
+	,toolbar_area: { padding:'3px 0px', display:'none',borderBottom:'1px solid #ddd'}
+}
+
+function PageHeader(parent, main_text, sub_text) {
+
+	this.wrapper = $a(parent,'div','page_header');
+	this.close_btn = $a(this.wrapper, 'a', 'close', {}, '&times;');
+	this.close_btn.onclick = function() { window.history.back(); };
+	
+	this.breadcrumbs = $a(this.wrapper, 'div', 'breadcrumbs-area');
+	this.main_head = $a(this.wrapper, 'h1', '', def_ph_style.main_heading);
+	this.sub_head = $a(this.wrapper, 'h4', '', def_ph_style.sub_heading);
+
+	this.separator = $a(this.wrapper, 'div', '', def_ph_style.separator);
+	this.toolbar_area = $a(this.wrapper, 'div', '', def_ph_style.toolbar_area);
+	this.padding_area = $a(this.wrapper, 'div', '', {padding:'3px'});
+
+	if(main_text) this.main_head.innerHTML = main_text;
+	if(sub_text) this.sub_head.innerHTML = sub_text;
+	
+	this.buttons = {};
+	this.buttons2 = {};
+}
+
+PageHeader.prototype.add_button = function(label, fn, bold, icon, green) {
+
+	var tb = this.toolbar_area;
+	if(this.buttons[label]) return;
+
+	iconhtml = icon ? ('<i class="'+icon+'"></i> ') : '';
+
+	var $button = $('<button class="btn btn-small">'+ iconhtml + label +'</button>')
+		.click(fn)
+		.appendTo(tb);
+	if(green) {
+		$button.addClass('btn-info');
+		$button.find('i').addClass('icon-white');
+	}
+	if(bold) $button.css('font-weight', 'bold');
+	
+	this.buttons[label] = $button.get(0);
+	$ds(this.toolbar_area);
+	
+	return this.buttons[label];
+}
+
+PageHeader.prototype.clear_toolbar = function() {
+	this.toolbar_area.innerHTML = '';
+	this.buttons = {};
+}
+
+PageHeader.prototype.make_buttonset = function() {
+	$(this.toolbar_area).buttonset();
+}
+
 /*
  *	lib/js/legacy/widgets/tags.js
  */
-_tags={dialog:null,color_map:{},all_tags:[],colors:{'Default':'#add8e6'}}
-TagList=function(parent,start_list,dt,dn,static,onclick){this.start_list=start_list?start_list:[];this.tag_list=[];this.dt=dt;this.onclick=onclick;this.dn=dn;this.static;this.parent=parent;this.make_body();}
-TagList.prototype.make=function(parent){for(var i=0;i<this.start_list.length;i++){if(this.start_list[i])
-new SingleTag({parent:this.body,label:this.start_list[i],dt:this.dt,dn:this.dn,fieldname:'_user_tags',static:this.static,taglist:this,onclick:this.onclick});}}
-TagList.prototype.make_body=function(){var div=$a(this.parent,'span','',{margin:'3px 0px',padding:'3px 0px'});this.body=$a(div,'span','',{marginRight:'4px'});this.add_tag_area=$a(div,'span');this.make_add_tag();this.make();}
-TagList.prototype.add_tag=function(label,static,fieldname,color){if(!label)return;if(in_list(this.tag_list,label))return;var tag=new SingleTag({parent:this.body,label:label,dt:this.dt,dn:this.dn,fieldname:fieldname,static:static,taglist:this,color:color,onclick:this.onclick});}
-TagList.prototype.make_add_tag=function(){var me=this;this.add_tag_span=$a(this.add_tag_area,'span','',{color:'#888',textDecoration:'underline',cursor:'pointer',marginLeft:'4px',fontSize:'11px'});this.add_tag_span.innerHTML='Add tag';this.add_tag_span.onclick=function(){me.new_tag();}}
-TagList.prototype.make_tag_dialog=function(){var me=this;var d=new wn.ui.Dialog({title:'Add a tag',width:400,fields:[{fieldtype:'Link',fieldname:'tag',label:'Tag',options:'Tag',reqd:1,description:'Max chars (20)',no_buttons:1},{fieldtype:'Button',fieldname:'add',label:'Add'}]})
-$(d.fields_dict.tag.input).attr('maxlength',20);d.fields_dict.add.input.onclick=function(){me.save_tag(d);}
-return d;}
-TagList.prototype.is_text_okay=function(val){if(!val){msgprint("Please type something");return;}
-if(validate_spl_chars(val)){msgprint("Special charaters, commas etc not allowed in tags");return;}
-return 1}
-TagList.prototype.add_to_locals=function(tag){if(locals[this.dt]&&locals[this.dt][this.dn]){var doc=locals[this.dt][this.dn];if(!doc._user_tags){doc._user_tags=''}
-var tl=doc._user_tags.split(',')
-tl.push(tag)
-doc._user_tags=tl.join(',');}}
-TagList.prototype.remove_from_locals=function(tag){if(locals[this.dt]&&locals[this.dt][this.dn]){var doc=locals[this.dt][this.dn];var tl=doc._user_tags.split(',');var new_tl=[];for(var i=0;i<tl.length;i++){if(tl[i]!=tag)new_tl.push(tl[i]);}
-doc._user_tags=new_tl.join(',');}}
-TagList.prototype.save_tag=function(d){var val=d.get_values();if(val)val=val.tag;var me=this;if(!this.is_text_okay(val))return;var callback=function(r,rt){var d=me.dialog;d.fields_dict.add.input.done_working();d.fields_dict.tag.input.set_input('');d.hide();me.add_to_locals(val)
-if(!r.message)return;me.add_tag(r.message,0,'_user_tags');}
-me.dialog.fields_dict.add.input.set_working();$c('webnotes.widgets.tags.add_tag',{'dt':me.dt,'dn':me.dn,'tag':val,'color':'na'},callback);}
-TagList.prototype.new_tag=function(){var me=this;if(!this.dialog){this.dialog=this.make_tag_dialog();}
-this.dialog.show();}
-TagList.prototype.refresh_tags=function(){}
-function SingleTag(opts){$.extend(this,opts);if(!this.color)this.color='#add8e6';if(this.taglist&&!in_list(this.taglist.tag_list,this.label))
-this.taglist.tag_list.push(this.label);this.make_body(this.parent);}
-SingleTag.prototype.make_body=function(parent){var me=this;this.body=$a(parent,'span','',{padding:'2px 4px',backgroundColor:this.color,color:'#226',marginRight:'4px'});$br(this.body,'3px');if(this.onclick)$y(this.body,{cursor:'pointer'});$(this.body).hover(function(){$(this).css('opacity',0.6);},function(){$(this).css('opacity',1);});this.make_label();if(!this.static)this.make_remove_btn();_tags.all_tags.push(this);}
-SingleTag.prototype.make_remove_btn=function(){var me=this;var span=$a(this.body,'span');span.innerHTML+=' |';var span=$a(this.body,'span','',{cursor:'pointer'});span.innerHTML=' x'
-span.onclick=function(){me.remove(me);}}
-SingleTag.prototype.make_label=function(){var me=this;this.label_span=$a(this.body,'span','social',null,this.label);this.label_span.onclick=function(){if(me.onclick)me.onclick(me);}}
-SingleTag.prototype.remove_tag_body=function(){$dh(this.body);var nl=[];for(var i in this.tag_list)
-if(this.tag_list[i]!=this.label)
-nl.push(this.tag_list[i]);if(this.taglist)
-this.taglist.tag_list=nl;}
-SingleTag.prototype.remove=function(){var me=this;var callback=function(r,rt){me.remove_tag_body()
-me.taglist.remove_from_locals(me.label);}
-$c('webnotes.widgets.tags.remove_tag',{'dt':me.dt,'dn':me.dn,'tag':me.label},callback)
-$bg(me.body,'#DDD');}
-wn.widgets.TagCloud=function(parent,doctype,onclick){var me=this;this.make=function(r,rt){parent.innerHTML='';if(r.message&&r.message.length){me.tab=make_table(parent,r.message.length,2,'100%',['40px',null],{padding:'5px 3px 5px 0px'})
-$y($td(me.tab,0,0),{textAlign:'right'});for(var i=0;i<r.message.length;i++){new wn.widgets.TagCloud.Tag({parent:$td(me.tab,i,1),label:r.message[i][0],onclick:onclick,fieldname:r.message[i][2]},$td(me.tab,i,0),r.message[i])}}else{me.set_no_tags();}
-me.refresh=$ln($a(parent,'div'),'refresh',function(){me.refresh.set_working();me.render(1);},{fontSize:'11px',margin:'3px 0px',color:'#888'},1);}
-this.set_no_tags=function(){$a(parent,'div','social comment',{fontSize:'11px',margin:'3px 0px'},'<i>No tags yet!, please start tagging</i>');}
-this.render=function(refresh){$c('webnotes.widgets.tags.get_top_tags',{doctype:doctype,refresh:(refresh?1:0)},this.make);}
-this.render();}
-wn.widgets.TagCloud.Tag=function(args,count_cell,det){$(count_cell).css('text-align','right').html(det[1]+' x');args.static=1;this.tag=new SingleTag(args)}
+// Copyright (c) 2012 Web Notes Technologies Pvt Ltd (http://erpnext.com)
+// 
+// MIT License (MIT)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a 
+// copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// 
+
+// =================================================
+//
+// Tag Globals
+//
+_tags = {
+	dialog: null,
+	color_map: {},
+	all_tags: [],
+	colors: {'Default':'#add8e6'}
+	//color_list: ['Default'] // for sequence
+}
+
+//
+// Tag List
+//
+TagList = function(parent, start_list, dt, dn, static, onclick) {
+	this.start_list = start_list ? start_list : [];
+	this.tag_list = [];
+	this.dt = dt;
+	this.onclick = onclick;
+	this.dn = dn;
+	this.static;
+	this.parent = parent;
+	this.make_body();
+}
+
+TagList.prototype.make = function(parent) {
+	for(var i=0; i<this.start_list.length; i++) {
+		if(this.start_list[i])
+			new SingleTag({
+				parent: this.body,
+				label: this.start_list[i],
+				dt: this.dt,
+				dn: this.dn,
+				fieldname: '_user_tags',
+				static: this.static,
+				taglist: this,
+				onclick: this.onclick
+			});
+	}
+}
+
+TagList.prototype.make_body = function() {
+	var div = $a(this.parent, 'span', '', {margin:'3px 0px', padding:'3px 0px'});
+	this.body = $a(div, 'span', '', {marginRight:'4px'});
+	this.add_tag_area = $a(div, 'span');
+	this.make_add_tag();
+	this.make();
+}
+
+// render a new tag
+TagList.prototype.add_tag = function(label, static, fieldname, color) {
+	if(!label) return;
+	if(in_list(this.tag_list, label)) return; // no double tags
+	var tag = new SingleTag({
+		parent: this.body,
+		label: label,
+		dt: this.dt,
+		dn: this.dn,
+		fieldname: fieldname,
+		static: static,
+		taglist: this,
+		color: color,
+		onclick: this.onclick
+	});
+}
+
+// add -tag area
+TagList.prototype.make_add_tag = function() {
+	var me = this;
+	this.add_tag_span = $a(this.add_tag_area, 'span', '', 
+		{color:'#888', textDecoration:'underline', cursor:'pointer',marginLeft:'4px',fontSize:'11px'});
+	this.add_tag_span.innerHTML = 'Add tag';
+	this.add_tag_span.onclick = function() { me.new_tag(); }
+}
+
+// new tag dialog
+TagList.prototype.make_tag_dialog = function() {
+	var me = this;
+	
+	var d = new wn.ui.Dialog({
+		title: 'Add a tag',
+		width: 400,
+		fields: [
+			{fieldtype:'Link', fieldname:'tag', label:'Tag', options:'Tag', 
+				reqd:1, description:'Max chars (20)', no_buttons:1},
+			{fieldtype:'Button', fieldname: 'add', label:'Add'}
+		]
+	})
+	
+	$(d.fields_dict.tag.input).attr('maxlength', 20);
+	d.fields_dict.add.input.onclick = function() { me.save_tag(d); }
+
+	return d;
+}
+
+
+// check if tag text is okay
+TagList.prototype.is_text_okay = function(val) {
+	if(!val) {
+		msgprint("Please type something");
+		return;
+	}
+	if(validate_spl_chars(val)) {
+		msgprint("Special charaters, commas etc not allowed in tags");
+		return;
+	}
+	return 1
+}
+
+// add to local
+TagList.prototype.add_to_locals = function(tag) {
+	if(locals[this.dt] && locals[this.dt][this.dn]) {
+		var doc = locals[this.dt][this.dn];
+	
+		if(!doc._user_tags) {
+			doc._user_tags = ''
+		}
+		var tl = doc._user_tags.split(',')
+		tl.push(tag)
+		doc._user_tags = tl.join(',');
+	}
+}
+
+// remove from local
+TagList.prototype.remove_from_locals = function(tag) {
+	if(locals[this.dt] && locals[this.dt][this.dn]) {
+		var doc = locals[this.dt][this.dn];
+	
+		var tl = doc._user_tags.split(',');
+		var new_tl = [];
+		for(var i=0; i<tl.length; i++) {
+			if(tl[i]!=tag) new_tl.push(tl[i]);
+		}
+		doc._user_tags = new_tl.join(',');
+	}
+}
+
+// save the tag
+TagList.prototype.save_tag = function(d) {
+	var val = d.get_values();
+	if(val) val = val.tag;
+
+	var me = this;
+
+	if(!this.is_text_okay(val)) return;
+	
+	var callback = function(r,rt) {
+		var d = me.dialog;
+		// hide the dialog
+		d.fields_dict.add.input.done_working();
+		d.fields_dict.tag.input.set_input('');
+		d.hide();
+		
+		// add in locals
+		me.add_to_locals(val)
+
+		if(!r.message) return;
+		me.add_tag(r.message, 0, '_user_tags');
+		
+	}
+	me.dialog.fields_dict.add.input.set_working();
+	$c('webnotes.widgets.tags.add_tag',{'dt': me.dt, 'dn': me.dn, 'tag':val, 'color':'na'}, callback);
+}
+
+// create a new tag
+TagList.prototype.new_tag = function() {
+	var me = this;
+	
+	if(!this.dialog) {
+		this.dialog = this.make_tag_dialog();
+	}
+	this.dialog.show();
+}
+
+// refresh tags
+TagList.prototype.refresh_tags = function() {
+}
+
+//
+// SingleTag
+// parameters {parent, label, dt, dn, fieldname, static, taglist, color}
+//
+function SingleTag(opts) {
+	$.extend(this, opts);
+
+	if(!this.color) this.color = '#add8e6';
+	
+	if(this.taglist && !in_list(this.taglist.tag_list, this.label))
+		this.taglist.tag_list.push(this.label);
+	
+	this.make_body(this.parent);
+}
+
+// make body
+SingleTag.prototype.make_body = function(parent) {
+	var me = this;
+	// tag area
+	this.body = $a(parent,'span','',{padding:'2px 4px', backgroundColor: this.color, 
+		color:'#226', marginRight:'4px'});
+	$br(this.body,'3px');
+	
+	if(this.onclick) $y(this.body, {cursor:'pointer'});
+	
+	// hover
+	$(this.body).hover(function() { 
+		$(this).css('opacity', 0.6);
+	 } ,function() { 
+		$(this).css('opacity', 1);
+	 });
+
+	// label
+	this.make_label();
+	
+	// remove btn
+	if(!this.static) this.make_remove_btn();
+	
+	// add to all tags
+	_tags.all_tags.push(this);
+}
+
+// remove btn
+SingleTag.prototype.make_remove_btn = function() {
+	var me = this;
+	var span = $a(this.body,'span');
+	span.innerHTML += ' |';
+	
+	var span = $a(this.body,'span','',{cursor:'pointer'});
+	span.innerHTML = ' x'
+	span.onclick = function() { me.remove(me); }
+}
+
+// label
+SingleTag.prototype.make_label = function() {
+	var me = this;
+	this.label_span = $a(this.body,'span', 'social', null, this.label);
+	this.label_span.onclick = function() { if(me.onclick) me.onclick(me); }
+}
+
+// remove
+SingleTag.prototype.remove_tag_body = function() {
+	// clear tag
+	$dh(this.body);
+
+	// remove from tag_list
+	var nl=[]; 
+	for(var i in this.tag_list) 
+		if(this.tag_list[i]!=this.label) 
+			nl.push(this.tag_list[i]);
+	if(this.taglist)
+		this.taglist.tag_list = nl;
+}
+
+// remove
+SingleTag.prototype.remove = function() {
+	var me = this;
+	var callback = function(r,rt) {
+		me.remove_tag_body()
+		me.taglist.remove_from_locals(me.label);
+	}
+	$c('webnotes.widgets.tags.remove_tag', {'dt':me.dt, 'dn':me.dn, 'tag':me.label}, callback)
+	$bg(me.body,'#DDD');
+}
+
+// tag cloud
+// render the tag cloud
+// n1 x [tag1]
+// n2 x [tag2]
+
+wn.widgets.TagCloud = function(parent, doctype, onclick) {
+	var me = this;
+		
+	this.make = function(r, rt) {
+		parent.innerHTML = '';
+		if(r.message && r.message.length) {
+			me.tab = make_table(parent, r.message.length, 2, '100%', ['40px', null], {padding:'5px 3px 5px 0px'})
+			$y($td(me.tab, 0, 0), {textAlign:'right'});
+			
+			for(var i=0; i<r.message.length; i++) {
+				new wn.widgets.TagCloud.Tag({
+					parent:$td(me.tab, i, 1),
+					label: r.message[i][0],
+					onclick: onclick,
+					fieldname: r.message[i][2]
+				}, $td(me.tab, i, 0), r.message[i]) 
+			}
+		} else {
+			me.set_no_tags();
+		}
+		
+		me.refresh = $ln($a(parent, 'div'), 'refresh', function() {
+			me.refresh.set_working();
+			me.render(1);
+		}, {fontSize:'11px', margin:'3px 0px', color:'#888'}, 1);
+	}
+	
+	this.set_no_tags = function() {
+		$a(parent, 'div', 'social comment', {fontSize:'11px', margin:'3px 0px'}, '<i>No tags yet!, please start tagging</i>');
+	}
+	
+	this.render = function(refresh) {
+		$c('webnotes.widgets.tags.get_top_tags', {doctype:doctype, refresh:(refresh ? 1 : 0)}, this.make);	
+	}
+	this.render();
+}
+
+// make a single row of a tag
+wn.widgets.TagCloud.Tag = function(args, count_cell, det) {
+	// counter
+	$(count_cell).css('text-align', 'right').html(det[1] + ' x');
+	
+	args.static = 1;
+	
+	// tag
+	this.tag = new SingleTag(args)
+}
+
+
+
+
+
+
 /*
  *	lib/js/legacy/widgets/export_query.js
  */
-var export_dialog;function export_query(query,callback){if(!export_dialog){var d=new Dialog(400,300,"Export...");d.make_body([['Data','Max rows','Blank to export all rows'],['Button','Go'],]);d.widgets['Go'].onclick=function(){export_dialog.hide();n=export_dialog.widgets['Max rows'].value;if(cint(n))
-export_dialog.query+=' LIMIT 0,'+cint(n);callback(export_dialog.query);}
-d.onshow=function(){this.widgets['Max rows'].value='500';}
-export_dialog=d;}
-export_dialog.query=query;export_dialog.show();}
-function export_csv(q,report_name,sc_id,is_simple,filter_values,colnames){var args={}
-args.cmd='webnotes.widgets.query_builder.runquery_csv';if(is_simple)
-args.simple_query=q;else
-args.query=q;args.sc_id=sc_id?sc_id:'';args.filter_values=filter_values?filter_values:'';if(colnames)
-args.colnames=colnames.join(',');args.report_name=report_name?report_name:'';open_url_post(wn.request.url,args);}
+// Copyright (c) 2012 Web Notes Technologies Pvt Ltd (http://erpnext.com)
+// 
+// MIT License (MIT)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a 
+// copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// 
+
+var export_dialog;
+function export_query(query, callback) {
+
+	if(!export_dialog) {
+		var d = new Dialog(400, 300, "Export...");
+		d.make_body([
+			['Data', 'Max rows', 'Blank to export all rows'],
+			['Button', 'Go'],
+		]);	
+		d.widgets['Go'].onclick = function() {
+			export_dialog.hide();
+			n = export_dialog.widgets['Max rows'].value;
+			if(cint(n))
+				export_dialog.query += ' LIMIT 0,' + cint(n);
+			callback(export_dialog.query);
+		}
+		d.onshow = function() {
+			this.widgets['Max rows'].value = '500';
+		}
+		export_dialog = d;
+	}
+	export_dialog.query = query;
+	export_dialog.show();
+}
+
+function export_csv(q, report_name, sc_id, is_simple, filter_values, colnames) {
+    var args = {}
+    args.cmd = 'webnotes.widgets.query_builder.runquery_csv';
+    if(is_simple) 
+    	args.simple_query = q; 
+    else 
+    	args.query = q;
+
+    args.sc_id = sc_id ? sc_id : '';
+    args.filter_values = filter_values ? filter_values: '';
+    if(colnames) 
+    	args.colnames = colnames.join(',');
+	args.report_name = report_name ? report_name : '';
+	open_url_post(wn.request.url, args);
+}
+
+
 /*
  *	lib/js/legacy/webpage/spinner.js
  */
-var pending_req=0;var fcount=0;var dialog_back;function set_loading(){pending_req++;$('#spinner').css('visibility','visible');$('body').css('cursor','progress');}
-function hide_loading(){pending_req--;if(!pending_req){$('body').css('cursor','default');$('#spinner').css('visibility','hidden');}}
-function freeze(){if(!dialog_back){dialog_back=$a($i('body_div'),'div','dialog_back');$(dialog_back).css('opacity',0.6);}
-$ds(dialog_back);fcount++;}
-function unfreeze(){if(!fcount)return;fcount--;if(!fcount){$dh(dialog_back);}}
+// Copyright (c) 2012 Web Notes Technologies Pvt Ltd (http://erpnext.com)
+// 
+// MIT License (MIT)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a 
+// copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// 
+
+var pending_req = 0;
+var fcount = 0;
+var dialog_back;
+
+function set_loading() {
+	pending_req++;
+	$('#spinner').css('visibility', 'visible');
+	$('body').css('cursor', 'progress');
+}
+
+function hide_loading() {
+	pending_req--;
+	if(!pending_req){
+		$('body').css('cursor', 'default');
+		$('#spinner').css('visibility', 'hidden');
+	}
+}
+
+function freeze() {
+	// blur
+	if(!dialog_back) {
+		dialog_back = $a($i('body_div'), 'div', 'dialog_back');
+		$(dialog_back).css('opacity', 0.6);
+	}
+	$ds(dialog_back);
+	fcount++;
+}
+function unfreeze() {
+	if(!fcount)return; // anything open?
+	fcount--;
+	if(!fcount) {
+		$dh(dialog_back);
+	}
+}
+
 /*
  *	lib/js/legacy/webpage/loaders.js
  */
-function loadreport(dt,rep_name,onload){if(rep_name)
-wn.set_route('Report',dt,rep_name);else
-wn.set_route('Report',dt);}
-function loaddoc(doctype,name,onload){wn.model.with_doctype(doctype,function(){if(locals.DocType[doctype].in_dialog){_f.edit_record(doctype,name);}else{wn.set_route('Form',doctype,name);}})}
-var load_doc=loaddoc;function new_doc(doctype,onload,in_dialog,on_save_callback,cdt,cdn,cnic){wn.model.with_doctype(doctype,function(){wn.views.formview.create(doctype);})}
-var newdoc=new_doc;var pscript={};function loadpage(page_name,call_back,no_history){wn.set_route(page_name);}
-function loaddocbrowser(dt){wn.set_route('List',dt);}
+// Copyright (c) 2012 Web Notes Technologies Pvt Ltd (http://erpnext.com)
+// 
+// MIT License (MIT)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a 
+// copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// 
+
+function loadreport(dt, rep_name, onload) {
+	if(rep_name)
+		wn.set_route('Report', dt, rep_name);
+	else
+		wn.set_route('Report', dt);
+}	
+
+function loaddoc(doctype, name, onload) {
+	//doctype = get_label_doctype(doctype);
+	wn.model.with_doctype(doctype, function() {
+		if(locals.DocType[doctype].in_dialog) {
+			_f.edit_record(doctype, name);
+		} else {
+			wn.set_route('Form', doctype, name);			
+		}
+	})
+}
+var load_doc = loaddoc;
+
+function new_doc(doctype, onload, in_dialog, on_save_callback, cdt, cdn, cnic) {
+	wn.model.with_doctype(doctype, function() {
+		wn.views.formview.create(doctype);
+	})
+}
+var newdoc = new_doc;
+
+var pscript={};
+function loadpage(page_name, call_back, no_history) {
+	wn.set_route(page_name);
+}
+
+function loaddocbrowser(dt) {	
+	wn.set_route('List', dt);
+}
+
+
 /*
  *	lib/js/legacy/wn/page_layout.js
  */
-wn.PageLayout=function(args){$.extend(this,args)
-this.wrapper=$a(this.parent,'div','layout-wrapper layout-wrapper-background');this.head=$a(this.wrapper,'div');this.main=$a(this.wrapper,'div','layout-main-section');this.sidebar_area=$a(this.wrapper,'div','layout-side-section');$a(this.wrapper,'div','',{clear:'both'});this.body=$a(this.main,'div');this.footer=$a(this.main,'div');if(this.heading){this.page_head=new PageHeader(this.head,this.heading);}}
+// Copyright (c) 2012 Web Notes Technologies Pvt Ltd (http://erpnext.com)
+// 
+// MIT License (MIT)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a 
+// copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// 
+
+/* standard 2-column layout with
+	wrapper
+		+ wtab
+			+ main
+				+ head
+				+ toolbar_area
+				+ body
+				+ footer
+			+ sidebar_area
+
+*/
+
+wn.PageLayout = function(args) {
+	$.extend(this, args)
+	this.wrapper 		= $a(this.parent, 'div', 'layout-wrapper layout-wrapper-background');
+	this.head 			= $a(this.wrapper, 'div');	
+	this.main 			= $a(this.wrapper, 'div', 'layout-main-section');
+	this.sidebar_area 	= $a(this.wrapper, 'div', 'layout-side-section');
+	$a(this.wrapper, 'div', '', {clear:'both'});
+	this.body 			= $a(this.main, 'div');
+	this.footer 		= $a(this.main, 'div');
+	if(this.heading) {
+		this.page_head = new PageHeader(this.head, this.heading);
+	}
+}
+
 /*
  *	lib/js/legacy/wn/widgets/page_sidebar.js
  */
-wn.widgets.PageSidebar=function(parent,opts){this.opts=opts
-this.sections={}
-this.wrapper=$a(parent,'div','psidebar')
-this.refresh=function(){this.wrapper.innerHTML=''
-if(this.opts.title)
-this.make_head();for(var i=0;i<this.opts.sections.length;i++){var section=this.opts.sections[i];if((section.display&&section.display())||!section.display){this.sections[section.title]=new wn.widgets.PageSidebarSection(this,section);}}
-if(this.opts.onrefresh){this.opts.onrefresh(this)}}
-this.make_head=function(){this.head=$a(this.wrapper,'div','head','',this.opts.title);}
-this.refresh();}
-wn.widgets.PageSidebarSection=function(sidebar,opts){this.items=[];this.sidebar=sidebar;this.wrapper=$a(sidebar.wrapper,'div','section');this.head=$a(this.wrapper,'div','section-head','',opts.title);this.body=$a(this.wrapper,'div','section-body');$br(this.wrapper,'5px');this.opts=opts;this.make_items=function(){for(var i=0;i<this.opts.items.length;i++){var item=this.opts.items[i];if((item.display&&item.display())||!item.display){var div=$a(this.body,'div','section-item small');this.make_one_item(item,div);}}}
-this.make_one_item=function(item,div){if(item.type.toLowerCase()=='link')
-this.items[item.label]=new wn.widgets.PageSidebarLink(this,item,div);else if(item.type.toLowerCase()=='button')
-this.items[item.label]=new wn.widgets.PageSidebarButton(this,this.opts.items[i],div);else if(item.type.toLowerCase()=='html')
-this.items[item.label]=new wn.widgets.PageSidebarHTML(this,this.opts.items[i],div);}
-this.add_icon=function(parent,icon){var img=$a(parent,'i',icon,{marginRight:'7px',marginBottom:'-3px'});}
-this.refresh=function(){this.body.innerHTML='';if(this.opts.render){this.opts.render(this.body);}
-else
-this.make_items();}
-this.refresh();}
-wn.widgets.PageSidebarLink=function(section,opts,wrapper){this.wrapper=wrapper;this.section=section;this.opts=opts;var me=this;if(opts.icon){section.add_icon(this.wrapper,opts.icon);}
-this.ln=$a(this.wrapper,'span','link_type section-link small',opts.style,opts.label);this.ln.onclick=function(){me.opts.onclick(me)};}
-wn.widgets.PageSidebarButton=function(section,opts,wrapper){this.wrapper=wrapper;this.section=section;this.opts=opts;var me=this;this.btn=$btn(this.wrapper,opts.label,opts.onclick,opts.style,opts.color);}
-wn.widgets.PageSidebarHTML=function(section,opts,wrapper){wrapper.innerHTML=opts.content}
+// Copyright (c) 2012 Web Notes Technologies Pvt Ltd (http://erpnext.com)
+// 
+// MIT License (MIT)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a 
+// copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// 
+
+// opts = { 'title': 'My Sidebar',
+//  'sections': [
+//     {'title': 'Actions', 
+//		'items': [{type: , label:, onclick function / string to eval], ]
+//		'render': function (optional) 
+//		}
+//
+// item types = link, button, html, inpu
+
+
+//
+// Page Sidebar
+//
+wn.widgets.PageSidebar = function(parent, opts) {
+	this.opts = opts
+	this.sections = {}
+	this.wrapper = $a(parent, 'div', 'psidebar')
+
+	// refresh sidebar - make head and sections
+	this.refresh = function() {
+		this.wrapper.innerHTML = ''
+		if(this.opts.title)
+			this.make_head();
+		for(var i=0; i<this.opts.sections.length; i++) {
+			var section = this.opts.sections[i];
+
+			if((section.display && section.display()) || !section.display) {
+			
+				this.sections[section.title] 
+					= new wn.widgets.PageSidebarSection(this, section);
+			}
+		}
+		if(this.opts.onrefresh) { this.opts.onrefresh(this) }
+	}
+
+	this.make_head = function() {
+		this.head = $a(this.wrapper, 'div', 'head', '', this.opts.title);
+	}
+	
+	this.refresh();
+}
+
+//
+// Sidebar Section
+//
+wn.widgets.PageSidebarSection = function(sidebar, opts) {
+	this.items = [];
+	this.sidebar = sidebar;
+	this.wrapper = $a(sidebar.wrapper, 'div', 'section');
+	this.head = $a(this.wrapper, 'div', 'section-head', '', opts.title);
+	this.body = $a(this.wrapper, 'div', 'section-body');
+	$br(this.wrapper, '5px');
+	this.opts = opts;
+
+
+	// make items
+	this.make_items = function() {
+		for(var i=0; i<this.opts.items.length; i++) {
+			
+			var item = this.opts.items[i];
+			if((item.display && item.display()) || !item.display) {
+				
+				var div = $a(this.body, 'div', 'section-item small');
+				this.make_one_item(item, div);
+			}
+				
+		}
+	}
+
+	this.make_one_item = function(item, div) {
+		if (item.type.toLowerCase()=='link')
+			this.items[item.label] = new wn.widgets.PageSidebarLink(this, item, div);
+
+		else if (item.type.toLowerCase()=='button')
+			this.items[item.label] = new wn.widgets.PageSidebarButton(this, this.opts.items[i], div);
+
+		//else if (item.type=='Input')
+		//	new wn.widgets.PageSidebarInput(this, this.opts.items[i], div);
+
+		else if (item.type.toLowerCase()=='html')
+			this.items[item.label] = new wn.widgets.PageSidebarHTML(this, this.opts.items[i], div);
+	}
+	
+	// image
+	this.add_icon = function(parent, icon) {
+		var img = $a(parent, 'i', icon, {marginRight: '7px', marginBottom:'-3px'});
+	}
+	
+	this.refresh = function() {
+		this.body.innerHTML = '';
+		if(this.opts.render) { 
+			this.opts.render(this.body); }
+		else 
+			this.make_items();
+	}
+	this.refresh();
+}
+//
+// Elements
+//
+
+// link
+wn.widgets.PageSidebarLink = function(section, opts, wrapper) {
+	this.wrapper = wrapper;
+	this.section = section;
+	this.opts = opts;
+	
+	var me = this;
+	if(opts.icon) {
+		section.add_icon(this.wrapper, opts.icon);
+	}
+	this.ln = $a(this.wrapper, 'span', 'link_type section-link small', opts.style, opts.label);
+	this.ln.onclick = function() { me.opts.onclick(me) };
+}
+
+// button
+wn.widgets.PageSidebarButton = function(section, opts, wrapper) {
+	this.wrapper = wrapper;
+	this.section = section;
+	this.opts = opts;
+	
+	var me = this;
+	this.btn = $btn(this.wrapper, opts.label, opts.onclick, opts.style, opts.color);
+}
+
+// html
+wn.widgets.PageSidebarHTML = function(section, opts, wrapper) {
+	wrapper.innerHTML = opts.content
+}
+
 /*
  *	lib/js/legacy/wn/widgets/footer.js
  */
-wn.widgets.Footer=function(args){$.extend(this,args);this.make=function(){this.wrapper=$a(this.parent,'div','std-footer');this.table=make_table(this.wrapper,1,this.columns,[],{width:100/this.columns+'%'});this.render_items();}
-this.render_items=function(){for(var i=0;i<this.items.length;i++){var item=this.items[i];var div=$a($td(this.table,0,item.column),'div','std-footer-item');div.label=$a($a(div,'div'),'span','link_type','',item.label);div.label.onclick=item.onclick;if(item.description){div.description=$a(div,'div','field_description','',item.description);}}}
-if(this.items)
-this.make();}
+// Copyright (c) 2012 Web Notes Technologies Pvt Ltd (http://erpnext.com)
+// 
+// MIT License (MIT)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a 
+// copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// 
+
+// a simple footer
+
+// args - parent, columns, items
+// items as [{column:1, label:'x', description:'y', onclick:function}]
+wn.widgets.Footer = function(args) {
+	$.extend(this, args);
+	this.make = function() {
+		this.wrapper = $a(this.parent, 'div', 'std-footer');
+		this.table = make_table(this.wrapper, 1, this.columns, [], {width:100/this.columns + '%'});
+		this.render_items();
+	}
+	this.render_items = function() {
+		for(var i=0; i<this.items.length; i++) {
+			var item = this.items[i];
+			
+			var div = $a($td(this.table,0,item.column), 'div', 'std-footer-item');
+			div.label = $a($a(div,'div'),'span','link_type','',item.label);
+			div.label.onclick = item.onclick;
+			if(item.description) {
+				div.description = $a(div,'div','field_description','',item.description);
+			}
+		}
+	}
+	if(this.items)
+		this.make();
+}
+
 /*
  *	lib/js/legacy/model/local_data.js
  */
-var locals={'DocType':{}};var LocalDB={};var READ=0;var WRITE=1;var CREATE=2;var SUBMIT=3;var CANCEL=4;var AMEND=5;LocalDB.getchildren=function(child_dt,parent,parentfield,parenttype){var l=[];for(var key in locals[child_dt]){var d=locals[child_dt][key];if((d.parent==parent)&&(d.parentfield==parentfield)){if(parenttype){if(d.parenttype==parenttype)l.push(d);}else{l.push(d);}}}
-l.sort(function(a,b){return(cint(a.idx)-cint(b.idx))});return l;}
-LocalDB.add=function(dt,dn){if(!locals[dt])locals[dt]={};if(locals[dt][dn])delete locals[dt][dn];locals[dt][dn]={'name':dn,'doctype':dt,'docstatus':0};return locals[dt][dn];}
-LocalDB.delete_doc=function(dt,dn){var doc=get_local(dt,dn);for(var ndt in locals){if(locals[ndt]){for(var ndn in locals[ndt]){var doc=locals[ndt][ndn];if(doc&&doc.parenttype==dt&&(doc.parent==dn||doc.__oldparent==dn)){delete locals[ndt][ndn];}}}}
-delete locals[dt][dn];}
-function get_local(dt,dn){return locals[dt]?locals[dt][dn]:null;}
-LocalDB.sync=function(list){if(list._kl)list=expand_doclist(list);if(list){LocalDB.clear_locals(list[0].doctype,list[0].name);}
-for(var i=0;i<list.length;i++){var d=list[i];if(!d.name)
-d.name=LocalDB.get_localname(d.doctype);LocalDB.add(d.doctype,d.name);locals[d.doctype][d.name]=d;if(cur_frm&&cur_frm.doctype==d.doctype&&cur_frm.docname==d.name){cur_frm.doc=d;}
-if(d.doctype=='DocField')
-wn.meta.add_field(d);if(d.localname){wn.model.new_names[d.localname]=d.name;$(document).trigger('rename',[d.doctype,d.localname,d.name]);delete locals[d.doctype][d.localname];}}}
-LocalDB.clear_locals=function(dt,dn){var doclist=make_doclist(dt,dn,1);$.each(doclist,function(i,v){v&&delete locals[v.doctype][v.name];});}
-local_name_idx={};LocalDB.get_localname=function(doctype){if(!local_name_idx[doctype])local_name_idx[doctype]=1;var n='New '+get_doctype_label(doctype)+' '+local_name_idx[doctype];local_name_idx[doctype]++;return n;}
-LocalDB.set_default_values=function(doc){var doctype=doc.doctype;var docfields=wn.meta.docfield_list[doctype];if(!docfields){return;}
-var fields_to_refresh=[];for(var fid=0;fid<docfields.length;fid++){var f=docfields[fid];if(!in_list(no_value_fields,f.fieldtype)&&doc[f.fieldname]==null){var v=LocalDB.get_default_value(f.fieldname,f.fieldtype,f['default']);if(v){if(in_list(["Int","Check"],f.fieldtype)){doc[f.fieldname]=cint(v);}else if(in_list(["Currency","Float"],f.fieldtype)){doc[f.fieldname]=flt(v);}else{doc[f.fieldname]=v;}
-fields_to_refresh.push(f.fieldname);}}}
-return fields_to_refresh;}
-function check_perm_match(p,dt,dn){if(!dn)return true;var out=false;if(p.match){if(user_defaults[p.match]){for(var i=0;i<user_defaults[p.match].length;i++){if(user_defaults[p.match][i]==locals[dt][dn][p.match]){return true;}}
-return false;}else if(!locals[dt][dn][p.match]){return true;}else{return false;}}else{return true;}}
-function get_perm(doctype,dn,ignore_submit){var perm=[[0,0],];if(in_list(user_roles,'Administrator'))perm[0][READ]=1;var plist=getchildren('DocPerm',doctype,'permissions','DocType');for(var pidx in plist){var p=plist[pidx];var pl=cint(p.permlevel?p.permlevel:0);if(in_list(user_roles,p.role)){if(check_perm_match(p,doctype,dn)){if(!perm[pl])perm[pl]=[];if(!perm[pl][READ]){if(cint(p.read))perm[pl][READ]=1;else perm[pl][READ]=0;}
-if(!perm[pl][WRITE]){if(cint(p.write)){perm[pl][WRITE]=1;perm[pl][READ]=1;}else perm[pl][WRITE]=0;}
-if(!perm[pl][CREATE]){if(cint(p.create))perm[pl][CREATE]=1;else perm[pl][CREATE]=0;}
-if(!perm[pl][SUBMIT]){if(cint(p.submit))perm[pl][SUBMIT]=1;else perm[pl][SUBMIT]=0;}
-if(!perm[pl][CANCEL]){if(cint(p.cancel))perm[pl][CANCEL]=1;else perm[pl][CANCEL]=0;}
-if(!perm[pl][AMEND]){if(cint(p.amend))perm[pl][AMEND]=1;else perm[pl][AMEND]=0;}}}}
-if((!ignore_submit)&&dn&&locals[doctype][dn].docstatus>0){for(pl in perm)
-perm[pl][WRITE]=0;}
-return perm;}
-LocalDB.create=function(doctype,n){if(!n)n=LocalDB.get_localname(doctype);var doc=LocalDB.add(doctype,n)
-doc.__islocal=1;doc.owner=user;LocalDB.set_default_values(doc);return n;}
-LocalDB.delete_record=function(dt,dn){delete locals[dt][dn];}
-LocalDB.get_default_value=function(fn,ft,df){if(df=='_Login'||df=='__user')
-return user;else if(df=='_Full Name')
-return user_fullname;else if(ft=='Date'&&(df=='Today'||df=='__today')){return get_today();}
-else if(df)
-return df;else if(user_defaults[fn])
-return user_defaults[fn][0];else if(sys_defaults[fn])
-return sys_defaults[fn];}
-LocalDB.add_child=function(doc,childtype,parentfield){var n=LocalDB.create(childtype);var d=locals[childtype][n];d.parent=doc.name;d.parentfield=parentfield;d.parenttype=doc.doctype;return d;}
-LocalDB.no_copy_list=['amended_from','amendment_date','cancel_reason'];LocalDB.copy=function(dt,dn,from_amend){var newdoc=LocalDB.create(dt);for(var key in locals[dt][dn]){var df=wn.meta.get_docfield(dt,key);if(key!=='name'&&key.substr(0,2)!='__'&&!(df&&((!from_amend&&cint(df.no_copy)==1)||in_list(LocalDB.no_copy_list,df.fieldname)))){locals[dt][newdoc][key]=locals[dt][dn][key];}}
-return locals[dt][newdoc];}
-function make_doclist(dt,dn){if(!locals[dt]){return[];}
-var dl=[];dl[0]=locals[dt][dn];for(var ndt in locals){if(locals[ndt]){for(var ndn in locals[ndt]){var doc=locals[ndt][ndn];if(doc&&doc.parenttype==dt&&doc.parent==dn){dl.push(doc)}}}}
-return dl;}
-var Meta={};var local_dt={};Meta.make_local_dt=function(dt,dn){var dl=make_doclist('DocType',dt);if(!local_dt[dt])local_dt[dt]={};if(!local_dt[dt][dn])local_dt[dt][dn]={};for(var i=0;i<dl.length;i++){var d=dl[i];if(d.doctype=='DocField'){var key=d.fieldname?d.fieldname:d.label;local_dt[dt][dn][key]=copy_dict(d);}}}
-Meta.set_field_property=function(fn,key,val,doc){if(!doc&&(cur_frm.doc))doc=cur_frm.doc;try{local_dt[doc.doctype][doc.name][fn][key]=val;refresh_field(fn);}catch(e){alert("Client Script Error: Unknown values for "+doc.name+','+fn+'.'+key+'='+val);}}
-Meta.get_field=function(dt,fn,dn){try{return local_dt[dt][dn][fn];}catch(e){return null;}}
-function get_doctype_label(dt){return dt}
-function get_label_doctype(label){return label}
-var getchildren=LocalDB.getchildren;var createLocal=LocalDB.create;
+// Copyright (c) 2012 Web Notes Technologies Pvt Ltd (http://erpnext.com)
+// 
+// MIT License (MIT)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a 
+// copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// 
+
+// Local DB 
+//-----------
+
+var locals = {'DocType':{}};
+var LocalDB={};
+var READ = 0; var WRITE = 1; var CREATE = 2; var SUBMIT = 3; var CANCEL = 4; var AMEND = 5;
+
+LocalDB.getchildren = function(child_dt, parent, parentfield, parenttype) { 
+	var l = []; 
+	for(var key in locals[child_dt]) {
+		var d = locals[child_dt][key];
+		if((d.parent == parent)&&(d.parentfield == parentfield)) {
+			if(parenttype) {
+				if(d.parenttype==parenttype)l.push(d);
+			} else { // ignore for now
+				l.push(d);
+			}
+		}
+	} 
+	l.sort(function(a,b){return (cint(a.idx)-cint(b.idx))}); return l; 
+}
+
+// Add Doc
+// ======================================================================================
+
+LocalDB.add=function(dt, dn) {
+	if(!locals[dt]) locals[dt] = {}; if(locals[dt][dn]) delete locals[dt][dn];
+	locals[dt][dn] = {'name':dn, 'doctype':dt, 'docstatus':0};
+	return locals[dt][dn];
+}
+
+// Delete Doc
+// ======================================================================================
+
+LocalDB.delete_doc=function(dt, dn) {
+	var doc = get_local(dt, dn);
+
+	for(var ndt in locals) { // all doctypes
+		if(locals[ndt]) {
+			for(var ndn in locals[ndt]) {
+				var doc = locals[ndt][ndn];
+				if(doc && doc.parenttype==dt && (doc.parent==dn||doc.__oldparent==dn)) {
+					delete locals[ndt][ndn];
+				}
+			}
+		}
+	}
+	delete locals[dt][dn];
+}
+
+function get_local(dt, dn) { return locals[dt] ? locals[dt][dn] : null; }
+
+// Sync Records from Server
+// ======================================================================================
+
+LocalDB.sync = function(list) {
+	if(list._kl)list = expand_doclist(list);
+	if (list) {
+		LocalDB.clear_locals(list[0].doctype, list[0].name);
+	}
+	for(var i=0;i<list.length;i++) {
+		var d = list[i];
+		if(!d.name) // get name (local if required)
+			d.name = LocalDB.get_localname(d.doctype);
+
+		LocalDB.add(d.doctype, d.name);
+		locals[d.doctype][d.name] = d;
+
+		// reset cur_frm.doc (as new doc is loaded from the server)
+		if(cur_frm && cur_frm.doctype==d.doctype && cur_frm.docname==d.name) {
+			cur_frm.doc = d;
+		}
+
+		if(d.doctype=='DocField') 
+			wn.meta.add_field(d);
+
+		if(d.localname) {
+			wn.model.new_names[d.localname] = d.name;
+			//console.log(d.localname);
+			$(document).trigger('rename', [d.doctype, d.localname, d.name]);
+			delete locals[d.doctype][d.localname];
+		}
+	}
+}
+
+LocalDB.clear_locals = function(dt, dn) {
+	var doclist = make_doclist(dt, dn, 1);
+	// console.dir(['in clear', doclist]);
+	$.each(doclist, function(i, v) {
+		v && delete locals[v.doctype][v.name];
+	});
+}
+
+
+// Get Local Name
+// ======================================================================================
+
+local_name_idx = {};
+LocalDB.get_localname=function(doctype) {
+	if(!local_name_idx[doctype]) local_name_idx[doctype] = 1;
+	var n = 'New '+ get_doctype_label(doctype) + ' ' + local_name_idx[doctype];
+	local_name_idx[doctype]++;
+	return n;
+}
+
+// Create Local Doc
+// ======================================================================================
+
+LocalDB.set_default_values = function(doc) {
+	var doctype = doc.doctype;
+	var docfields = wn.meta.docfield_list[doctype];
+	if(!docfields) {
+		return;
+	}
+	var fields_to_refresh = [];
+	for(var fid=0;fid<docfields.length;fid++) {
+		var f = docfields[fid];
+		if(!in_list(no_value_fields, f.fieldtype) && doc[f.fieldname]==null) {
+			var v = LocalDB.get_default_value(f.fieldname, f.fieldtype, f['default']);
+			
+			// set default in correct datatype
+			if(v) {
+				if(in_list(["Int", "Check"], f.fieldtype)) {
+					doc[f.fieldname] = cint(v);
+				} else if(in_list(["Currency", "Float"], f.fieldtype)) {
+					doc[f.fieldname] = flt(v);					
+				} else {
+					doc[f.fieldname] = v;					
+				}
+				fields_to_refresh.push(f.fieldname);
+			}
+		}
+	}
+	return fields_to_refresh;
+}
+
+// ======================================================================================
+
+function check_perm_match(p, dt, dn) {
+	if(!dn) return true;
+	var out =false;
+	if(p.match) {
+		if(user_defaults[p.match]) {
+			for(var i=0;i<user_defaults[p.match].length;i++) {
+				 // user must have match field in defaults
+				if(user_defaults[p.match][i]==locals[dt][dn][p.match]) {
+				    // must match document
+		  			return true;
+				}
+			}
+			return false;
+		} else if(!locals[dt][dn][p.match]) { // blanks are true
+			return true;
+		} else {
+			return false;
+		}
+	} else {
+		return true;
+	}
+}
+
+/* Note: Submitted docstatus overrides the permissions. To ignore submit condition
+pass ignore_submit=1 */
+
+function get_perm(doctype, dn, ignore_submit) {
+
+	var perm = [[0,0],];
+	if(in_list(user_roles, 'Administrator')) perm[0][READ] = 1;
+	var plist = getchildren('DocPerm', doctype, 'permissions', 'DocType');
+	for(var pidx in plist) {
+		var p = plist[pidx];
+		var pl = cint(p.permlevel?p.permlevel:0);
+		// if user role
+		if(in_list(user_roles, p.role)) {
+			// if field match
+			if(check_perm_match(p, doctype, dn)) { // new style
+				if(!perm[pl])perm[pl] = [];
+				if(!perm[pl][READ]) { 
+					if(cint(p.read))  perm[pl][READ]=1;   else perm[pl][READ]=0;
+				}
+				if(!perm[pl][WRITE]) { 
+					if(cint(p.write)) { perm[pl][WRITE]=1; perm[pl][READ]=1; }else perm[pl][WRITE]=0;
+				}
+				if(!perm[pl][CREATE]) { 
+					if(cint(p.create))perm[pl][CREATE]=1; else perm[pl][CREATE]=0;
+				}
+				if(!perm[pl][SUBMIT]) { 
+					if(cint(p.submit))perm[pl][SUBMIT]=1; else perm[pl][SUBMIT]=0;
+				}
+				if(!perm[pl][CANCEL]) { 
+					if(cint(p.cancel))perm[pl][CANCEL]=1; else perm[pl][CANCEL]=0;
+				}
+				if(!perm[pl][AMEND]) { 
+					if(cint(p.amend)) perm[pl][AMEND]=1;  else perm[pl][AMEND]=0;
+				}
+			}
+		}
+	}
+
+	if((!ignore_submit) && dn && locals[doctype][dn].docstatus>0) {
+		for(pl in perm)
+			perm[pl][WRITE]=0; // read only
+	}
+	return perm;
+}
+
+// ======================================================================================
+
+LocalDB.create = function(doctype, n) {
+	if(!n) n = LocalDB.get_localname(doctype);
+	var doc = LocalDB.add(doctype, n)
+	doc.__islocal=1; doc.owner = user;	
+	LocalDB.set_default_values(doc);
+	return n;
+}
+
+// ======================================================================================
+
+LocalDB.delete_record = function(dt, dn)  {
+	delete locals[dt][dn];
+}
+
+// ======================================================================================
+
+LocalDB.get_default_value = function(fn, ft, df) {
+	if(df=='_Login' || df=='__user')
+		return user;
+	else if(df=='_Full Name')
+		return user_fullname;
+	else if(ft=='Date'&& (df=='Today' || df=='__today')) {
+		return get_today(); }
+	else if(df)
+		return df;
+	else if(user_defaults[fn])
+		return user_defaults[fn][0];
+	else if(sys_defaults[fn])
+		return sys_defaults[fn];
+}
+
+// ======================================================================================
+
+LocalDB.add_child = function(doc, childtype, parentfield) {
+	// create row doc
+	var n = LocalDB.create(childtype);
+	var d = locals[childtype][n];
+	d.parent = doc.name;
+	d.parentfield = parentfield;
+	d.parenttype = doc.doctype;
+	return d;
+}
+
+// ======================================================================================
+
+LocalDB.no_copy_list = ['amended_from','amendment_date','cancel_reason'];
+LocalDB.copy=function(dt, dn, from_amend) {
+	var newdoc = LocalDB.create(dt);
+	for(var key in locals[dt][dn]) {
+		// dont copy name and blank fields
+		var df = wn.meta.get_docfield(dt, key);
+		if(key!=='name' && key.substr(0,2)!='__' &&
+			!(df && ((!from_amend && cint(df.no_copy)==1) || in_list(LocalDB.no_copy_list, df.fieldname)))) { 
+			locals[dt][newdoc][key] = locals[dt][dn][key];
+		}
+	}
+	return locals[dt][newdoc];
+}
+
+// ======================================================================================
+
+function make_doclist(dt, dn) {
+	if(!locals[dt]) { return []; }
+	var dl = [];
+	dl[0] = locals[dt][dn];
+	
+	// get children
+	for(var ndt in locals) { // all doctypes
+		if(locals[ndt]) {
+			for(var ndn in locals[ndt]) {
+				var doc = locals[ndt][ndn];
+				if(doc && doc.parenttype==dt && doc.parent==dn) {
+					dl.push(doc)
+				}
+			}
+		}
+	}
+	return dl;
+}
+
+// Meta Data
+// ======================================================================================
+
+var Meta={};
+var local_dt = {};
+
+// Make Unique Copy of DocType for each record for client scripting
+Meta.make_local_dt = function(dt, dn) {
+	var dl = make_doclist('DocType', dt);
+	if(!local_dt[dt]) 	  local_dt[dt]={};
+	if(!local_dt[dt][dn]) local_dt[dt][dn]={};
+	for(var i=0;i<dl.length;i++) {
+		var d = dl[i];
+		if(d.doctype=='DocField') {
+			var key = d.fieldname ? d.fieldname : d.label; 
+			local_dt[dt][dn][key] = copy_dict(d);
+		}
+	}
+}
+
+Meta.set_field_property=function(fn, key, val, doc) {
+	if(!doc && (cur_frm.doc))doc = cur_frm.doc;
+	try{
+		local_dt[doc.doctype][doc.name][fn][key] = val;
+		refresh_field(fn);
+	} catch(e) {
+		alert("Client Script Error: Unknown values for " + doc.name + ',' + fn +'.'+ key +'='+ val);
+	}
+}
+
+Meta.get_field = function(dt, fn, dn) {
+	try {
+		return local_dt[dt][dn][fn];
+	} catch(e) {
+		return null;
+	}
+}
+
+// Get Dt label
+// ======================================================================================
+function get_doctype_label(dt) {
+	return dt
+}
+
+function get_label_doctype(label) {
+	return label
+}
+// Global methods for API
+// ======================================================================================
+
+var getchildren = LocalDB.getchildren;
+var createLocal = LocalDB.create;
+
+
 /*
  *	lib/js/wn/app.js
  */
-wn.Application=Class.extend({init:function(){var me=this;if(window.app){wn.call({method:'startup',callback:function(r,rt){wn.provide('wn.boot');wn.boot=r;if(wn.boot.profile.name=='Guest'){window.location='index.html';return;}
-me.startup();}})}else{this.startup();}},startup:function(){this.load_bootinfo();this.make_page_container();this.make_nav_bar();this.set_favicon();$(document).trigger('startup');if(wn.boot){wn.route();}
-$(document).trigger('app_ready');},load_bootinfo:function(){if(wn.boot){wn.model.sync(wn.boot.docs);wn.control_panel=wn.boot.control_panel;this.set_globals();}else{this.set_as_guest();}},set_globals:function(){profile=wn.boot.profile;user=wn.boot.profile.name;user_fullname=wn.user_info(user).fullname;user_defaults=profile.defaults;user_roles=profile.roles;user_email=profile.email;sys_defaults=wn.boot.sysdefaults;},set_as_guest:function(){profile={name:'Guest'};user='Guest';user_fullname='Guest';user_defaults={};user_roles=['Guest'];user_email='';sys_defaults={};},make_page_container:function(){wn.container=new wn.views.Container();wn.views.make_403();wn.views.make_404();},make_nav_bar:function(){if(wn.boot){wn.container.wntoolbar=new wn.ui.toolbar.Toolbar();}},logout:function(){var me=this;me.logged_out=true;wn.call({method:'logout',callback:function(r){if(r.exc){console.log(r.exc);}
-me.redirect_to_login();}})},redirect_to_login:function(){window.location.href='index.html';},set_favicon:function(){var link=$('link[type="image/x-icon"]').remove().attr("href");var favicon='\
-   <link rel="shortcut icon" href="'+link+'" type="image/x-icon"> \
-   <link rel="icon" href="'+link+'" type="image/x-icon">'
-$(favicon).appendTo('head');}})
+// Copyright (c) 2012 Web Notes Technologies Pvt Ltd (http://erpnext.com)
+// 
+// MIT License (MIT)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a 
+// copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in 
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+
+wn.Application = Class.extend({
+	init: function() {
+		var me = this;
+		if(window.app) {
+			wn.call({
+				method: 'startup',
+				callback: function(r, rt) {
+					wn.provide('wn.boot');
+					wn.boot = r;
+					if(wn.boot.profile.name=='Guest') {
+						window.location = 'index.html';
+						return;
+					}
+					me.startup();
+				}
+			})
+		} else {
+			// clear sid cookie
+			//document.cookie = "sid=Guest;expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/"
+			this.startup();
+			//wn.views.pageview.show(window.home_page);
+		}
+	},
+	startup: function() {
+		// load boot info
+		this.load_bootinfo();
+
+		// page container
+		this.make_page_container();
+				
+		// navbar
+		this.make_nav_bar();
+			
+		// favicon
+		this.set_favicon();
+
+		// trigger app startup
+		$(document).trigger('startup');
+		
+		if(wn.boot) {
+			// route to home page
+			wn.route();	
+		}
+		
+		$(document).trigger('app_ready');
+	},
+	load_bootinfo: function() {
+		if(wn.boot) {
+			wn.model.sync(wn.boot.docs);
+			wn.control_panel = wn.boot.control_panel;
+
+			this.set_globals();		
+		} else {
+			this.set_as_guest();
+		}
+	},
+	set_globals: function() {
+		// for backward compatibility
+		profile = wn.boot.profile;
+		user = wn.boot.profile.name;
+		user_fullname = wn.user_info(user).fullname;
+		user_defaults = profile.defaults;
+		user_roles = profile.roles;
+		user_email = profile.email;
+		sys_defaults = wn.boot.sysdefaults;		
+	},
+	set_as_guest: function() {
+		// for backward compatibility
+		profile = {name:'Guest'};
+		user = 'Guest';
+		user_fullname = 'Guest';
+		user_defaults = {};
+		user_roles = ['Guest'];
+		user_email = '';
+		sys_defaults = {};
+	},
+	make_page_container: function() {
+		wn.container = new wn.views.Container();
+		wn.views.make_403();
+		wn.views.make_404();
+	},
+	make_nav_bar: function() {
+		// toolbar
+		if(wn.boot) {
+			wn.container.wntoolbar = new wn.ui.toolbar.Toolbar();
+		}
+	},
+	logout: function() {
+		var me = this;
+		me.logged_out = true;
+		wn.call({
+			method:'logout',
+			callback: function(r) {
+				if(r.exc) {
+					console.log(r.exc);
+				}
+				me.redirect_to_login();
+			}
+		})
+	},
+	redirect_to_login: function() {
+		window.location.href = 'index.html';
+	},
+	set_favicon: function() {
+		var link = $('link[type="image/x-icon"]').remove().attr("href");
+		var favicon ='\
+			<link rel="shortcut icon" href="' + link + '" type="image/x-icon"> \
+			<link rel="icon" href="' + link + '" type="image/x-icon">'
+
+		$(favicon).appendTo('head');
+	}
+})
+
 /*
  *	erpnext/startup/startup.js
  */
-var current_module;var is_system_manager=0;wn.provide('erpnext.startup');erpnext.modules={'Selling':'selling-home','Accounts':'accounts-home','Stock':'stock-home','Buying':'buying-home','Support':'support-home','Projects':'projects-home','Production':'production-home','Website':'website-home','HR':'hr-home','Setup':'Setup','Activity':'activity','To Do':'todo','Calendar':'calendar','Messages':'messages','Knowledge Base':'questions','Dashboard':'dashboard'}
-wn.provide('wn.modules');$.extend(wn.modules,erpnext.modules);wn.modules['Core']='Setup';erpnext.startup.set_globals=function(){if(inList(user_roles,'System Manager'))is_system_manager=1;}
-erpnext.startup.start=function(){console.log('Starting up...');$('#startup_div').html('Starting up...').toggle(true);erpnext.startup.set_globals();if(user!='Guest'){if(wn.boot.user_background){erpnext.set_user_background(wn.boot.user_background);}
-wn.boot.profile.allow_modules=wn.boot.profile.allow_modules.concat(['To Do','Knowledge Base','Calendar','Activity','Messages'])
-erpnext.toolbar.setup();erpnext.startup.set_periodic_updates();$('footer').html('<div class="web-footer erpnext-footer">\
-   <a href="#!attributions">ERPNext | Attributions and License</a></div>');if(in_list(user_roles,'System Manager')&&(wn.boot.setup_complete=='No')){wn.require("js/complete_setup.js");erpnext.complete_setup.show();}
-if(wn.boot.expires_on&&in_list(user_roles,'System Manager')){var today=dateutil.str_to_obj(dateutil.get_today());var expires_on=dateutil.str_to_obj(wn.boot.expires_on);var diff=dateutil.get_diff(expires_on,today);if(0<=diff&&diff<=15){var expiry_string=diff==0?"today":repl("in %(diff)s day(s)",{diff:diff});$('header').append(repl('<div class="expiry-info"> \
-     Your ERPNext subscription will <b>expire %(expiry_string)s</b>. \
-     Please renew your subscription to continue using ERPNext \
-     (and remove this annoying banner). \
-    </div>',{expiry_string:expiry_string}));}else if(diff<0){$('header').append(repl('<div class="expiry-info"> \
-     This ERPNext subscription <b>has expired</b>. \
-    </div>',{expiry_string:expiry_string}));}}
-erpnext.set_about();if(wn.control_panel.custom_startup_code)
-eval(wn.control_panel.custom_startup_code);}}
-erpnext.update_messages=function(reset){if(inList(['Guest'],user)||!wn.session_alive){return;}
-if(!reset){var set_messages=function(r){if(!r.exc){erpnext.toolbar.set_new_comments(r.message.unread_messages);var show_in_circle=function(parent_id,msg){var parent=$('#'+parent_id);if(parent){if(msg){parent.find('span:first').text(msg);parent.toggle(true);}else{parent.toggle(false);}}}
-show_in_circle('unread_messages',r.message.unread_messages.length);show_in_circle('open_support_tickets',r.message.open_support_tickets);show_in_circle('things_todo',r.message.things_todo);show_in_circle('todays_events',r.message.todays_events);show_in_circle('open_tasks',r.message.open_tasks);show_in_circle('unanswered_questions',r.message.unanswered_questions);}else{clearInterval(wn.updates.id);}}
-wn.call({method:'startup.startup.get_global_status_messages',callback:set_messages});}else{erpnext.toolbar.set_new_comments(0);$('#unread_messages').toggle(false);}}
-erpnext.startup.set_periodic_updates=function(){wn.updates={};if(wn.updates.id){clearInterval(wn.updates.id);}
-wn.updates.id=setInterval(erpnext.update_messages,60000);}
-erpnext.set_user_background=function(src){set_style(repl('#body_div { background: url("files/%(src)s") repeat;}',{src:src}))}
-$(document).bind('startup',function(){erpnext.startup.start();});erpnext.send_message=function(opts){if(opts.btn){$(opts.btn).start_working();}
-wn.call({method:'website.send_message',args:opts,callback:function(r){if(opts.btn){$(opts.btn).done_working();}
-if(opts.callback)opts.callback(r)}});}
-erpnext.hide_naming_series=function(){if(cur_frm.fields_dict.naming_series){hide_field('naming_series');if(cur_frm.doc.__islocal){unhide_field('naming_series');}}}
+// ERPNext - web based ERP (http://erpnext.com)
+// Copyright (C) 2012 Web Notes Technologies Pvt Ltd
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+var current_module;
+var is_system_manager = 0;
+
+wn.provide('erpnext.startup');
+
+erpnext.modules = {
+	'Selling': 'selling-home',
+	'Accounts': 'accounts-home',
+	'Stock': 'stock-home',
+	'Buying': 'buying-home',
+	'Support': 'support-home',
+	'Projects': 'projects-home',
+	'Production': 'production-home',
+	'Website': 'website-home',
+	'HR': 'hr-home',
+	'Setup': 'Setup',
+	'Activity': 'activity',
+	'To Do': 'todo',
+	'Calendar': 'calendar',
+	'Messages': 'messages',
+	'Knowledge Base': 'questions',
+	'Dashboard': 'dashboard'
+}
+
+// wn.modules is used in breadcrumbs for getting module home page
+wn.provide('wn.modules');
+$.extend(wn.modules, erpnext.modules);
+wn.modules['Core'] = 'Setup';
+
+erpnext.startup.set_globals = function() {
+	if(inList(user_roles,'System Manager')) is_system_manager = 1;
+}
+
+erpnext.startup.start = function() {
+	console.log('Starting up...');
+	$('#startup_div').html('Starting up...').toggle(true);
+	
+	
+	erpnext.startup.set_globals();
+		
+	if(user != 'Guest'){
+		if(wn.boot.user_background) {
+			erpnext.set_user_background(wn.boot.user_background);
+		}
+
+		// always allow apps
+		wn.boot.profile.allow_modules = wn.boot.profile.allow_modules.concat(
+			['To Do', 'Knowledge Base', 'Calendar', 'Activity', 'Messages'])
+		
+		// setup toolbar
+		erpnext.toolbar.setup();
+		
+		// set interval for updates
+		erpnext.startup.set_periodic_updates();
+
+		// border to the body
+		// ------------------
+		$('footer').html('<div class="web-footer erpnext-footer">\
+			<a href="#!attributions">ERPNext | Attributions and License</a></div>');
+
+		// complete registration
+		if(in_list(user_roles,'System Manager') && (wn.boot.setup_complete=='No')) { 
+			wn.require("js/complete_setup.js");
+			erpnext.complete_setup.show(); 
+		}
+		if(wn.boot.expires_on && in_list(user_roles, 'System Manager')) {
+			var today = dateutil.str_to_obj(dateutil.get_today());
+			var expires_on = dateutil.str_to_obj(wn.boot.expires_on);
+			var diff = dateutil.get_diff(expires_on, today);
+			if (0 <= diff && diff <= 15) {
+				var expiry_string = diff==0 ? "today" : repl("in %(diff)s day(s)", { diff: diff });
+				$('header').append(repl('<div class="expiry-info"> \
+					Your ERPNext subscription will <b>expire %(expiry_string)s</b>. \
+					Please renew your subscription to continue using ERPNext \
+					(and remove this annoying banner). \
+				</div>', { expiry_string: expiry_string }));
+			} else if (diff < 0) {
+				$('header').append(repl('<div class="expiry-info"> \
+					This ERPNext subscription <b>has expired</b>. \
+				</div>', { expiry_string: expiry_string }));
+			}
+		}
+		erpnext.set_about();
+		if(wn.control_panel.custom_startup_code)
+			eval(wn.control_panel.custom_startup_code);		
+	}
+}
+
+
+// ========== Update Messages ============
+erpnext.update_messages = function(reset) {
+	// Updates Team Messages
+	
+	if(inList(['Guest'], user) || !wn.session_alive) { return; }
+
+	if(!reset) {
+		var set_messages = function(r) {
+			if(!r.exc) {
+				// This function is defined in toolbar.js
+				erpnext.toolbar.set_new_comments(r.message.unread_messages);
+				
+				var show_in_circle = function(parent_id, msg) {
+					var parent = $('#'+parent_id);
+					if(parent) {
+						if(msg) {
+							parent.find('span:first').text(msg);
+							parent.toggle(true);
+						} else {
+							parent.toggle(false);
+						}
+					}
+				}
+				
+				show_in_circle('unread_messages', r.message.unread_messages.length);
+				show_in_circle('open_support_tickets', r.message.open_support_tickets);
+				show_in_circle('things_todo', r.message.things_todo);
+				show_in_circle('todays_events', r.message.todays_events);
+				show_in_circle('open_tasks', r.message.open_tasks);
+				show_in_circle('unanswered_questions', r.message.unanswered_questions);
+
+			} else {
+				clearInterval(wn.updates.id);
+			}
+		}
+
+		wn.call({
+			method: 'startup.startup.get_global_status_messages',
+			callback: set_messages
+		});
+	
+	} else {
+		erpnext.toolbar.set_new_comments(0);
+		$('#unread_messages').toggle(false);
+	}
+}
+
+erpnext.startup.set_periodic_updates = function() {
+	// Set interval for periodic updates of team messages
+	wn.updates = {};
+
+	if(wn.updates.id) {
+		clearInterval(wn.updates.id);
+	}
+
+	wn.updates.id = setInterval(erpnext.update_messages, 60000);
+}
+
+erpnext.set_user_background = function(src) {
+	set_style(repl('#body_div { background: url("files/%(src)s") repeat;}', {src:src}))
+}
+
+// start
+$(document).bind('startup', function() {
+	erpnext.startup.start();
+});
+
+// subject, sender, description
+erpnext.send_message = function(opts) {
+	if(opts.btn) {
+		$(opts.btn).start_working();
+	}
+	wn.call({
+		method: 'website.send_message',
+		args: opts,
+		callback: function(r) { 
+			if(opts.btn) {
+				$(opts.btn).done_working();
+			}
+			if(opts.callback)opts.callback(r) 
+		}
+	});
+}
+
+erpnext.hide_naming_series = function() {
+	if(cur_frm.fields_dict.naming_series) {
+		hide_field('naming_series');
+		if(cur_frm.doc.__islocal) {
+			unhide_field('naming_series');
+		}
+	}
+}
+
+
 /*
  *	erpnext/startup/js/modules.js
  */
-wn.provide('erpnext.module_page');erpnext.module_page.setup_page=function(module,wrapper){erpnext.module_page.hide_links(wrapper);erpnext.module_page.make_list(module,wrapper);$(wrapper).find("a[title]").tooltip({delay:{show:500,hide:100}});}
-erpnext.module_page.hide_links=function(wrapper){$(wrapper).find('[href*="List/"]').each(function(){var href=$(this).attr('href');var dt=href.split('/')[1];if(wn.boot.profile.all_read.indexOf(get_label_doctype(dt))==-1){var txt=$(this).text();$(this).parent().css('color','#999').html(txt);}});$(wrapper).find('[data-doctype]').each(function(){var dt=$(this).attr('data-doctype');if(wn.boot.profile.all_read.indexOf(dt)==-1){var txt=$(this).text();$(this).parent().css('color','#999').html(txt);}});$(wrapper).find('[href*="Form/"]').each(function(){var href=$(this).attr('href');var dt=href.split('/')[1];if(wn.boot.profile.all_read.indexOf(get_label_doctype(dt))==-1){var txt=$(this).text();$(this).parent().css('color','#999').html(txt);}});}
-erpnext.module_page.make_list=function(module,wrapper){var $w=$(wrapper).find('.reports-list');var $parent1=$('<div style="width: 45%; float: left; margin-right: 4.5%"></div>').appendTo($w);var $parent2=$('<div style="width: 45%; float: left;"></div>').appendTo($w);wrapper.list1=new wn.ui.Listing({parent:$parent1,method:'utilities.get_sc_list',render_row:function(row,data){if(!data.parent_doc_type)data.parent_doc_type=data.doc_type;$(row).html(repl('<a href="#!Report/%(doc_type)s/%(criteria_name)s" \
-    data-doctype="%(parent_doc_type)s">\
-    %(criteria_name)s</a>',data))},args:{module:module},no_refresh:true,callback:function(r){erpnext.module_page.hide_links($parent1)}});wrapper.list1.run();wrapper.list2=new wn.ui.Listing({parent:$parent2,method:'utilities.get_report_list',render_row:function(row,data){$(row).html(repl('<a href="#!Report2/%(ref_doctype)s/%(name)s" \
-    data-doctype="%(ref_doctype)s">\
-    %(name)s</a>',data))},args:{module:module},no_refresh:true,callback:function(r){erpnext.module_page.hide_links($parent2)}});wrapper.list2.run();$parent1.find('.list-toolbar-wrapper').prepend("<div class=\"show-all-reports\">\
-   <a href=\"#List/Search Criteria\"> [ List Of All Reports ]</a></div>");$parent2.find('.list-toolbar-wrapper').prepend("<div class=\"show-all-reports\">\
-   <a href=\"#List/Report\"> [ List Of All Reports (New) ]</a></div>");}
+// ERPNext - web based ERP (http://erpnext.com)
+// Copyright (C) 2012 Web Notes Technologies Pvt Ltd
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+wn.provide('erpnext.module_page');
+
+erpnext.module_page.setup_page = function(module, wrapper) {
+	erpnext.module_page.hide_links(wrapper);
+	erpnext.module_page.make_list(module, wrapper);
+	$(wrapper).find("a[title]").tooltip({
+		delay: { show: 500, hide: 100 }
+	});	
+}
+
+// hide list links where the user does
+// not have read permissions
+
+erpnext.module_page.hide_links = function(wrapper) {
+	// lists
+	$(wrapper).find('[href*="List/"]').each(function() {
+		var href = $(this).attr('href');
+		var dt = href.split('/')[1];
+		if(wn.boot.profile.all_read.indexOf(get_label_doctype(dt))==-1) {
+			var txt = $(this).text();
+			$(this).parent().css('color', '#999').html(txt);
+		}
+	});
+	
+	// reports
+	$(wrapper).find('[data-doctype]').each(function() {
+		var dt = $(this).attr('data-doctype');
+		if(wn.boot.profile.all_read.indexOf(dt)==-1) {
+			var txt = $(this).text();
+			$(this).parent().css('color', '#999').html(txt);
+		}
+	});
+	
+	// single (forms)
+	$(wrapper).find('[href*="Form/"]').each(function() {
+		var href = $(this).attr('href');
+		var dt = href.split('/')[1];
+		if(wn.boot.profile.all_read.indexOf(get_label_doctype(dt))==-1) {
+			var txt = $(this).text();
+			$(this).parent().css('color', '#999').html(txt);
+		}
+	});}
+
+// make list of reports
+
+erpnext.module_page.make_list = function(module, wrapper) {
+	// make project listing
+	var $w = $(wrapper).find('.reports-list');
+	var $parent1 = $('<div style="width: 45%; float: left; margin-right: 4.5%"></div>').appendTo($w);
+	var $parent2 = $('<div style="width: 45%; float: left;"></div>').appendTo($w);
+
+	wrapper.list1 = new wn.ui.Listing({
+		parent: $parent1,
+		method: 'utilities.get_sc_list',
+		render_row: function(row, data) {
+			if(!data.parent_doc_type) data.parent_doc_type = data.doc_type;
+			$(row).html(repl('<a href="#!Report/%(doc_type)s/%(criteria_name)s" \
+				data-doctype="%(parent_doc_type)s">\
+				%(criteria_name)s</a>', data))
+		},
+		args: { module: module },
+		no_refresh: true,
+		callback: function(r) {
+			erpnext.module_page.hide_links($parent1)
+		}
+	});
+	wrapper.list1.run();
+
+	wrapper.list2 = new wn.ui.Listing({
+		parent: $parent2,
+		method: 'utilities.get_report_list',
+		render_row: function(row, data) {
+			$(row).html(repl('<a href="#!Report2/%(ref_doctype)s/%(name)s" \
+				data-doctype="%(ref_doctype)s">\
+				%(name)s</a>', data))
+		},
+		args: { module: module },
+		no_refresh: true,
+		callback: function(r) {
+			erpnext.module_page.hide_links($parent2)
+		}
+	});
+	wrapper.list2.run();
+	
+	// show link to all reports
+	$parent1.find('.list-toolbar-wrapper')
+		.prepend("<div class=\"show-all-reports\">\
+			<a href=\"#List/Search Criteria\"> [ List Of All Reports ]</a></div>");
+	$parent2.find('.list-toolbar-wrapper')
+		.prepend("<div class=\"show-all-reports\">\
+			<a href=\"#List/Report\"> [ List Of All Reports (New) ]</a></div>");
+}
+
 /*
  *	erpnext/startup/js/toolbar.js
  */
-wn.provide('erpnext.toolbar');erpnext.toolbar.setup=function(){erpnext.toolbar.add_modules();$('#toolbar-user').append('<li><a href="#!profile-settings">Profile Settings</a></li>');$('.navbar .pull-right').append('\
-  <li><a href="#!messages" title="Unread Messages"><span class="navbar-new-comments"></span></a></li>');$('.navbar .pull-right').prepend('<li class="dropdown">\
-  <a class="dropdown-toggle" data-toggle="dropdown" href="#" \
-   onclick="return false;">Help<b class="caret"></b></a>\
-  <ul class="dropdown-menu" id="toolbar-help">\
-  </ul></li>')
-$('#toolbar-help').append('<li><a href="https://erpnext.com/manual" target="_blank">\
-  Documentation</a></li>')
-$('#toolbar-help').append('<li><a href="http://groups.google.com/group/erpnext-user-forum" target="_blank">\
-  Forum</a></li>')
-$('#toolbar-help').append('<li><a href="http://www.providesupport.com?messenger=iwebnotes" target="_blank">\
-  Live Chat (Office Hours)</a></li>')
-erpnext.toolbar.set_new_comments();}
-erpnext.toolbar.add_modules=function(){$('<li class="dropdown">\
-  <a class="dropdown-toggle" data-toggle="dropdown" href="#"\
-   onclick="return false;">Modules<b class="caret"></b></a>\
-  <ul class="dropdown-menu modules">\
-  </ul>\
-  </li>').prependTo('.navbar .nav:first');if(wn.boot.modules_list&&typeof(wn.boot.modules_list)=='string'){wn.boot.modules_list=JSON.parse(wn.boot.modules_list);}
-else
-wn.boot.modules_list=keys(erpnext.modules).sort();for(var i in wn.boot.modules_list){var m=wn.boot.modules_list[i]
-if(m!='Setup'&&wn.boot.profile.allow_modules.indexOf(m)!=-1){args={module:m,module_page:erpnext.modules[m],module_label:m=='HR'?'Human Resources':m}
-$('.navbar .modules').append(repl('<li><a href="#!%(module_page)s" \
-    data-module="%(module)s">%(module_label)s</a></li>',args));}}
-if(user_roles.indexOf("Accounts Manager")!=-1){$('.navbar .modules').append('<li><a href="#!dashboard" \
-   data-module="Dashboard">Dashboard</a></li>');}
-if(user_roles.indexOf("System Manager")!=-1){$('.navbar .modules').append('<li class="divider"></li>\
-  <li><a href="#!Setup" data-module="Setup">Setup</a></li>');}}
-erpnext.toolbar.set_new_comments=function(new_comments){var navbar_nc=$('.navbar-new-comments');if(new_comments&&new_comments.length>0){navbar_nc.text(new_comments.length);navbar_nc.addClass('navbar-new-comments-true')
-$.each(new_comments,function(i,v){var msg='New Message: '+(v[1].length<=100?v[1]:(v[1].substr(0,100)+"..."));var id=v[0].replace('/','-');if(!$('#'+id)[0]){show_alert(msg,id);}})}else{navbar_nc.removeClass('navbar-new-comments-true');navbar_nc.text(0);}}
+// ERPNext - web based ERP (http://erpnext.com)
+// Copyright (C) 2012 Web Notes Technologies Pvt Ltd
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+/* toolbar settings */
+wn.provide('erpnext.toolbar');
+
+erpnext.toolbar.setup = function() {
+	// modules 
+	erpnext.toolbar.add_modules();
+	
+	// profile
+	$('#toolbar-user').append('<li><a href="#!profile-settings">Profile Settings</a></li>');
+
+	$('.navbar .pull-right').append('\
+		<li><a href="#!messages" title="Unread Messages"><span class="navbar-new-comments"></span></a></li>');
+
+	// help
+	$('.navbar .pull-right').prepend('<li class="dropdown">\
+		<a class="dropdown-toggle" data-toggle="dropdown" href="#" \
+			onclick="return false;">Help<b class="caret"></b></a>\
+		<ul class="dropdown-menu" id="toolbar-help">\
+		</ul></li>')
+
+	$('#toolbar-help').append('<li><a href="https://erpnext.com/manual" target="_blank">\
+		Documentation</a></li>')
+
+	$('#toolbar-help').append('<li><a href="http://groups.google.com/group/erpnext-user-forum" target="_blank">\
+		Forum</a></li>')
+
+	$('#toolbar-help').append('<li><a href="http://www.providesupport.com?messenger=iwebnotes" target="_blank">\
+		Live Chat (Office Hours)</a></li>')
+
+	erpnext.toolbar.set_new_comments();
+}
+
+erpnext.toolbar.add_modules = function() {
+	$('<li class="dropdown">\
+		<a class="dropdown-toggle" data-toggle="dropdown" href="#"\
+			onclick="return false;">Modules<b class="caret"></b></a>\
+		<ul class="dropdown-menu modules">\
+		</ul>\
+		</li>').prependTo('.navbar .nav:first');
+	
+	// if no modules list then show all
+	if(wn.boot.modules_list && typeof(wn.boot.modules_list) == 'string') {
+		wn.boot.modules_list = JSON.parse(wn.boot.modules_list);	
+	}
+	else
+		wn.boot.modules_list = keys(erpnext.modules).sort();
+
+	// add to dropdown
+	for(var i in wn.boot.modules_list) {
+		var m = wn.boot.modules_list[i]
+		
+		if(m!='Setup' && wn.boot.profile.allow_modules.indexOf(m)!=-1) {
+			args = {
+				module: m,
+				module_page: erpnext.modules[m],
+				module_label: m=='HR' ? 'Human Resources' : m
+			}
+
+			$('.navbar .modules').append(repl('<li><a href="#!%(module_page)s" \
+				data-module="%(module)s">%(module_label)s</a></li>', args));			
+		}
+	}
+
+	// dasboard for accounts system manager
+	if(user_roles.indexOf("Accounts Manager")!=-1) {
+		$('.navbar .modules').append('<li><a href="#!dashboard" \
+			data-module="Dashboard">Dashboard</a></li>');
+	}
+	
+	// setup for system manager
+	if(user_roles.indexOf("System Manager")!=-1) {
+		$('.navbar .modules').append('<li class="divider"></li>\
+		<li><a href="#!Setup" data-module="Setup">Setup</a></li>');
+	}
+	
+}
+
+erpnext.toolbar.set_new_comments = function(new_comments) {
+	var navbar_nc = $('.navbar-new-comments');
+	if(new_comments && new_comments.length>0) {
+		navbar_nc.text(new_comments.length);
+		navbar_nc.addClass('navbar-new-comments-true')
+		$.each(new_comments, function(i, v) {
+			var msg = 'New Message: ' + (v[1].length<=100 ? v[1] : (v[1].substr(0, 100) + "..."));
+			var id = v[0].replace('/', '-');
+			if(!$('#' + id)[0]) { show_alert(msg, id); }
+		})
+	} else {
+		navbar_nc.removeClass('navbar-new-comments-true');
+		navbar_nc.text(0);
+	}
+}
+
+
+
 /*
  *	erpnext/startup/js/feature_setup.js
  */
-pscript.feature_dict={'fs_projects':{'BOM':{'fields':['project_name']},'Delivery Note':{'fields':['project_name']},'Purchase Invoice':{'entries':['project_name']},'Production Order':{'fields':['project_name']},'Purchase Order':{'po_details':['project_name']},'Purchase Receipt':{'purchase_receipt_details':['project_name']},'Sales Invoice':{'fields':['project_name']},'Sales Order':{'fields':['project_name']},'Stock Entry':{'fields':['project_name']},'Timesheet':{'timesheet_details':['project_name']}},'fs_packing_details':{},'fs_discounts':{'Delivery Note':{'delivery_note_details':['adj_rate']},'Quotation':{'quotation_details':['adj_rate']},'Sales Invoice':{'entries':['adj_rate']},'Sales Order':{'sales_order_details':['adj_rate','ref_rate']}},'fs_purchase_discounts':{'Purchase Order':{'po_details':['purchase_ref_rate','discount_rate','import_ref_rate']},'Purchase Receipt':{'purchase_receipt_details':['purchase_ref_rate','discount_rate','import_ref_rate']},'Purchase Invoice':{'entries':['purchase_ref_rate','discount_rate','import_ref_rate']}},'fs_brands':{'Delivery Note':{'delivery_note_details':['brand']},'Purchase Request':{'indent_details':['brand']},'Item':{'fields':['brand']},'Purchase Order':{'po_details':['brand']},'Purchase Invoice':{'entries':['brand']},'Quotation':{'quotation_details':['brand']},'Sales Invoice':{'entries':['brand']},'Sales BOM':{'fields':['new_item_brand']},'Sales Order':{'sales_order_details':['brand']},'Serial No':{'fields':['brand']}},'fs_after_sales_installations':{'Delivery Note':{'fields':['installation_status','per_installed'],'delivery_note_details':['installed_qty']}},'fs_item_batch_nos':{'Delivery Note':{'delivery_note_details':['batch_no']},'Item':{'fields':['has_batch_no']},'Purchase Receipt':{'purchase_receipt_details':['batch_no']},'Quality Inspection':{'fields':['batch_no']},'Sales and Pruchase Return Wizard':{'return_details':['batch_no']},'Sales Invoice':{'entries':['batch_no']},'Stock Entry':{'mtn_details':['batch_no']},'Stock Ledger Entry':{'fields':['batch_no']}},'fs_item_serial_nos':{'Customer Issue':{'fields':['serial_no']},'Delivery Note':{'delivery_note_details':['serial_no'],'packing_details':['serial_no']},'Installation Note':{'installed_item_details':['serial_no']},'Item':{'fields':['has_serial_no']},'Maintenance Schedule':{'item_maintenance_detail':['serial_no'],'maintenance_schedule_detail':['serial_no']},'Maintenance Visit':{'maintenance_visit_details':['serial_no']},'Purchase Receipt':{'purchase_receipt_details':['serial_no']},'Quality Inspection':{'fields':['item_serial_no']},'Sales and Pruchase Return Wizard':{'return_details':['serial_no']},'Sales Invoice':{'entries':['serial_no']},'Stock Entry':{'mtn_details':['serial_no']},'Stock Ledger Entry':{'fields':['serial_no']}},'fs_item_barcode':{'Item':{'fields':['barcode']},'Delivery Note':{'delivery_note_details':['barcode']},'Sales Invoice':{'entries':['barcode']}},'fs_item_group_in_details':{'Delivery Note':{'delivery_note_details':['item_group']},'Opportunity':{'enquiry_details':['item_group']},'Purchase Request':{'indent_details':['item_group']},'Item':{'fields':['item_group']},'Global Defaults':{'fields':['default_item_group']},'Purchase Order':{'po_details':['item_group']},'Purchase Receipt':{'purchase_receipt_details':['item_group']},'Purchase Voucher':{'entries':['item_group']},'Quotation':{'quotation_details':['item_group']},'Sales Invoice':{'entries':['item_group']},'Sales BOM':{'fields':['serial_no']},'Sales Order':{'sales_order_details':['item_group']},'Serial No':{'fields':['item_group']},'Sales Partner':{'partner_target_details':['item_group']},'Sales Person':{'target_details':['item_group']},'Territory':{'target_details':['item_group']}},'fs_page_break':{'Delivery Note':{'delivery_note_details':['page_break'],'packing_details':['page_break']},'Purchase Request':{'indent_details':['page_break']},'Purchase Order':{'po_details':['page_break']},'Purchase Receipt':{'purchase_receipt_details':['page_break']},'Purchase Voucher':{'entries':['page_break']},'Quotation':{'quotation_details':['page_break']},'Sales Invoice':{'entries':['page_break']},'Sales Order':{'sales_order_details':['page_break']}},'fs_exports':{'Delivery Note':{'fields':['Note','conversion_rate','currency','grand_total_export','in_words_export','rounded_total_export'],'delivery_note_details':['base_ref_rate','amount','basic_rate']},'POS Setting':{'fields':['conversion_rate','currency']},'Quotation':{'fields':['Note HTML','OT Notes','conversion_rate','currency','grand_total_export','in_words_export','rounded_total_export'],'quotation_details':['base_ref_rate','amount','basic_rate']},'Sales Invoice':{'fields':['conversion_rate','currency','grand_total_export','in_words_export','rounded_total_export'],'entries':['base_ref_rate','amount','basic_rate']},'Item':{'ref_rate_details':['ref_currency']},'Sales BOM':{'fields':['currency']},'Sales Order':{'fields':['Note1','OT Notes','conversion_rate','currency','grand_total_export','in_words_export','rounded_total_export'],'sales_order_details':['base_ref_rate','amount','basic_rate']}},'fs_imports':{'Purchase Invoice':{'fields':['conversion_rate','currency','grand_total_import','in_words_import','net_total_import','other_charges_added_import','other_charges_deducted_import'],'entries':['purchase_ref_rate','amount','rate']},'Purchase Order':{'fields':['Note HTML','conversion_rate','currency','grand_total_import','in_words_import','net_total_import','other_charges_added_import','other_charges_deducted_import'],'po_details':['purchase_ref_rate','amount','purchase_rate']},'Purchase Receipt':{'fields':['conversion_rate','currency','grand_total_import','in_words_import','net_total_import','other_charges_added_import','other_charges_deducted_import'],'purchase_receipt_details':['purchase_ref_rate','amount','purchase_rate']},'Supplier Quotation':{'fields':['conversion_rate','currency']}},'fs_item_advanced':{'Item':{'fields':['item_customer_details']}},'fs_sales_extras':{'Address':{'fields':['sales_partner']},'Contact':{'fields':['sales_partner']},'Customer':{'fields':['sales_team']},'Delivery Note':{'fields':['sales_team','Packing List']},'Item':{'fields':['item_customer_details']},'Sales Invoice':{'fields':['sales_team']},'Sales Order':{'fields':['sales_team','Packing List']}},'fs_more_info':{'Delivery Note':{'fields':['More Info']},'Opportunity':{'fields':['More Info']},'Purchase Request':{'fields':['More Info']},'Lead':{'fields':['More Info']},'Purchase Invoice':{'fields':['More Info']},'Purchase Order':{'fields':['More Info']},'Purchase Receipt':{'fields':['More Info']},'Quotation':{'fields':['More Info']},'Sales Invoice':{'fields':['More Info']},'Sales Order':{'fields':['More Info']},},'fs_quality':{'Item':{'fields':['Item Inspection Criteria','inspection_required']},'Purchase Receipt':{'purchase_receipt_details':['qa_no']}},'fs_manufacturing':{'Item':{'fields':['Manufacturing']}},'fs_pos':{'Sales Invoice':{'fields':['is_pos']}},'fs_recurring_invoice':{'Sales Invoice':{'fields':['Recurring Invoice']}}}
-$(document).bind('form_refresh',function(){for(sys_feat in sys_defaults)
-{if(sys_defaults[sys_feat]=='0'&&(sys_feat in pscript.feature_dict))
-{if(cur_frm.doc.doctype in pscript.feature_dict[sys_feat])
-{for(fort in pscript.feature_dict[sys_feat][cur_frm.doc.doctype])
-{if(fort=='fields')
-hide_field(pscript.feature_dict[sys_feat][cur_frm.doc.doctype][fort]);else if(cur_frm.fields_dict[fort])
-{for(grid_field in pscript.feature_dict[sys_feat][cur_frm.doc.doctype][fort])
-cur_frm.fields_dict[fort].grid.set_column_disp(pscript.feature_dict[sys_feat][cur_frm.doc.doctype][fort][grid_field],false);}
-else
-msgprint('Grid "'+fort+'" does not exists');}}}}})
+// ERPNext - web based ERP (http://erpnext.com)
+// Copyright (C) 2012 Web Notes Technologies Pvt Ltd
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+/* features setup "Dictionary", "Script"
+Dictionary Format
+	'projects': {
+		'Sales Order': {
+			'fields':['project_name'],
+			'sales_order_details':['projected_qty']
+		},
+		'Purchase Order': {
+			'fields':['project_name']
+		}
+	}
+// ====================================================================*/
+pscript.feature_dict = {
+	'fs_projects': {
+		'BOM': {'fields':['project_name']},
+		'Delivery Note': {'fields':['project_name']},
+		'Purchase Invoice': {'entries':['project_name']},
+		'Production Order': {'fields':['project_name']},
+		'Purchase Order': {'po_details':['project_name']},
+		'Purchase Receipt': {'purchase_receipt_details':['project_name']},
+		'Sales Invoice': {'fields':['project_name']},
+		'Sales Order': {'fields':['project_name']},
+		'Stock Entry': {'fields':['project_name']},
+		'Timesheet': {'timesheet_details':['project_name']}
+	},
+	'fs_packing_details': {
+		//'Delivery Note': {'fields':['packing_details','print_packing_slip','packing_checked_by','packed_by','pack_size','shipping_mark'],'delivery_note_details':['no_of_packs','pack_gross_wt','pack_nett_wt','pack_no','pack_unit']},
+		//'Sales Order': {'fields':['packing_details']}
+	},
+	'fs_discounts': {
+		'Delivery Note': {'delivery_note_details':['adj_rate']},
+		'Quotation': {'quotation_details':['adj_rate']},
+		'Sales Invoice': {'entries':['adj_rate']},
+		'Sales Order': {'sales_order_details':['adj_rate','ref_rate']}
+	},
+	'fs_purchase_discounts': {
+		'Purchase Order': {'po_details':['purchase_ref_rate', 'discount_rate', 'import_ref_rate']},
+		'Purchase Receipt': {'purchase_receipt_details':['purchase_ref_rate', 'discount_rate', 'import_ref_rate']},
+		'Purchase Invoice': {'entries':['purchase_ref_rate', 'discount_rate', 'import_ref_rate']}
+	},
+	'fs_brands': {
+		'Delivery Note': {'delivery_note_details':['brand']},
+		'Purchase Request': {'indent_details':['brand']},
+		'Item': {'fields':['brand']},
+		'Purchase Order': {'po_details':['brand']},
+		'Purchase Invoice': {'entries':['brand']},
+		'Quotation': {'quotation_details':['brand']},
+		'Sales Invoice': {'entries':['brand']},
+		'Sales BOM': {'fields':['new_item_brand']},
+		'Sales Order': {'sales_order_details':['brand']},
+		'Serial No': {'fields':['brand']}
+	},
+	'fs_after_sales_installations': {
+		'Delivery Note': {'fields':['installation_status','per_installed'],'delivery_note_details':['installed_qty']}
+	},
+	'fs_item_batch_nos': {
+		'Delivery Note': {'delivery_note_details':['batch_no']},
+		'Item': {'fields':['has_batch_no']},
+		'Purchase Receipt': {'purchase_receipt_details':['batch_no']},
+		'Quality Inspection': {'fields':['batch_no']},
+		'Sales and Pruchase Return Wizard': {'return_details':['batch_no']},
+		'Sales Invoice': {'entries':['batch_no']},
+		'Stock Entry': {'mtn_details':['batch_no']},
+		'Stock Ledger Entry': {'fields':['batch_no']}
+	},
+	'fs_item_serial_nos': {
+		'Customer Issue': {'fields':['serial_no']},
+		'Delivery Note': {'delivery_note_details':['serial_no'],'packing_details':['serial_no']},
+		'Installation Note': {'installed_item_details':['serial_no']},
+		'Item': {'fields':['has_serial_no']},
+		'Maintenance Schedule': {'item_maintenance_detail':['serial_no'],'maintenance_schedule_detail':['serial_no']},
+		'Maintenance Visit': {'maintenance_visit_details':['serial_no']},
+		'Purchase Receipt': {'purchase_receipt_details':['serial_no']},
+		'Quality Inspection': {'fields':['item_serial_no']},
+		'Sales and Pruchase Return Wizard': {'return_details':['serial_no']},
+		'Sales Invoice': {'entries':['serial_no']},
+		'Stock Entry': {'mtn_details':['serial_no']},
+		'Stock Ledger Entry': {'fields':['serial_no']}
+	},
+	'fs_item_barcode': {
+		'Item': {'fields': ['barcode']},
+		'Delivery Note': {'delivery_note_details': ['barcode']},
+		'Sales Invoice': {'entries': ['barcode']}
+	},
+	'fs_item_group_in_details': {
+		'Delivery Note': {'delivery_note_details':['item_group']},
+		'Opportunity': {'enquiry_details':['item_group']},
+		'Purchase Request': {'indent_details':['item_group']},
+		'Item': {'fields':['item_group']},
+		'Global Defaults': {'fields':['default_item_group']},
+		'Purchase Order': {'po_details':['item_group']},
+		'Purchase Receipt': {'purchase_receipt_details':['item_group']},
+		'Purchase Voucher': {'entries':['item_group']},
+		'Quotation': {'quotation_details':['item_group']},
+		'Sales Invoice': {'entries':['item_group']},
+		'Sales BOM': {'fields':['serial_no']},
+		'Sales Order': {'sales_order_details':['item_group']},
+		'Serial No': {'fields':['item_group']},
+		'Sales Partner': {'partner_target_details':['item_group']},
+		'Sales Person': {'target_details':['item_group']},
+		'Territory': {'target_details':['item_group']}
+	},
+	'fs_page_break': {
+		'Delivery Note': {'delivery_note_details':['page_break'],'packing_details':['page_break']},
+		'Purchase Request': {'indent_details':['page_break']},
+		'Purchase Order': {'po_details':['page_break']},
+		'Purchase Receipt': {'purchase_receipt_details':['page_break']},
+		'Purchase Voucher': {'entries':['page_break']},
+		'Quotation': {'quotation_details':['page_break']},
+		'Sales Invoice': {'entries':['page_break']},
+		'Sales Order': {'sales_order_details':['page_break']}
+	},
+	'fs_exports': {
+		'Delivery Note': {'fields':['Note','conversion_rate','currency','grand_total_export','in_words_export','rounded_total_export'],'delivery_note_details':['base_ref_rate','amount','basic_rate']},
+		'POS Setting': {'fields':['conversion_rate','currency']},
+		'Quotation': {'fields':['Note HTML','OT Notes','conversion_rate','currency','grand_total_export','in_words_export','rounded_total_export'],'quotation_details':['base_ref_rate','amount','basic_rate']},
+		'Sales Invoice': {'fields':['conversion_rate','currency','grand_total_export','in_words_export','rounded_total_export'],'entries':['base_ref_rate','amount','basic_rate']},
+		'Item': {'ref_rate_details':['ref_currency']},
+		'Sales BOM': {'fields':['currency']},
+		'Sales Order': {'fields':['Note1','OT Notes','conversion_rate','currency','grand_total_export','in_words_export','rounded_total_export'],'sales_order_details':['base_ref_rate','amount','basic_rate']}
+	},
+	'fs_imports': {
+		'Purchase Invoice': {'fields':['conversion_rate','currency','grand_total_import','in_words_import','net_total_import','other_charges_added_import','other_charges_deducted_import'],'entries':['purchase_ref_rate', 'amount','rate']},
+		'Purchase Order': {'fields':['Note HTML','conversion_rate','currency','grand_total_import','in_words_import','net_total_import','other_charges_added_import','other_charges_deducted_import'],'po_details':['purchase_ref_rate', 'amount','purchase_rate']},
+		'Purchase Receipt': {'fields':['conversion_rate','currency','grand_total_import','in_words_import','net_total_import','other_charges_added_import','other_charges_deducted_import'],'purchase_receipt_details':['purchase_ref_rate','amount','purchase_rate']},
+		'Supplier Quotation': {'fields':['conversion_rate','currency']}
+	},
+	'fs_item_advanced': {
+		'Item': {'fields':['item_customer_details']}
+	},
+	'fs_sales_extras': {
+		'Address': {'fields':['sales_partner']},
+		'Contact': {'fields':['sales_partner']},
+		'Customer': {'fields':['sales_team']},
+		'Delivery Note': {'fields':['sales_team','Packing List']},
+		'Item': {'fields':['item_customer_details']},
+		'Sales Invoice': {'fields':['sales_team']},
+		'Sales Order': {'fields':['sales_team','Packing List']}
+	},
+	'fs_more_info': {
+		'Delivery Note': {'fields':['More Info']},
+		'Opportunity': {'fields':['More Info']},
+		'Purchase Request': {'fields':['More Info']},
+		'Lead': {'fields':['More Info']},
+		'Purchase Invoice': {'fields':['More Info']},
+		'Purchase Order': {'fields':['More Info']},
+		'Purchase Receipt': {'fields':['More Info']},
+		'Quotation': {'fields':['More Info']},
+		'Sales Invoice': {'fields':['More Info']},
+		'Sales Order': {'fields':['More Info']},
+	},
+	'fs_quality': {
+		'Item': {'fields':['Item Inspection Criteria','inspection_required']},
+		'Purchase Receipt': {'purchase_receipt_details':['qa_no']}
+	},
+	'fs_manufacturing': {
+		'Item': {'fields':['Manufacturing']}
+	},
+	'fs_pos': {
+		'Sales Invoice': {'fields':['is_pos']}
+	},
+	'fs_recurring_invoice': {
+		'Sales Invoice': {'fields': ['Recurring Invoice']}
+	}
+}
+
+$(document).bind('form_refresh', function() {
+	for(sys_feat in sys_defaults)
+	{
+		if(sys_defaults[sys_feat]=='0' && (sys_feat in pscript.feature_dict)) //"Features to hide" exists
+		{
+			if(cur_frm.doc.doctype in  pscript.feature_dict[sys_feat])
+			{
+				for(fort in pscript.feature_dict[sys_feat][cur_frm.doc.doctype])
+				{
+					if(fort=='fields')
+						hide_field(pscript.feature_dict[sys_feat][cur_frm.doc.doctype][fort]);
+					else if(cur_frm.fields_dict[fort])
+					{
+						for(grid_field in pscript.feature_dict[sys_feat][cur_frm.doc.doctype][fort])
+							cur_frm.fields_dict[fort].grid.set_column_disp(pscript.feature_dict[sys_feat][cur_frm.doc.doctype][fort][grid_field], false);
+					}
+					else
+						msgprint('Grid "'+fort+'" does not exists');
+				}
+			}
+		}
+	}
+})
+
+
 /*
  *	conf.js
  */
-wn.provide('erpnext');erpnext.set_about=function(){wn.provide('wn.app');$.extend(wn.app,{name:'ERPNext',license:'GNU/GPL - Usage Condition: All "erpnext" branding must be kept as it is',source:'https://github.com/webnotes/erpnext',publisher:'Web Notes Technologies Pvt Ltd, Mumbai',copyright:'&copy; Web Notes Technologies Pvt Ltd',version:'2'});}
-wn.modules_path='erpnext';$(document).bind('toolbar_setup',function(){$('.brand').html((wn.boot.website_settings.brand_html||'erpnext')+' <i class="icon-home icon-white navbar-icon-home" ></i>').css('max-width','200px').css('overflow','hidden').hover(function(){$(this).find('.icon-home').addClass('navbar-icon-home-hover');},function(){$(this).find('.icon-home').removeClass('navbar-icon-home-hover');});});
+wn.provide('erpnext');
+erpnext.set_about = function() {
+	wn.provide('wn.app');
+	$.extend(wn.app, {
+		name: 'ERPNext',
+		license: 'GNU/GPL - Usage Condition: All "erpnext" branding must be kept as it is',
+		source: 'https://github.com/webnotes/erpnext',
+		publisher: 'Web Notes Technologies Pvt Ltd, Mumbai',
+		copyright: '&copy; Web Notes Technologies Pvt Ltd',
+		version: '2' //+ '.' + window._version_number
+	});
+}
+
+wn.modules_path = 'erpnext';
+
+// add toolbar icon
+$(document).bind('toolbar_setup', function() {
+	$('.brand').html((wn.boot.website_settings.brand_html || 'erpnext') +
+	' <i class="icon-home icon-white navbar-icon-home" ></i>')
+	.css('max-width', '200px').css('overflow', 'hidden')
+	.hover(function() {
+		$(this).find('.icon-home').addClass('navbar-icon-home-hover');
+	}, function() {
+		$(this).find('.icon-home').removeClass('navbar-icon-home-hover');
+	});
+});
+
