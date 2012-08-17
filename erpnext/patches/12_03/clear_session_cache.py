@@ -16,5 +16,5 @@
 
 from __future__ import unicode_literals
 def execute():
-	import webnotes
-	webnotes.clear_cache()
+	import webnotes.session_cache
+	webnotes.session_cache.clear()

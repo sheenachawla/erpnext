@@ -101,7 +101,8 @@ class SetupControlController(DocListController):
 		
 		self.create_email_digest()
 
-		webnotes.clear_cache()
+		import webnotes.session_cache
+		webnotes.session_cache.clear()
 		msgprint("Company setup is complete")
 		
 		import webnotes.utils

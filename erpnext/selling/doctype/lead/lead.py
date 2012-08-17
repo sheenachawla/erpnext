@@ -18,7 +18,7 @@ from __future__ import unicode_literals
 import webnotes
 from webnotes.model.controller import DocListController
 
-from webnotes.utils import cstr, now, sendmail, validate_email_add
+from webnotes.utils import cstr, now, validate_email_add
 
 from webnotes.model.doc import Document, make_autoname
 
