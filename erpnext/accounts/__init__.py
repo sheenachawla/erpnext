@@ -103,7 +103,7 @@ def get_invoice_account_jv_record(doc, children, fiscal_year, obj):
 	import accounts.utils
 	ret.update({
 		'account': account,
-		'balance': accounts.utils.get_balance_on_specific_date(account, nowdate)
+		'balance': accounts.utils.get_balance_on(account, nowdate)
 	})
 
 	return ret
@@ -137,7 +137,7 @@ def get_item_accountwise_jv_record(doc, children, fiscal_year, obj):
 			rec = {
 				'account': inv_ch.fields.get(ac_field),
 				'cost_center': inv_ch.fields.get('cost_center'),
-				'balance': accounts.utils.get_balance_on_specific_date(inv_ch.fields.get(ac_field), nowdate)
+				'balance': accounts.utils.get_balance_on(inv_ch.fields.get(ac_field), nowdate)
 			}
 			rec[amt_field] = amount
 			accwise_list.append(rec)
