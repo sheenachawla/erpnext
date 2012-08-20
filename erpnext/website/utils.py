@@ -69,10 +69,10 @@ def get_html(page_name):
 	return html
 
 def get_comments(page_name):
-	import webnotes
+	import webnotes.utils
 	
 	if page_name == '404':
-		comments = """error: %s""" % webnotes.getTraceback()
+		comments = """error: %s""" % webnotes.utils.getTraceback()
 	else:
 		comments = """page: %s""" % page_name
 		
