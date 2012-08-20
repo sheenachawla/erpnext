@@ -95,8 +95,8 @@ class TestAccount(TestBase):
 		
 		gle = base_gle.copy()
 		gle.update({'account': acc.doc['name']})
-		acc = webnotes.model.insert(gle)
-		self.assertRaises(webnotes.ValidationError, acc.doc.convert_ledger_to_group)
+		webnotes.model.insert(gle)
+		self.assertRaises(webnotes.ValidationError, acc.convert_ledger_to_group)
 		
 	def test_nsm_model(self):
 		prev_rgt = self.get_rgt("Application of Funds (Assets) - EW")
@@ -143,7 +143,7 @@ class TestAccount(TestBase):
 		from webnotes.model.rename_doc import rename_doc
 		rename_doc("Account", "test_account - EW", "test_account_renamed - EW")
 		
-		self.assertFalse(webnotes.conn.exists("Account", "test_account"))
+		self.assertFalse(webnotes.conn.exists("Account", "test_account - EW"))
 		self.assertTrue(webnotes.conn.exists("Account", {"name": "test_account_renamed - EW",\
 		 	"account_name": "test_account_renamed"}))
 

@@ -17,7 +17,7 @@
 from __future__ import unicode_literals
 import webnotes
 from webnotes import msgprint
-from webnotes.model.controller import DocListController
+from webnotes.utils import cstr
 from webnotes.utils.nestedset import NestedSetController
 
 class CostCenterController(NestedSetController):
@@ -26,7 +26,7 @@ class CostCenterController(NestedSetController):
 
 	def autoname(self):
 		abbr = webnotes.conn.get_value('Company', self.doc.company_name, 'abbr')
-		self.doc.name = self.doc.cost_center_name + ' - ' + abbr
+		self.doc.name = cstr(self.doc.cost_center_name) + ' - ' + abbr
 		
 	def validate(self):
 		self.validate_mandatory()
@@ -38,6 +38,8 @@ class CostCenterController(NestedSetController):
 			msgprint("Please select Group or Ledger value", raise_exception=webnotes.MandatoryError)			
 		if self.doc.cost_center_name != 'Root' and not self.doc.parent_cost_center:
 			msgprint("Please enter parent cost center", raise_exception=webnotes.MandatoryError)
+		if self.doc.cost_center_name =='Root' and self.doc.parent_cost_center:
+			msgprint("Root cost center can not have a parent", raise_exception=webnotes.MandatoryError)
 		
 	def validate_duplicate_cost_center(self):
 		"""Cost Center name must be unique"""		
