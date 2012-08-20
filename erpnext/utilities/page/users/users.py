@@ -32,7 +32,7 @@ def get(arg=None):
 @webnotes.whitelist()
 def get_roles(arg=None):
 	"""return all roles except standard"""
-	return _get_roles(webnotes.form_dict['uid'])
+	return _get_roles(webnotes.form['uid'])
 
 def _get_roles(user):
 	"""return all roles except standard"""
@@ -43,7 +43,7 @@ def _get_roles(user):
 def get_user_roles(arg=None):
 	"""get roles for a user"""
 	return [r[0] for r in webnotes.conn.sql("""select role from tabUserRole
-		where parent=%s""", webnotes.form_dict['uid'])]
+		where parent=%s""", webnotes.form['uid'])]
 
 @webnotes.whitelist()
 def get_perm_info(arg=None):
@@ -51,15 +51,15 @@ def get_perm_info(arg=None):
 	return webnotes.conn.sql("""select parent, permlevel, `read`, `write`, submit,
 		cancel, amend from tabDocPerm where role=%s 
 		and docstatus<2 order by parent, permlevel""", 
-			webnotes.form_dict['role'], as_dict=1)
+			webnotes.form['role'], as_dict=1)
 
 @webnotes.whitelist()
 def update_roles(arg=None):
 	"""update set and unset roles"""
 	# remove roles
-	unset = json.loads(webnotes.form_dict['unset_roles'])
+	unset = json.loads(webnotes.form['unset_roles'])
 	webnotes.conn.sql("""delete from tabUserRole where parent='%s' 
-		and role in ('%s')""" % (webnotes.form_dict['uid'], "','".join(unset)))
+		and role in ('%s')""" % (webnotes.form['uid'], "','".join(unset)))
 
 	# check for 1 system manager
 	if not webnotes.conn.sql("""select parent from tabUserRole where role='System Manager'
@@ -69,12 +69,12 @@ def update_roles(arg=None):
 
 	# add roles
 	roles = get_user_roles()
-	toset = json.loads(webnotes.form_dict['set_roles'])
+	toset = json.loads(webnotes.form['set_roles'])
 	for role in toset:
 		if not role in roles:
 			d = Document('UserRole')
 			d.role = role
-			d.parent = webnotes.form_dict['uid']
+			d.parent = webnotes.form['uid']
 			d.save()
 	
 	webnotes.msgprint('Roles Updated')
@@ -132,7 +132,7 @@ def add_profile(args):
 				% {'active_users': active_users}, raise_exception=1)
 	
 	if not email:
-		email = webnotes.form_dict.get('user')
+		email = webnotes.form.get('user')
 	if not validate_email_add(email):
 		raise Exception
 		return 'Invalid Email Id'
@@ -181,8 +181,8 @@ def send_welcome_mail(email, args):
 def delete(arg=None):
 	"""delete user"""
 	webnotes.conn.sql("update tabProfile set enabled=0, docstatus=2 where name=%s", 
-		webnotes.form_dict['uid'])
-	webnotes.login_manager.logout(user=webnotes.form_dict['uid'])
+		webnotes.form['uid'])
+	webnotes.login_manager.logout(user=webnotes.form['uid'])
 	
 welcome_txt = """
 ## %(company)s

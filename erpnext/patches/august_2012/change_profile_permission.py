@@ -1,23 +1,35 @@
 from __future__ import unicode_literals
 def execute():
-	"""Make profile readonly for role All"""
+	import webnotes
 	import webnotes.model.doc
-	webnotes.conn.sql("delete from `tabDocPerm` where parent='Profile' and role='All'")
+	webnotes.conn.sql("delete from `tabDocPerm` where parent='Profile' and permlevel=1")
 	new_perms = [
 		{
 			'parent': 'Profile',
 			'parentfield': 'permissions',
 			'parenttype': 'DocType',
-			'role': 'All',			
-			'permlevel': 0,
+			'role': 'Administrator',			
+			'permlevel': 1,
 			'read': 1,
+			'write': 1
 		},
+		{
+			'parent': 'Profile',
+			'parentfield': 'permissions',
+			'parenttype': 'DocType',
+			'role': 'System Manager',
+			'permlevel': 1,
+			'read': 1,
+			'write': 1
+		},
+		
 	]
 	for perms in new_perms:
 		doc = webnotes.model.doc.Document('DocPerm')
-		doc.update(perms)
+		doc.fields.update(perms)
 		doc.save()
 	webnotes.conn.commit()
 	webnotes.conn.begin()
+	
 	import webnotes.model.sync
 	webnotes.model.sync.sync('core', 'profile')

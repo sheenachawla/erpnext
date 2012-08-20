@@ -39,7 +39,7 @@ def init():
 def respond():
 	import webnotes
 	import website.utils
-	return website.utils.render(webnotes.form_dict.get('page'))
+	return website.utils.render(webnotes.form.get('page'))
 
 if __name__=="__main__":
 	init()

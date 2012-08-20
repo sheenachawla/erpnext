@@ -19,7 +19,6 @@ import webnotes
 import webnotes.model
 from webnotes.utils import cstr, get_defaults
 from webnotes.model.doc import Document, make_autoname
-from webnotes.model.code import get_obj
 from webnotes import msgprint
 from controllers.party import PartyController
 
@@ -43,7 +42,8 @@ class CustomerController(PartyController):
 	def create_customer_ledger(self):
 		self.create_account({
 			'parent_account': self.get_party_group('receivables_group'),
-			'customer': self.doc.name
+			'customer': self.doc.name,
+			'debit_or_credit': "Debit"
 		})
 	
 	def create_address_and_contact(self):
@@ -71,7 +71,7 @@ class CustomerController(PartyController):
 			
 	def create_doc(self, dt, values, dn):
 		if not webnotes.conn.exists(dt, dn):
-			webnotes.model.insert_variants(values, [{'doctype': dt}], ignore_fields=1)
+			webnotes.model.insert_variants(values, [{'doctype': dt}])
 	
 	def on_trash(self):
 		PartyController.on_trash(self)

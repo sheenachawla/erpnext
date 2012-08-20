@@ -33,15 +33,15 @@ class OverDeliveryError(webnotes.ValidationError): pass
 def get_comp_base_currency(arg=None):
 	""" get default currency of company"""
 	res = webnotes.conn.sql("""select default_currency from `tabCompany`
-			where name = %s""", webnotes.form_dict.get('company'))
+			where name = %s""", webnotes.form.get('company'))
 	return res and res[0][0] or None
 
 @webnotes.whitelist()
 def get_price_list_currency(arg=None):
 	""" Get all currency in which price list is maintained"""
-	plc = webnotes.conn.sql("select distinct ref_currency from `tabItem Price` where price_list_name = %s", webnotes.form_dict['price_list'])
+	plc = webnotes.conn.sql("select distinct ref_currency from `tabItem Price` where price_list_name = %s", webnotes.form['price_list'])
 	plc = [d[0] for d in plc]
-	base_currency = get_comp_base_currency(webnotes.form_dict['company'])
+	base_currency = get_comp_base_currency(webnotes.form['company'])
 	return plc, base_currency
 
 
@@ -267,7 +267,7 @@ class DocType(TransactionBase):
 
 				d = addchild(obj.doc, 'other_charges', 'Sales Taxes and Charges', 1,
 						obj.doclist)
-				d.fields.update(other)
+				d.update(other)
 				d.rate = flt(d.rate)
 				d.tax_amount = flt(d.tax_rate)
 				d.included_in_print_rate = cint(d.included_in_print_rate)
@@ -563,9 +563,9 @@ class DocType(TransactionBase):
 	def check_stop_sales_order(self,obj):
 		for d in getlist(obj.doclist,obj.fname):
 			ref_doc_name = ''
-			if d.fields.has_key('prevdoc_docname') and d.prevdoc_docname and d.prevdoc_doctype == 'Sales Order':
+			if d.has_key('prevdoc_docname') and d.prevdoc_docname and d.prevdoc_doctype == 'Sales Order':
 				ref_doc_name = d.prevdoc_docname
-			elif d.fields.has_key('sales_order') and d.sales_order and not d.delivery_note:
+			elif d.has_key('sales_order') and d.sales_order and not d.delivery_note:
 				ref_doc_name = d.sales_order
 			if ref_doc_name:
 				so_status = webnotes.conn.sql("select status from `tabSales Order` where name = %s",ref_doc_name)
@@ -745,7 +745,7 @@ class StatusUpdater:
 		# get unique transactions to update
 		for d in self.obj.doclist:
 			if d.doctype == args['source_dt']:
-				args['name'] = d.fields[args['join_field']]
+				args['name'] = d[args['join_field']]
 
 				# get all qty where qty > compare_field
 				item = webnotes.conn.sql("""
@@ -850,7 +850,7 @@ class StatusUpdater:
 		for d in self.obj.doclist:
 			if d.doctype == args['source_dt']:
 				# updates qty in the child table
-				args['detail_id'] = d.fields.get(args['join_field'])
+				args['detail_id'] = d.get(args['join_field'])
 			
 				if args['detail_id']:
 					webnotes.conn.sql("""
@@ -863,7 +863,7 @@ class StatusUpdater:
 					""" % args)			
 		
 		# get unique transactions to update
-		for name in set([d.fields.get(args['percent_join_field']) for d in self.obj.doclist if d.doctype == args['source_dt']]):
+		for name in set([d.get(args['percent_join_field']) for d in self.obj.doclist if d.doctype == args['source_dt']]):
 			if name:
 				args['name'] = name
 				

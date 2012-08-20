@@ -16,30 +16,18 @@
 
 from __future__ import unicode_literals
 import webnotes
+from webnotes.model.controller import DocListController
 
-from webnotes.utils import cstr, now, sendmail, validate_email_add
+from webnotes.utils import cstr, now, validate_email_add
 
-from webnotes.model.doc import Document, addchild, make_autoname
-from webnotes.model.controller import getlist
-from webnotes.model.code import get_obj
+from webnotes.model.doc import Document, make_autoname
+
+
 from webnotes import session, msgprint
 
 sql = webnotes.conn.sql
 	
-
-
-class DocType:
-	def __init__(self, doc, doclist):
-		self.doc = doc
-		self.doclist = doclist
-	
-	# Autoname
-	# ---------
-	def autoname(self):
-		self.doc.name = make_autoname(self.doc.naming_series+'.#####')
-	
-	#check status of lead
-	#------------------------
+class LeadController(DocListController):
 	def check_status(self):
 		chk = sql("select status from `tabLead` where name=%s", self.doc.name)
 		chk = chk and chk[0][0] or ''
@@ -115,14 +103,6 @@ class DocType:
 		ev.ref_name = self.doc.name
 		ev.save(1)
 
-	def add_in_follow_up(self,message,type):
-		import datetime
-		child = addchild( self.doc, 'follow_up', 'Communication Log', 1, self.doclist)
-		child.date = datetime.datetime.now().date().strftime('%Y-%m-%d')
-		child.notes = message
-		child.follow_up_type = type
-		child.save()
-
 #-------------------SMS----------------------------------------------
 	def send_sms(self):
 		if not self.doc.sms_message or not self.doc.mobile_no:
@@ -137,5 +117,9 @@ class DocType:
 					receiver_list.append(d.other_mobile_no)
 		
 		if receiver_list:
-			msgprint(get_obj('SMS Control', 'SMS Control').send_sms(receiver_list, self.doc.sms_message))
-			self.add_in_follow_up(self.doc.sms_message,'SMS')
+			msgprint(webnotes.model.get_controller("SMS Control", "SMS Control").send_sms(
+				receiver_list, self.doc.sms_message))
+			
+			# TODO: add to Communication
+			
+			# self.add_in_follow_up(self.doc.sms_message,'SMS')

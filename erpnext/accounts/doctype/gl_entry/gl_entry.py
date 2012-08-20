@@ -40,8 +40,9 @@ class GLEntryController(DocListController):
 		# Following fields are mandatory in GL Entry
 		mandatory = ['account','remarks','voucher_type','voucher_no','fiscal_year','company', 'posting_date']
 		for k in mandatory:
-			if not self.doc.fields.get(k):
-				msgprint("%s is mandatory for GL Entry" % k, raise_exception=webnotes.MandatoryError)
+			if not self.doc.get(k):
+				msgprint("%s is mandatory for GL Entry" % k,
+					raise_exception=webnotes.MandatoryError)
 				
 	def validate_zero_value_transaction(self):
 		if not (flt(self.doc.debit) or flt(self.doc.credit)):

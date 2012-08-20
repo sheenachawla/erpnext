@@ -11,7 +11,7 @@ def get_blog_list(args=None):
 	"""
 	import webnotes
 	
-	if not args: args = webnotes.form_dict
+	if not args: args = webnotes.form
 	
 	query = """\
 		select
@@ -54,7 +54,7 @@ def get_recent_blog_list(args=None):
 	"""
 	import webnotes
 	
-	if not args: args = webnotes.form_dict
+	if not args: args = webnotes.form
 	
 	query = """\
 		select name, page_name, title, left(content, 100) as content
@@ -87,18 +87,19 @@ def add_comment(args=None):
 		}
 	"""
 	import webnotes
+	import webnotes.utils, markdown2
+	import webnotes.widgets.form.comments	
+	import website.web_cache
 	
-	if not args: args = webnotes.form_dict
+	if not args: args = webnotes.form
+	args['comment'] = markdown2.markdown(args.get('comment') or '')
 	
-	import webnotes.widgets.form.comments
 	comment = webnotes.widgets.form.comments.add_comment(args)
 	
 	# since comments are embedded in the page, clear the web cache
-	import website.web_cache
 	website.web_cache.clear_cache(args.get('page_name'),
 		args.get('comment_doctype'), args.get('comment_docname'))
 	
-	import webnotes.utils
 	
 	comment['comment_date'] = webnotes.utils.pretty_date(comment['creation'])
 	template_args = { 'comment_list': [comment], 'template': 'html/comment.html' }
@@ -115,21 +116,21 @@ def add_comment(args=None):
 		args.get('comment_docname'), as_dict=1)[0]
 	
 	from webnotes.utils.email_lib.bulk import send
-	send(recipients=commentors + [blog['owner']], 
+	send(recipients=list(set(commentors + [blog['owner']])), 
 		doctype='Comment', 
 		email_field='comment_by', 
 		first_name_field="comment_by_fullname",
 		last_name_field="NA", 
 		subject='New Comment on Blog: ' + blog['title'], 
-		message='<p>%(comment)s</p><p>By %(comment_by_fullname)s</p>' % args)
+		message='%(comment)s<p>By %(comment_by_fullname)s</p>' % args)
 	
 	return comment_html
 
 @webnotes.whitelist(allow_guest=True)
 def add_subscriber():
 	"""add blog subscriber to lead"""
-	full_name = webnotes.form_dict.get('your_name')
-	email = webnotes.form_dict.get('your_email_address')
+	full_name = webnotes.form.get('your_name')
+	email = webnotes.form.get('your_email_address')
 	name = webnotes.conn.sql("""select name from tabLead where email_id=%s""", email)
 	
 	from webnotes.model.doc import Document

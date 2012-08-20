@@ -38,5 +38,5 @@ def load_data():
 		'timezone': 'Asia/Calcutta'
 	}
 	import json
-	from webnotes.model.code import get_obj
-	get_obj('Setup Control').setup_account(json.dumps(args))
+	import webnotes.model
+	webnotes.model.get_controller("Setup Control", "Setup Control").setup_account(json.dumps(args))

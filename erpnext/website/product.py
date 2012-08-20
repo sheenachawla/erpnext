@@ -14,7 +14,7 @@ def get_product_list(args=None):
 	import webnotes
 	from webnotes.utils import cstr
 	
-	if not args: args = webnotes.form_dict
+	if not args: args = webnotes.form
 	
 	# base query
 	query = """\
@@ -61,7 +61,7 @@ def get_product_category_list(args=None):
 	"""
 	import webnotes
 	
-	if not args: args = webnotes.form_dict
+	if not args: args = webnotes.form
 	
 	query = """\
 		select count(name) as items, item_group
@@ -96,7 +96,7 @@ def get_similar_product_list(args=None):
 	"""
 	import webnotes
 	
-	if not args: args = webnotes.form_dict
+	if not args: args = webnotes.form
 	
 	query = """\
 		select name, item_name, page_name, website_image,

@@ -16,16 +16,14 @@
 
 from __future__ import unicode_literals
 import webnotes
+import webnotes.model
 
 from webnotes.utils import cint, cstr, getdate, now, nowdate, get_first_day, get_last_day
-from webnotes.model.doc import Document, addchild
-from webnotes.model.code import get_obj
+from webnotes.model.doc import Document
 from webnotes import session, form, msgprint
 
-class DocType:
-	def __init__(self, d, dl):
-		self.doc, self.doclist = d, dl
-	
+from webnotes.model.controller import DocListController
+class SetupControlController(DocListController):
 	# Account Setup
 	# ---------------
 	def setup_account(self, args):
@@ -103,7 +101,8 @@ class DocType:
 		
 		self.create_email_digest()
 
-		webnotes.clear_cache()
+		import webnotes.session_cache
+		webnotes.session_cache.clear()
 		msgprint("Company setup is complete")
 		
 		import webnotes.utils
@@ -170,7 +169,7 @@ class DocType:
 						'expenses_booked', 'invoiced_amount', 'collections',
 						'income', 'bank_balance', 'stock_below_rl',
 						'income_year_to_date', 'enabled']:
-					edigest.fields[f] = 1
+					edigest[f] = 1
 				exists = webnotes.conn.sql("""\
 					SELECT name FROM `tabEmail Digest`
 					WHERE name = %s""", edigest.name)
@@ -202,39 +201,23 @@ class DocType:
 	# ------------------------------- 
 	def create_records(self, master_dict):
 		for d in master_dict.keys():
-			rec = Document(d)
-			for fn in master_dict[d].keys():
-				rec.fields[fn] = master_dict[d][fn]
-			# add blank fields
-			for fn in rec.fields:
-				if fn not in master_dict[d].keys()+['name','owner','doctype']:
-					rec.fields[fn] = ''
-			rec_obj = get_obj(doc=rec)
-			rec_obj.doc.save(1)
-			if hasattr(rec_obj, 'on_update'):
-				rec_obj.on_update()
-
+			master_dict[d]["doctype"] = d
+			webnotes.model.insert(master_dict[d])
 
 	# Set System Defaults
 	# --------------------
 	def set_defaults(self, def_args):
-		ma_obj = get_obj('Global Defaults','Global Defaults')
-		for d in def_args.keys():
-			ma_obj.doc.fields[d] = def_args[d]
-		ma_obj.doc.save()
-		ma_obj.on_update()
-
+		args = def_args.copy()
+		args.update({"doctype": "Global Defaults", "name": "Global Defaults"})
+		webnotes.model.update(args)
 
 	# Set Control Panel Defaults
 	# --------------------------
 	def set_cp_defaults(self, industry, country, timezone, company_name):
-		cp = Document('Control Panel','Control Panel')
-		cp.company_name = company_name
-		cp.industry = industry
-		cp.time_zone = timezone
-		cp.country = country
-		cp.save()
-			
+		webnotes.model.update({"doctype": "Control Panel", "name": "Control Panel",
+			"company_name": company_name, "industry": industry, "time_zone": timezone,
+			"country": country})
+
 	# Create Profile
 	# --------------
 	def create_profile(self, user_email, user_fname, user_lname, pwd=None):
@@ -254,7 +237,14 @@ class DocType:
 			'Purchase Manager', 'Purchase User', 'Purchase Master Manager', 'Quality Manager', \
 			'Sales Manager', 'Sales User', 'Sales Master Manager', 'Support Manager', 'Support Team', \
 			'System Manager', 'Website Manager']
+		
+		profile_controller = webnotes.model.get_controller([pr])
+		
 		for r in roles_list:
-			d = addchild(pr, 'userroles', 'UserRole', 1)
-			d.role = r
-			d.save(1)
+			profile_controller.add_child({
+				"doctype": "UserRole",
+				"parentfield": "userroles",
+				"role": r
+			})
+
+		profile_controller.save()

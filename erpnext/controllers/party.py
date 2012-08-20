@@ -19,7 +19,6 @@ import webnotes
 import webnotes.model
 from webnotes.utils import cstr, get_defaults
 from webnotes.model.doc import Document, make_autoname
-from webnotes.model.code import get_obj
 from webnotes import msgprint
 from webnotes.model.controller import DocListController
 
@@ -30,7 +29,7 @@ class PartyController(DocListController):
 			If exists, do not allow saving because it will conflict in party account
 		"""
 		if get_defaults(global_naming_key) == naming_based_on:
-			party_name = self.doc.fields[naming_based_on.lower().replace(' ', '_')]
+			party_name = self.doc[naming_based_on.lower().replace(' ', '_')]
 			if webnotes.conn.exists(opp_dt, party_name):
 				msgprint("You already have a %s with same name, please change the %s name"
 				 	% (opp_dt, self.doc.doctype.lower()), raise_exception=webnotes.NameError)
@@ -51,7 +50,7 @@ class PartyController(DocListController):
 			set credit_days = %s, credit_limit = %s
 			where %s = %s
 		"""% ('%s', '%s', self.doc.doctype.lower(), '%s'), 
-		(self.doc.credit_days, self.doc.fields.get('credit_limit', 0), self.doc.name))
+		(self.doc.credit_days, self.doc.get('credit_limit', 0), self.doc.name))
 
 	def get_party_group(self, fld):
 		"""Returns Parent Account of customer/supplier from company master"""
@@ -61,23 +60,21 @@ class PartyController(DocListController):
 				self.doc.company, raise_exception=webnotes.MandatoryError)
 		return rg
 		
-	def create_account(self, det):
+	def create_account(self, account_args):
 		""" 
 			create party account head under
 			parent group mentioned in company master
 		"""
-		acc_details = {
-			'account_name':self.doc.name,
-			'group_or_ledger':'Ledger', 
-			'company': self.doc.company
-		}
-		acc_details.update(det)
-		if not webnotes.conn.get_value('Account', 
-			{"account_name": acc_details['account_name'], "company": self.doc.company}):
+		if not webnotes.conn.get_value("Account", 
+			{"account_name": self.doc.name, "company": self.doc.company}):
+			args = {"account_name": self.doc.name, "group_or_ledger": "Ledger",
+				"company": self.doc.company}
+			args.update(account_args)
+
 			import accounts.utils
-			ac = accounts.utils.add_account(cstr(acc_details))
-			msgprint("Account Head: %s created" % ac)
-			return ac
+			account_head = accounts.utils.add_account(args)
+			webnotes.msgprint("""Account Head: "%s" created""" % account_head.doc.name)
+			return account_head
 
 	def on_trash(self):
 		self.delete_party_address_and_contact()
@@ -104,8 +101,8 @@ def get_contacts():
 		from tabContact
 		where %s=%s and docstatus != 2
 		order by is_primary_contact desc limit %s, %s""" % 
-		(webnotes.form_dict.get('doctype').lower(), '%s', webnotes.form_dict.get("limit_start"), 
-		webnotes.form_dict.get("limit_page_length")), webnotes.form_dict.get('name'), as_dict=1)
+		(webnotes.form.get('doctype').lower(), '%s', webnotes.form.get("limit_start"), 
+		webnotes.form.get("limit_page_length")), webnotes.form.get('name'), as_dict=1)
 
 @webnotes.whitelist()
 def get_addresses():		
@@ -113,5 +110,5 @@ def get_addresses():
 		state, country, pincode, fax, email_id, phone, is_primary_address, is_shipping_address 
 		from tabAddress 
 		where %s = %s and docstatus != 2 order by is_primary_address desc limit %s, %s""" %
-		(webnotes.form_dict.get('doctype').lower(), '%s', webnotes.form_dict.get("limit_start"), 
-		webnotes.form_dict.get("limit_page_length")), webnotes.form_dict.get('name'), as_dict=1)
+		(webnotes.form.get('doctype').lower(), '%s', webnotes.form.get("limit_start"), 
+		webnotes.form.get("limit_page_length")), webnotes.form.get('name'), as_dict=1)

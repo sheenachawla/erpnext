@@ -17,7 +17,6 @@
 from __future__ import unicode_literals
 import webnotes
 import webnotes.model
-from webnotes.model.doc import Document, addchild
 	
 def get_balance_on(account, dt):
 	acc = webnotes.conn.get_value('Account', account, \
@@ -40,9 +39,10 @@ def get_balance_on(account, dt):
 		bal = -bal
 	return bal
 	
-def add_account(arg):
-	return webnotes.model.insert_variants(eval(arg), [{'doctype': 'Account'}])
+def add_account(args):
+	args.update({"doctype": "Account"})
+	return webnotes.model.insert(args)
 
-def add_cost_center(arg):
-	return webnotes.model.insert_variants(eval(arg), [{'doctype': 'Cost Center'}])
-	
+def add_cost_center(args):
+	args.update({"doctype": "Cost Center"})
+	return webnotes.model.insert(args)	

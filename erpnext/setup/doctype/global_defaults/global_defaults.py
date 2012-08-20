@@ -44,7 +44,7 @@ keydict = {
 class GlobalDefaultsController(DocListController):
 	def on_update(self):
 		for key in keydict:
-			webnotes.conn.set_default(key, self.doc.fields.get(keydict[key], ''))
+			webnotes.conn.set_default(key, self.doc.get(keydict[key], ''))
 			
 		# update year start date and year end date from fiscal_year
 		ysd, yed = webnotes.conn.get_value('Fiscal Year', self.doc.current_fiscal_year, \

@@ -132,8 +132,9 @@ erpnext.desktop.show_pending_notifications = function() {
 
 }
 
-pscript.onload_desktop = function() {
+wn.pages.desktop.on('load', function() {
+	console.log(1)
 	// load desktop
-	erpnext.desktop.refresh();
-}
+	erpnext.desktop.refresh();	
+})
 

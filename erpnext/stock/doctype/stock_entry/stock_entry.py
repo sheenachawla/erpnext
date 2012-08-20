@@ -26,10 +26,9 @@ from webnotes import msgprint
 	
 from utilities.transaction_base import TransactionBase
 
-class DocType(TransactionBase):
-	def __init__(self, doc, doclist=[]):
-		self.doc = doc
-		self.doclist = doclist
+class StockEntryController(TransactionBase):
+	def __init__(self, doctype, name=None):
+		super(StockEntryController, self).__init__(doctype, name)
 		self.item_dict = {}
 		self.fname = 'mtn_details' 
 

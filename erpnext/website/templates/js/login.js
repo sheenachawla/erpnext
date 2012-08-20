@@ -16,7 +16,8 @@
 
 wn.provide('erpnext.login');
 
-wn.pages["{{ name }}"].onload = function(wrapper) {
+wn.pages.login.on('load', function() {
+	var wrapper = this.wrapper;
 	wrapper.appframe = new wn.ui.AppFrame($(wrapper).find('.appframe-area'));
 	wrapper.appframe.title('Login');
 	wrapper.appframe.$w.find('.close').toggle(false);
@@ -35,7 +36,7 @@ wn.pages["{{ name }}"].onload = function(wrapper) {
 		}
 	});
 	$(document).trigger('login_rendered');
-}
+});
 
 // Login Callback
 erpnext.login.onLoginReply = function(r, rtext) {

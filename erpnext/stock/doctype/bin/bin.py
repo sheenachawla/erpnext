@@ -392,5 +392,5 @@ class DocType:
 	def validate_mandatory(self):
 		qf = ['actual_qty', 'reserved_qty', 'ordered_qty', 'indented_qty']
 		for f in qf:
-			if (not self.doc.fields.has_key(f)) or (not self.doc.fields[f]): 
-				self.doc.fields[f] = 0.0
+			if (not self.doc.has_key(f)) or (not self.doc[f]): 
+				self.doc[f] = 0.0

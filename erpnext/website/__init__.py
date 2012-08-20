@@ -4,12 +4,12 @@ import webnotes
 @webnotes.whitelist(allow_guest=True)
 def send_message():
 	from webnotes.model.doc import Document
-	args = webnotes.form_dict
+	args = webnotes.form
 	
 	d = Document('Support Ticket')
-	d.subject = webnotes.form_dict.get('subject', 'Website Query')
-	d.description = webnotes.form_dict.get('message')
-	d.raised_by = webnotes.form_dict.get('sender')
+	d.subject = webnotes.form.get('subject', 'Website Query')
+	d.description = webnotes.form.get('message')
+	d.raised_by = webnotes.form.get('sender')
 	
 	if not d.description:
 		webnotes.msgprint('Please write something', raise_exception=True)

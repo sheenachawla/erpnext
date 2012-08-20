@@ -62,7 +62,7 @@ def execute():
 					c = addchild(obj.doc, 'field_mapper_details', 'Field Mapper Detail', obj.doclist)
 					c.from_field = f[0]
 					c.to_field = f[1]
-					c.fields['map'] = f[2]
+					c['map'] = f[2]
 					c.match_id = match_id
 					c.idx = max_idx + 1
 					c.save()

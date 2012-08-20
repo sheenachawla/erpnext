@@ -52,5 +52,5 @@ class DocType:
       field_name=sql("select fieldname from tabDocField where parent='%s' and label='%s'" %(form_obj.doc.doctype,d.action_field))[0][0]
       if field_name:
         #msgprint(field_name)
-        form_obj.doc.fields[field_name] = d.action_value
+        form_obj.doc[field_name] = d.action_value
     return

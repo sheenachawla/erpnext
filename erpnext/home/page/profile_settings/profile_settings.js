@@ -74,7 +74,7 @@ MyProfile = function(wrapper) {
 	// change password
 	//
 	this.change_password = function() {
-		var d = new wn.widgets.Dialog({
+		var d = new wn.ui.Dialog({
 			title:'Change Password',
 			width: 400,
 			fields: [
@@ -106,7 +106,7 @@ MyProfile = function(wrapper) {
 	//
 	
 	this.change_image = function() {
-		var d = new wn.widgets.Dialog({
+		var d = new wn.ui.Dialog({
 			title: 'Set your Profile'
 		});
 		
@@ -127,7 +127,7 @@ MyProfile = function(wrapper) {
 	}
 	
 	this.change_background = function() {
-		var d = new wn.widgets.Dialog({
+		var d = new wn.ui.Dialog({
 			title: 'Set Background Image'
 		})
 

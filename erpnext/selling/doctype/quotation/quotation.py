@@ -75,20 +75,20 @@ class DocType(TransactionBase):
 		else:
 			obj = get_obj('Sales Common')
 			for doc in self.doclist:
-				if doc.fields.get('item_code'):
+				if doc.get('item_code'):
 					arg = {
-						'item_code': doc.fields.get('item_code'),
-						'income_account': doc.fields.get('income_account'),
-						'cost_center': doc.fields.get('cost_center'),
-						'warehouse': doc.fields.get('warehouse')
+						'item_code': doc.get('item_code'),
+						'income_account': doc.get('income_account'),
+						'cost_center': doc.get('cost_center'),
+						'warehouse': doc.get('warehouse')
 					}
 					fields_dict = obj.get_item_details(arg, self)
 					if fields_dict:
-						doc.fields.update(fields_dict)
+						doc.update(fields_dict)
 					#ret = obj.get_item_defaults(arg)
 					#for r in ret:
-					#	if not doc.fields.get(r):
-					#		doc.fields[r] = ret[r]					
+					#	if not doc.get(r):
+					#		doc[r] = ret[r]					
 
 
 	# Re-calculates Basic Rate & amount based on Price List Selected
@@ -219,7 +219,7 @@ class DocType(TransactionBase):
 		webnotes.conn.set(self.doc, 'status', 'Draft')
 
 		# subject for follow
-		self.doc.subject = '[%(status)s] To %(customer)s worth %(currency)s %(grand_total)s' % self.doc.fields
+		self.doc.subject = '[%(status)s] To %(customer)s worth %(currency)s %(grand_total)s' % self.doc
 
 	
 	# Add to Calendar

@@ -50,7 +50,7 @@ def init():
 	#except webnotes.UnknownDomainError, e:
 	#	print "Location: " + (conf.redirect_404)
 	except webnotes.SessionStopped, e:
-		if 'cmd' in webnotes.form_dict:
+		if 'cmd' in webnotes.form:
 			import webnotes.handler
 			webnotes.handler.print_json()
 		else:
@@ -67,7 +67,7 @@ def init():
 
 def respond():
 	import webnotes
-	if 'cmd' in webnotes.form_dict:
+	if 'cmd' in webnotes.form:
 		import webnotes.handler
 		webnotes.handler.handle()
 	else:

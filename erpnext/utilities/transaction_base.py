@@ -16,11 +16,11 @@
 
 from __future__ import unicode_literals
 import webnotes
+import webnotes.model.controller
 from webnotes.utils import load_json, cstr, flt, get_defaults
-from webnotes.model.doc import addchild
 from webnotes.model.code import get_obj
 
-class TransactionBase:
+class TransactionBase(webnotes.model.controller.DocListController):
 
 	# Get Customer Default Primary Address - first load
 	# -----------------------
@@ -129,17 +129,17 @@ class TransactionBase:
 			where name = %s and docstatus < 2""", name, as_dict=1)
 		if customer_details:
 			for f in ['customer_name', 'customer_group', 'territory']:
-				self.doc.fields[f] = customer_details[0][f] or self.doc.fields.get(f)
+				self.doc[f] = customer_details[0][f] or self.doc.get(f)
 			
 			# fields prepended with default in Customer doctype
 			for f in ['sales_partner', 'commission_rate', 'currency']:
-				self.doc.fields[f] = customer_details[0]["default_%s" % f] or self.doc.fields.get(f)
+				self.doc[f] = customer_details[0]["default_%s" % f] or self.doc.get(f)
 			
 			# optionally fetch default price list from Customer Group
 			self.doc.price_list_name = (customer_details[0]['default_price_list']
 				or webnotes.conn.get_value('Customer Group', self.doc.customer_group,
 					'default_price_list')
-				or self.doc.fields.get('price_list_name'))
+				or self.doc.get('price_list_name'))
 
 	# Get Customer Shipping Address
 	# -----------------------
@@ -221,9 +221,9 @@ class TransactionBase:
 		if supplier_details:
 			return {
 				'supplier_name': (supplier_details[0]['supplier_name']
-					or self.doc.fields.get('supplier_name')),
+					or self.doc.get('supplier_name')),
 				'currency': (supplier_details[0]['default_currency']
-					or self.doc.fields.get('currency')),
+					or self.doc.get('currency')),
 			}
 		else:
 			return {}

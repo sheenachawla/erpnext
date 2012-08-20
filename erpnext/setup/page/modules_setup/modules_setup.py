@@ -4,6 +4,8 @@ import webnotes
 @webnotes.whitelist()
 def update(arg=None):
 	"""update modules"""
-	webnotes.conn.set_global('modules_list', webnotes.form_dict['ml'])
+	webnotes.conn.set_global('modules_list', webnotes.form['ml'])
 	webnotes.msgprint('Updated')
-	webnotes.clear_cache()
+	
+	import webnotes.session_cache
+	webnotes.session_cache.clear_cache()

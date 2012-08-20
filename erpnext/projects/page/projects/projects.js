@@ -16,6 +16,7 @@
 
 pscript.onload_Projects = function(wrapper) {
 	wn.ui.make_app_page({parent:wrapper, title:'Gantt Chart: All Tasks', single_column:true});
+
 	if(!erpnext.show_task_gantt)
 		wn.require('js/gantt_task.js');
 

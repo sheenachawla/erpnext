@@ -16,18 +16,16 @@
 
 from __future__ import unicode_literals
 import webnotes
-from webnotes.model.controller import getlist
 from webnotes import msgprint
 from webnotes.model.controller import DocListController
-from webnotes.utils.nestedset import DocTypeNestedSet
+from webnotes.utils.nestedset import NestedSetController
 
-class CostCenterController(DocListController, DocTypeNestedSet):
-	def __init__(self,dt=None,dn=None):
-		DocListController.__init__(self, dt, dn)
+class CostCenterController(NestedSetController):
+	def setup(self):
 		self.nsm_parent_field = 'parent_cost_center'
-				
+
 	def autoname(self):
-		abbr = webnotes.conn.get_value('Company', self.doc.company, 'abbr')
+		abbr = webnotes.conn.get_value('Company', self.doc.company_name, 'abbr')
 		self.doc.name = self.doc.cost_center_name + ' - ' + abbr
 		
 	def validate(self):
@@ -48,7 +46,7 @@ class CostCenterController(DocListController, DocTypeNestedSet):
 			msgprint("Cost Center Name already exists, please rename", raise_exception=webnotes.NameError)
 			
 	def validate_budget_against_group(self):
-		if self.doc.group_or_ledger=="Group" and getlist(self.doclist, 'budget_details'):
+		if self.doc.group_or_ledger=="Group" and self.doclist.get({"parentfield": "budget_details"}):
 			msgprint("Budget cannot be set for Group Cost Centers", raise_exception=1)
 		
 	def convert_group_to_ledger(self):
@@ -62,7 +60,7 @@ class CostCenterController(DocListController, DocTypeNestedSet):
 			return 1
 			
 	def convert_ledger_to_group(self):
-		if webnotes.conn.exists('GL Entry', {'cost_center': self.doc.name, 'is_cancelled': 'No'})
+		if webnotes.conn.exists('GL Entry', {'cost_center': self.doc.name, 'is_cancelled': 'No'}):
 			msgprint("Cost Center with existing transaction can not be converted to group."
 				, raise_exception=webnotes.ValidationError)
 		else:

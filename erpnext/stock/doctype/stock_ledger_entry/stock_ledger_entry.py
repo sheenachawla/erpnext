@@ -21,24 +21,20 @@ from webnotes.utils import cstr, cint, flt, cstr, getdate
 from webnotes import msgprint
 
 
-
-class DocType:
-	def __init__(self, doc, doclist=[]):
-		self.doc = doc
-		self.doclist = doclist
-	
+from webnotes.model.controller import DocListController
+class StockLedgerEntryController(DocListController):
 	#check for item quantity available in stock
 	def actual_amt_check(self):
 		if self.doc.batch_no:
 			batch_bal = flt(webnotes.conn.sql("select sum(actual_qty) from `tabStock Ledger Entry` where warehouse = '%s' and item_code = '%s' and batch_no = '%s'"%(self.doc.warehouse,self.doc.item_code,self.doc.batch_no))[0][0])
-			self.doc.fields.update({'batch_bal': batch_bal})
+			self.doc.update({'batch_bal': batch_bal})
 
 			if (batch_bal + self.doc.actual_qty) < 0:
 				msgprint("""Not enough quantity (requested: %(actual_qty)s, current: %(batch_bal)s in Batch 
 		<b>%(batch_no)s</b> for Item <b>%(item_code)s</b> at Warehouse<b>%(warehouse)s</b> 
-		as on %(posting_date)s %(posting_time)s""" % self.doc.fields, raise_exception = 1)
+		as on %(posting_date)s %(posting_time)s""" % self.doc, raise_exception = 1)
 
-			self.doc.fields.pop('batch_bal')
+			self.doc.pop('batch_bal')
 			 
 
 	# mandatory
@@ -47,11 +43,11 @@ class DocType:
 	def validate_mandatory(self):		
 		mandatory = ['warehouse','transaction_date','posting_date','voucher_type','voucher_no','actual_qty','company','fiscal_year']
 		for k in mandatory:
-			if self.doc.fields.get(k)==None:
+			if self.doc.get(k)==None:
 				msgprint("Stock Ledger Entry: '%s' is mandatory" % k, raise_exception = 1)
 			elif k == 'warehouse':
-				if not webnotes.conn.sql("select name from tabWarehouse where name = '%s'" % self.doc.fields.get(k)):
-					msgprint("Warehouse: '%s' does not exist in the system. Please check." % self.doc.fields.get(k), raise_exception = 1)
+				if not webnotes.conn.sql("select name from tabWarehouse where name = '%s'" % self.doc.get(k)):
+					msgprint("Warehouse: '%s' does not exist in the system. Please check." % self.doc.get(k), raise_exception = 1)
 
 	# validate for item
 	# -----------------

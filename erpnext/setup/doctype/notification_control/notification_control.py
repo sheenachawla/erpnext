@@ -60,7 +60,7 @@ class DocType:
 		}
 
 		dt_small = args.get('doctype').replace(' ', '_').lower()
-		if cint(self.doc.fields.get(dt_small)):
+		if cint(self.doc.get(dt_small)):
 			res['send'] = 1
 
 		return json.dumps(res)

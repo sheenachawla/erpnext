@@ -30,7 +30,6 @@ class PageController(DocListController):
 		# page name updates with the title
 		self.update_page_name()
 		self.clear_web_cache()
-		self.doc.save()
 		
 	def on_trash(self):
 		"""delete Web Cache entry"""
@@ -48,6 +47,8 @@ class PageController(DocListController):
 			webnotes.msgprint("""A %s with the same title already exists.
 				Please change the title of %s and save again."""
 				% (self.doc.doctype, self.doc.name), raise_exception=1)
+				
+		webnotes.conn.set_value(self.doc.doctype, self.doc.name, "page_name", self.doc.page_name)
 
 	def clear_web_cache(self):
 		"""
@@ -71,5 +72,5 @@ class PageController(DocListController):
 		import markdown2
 		for f in fields_list:
 			field_name = "%s_html" % f
-			self.doc.fields[field_name] = markdown2.markdown(self.doc.fields.get(f) or '', \
+			self.doc[field_name] = markdown2.markdown(self.doc.get(f) or '', \
 				extras=["wiki-tables"])

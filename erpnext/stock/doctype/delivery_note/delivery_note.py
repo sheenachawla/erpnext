@@ -22,20 +22,16 @@ from webnotes.model.controller import getlist
 from webnotes.model.code import get_obj
 from webnotes import msgprint
 
-
+import webnotes.model
 from utilities.transaction_base import TransactionBase
 
-class DocType(TransactionBase):
-	def __init__(self, doc, doclist=[]):
-		self.doc = doc
-		self.doclist = doclist
+class DeliveryNoteController(TransactionBase):
+	def setup(self):
 		self.tname = 'Delivery Note Item'
 		self.fname = 'delivery_note_details'
 
-
 	def autoname(self):
 		self.doc.name = make_autoname(self.doc.naming_series+'.#####')
-
 
 	def validate_fiscal_year(self):
 		get_obj('Sales Common').validate_fiscal_year(self.doc.fiscal_year,self.doc.posting_date,'Posting Date')
@@ -95,13 +91,13 @@ class DocType(TransactionBase):
 		else:
 			obj = get_obj('Sales Common')
 			for doc in self.doclist:
-				if doc.fields.get('item_code'):
-					arg = {'item_code':doc.fields.get('item_code'), 'income_account':doc.fields.get('income_account'), 
-						'cost_center': doc.fields.get('cost_center'), 'warehouse': doc.fields.get('warehouse')};
+				if doc.get('item_code'):
+					arg = {'item_code':doc.get('item_code'), 'income_account':doc.get('income_account'), 
+						'cost_center': doc.get('cost_center'), 'warehouse': doc.get('warehouse')};
 					ret = obj.get_item_defaults(arg)
 					for r in ret:
-						if not doc.fields.get(r):
-							doc.fields[r] = ret[r]					
+						if not doc.get(r):
+							doc[r] = ret[r]					
 
 	def get_barcode_details(self, barcode):
 		return get_obj('Sales Common').get_barcode_details(barcode)
@@ -264,17 +260,17 @@ class DocType(TransactionBase):
 		"""
 			Validate that if packed qty exists, it should be equal to qty
 		"""
-		if not any([flt(d.fields.get('packed_qty')) for d in self.doclist if
+		if not any([flt(d.get('packed_qty')) for d in self.doclist if
 				d.doctype=='Delivery Note Item']):
 			return
 		packing_error_list = []
 		for d in self.doclist:
 			if d.doctype != 'Delivery Note Item': continue
-			if flt(d.fields.get('qty')) != flt(d.fields.get('packed_qty')):
+			if flt(d.get('qty')) != flt(d.get('packed_qty')):
 				packing_error_list.append([
-					d.fields.get('item_code', ''),
-					d.fields.get('qty', 0),
-					d.fields.get('packed_qty', 0)
+					d.get('item_code', ''),
+					d.get('qty', 0),
+					d.get('packed_qty', 0)
 				])
 		if packing_error_list:
 			from webnotes.utils import cstr
@@ -322,10 +318,8 @@ class DocType(TransactionBase):
 			""", self.doc.name)
 
 		if res and res[0][1]>0:
-			from webnotes.model.controller import DocListController
 			for r in res:
-				ps = DocListController(dt='Packing Slip', dn=r[0])
-				ps.cancel()
+				webnotes.model.get_controller("Packing Slip", r[0]).cancel()
 			webnotes.msgprint("%s Packing Slip(s) Cancelled" % res[0][1])
 
 

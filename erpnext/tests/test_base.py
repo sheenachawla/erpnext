@@ -17,8 +17,8 @@
 from __future__ import unicode_literals
 import unittest
 import webnotes
+import webnotes.model
 from webnotes.utils import cint
-from webnotes.model.code import get_obj
 
 class TestBase(unittest.TestCase):
 	def setUp(self):
@@ -74,13 +74,11 @@ class TestBase(unittest.TestCase):
 		
 	def submit_doc(self, data, validate=0, on_update=0):
 		rec = self.create_docs(data, make_autoname=0)
-		rec_obj = get_obj(data[0]['doctype'], data[0]['name'], with_children=1)
-		if validate and hasattr(rec_obj, 'validate'):
-			rec_obj.validate()
-		if on_update and hasattr(rec_obj, 'on_update'):
-			rec_obj.on_update()
+		controller = webnotes.model.get_controller(data[0]['doctype'], data[0]['name'])
+		controller.run("validate")
+		controller.run("on_update")
+		controller.on_submit()
 
-		rec_obj.on_submit()
 		for d in data:
 			webnotes.conn.sql("update `tab%s` set docstatus=1 where name = '%s'" % (d['doctype'], d['name']))
 

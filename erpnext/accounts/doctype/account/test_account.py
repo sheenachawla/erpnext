@@ -73,28 +73,30 @@ class TestAccount(TestBase):
 		self.assertRaises(webnotes.ValidationError, acc.convert_group_to_ledger)
 		
 		# successfull conversion (group to ledger)
-		webnotes.model.insert(base_account)
-		acc = webnotes.model.get_controller('Account', 'test_account - EW')
+
+		acc = webnotes.model.insert(base_account)
 		self.assertEqual(acc.convert_group_to_ledger(), 1)
 		
 	def test_ledger_to_group(self):
 		# successfull conversion (ledger to group)
-		webnotes.model.insert(base_account)
-		acc = webnotes.model.get_controller('Account', 'test_account - EW')
+		acc = webnotes.model.insert(base_account)
 		self.assertEqual(acc.convert_ledger_to_group(), 1)
 		
 		# account with account_type, customer or supplier can not be converted
-		webnotes.model.insert_variants(base_account, \
-			[{'account_name': 'Convenience Charge', 'account_type': 'Chargeable'}])
-		acc = webnotes.model.get_controller('Account', 'Convenience Charge - EW')
+		acc = base_account.copy()
+		acc.update({'account_name': 'Convenience Charge', 'account_type': 'Chargeable'})
+		acc = webnotes.model.insert(acc)
 		self.assertRaises(webnotes.ValidationError, acc.convert_ledger_to_group)
 		
 		# account with existing ledger entry can not be converted
-		webnotes.model.insert_variants(base_account, [{'account_name': 'MD Electronics'}])
+		acc = base_account.copy()
+		acc.update({'account_name': 'MD Electronics'})
+		acc = webnotes.model.insert(acc)
 		
-		webnotes.model.insert_variants(base_gle, [{'account': 'MD Electronics - EW'}])		
-		acc = webnotes.model.get_controller('Account', 'MD Electronics - EW')
-		self.assertRaises(webnotes.ValidationError, acc.convert_ledger_to_group)
+		gle = base_gle.copy()
+		gle.update({'account': acc.doc['name']})
+		acc = webnotes.model.insert(gle)
+		self.assertRaises(webnotes.ValidationError, acc.doc.convert_ledger_to_group)
 		
 	def test_nsm_model(self):
 		prev_rgt = self.get_rgt("Application of Funds (Assets) - EW")
@@ -106,27 +108,29 @@ class TestAccount(TestBase):
 		return webnotes.conn.get_value("Account", acc, "rgt")
 		
 	def test_credit_limit(self):
-		webnotes.model.insert_variants(base_account, [{'credit_limit': 100000}])
-		acc_controller = webnotes.model.get_controller('Account', 'test_account - EW')
+		acc = base_account.copy()
+		acc.update({'credit_limit': 100000})
+		acc_controller = webnotes.model.insert(acc)
 		self.assertRaises(webnotes.ValidationError, acc_controller.check_credit_limit, \
-			'test_account - EW', 'East Wind Corporation', 200000)
+			acc_controller.doc.name, acc_controller.doc.company, 200000)
 			
 	def test_account_deletion(self):		
 		# successfull deletion
-		webnotes.model.insert(base_account)
+		acc = webnotes.model.insert(base_account)
 		prev_rgt = self.get_rgt("Application of Funds (Assets) - EW")
-		webnotes.model.delete_doc('Account', 'test_account - EW')
+		webnotes.model.delete_doc('Account', acc.doc.name)
 		
 		self.assertFalse(webnotes.conn.exists('Account', 'test_account - EW'))
 		self.assertEqual(self.get_rgt("Application of Funds (Assets) - EW"), prev_rgt - 2)
 		self.assertNsm('Account', 'parent_account', 'group_or_ledger')
 		
-		# if sle exists, could not be deleted
-		webnotes.model.insert(base_account)
+		# if sle exists, could not be deleted		
+		acc = webnotes.model.insert(base_account)
 		# gl entry
-		webnotes.model.insert_variants(base_gle, [{'account': 'test_account - EW'}])
+		webnotes.model.insert_variants(base_gle, [{'account': acc.doc['name']}])
 		
-		self.assertRaises(webnotes.ValidationError, webnotes.model.delete_doc, 'Account', 'test_account - EW')
+		self.assertRaises(webnotes.ValidationError, webnotes.model.delete_doc, 'Account',
+			acc.doc['name'])
 		
 		# if child exists, can not be deleted
 		self.assertRaises(webnotes.ValidationError, webnotes.model.delete_doc, \

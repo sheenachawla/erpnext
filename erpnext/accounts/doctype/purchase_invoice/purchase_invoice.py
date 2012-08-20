@@ -113,11 +113,11 @@ class DocType(TransactionBase):
 			return self.get_pv_details(arg)
 		else:
 			for doc in self.doclist:
-				if doc.fields.get('item_code'):
+				if doc.get('item_code'):
 					ret = self.get_pv_details(doc.item_code)
 					for r in ret:
-						if not doc.fields.get(r):
-							doc.fields[r] = ret[r]
+						if not doc.get(r):
+							doc[r] = ret[r]
 
 
 	def get_pv_details(self, arg):

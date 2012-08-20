@@ -74,7 +74,7 @@ class TestSupplier(TestBase):
 			
 	def test_supplier_deletion(self):		
 		supp = base_supplier.copy()
-		webnotes.model.insert(supp, ignore_fields=1)
+		webnotes.model.insert(supp)
 		
 		webnotes.model.delete_doc('Supplier', 'test_supplier')
 		
@@ -83,7 +83,7 @@ class TestSupplier(TestBase):
 		self.assertFalse(webnotes.conn.exists("Account", "Robert Smith-test_supplier"))
 		
 	def test_supplier_renaming(self):
-		webnotes.model.insert(base_supplier, ignore_fields=1)
+		webnotes.model.insert(base_supplier)
 		
 		from webnotes.model.rename_doc import rename_doc
 		rename_doc("Supplier", "test_supplier", "test_supplier_renamed")

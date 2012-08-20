@@ -52,8 +52,7 @@ class AccountController(DocListController):
 				par = webnotes.conn.get_value("Account", self.doc.parent_account, ["is_pl_account", "debit_or_credit"])
 				self.doc.is_pl_account = par[0]
 				self.doc.debit_or_credit = par[1]
-		elif self.doc.account_name not in ['Income','Source of Funds (Liabilities)', \
-			'Expenses', 'Application of Funds (Assets)']:
+		elif self.doc.account_name not in ['Income','Source of Funds (Liabilities)', 'Expenses','Application of Funds (Assets)']:
 			msgprint("Parent Account is mandatory", raise_exception=webnotes.MandatoryError)
 	
 	def validate_duplicate_account(self):
@@ -109,10 +108,10 @@ class AccountController(DocListController):
 
 	def check_gle_exists(self):
 		return webnotes.conn.exists("GL Entry", {"account": self.doc.name, "is_cancelled": "No"})
-			
+
 	def on_update(self):
 		self.update_nsm_model()		
-			 
+
 	def update_nsm_model(self):
 		import webnotes
 		import webnotes.utils.nestedset
