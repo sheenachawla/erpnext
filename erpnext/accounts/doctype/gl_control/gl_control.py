@@ -252,9 +252,6 @@ class GLControlController(DocListController):
 			raise Exception
 		return
 
-
-######################################################################################################################
-
 	#------------------------------------------
 	def reconcile_against_document(self, args):
 		"""
@@ -326,33 +323,6 @@ class GLControlController(DocListController):
 		if not ret:
 			msgprint("Payment Entry has been modified after you pulled it. Please pull it again.", raise_exception=1)
 		
-
-	def repost_illegal_cancelled(self, after_date='2011-01-01'):
-		"""
-			Find vouchers that are not cancelled correctly and repost them
-		"""
-		vl = webnotes.conn.sql("""
-			select voucher_type, voucher_no, account, sum(debit) as sum_debit, sum(credit) as sum_credit
-			from `tabGL Entry`
-			where is_cancelled='Yes' and creation > %s
-			group by voucher_type, voucher_no, account
-			""", after_date, as_dict=1)
-
-		ac_list = []
-		for v in vl:
-			if v['sum_debit'] != 0 or v['sum_credit'] != 0:
-				ac_list.append(v['account'])
-
-		fy_list = webnotes.conn.sql("""select name from `tabFiscal Year`
-		where (%s between year_start_date and date_sub(date_add(year_start_date,interval 1 year), interval 1 day))
-		or year_start_date > %s
-		order by year_start_date ASC""", (after_date, after_date))
-
-		for fy in fy_list:
-			fy_obj = get_obj('Fiscal Year', fy[0])
-			for a in set(ac_list):
-				fy_obj.repost(a)
-
 
 def manage_recurring_invoices():
 	""" 
