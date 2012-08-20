@@ -18,7 +18,7 @@ def get_blog_list(args=None):
 			cache.name as name, cache.html as content,
 			blog.owner as owner, blog.creation as published,
 			blog.title as title, (select count(name) from `tabComment` where
-				comment_doctype='Blog' and comment_docname=blog.name) as comments
+				parenttype='Blog' and parent=blog.name) as comments
 		from `tabWeb Cache` cache, `tabBlog` blog
 		where cache.doc_type = 'Blog' and blog.page_name = cache.name
 		order by published desc, name asc"""
@@ -81,8 +81,8 @@ def add_comment(args=None):
 			'comment': '',
 			'comment_by': '',
 			'comment_by_fullname': '',
-			'comment_doctype': '',
-			'comment_docname': '',
+			'parenttype': '',
+			'parent': '',
 			'page_name': '',
 		}
 	"""
@@ -98,7 +98,7 @@ def add_comment(args=None):
 	
 	# since comments are embedded in the page, clear the web cache
 	website.web_cache.clear_cache(args.get('page_name'),
-		args.get('comment_doctype'), args.get('comment_docname'))
+		args.get('parenttype'), args.get('parent'))
 	
 	
 	comment['comment_date'] = webnotes.utils.pretty_date(comment['creation'])
@@ -109,11 +109,11 @@ def add_comment(args=None):
 	
 	# notify commentors 
 	commentors = [d[0] for d in webnotes.conn.sql("""select comment_by from tabComment where
-		comment_doctype='Blog' and comment_docname=%s and
-		ifnull(unsubscribed, 0)=0""", args.get('comment_docname'))]
+		parenttype='Blog' and parent=%s and
+		ifnull(unsubscribed, 0)=0""", args.get('parent'))]
 	
 	blog = webnotes.conn.sql("""select * from tabBlog where name=%s""", 
-		args.get('comment_docname'), as_dict=1)[0]
+		args.get('parent'), as_dict=1)[0]
 	
 	from webnotes.utils.email_lib.bulk import send
 	send(recipients=list(set(commentors + [blog['owner']])), 

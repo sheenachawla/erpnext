@@ -122,21 +122,21 @@ class SetupControlController(DocListController):
 		d.description = 'Create your first Customer'
 		d.priority = 'High'
 		d.date = nowdate()
-		d.reference_type = 'Customer'
+		d.parenttype = 'Customer'
 		d.save(1)
 
 		d = Document('ToDo')
 		d.description = 'Create your first Item'
 		d.priority = 'High'
-		d.date = nowdate()
-		d.reference_type = 'Item'
+		d.parenttype = nowdate()
+		d.parent = 'Item'
 		d.save(1)
 
 		d = Document('ToDo')
 		d.description = 'Create your first Supplier'
 		d.priority = 'High'
 		d.date = nowdate()
-		d.reference_type = 'Supplier'
+		d.parenttype = 'Supplier'
 		d.save(1)
 
 	def create_email_digest(self):

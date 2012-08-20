@@ -19,7 +19,7 @@ import webnotes
 
 from webnotes.utils import cstr, load_json
 
-from webnotes.model.doc import Document, addchild, make_autoname
+from webnotes.model.doc import Document, make_autoname
 from webnotes.model.controller import getlist
 from webnotes.model.code import get_obj
 from webnotes import msgprint

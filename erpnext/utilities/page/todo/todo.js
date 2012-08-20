@@ -78,12 +78,12 @@ erpnext.todo.ToDoItem = Class.extend({
 		}
 		parent_list += " div.todo-content";
 		
-		if(todo.reference_name && todo.reference_type) {
-			todo.link = repl('<br><a href="#!Form/%(reference_type)s/%(reference_name)s">\
-						%(reference_type)s: %(reference_name)s</a>', todo);
-		} else if(todo.reference_type) {
-			todo.link = repl('<br><a href="#!List/%(reference_type)s">\
-						%(reference_type)s</a>', todo);
+		if(todo.parenttype && todo.parent) {
+			todo.link = repl('<br><a href="#!Form/%(parenttype)s/%(parent)s">\
+						%(parent)s: %(parent)s</a>', todo);
+		} else if(todo.parent) {
+			todo.link = repl('<br><a href="#!List/%(parenttype)s">\
+						%(parenttype)s</a>', todo);
 		} else {
 			todo.link = '';
 		}
@@ -109,7 +109,7 @@ erpnext.todo.ToDoItem = Class.extend({
 			$todo.find('.description').css('text-decoration', 'line-through');
 		}
 		
-		if(!todo.reference_type)
+		if(!todo.parent)
 			$todo.find('.ref_link').toggle(false);
 		
 		$todo.find('.popup-on-click')
@@ -191,7 +191,8 @@ erpnext.todo.save = function(btn) {
 	});
 }
 
-wn.pages.todo.onload = function(wrapper) {
+wn.pages.todo.on('load', function(wrapper) {
+	console.log(arguments)
 	// create app frame
 	wrapper.appframe = new wn.ui.AppFrame($(wrapper).find('.appframe-area'), 'To Do');
 	wrapper.appframe.add_button('Refresh', erpnext.todo.refresh, 'icon-refresh');
@@ -202,4 +203,4 @@ wn.pages.todo.onload = function(wrapper) {
 
 	// load todos
 	erpnext.todo.refresh();
-}
+});

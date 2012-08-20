@@ -192,7 +192,7 @@ class DocType:
 		
 	def get_todo_list(self):
 		res = sql("""select name, description, `date`, 
-			priority, checked, reference_type, reference_name from `tabToDo` 
+			priority, checked, parent, reference_name from `tabToDo` 
 			where owner=%s order by field(priority,'High','Medium','Low') asc, date asc""", \
 				session['user'], as_dict=1)
 		return res
@@ -220,7 +220,7 @@ class DocType:
 		sql("delete from `tabToDo` where name = %s",nm)
 
 	def notify_assignment(self, d):
-		doc_type = d.get('reference_type')
+		doc_type = d.get('parent')
 		doc_name = d.get('reference_name')
 		assigned_by = d.get('assigned_by')
 		if doc_type and doc_name and assigned_by:

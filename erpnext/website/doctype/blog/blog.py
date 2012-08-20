@@ -79,8 +79,8 @@ class DocType(PageController):
 
 		comment_list = webnotes.conn.sql("""\
 			select comment, comment_by_fullname, creation
-			from `tabComment` where comment_doctype="Blog"
-			and comment_docname=%s order by creation""", self.doc.name, as_dict=1)
+			from `tabComment` where parenttype="Blog"
+			and parent=%s order by creation""", self.doc.name, as_dict=1)
 		
 		self.doc.comment_list = comment_list or []
 		for comment in self.doc.comment_list:
