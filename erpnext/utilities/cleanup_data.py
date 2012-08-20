@@ -158,7 +158,8 @@ def reset_global_defaults():
 		gd.doc[d] = flds[d]
 	gd.doc.save()
 	
-	webnotes.clear_cache()
+	import webnotes.session_cache
+	webnotes.session_cache.clear()
 
 
 def run():
