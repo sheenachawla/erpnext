@@ -31,10 +31,9 @@ stages = {
 		"stages": ["Setup"],
 		"tests": [
 			"stock.doctype.item.test_item",
-			"selling.doctype.customer.test_customer",
-			"buying.doctype.supplier.test_supplier",
 			"accounts.doctype.account.test_account",
 			"accounts.doctype.cost_center.test_cost_center",
+			"accounts.doctype.party.test_party",
 			
 		],
 	}

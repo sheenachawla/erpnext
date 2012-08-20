@@ -1,0 +1,46 @@
+# DocType, Party Group
+[
+
+	# These values are common in all dictionaries
+	{
+		u'creation': '2012-08-20 19:40:20',
+		u'docstatus': 0,
+		u'modified': '2012-08-20 19:40:20',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
+	},
+
+	# These values are common for all DocType
+	{
+		'autoname': u'Prompt',
+		'doctype': u'DocType',
+		'document_type': u'Master',
+		'module': u'Setup',
+		u'name': u'__common__'
+	},
+
+	# These values are common for all DocField
+	{
+		'doctype': u'DocField',
+		'fieldname': u'default_price_list',
+		'fieldtype': u'Link',
+		'label': u'Default Price List',
+		u'name': u'__common__',
+		'options': u'Price List',
+		'parent': u'Party Group',
+		'parentfield': u'fields',
+		'parenttype': u'DocType',
+		'permlevel': 0
+	},
+
+	# DocType, Party Group
+	{
+		u'doctype': u'DocType',
+		'name': u'Party Group'
+	},
+
+	# DocField
+	{
+		u'doctype': u'DocField'
+	}
+]

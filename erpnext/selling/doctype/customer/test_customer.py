@@ -54,11 +54,7 @@ def make_territory():
 		{"name":"South", "parent_territory":"All Territories", "is_group": "No"},
 	])
 		
-class TestCustomer(TestBase):
-	# def tearDown(self):
-	# 	webnotes.conn.rollback()
-	# 	print "customer"
-	
+class TestCustomer(TestBase):	
 	def test_customer_creation(self):
 		make_customer_groups()
 		make_territory()
