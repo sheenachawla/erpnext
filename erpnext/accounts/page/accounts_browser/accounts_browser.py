@@ -36,6 +36,6 @@ def get_children():
 		currency = webnotes.conn.get_value('Company', company, 'default_currency')
 		import accounts.utils
 		for each in acc:
-			bal = accounts.utils.get_balance_on_specific_date(each.get('value'), nowdate)
+			bal = accounts.utils.get_balance_on(each.get('value'), nowdate)
 			each['balance'] = currency + ' ' + cstr(bal)
 	return acc

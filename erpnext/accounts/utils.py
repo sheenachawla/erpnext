@@ -18,7 +18,7 @@ from __future__ import unicode_literals
 import webnotes
 import webnotes.model
 	
-def get_balance_on_specific_date(account, dt, ):
+def get_balance_on(account, dt):
 	acc = webnotes.conn.get_value('Account', account, \
 		['lft', 'rgt', 'debit_or_credit', 'is_pl_account'], as_dict=1)
 	cond = ""
@@ -36,7 +36,7 @@ def get_balance_on_specific_date(account, dt, ):
 	""", (acc['lft'], acc['rgt'], dt, cond))[0][0]
 	
 	if acc['debit_or_credit'] == 'Credit':
-		bal = -bal		
+		bal = -bal
 	return bal
 	
 def add_account(args):

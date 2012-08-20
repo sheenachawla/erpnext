@@ -34,6 +34,8 @@ stages = {
 			"selling.doctype.customer.test_customer",
 			"buying.doctype.supplier.test_supplier",
 			"accounts.doctype.account.test_account",
+			"accounts.doctype.cost_center.test_cost_center",
+			
 		],
 	}
 }
