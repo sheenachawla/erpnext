@@ -10,7 +10,7 @@ this.make_answers=function(){if(this.doctype=='Question'){if(this.det.answers==0
 this.make_tags=function(){this.line1.innerHTML+=' | '
 this.tags_area=$a(this.line1,'span','kb-tags')
 this.tags=new TagList(this.tags_area,this.det._user_tags&&(this.det._user_tags.split(',')),this.doctype,this.det.name,0,kb.set_tag_filter)}
-this.setup_del=function(){$(this.line1).find('.del-link').click(function(){console.log(1);this.innerHTML='deleting...';this.disabled=1;$c_page('utilities','questions','delete',{dt:me.doctype,dn:me.det.name},function(r,rt){kb.list.run()});});}
+this.setup_del=function(){$(this.line1).find('.del-link').click(function(){this.innerHTML='deleting...';this.disabled=1;$c_page('utilities','questions','delete',{dt:me.doctype,dn:me.det.name},function(r,rt){kb.list.run()});});}
 this.make();}
 EditableText=function(args){$.extend(this,args);var me=this;me.$w=$(repl('<div class="ed-text">\
   <div class="ed-text-display %(disp_class)s"></div>\

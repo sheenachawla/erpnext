@@ -20,7 +20,7 @@ function Class(){this._observers=new Object();if(!initializing&&this.init)
 this.init.apply(this,arguments);}
 Class.prototype=prototype;Class.prototype.constructor=Class;Class.prototype.on=function(event_name,handle){if(!this._observers[event_name]){this._observers[event_name]=[];}
 this._observers[event_name].push(handle);}
-Class.prototype.trigger=function(event_name){var args=[];if(arguments.lengths>1)args=arguments.splice(1);var observer_list=this._observers[event_name]||[];for(var i=0;i<observer_list.length;i++){observer_list[i].apply(this,args);}}
+Class.prototype.trigger=function(event_name){var args=[];if(arguments.length>1)args=Array.prototype.slice.call(arguments,1);var observer_list=this._observers[event_name]||[];for(var i=0;i<observer_list.length;i++){observer_list[i].apply(this,args);}}
 Class.extend=arguments.callee;return Class;};})();
 /*
  *	lib/js/wn/provide.js
@@ -101,7 +101,8 @@ doc.doclist=this;this.doclist.push(doc);if(this.doclist.length==1){this.setup(do
 filters=arguments[1];filters.doctype=arguments[0];}else{var filters=arguments[0];}
 var ret=$.map(this.doclist,function(d){return me.match(filters,d)})
 ret.sort(function(a,b){return a.idx>b.idx;});return ret;},get_value:function(key,def){return this.doc.get(key,def);},match:function(filters,doc){for(key in filters){var fval=filters[key];if(fval instanceof Array){if(!in_list(fval,doc.get(key)))return null;}else{if(doc.get(key)!=filters[key]){return null;}}}
-return doc;},save:function(callback,btn){var me=this;wn.call({method:'webnotes.model.client.save',args:{docs:this.get_docs()},callback:function(r){me.reset(r.docs);callback(r);}});},reset:function(doclist){var oldname=this.doc.get('name');this.doclist.splice(0,this.doclist.length);for(i in doclist){this.add(doclist[i]);}
+return doc;},save:function(callback,btn){var me=this;wn.call({method:'webnotes.model.client.save',args:{docs:this.get_docs()},callback:function(r){if(!r.exc){me.reset(r.docs);}
+callback(r);}});},reset:function(doclist){var oldname=this.doc.get('name');this.doclist.splice(0,this.doclist.length);for(i in doclist){this.add(doclist[i]);}
 if(oldname!=this.name){delete wn.doclists[this.doctype][oldname];}},get_docs:function(){return $.map(this.doclist,function(d){return d.fields;});},rename:function(){this.name=this.doclist[0].get('name');},meta:function(){return wn.model.get('DocType',this.doc.get('doctype'));},add_child:function(parentfield){var docfield=this.meta().get({fieldname:parentfield,doctype:'DocField'})[0];var doc=new wn.model.Document({doctype:docfield.get('options'),name:wn.model.new_name(docfield.get('options')),__islocal:1,owner:user,parent:this.doc.get('name'),parenttype:this.doc.get('doctype'),parentfield:parentfield,idx:this.get({parentfield:docfield.get('fieldname')}).length+1});wn.model.set_defaults(doc);this.add(doc);return doc;},remove_child:function(doc){this.doclist.splice(this.doclist.indexOf(doc),1);this.renum_idx(doc.get('parentfield'));},renum_idx:function(parentfield){$.each(this.get({parentfield:parentfield}),function(i,d){d.set('idx',i+1);});}});
 /*
  *	lib/js/wn/meta.js
@@ -175,101 +176,6 @@ wn.set_route=function(){route=$.map(arguments,function(a){return encodeURICompon
 wn._cur_route=null;$(window).bind('hashchange',function(){if(location.hash==wn._cur_route)
 return;wn.route();});
 /*
- *	lib/js/wn/ui/listing.js
- */
-wn.provide('wn.ui');wn.ui.Listing=Class.extend({init:function(opts){this.opts=opts||{};this.page_length=20;this.start=0;this.data=[];if(opts){this.make();}},prepare_opts:function(){if(this.opts.new_doctype){if(wn.boot.profile.can_read.indexOf(this.opts.new_doctype)==-1){this.opts.new_doctype=null;}else{this.opts.new_doctype=get_doctype_label(this.opts.new_doctype);}}
-if(!this.opts.no_result_message){this.opts.no_result_message='Nothing to show'}},make:function(opts){if(opts){this.opts=opts;}
-this.prepare_opts();$.extend(this,this.opts);$(this.parent).html(repl('\
-   <div class="wnlist">\
-    <h3 class="title hide">%(title)s</h3>\
-    \
-    <div class="list-filters hide">\
-     <div class="show_filters well">\
-      <div class="filter_area"></div>\
-      <div>\
-       <button class="btn btn-small btn-info search-btn">\
-        <i class="icon-refresh icon-white"></i> Search</button>\
-       <button class="btn btn-small add-filter-btn">\
-        <i class="icon-plus"></i> Add Filter</button>\
-      </div>\
-     </div>\
-    </div>\
-    \
-    <div style="margin-bottom:9px" class="list-toolbar-wrapper">\
-     <div class="list-toolbar" style="display:inline-block; margin-right: 10px;">\
-     </div>\
-     <div style="display:inline-block; width: 24px; margin-left: 4px">\
-      <img src="images/lib/ui/button-load.gif" \
-      class="img-load"/></div>\
-    </div><div style="clear:both"></div>\
-    \
-    <div class="no-result help hide">\
-     %(no_result_message)s\
-    </div>\
-    \
-    <div class="result">\
-     <div class="result-list"></div>\
-    </div>\
-    \
-    <div class="paging-button">\
-     <button class="btn btn-small btn-more hide">More...</div>\
-    </div>\
-   </div>\
-  ',this.opts));this.$w=$(this.parent).find('.wnlist');this.set_events();if(this.appframe){this.$w.find('.list-toolbar-wrapper').toggle(false);}
-if(this.show_filters){this.make_filters();}},add_button:function(label,click,icon){if(this.appframe){return this.appframe.add_button(label,click,icon)}else{$button=$('<button class="btn btn-small"></button>').appendTo(this.$w.find('.list-toolbar'))
-if(icon){$('<i>').addClass(icon).appendTo($button);}
-$button.html(label).click(click);return $button}},show_view:function($btn,$div,$btn_unsel,$div_unsel){$btn_unsel.removeClass('btn-info');$btn_unsel.find('i').removeClass('icon-white');$div_unsel.toggle(false);$btn.addClass('btn-info');$btn.find('i').addClass('icon-white');$div.toggle(true);},set_events:function(){var me=this;this.$w.find('.btn-more').click(function(){me.run({append:true});});if(this.title){this.$w.find('h3').html(this.title).toggle(true);}
-if(!(this.hide_refresh||this.no_refresh)){this.add_button('Refresh',function(){me.run();},'icon-refresh');}
-if(this.new_doctype){this.add_button('New '+this.new_doctype,function(){me.make_new_doc(me.new_doctype);},'icon-plus');}
-if(me.show_filters){this.add_button('Show Filters',function(){me.filter_list.show_filters();},'icon-search').addClass('btn-filter');}
-if(me.no_toolbar||me.hide_toolbar){me.$w.find('.list-toolbar-wrapper').toggle(false);}},make_new_doc:function(new_doctype){new_doc(new_doctype);},make_filters:function(){this.filter_list=new wn.ui.FilterList({listobj:this,$parent:this.$w.find('.list-filters').toggle(true),doctype:this.doctype,filter_fields:this.filter_fields});},clear:function(){this.data=[];this.$w.find('.result-list').empty();this.$w.find('.result').toggle(true);this.$w.find('.no-result').toggle(false);this.start=0;},run:function(){var me=this;var a0=arguments[0];var a1=arguments[1];if(a0&&typeof a0=='function')
-this.onrun=a0;if(a0&&a0.callback)
-this.onrun=a0.callback;if(!a1&&!(a0&&a0.append))
-this.start=0;me.set_working(true);wn.call({method:this.opts.method||'webnotes.widgets.query_builder.runquery',args:this.get_call_args(a0),callback:function(r){me.set_working(false);me.render_results(r)},no_spinner:this.opts.no_loading});},set_working:function(flag){this.$w.find('.img-load').toggle(flag);},get_call_args:function(opts){if(!this.method){var query=this.get_query?this.get_query():this.query;query=this.add_limits(query);var args={query_max:this.query_max,as_dict:1}
-args.simple_query=query;}else{var args={limit_start:this.start,limit_page_length:this.page_length}}
-if(this.args)
-$.extend(args,this.args)
-if(this.get_args){$.extend(args,this.get_args(opts));}
-return args;},render_results:function(r){if(this.start==0)this.clear();this.$w.find('.btn-more').toggle(false);if(r.message)r.values=r.message;if(r.values&&r.values.length){this.data=this.data.concat(r.values);this.render_list(r.values);this.update_paging(r.values);}else{if(this.start==0){this.$w.find('.result').toggle(false);this.$w.find('.no-result').toggle(true);}}
-if(this.onrun)this.onrun();if(this.callback)this.callback(r);},render_list:function(values){var m=Math.min(values.length,this.page_length);for(var i=0;i<m;i++){this.render_row(this.add_row(),values[i],this,i);}},update_paging:function(values){if(values.length>=this.page_length){this.$w.find('.btn-more').toggle(true);this.start+=this.page_length;}},add_row:function(){return $('<div class="list-row">').appendTo(this.$w.find('.result-list')).get(0);},refresh:function(){this.run();},add_limits:function(query){query+=' LIMIT '+this.start+','+(this.page_length+1);return query}});
-/*
- *	lib/js/wn/ui/filters.js
- */
-wn.ui.FilterList=Class.extend({init:function(opts){$.extend(this,opts);this.filters=[];this.$w=this.$parent;this.set_events();},set_events:function(){var me=this;this.$w.find('.add-filter-btn').bind('click',function(){me.add_filter();});this.$w.find('.search-btn').bind('click',function(){me.listobj.run();});},show_filters:function(){this.$w.find('.show_filters').toggle();if(!this.filters.length)
-this.add_filter();},add_filter:function(fieldname,condition,value){this.push_new_filter(fieldname,condition,value);if(fieldname){this.$w.find('.show_filters').toggle(true);}},push_new_filter:function(fieldname,condition,value){this.filters.push(new wn.ui.Filter({flist:this,fieldname:fieldname,condition:condition,value:value}));},get_filters:function(){var values=[];$.each(this.filters,function(i,f){if(f.field)
-values.push(f.get_value());})
-return values;},update_filters:function(){var fl=[];$.each(this.filters,function(i,f){if(f.field)fl.push(f);})
-this.filters=fl;},get_filter:function(fieldname){for(var i in this.filters){if(this.filters[i].field.docfield.fieldname==fieldname)
-return this.filters[i];}}});wn.ui.Filter=Class.extend({init:function(opts){$.extend(this,opts);this.doctype=this.flist.doctype;this.make();this.make_select();this.set_events();},make:function(){this.flist.$w.find('.filter_area').append('<div class="list_filter">\
-  <span class="fieldname_select_area"></span>\
-  <select class="condition">\
-   <option value="=">Equals</option>\
-   <option value="like">Like</option>\
-   <option value=">=">Greater or equals</option>\
-   <option value="<=">Less or equals</option>\
-   <option value=">">Greater than</option>\
-   <option value="<">Less than</option>\
-   <option value="in">In</option>\
-   <option value="!=">Not equals</option>\
-  </select>\
-  <span class="filter_field"></span>\
-  <a class="close">&times;</a>\
-  </div>');this.$w=this.flist.$w.find('.list_filter:last-child');},make_select:function(){this.fieldselect=new wn.ui.FieldSelect(this.$w.find('.fieldname_select_area'),this.doctype,this.filter_fields);},set_events:function(){var me=this;this.fieldselect.$select.bind('change',function(){me.set_field(this.value);});this.$w.find('a.close').bind('click',function(){me.$w.css('display','none');var value=me.field.get_value();me.field=null;if(!me.flist.get_filters().length){me.flist.$w.find('.set_filters').toggle(true);me.flist.$w.find('.show_filters').toggle(false);}
-if(value){me.flist.listobj.run();}
-me.flist.update_filters();return false;});me.$w.find('.condition').change(function(){if($(this).val()=='in'){me.set_field(me.field.docfield.fieldname,'Data');if(!me.field.desc_area)
-me.field.desc_area=$a(me.field.wrapper,'span','help',null,'values separated by comma');}else{me.set_field(me.field.docfield.fieldname);}});if(me.fieldname){this.set_values(me.fieldname,me.condition,me.value);}else{me.set_field('name');}},set_values:function(fieldname,condition,value){this.set_field(fieldname);if(condition)this.$w.find('.condition').val(condition).change();if(value)this.field.set_input(value)},set_field:function(fieldname,fieldtype){var me=this;var cur=me.field?{fieldname:me.field.docfield.fieldname,fieldtype:me.field.docfield.fieldtype}:{}
-var df=me.fieldselect.fields_by_name[fieldname];this.set_fieldtype(df,fieldtype);if(me.field&&cur.fieldname==fieldname&&df.fieldtype==cur.fieldtype){return;}
-me.fieldselect.$select.val(fieldname);var field_area=me.$w.find('.filter_field').empty().get(0);me.field=wn.ui.make_control({docfield:df,parent:field_area});me.field.as_inline();me.field.hide_label();this.set_default_condition(df,fieldtype);$(me.field.wrapper).find(':input').keydown(function(ev){if(ev.which==13){me.flist.listobj.run();}})},set_fieldtype:function(df,fieldtype){if(df.original_type)
-df.fieldtype=df.original_type;else
-df.original_type=df.fieldtype;df.description='';df.reqd=0;if(fieldtype){df.fieldtype=fieldtype;return;}
-if(df.fieldtype=='Check'){df.fieldtype='Select';df.options='No\nYes';}else if(['Text','Text Editor','Code','Link'].indexOf(df.fieldtype)!=-1){df.fieldtype='Data';}},set_default_condition:function(df,fieldtype){if(!fieldtype){if(df.fieldtype=='Data'){this.$w.find('.condition').val('like');}else{this.$w.find('.condition').val('=');}}},get_value:function(){var me=this;var val=me.field.get_value();var cond=me.$w.find('.condition').val();if(me.field.docfield.original_type=='Check'){val=(val=='Yes'?1:0);}
-if(cond=='like'){val=val+'%';}
-return[me.fieldselect.$select.find('option:selected').attr('table'),me.field.docfield.fieldname,me.$w.find('.condition').val(),cstr(val)];}});wn.ui.FieldSelect=Class.extend({init:function(parent,doctype,filter_fields,with_blank){this.doctype=doctype;this.fields_by_name={};this.with_blank=with_blank;this.$select=$('<select>').appendTo(parent);if(filter_fields){for(var i in filter_fields)
-this.add_field_option(this.filter_fields[i])}else{this.build_options();}},build_options:function(){var me=this;me.table_fields=[];var std_filters=[{fieldname:'name',fieldtype:'Data',label:'ID',parent:me.doctype},{fieldname:'modified',fieldtype:'Date',label:'Last Modified',parent:me.doctype},{fieldname:'owner',fieldtype:'Data',label:'Created By',parent:me.doctype},{fieldname:'creation',fieldtype:'Date',label:'Created On',parent:me.doctype},{fieldname:'_user_tags',fieldtype:'Data',label:'Tags',parent:me.doctype},{fieldname:'docstatus',fieldtype:'Int',label:'Doc Status',parent:me.doctype},];var doctype_obj=locals['DocType'][me.doctype];if(doctype_obj&&cint(doctype_obj.istable)){std_filters=std_filters.concat([{fieldname:'parent',fieldtype:'Data',label:'Parent',parent:me.doctype}]);}
-if(this.with_blank){this.$select.append($('<option>',{value:''}).text(''));}
-$.each(std_filters.concat(wn.model.get('DocType',me.doctype).get('DocField')),function(i,df){me.add_field_option(df);});$.each(me.table_fields,function(i,table_df){if(table_df.options){$.each(wn.model.get('DocType',me.doctype).get('DocField'),function(i,df){me.add_field_option(df);});}});},add_field_option:function(df){var me=this;if(me.doctype&&df.parent==me.doctype){var label=df.label;var table=me.doctype;if(df.fieldtype=='Table')me.table_fields.push(df);}else{var label=df.label+' ('+df.parent+')';var table=df.parent;}
-if(wn.model.no_value_type.indexOf(df.fieldtype)==-1&&!(me.fields_by_name[df.fieldname]&&me.fields_by_name[df.fieldname]['parent']==df.parent)){this.$select.append($('<option>',{value:df.fieldname,table:table}).text(label));me.fields_by_name[df.fieldname]=df;}}})
-/*
  *	lib/js/wn/request.js
  */
 wn.provide('wn.request');wn.request.url='server.py';wn.request.prepare=function(opts){if(opts.btn)$(opts.btn).set_working();if(opts.show_spinner)set_loading();if(opts.freeze)freeze();if(!opts.args.cmd){console.log(opts)
@@ -286,10 +192,16 @@ if(opts.module&&opts.page){args.cmd=opts.module+'.page.'+opts.page+'.'+opts.page
 for(key in args){if(args[key]&&typeof args[key]!='string'){args[key]=JSON.stringify(args[key]);}}
 wn.request.call({args:args,success:opts.callback,error:opts.error,btn:opts.btn,freeze:opts.freeze,show_spinner:!opts.no_spinner});}
 /*
- *	lib/js/core.js
+ *	lib/js/wn/app.js
  */
-if(!console){var console={log:function(txt){}}}
-$(document).ready(function(){wn.versions.check();wn.provide('wn.app');$.extend(wn.app,new wn.Application());});
+wn.provide('wn.views');wn.provide('wn.contents');if(!console){var console={log:function(txt){}}}
+$(document).ready(function(){wn.versions.check();wn.provide('wn.app');$.extend(wn.app,new wn.Application());});wn.Application=Class.extend({init:function(){var me=this;if(window.app){wn.call({method:'startup',callback:function(r,rt){wn.provide('wn.boot');wn.boot=r;if(wn.boot.profile.name=='Guest'){window.location='index.html';return;}
+me.startup();}})}else{this.startup();}},startup:function(){this.load_bootinfo();this.make_page_container();this.make_nav_bar();this.set_favicon();$(document).trigger('startup');if(wn.boot){wn.route();}
+$(document).trigger('app_ready');},load_bootinfo:function(){if(wn.boot){wn.model.sync(wn.boot.docs);wn.control_panel=wn.boot.control_panel;this.set_globals();}else{this.set_as_guest();}},set_globals:function(){profile=wn.boot.profile;user=wn.boot.profile.name;user_fullname=wn.user_info(user).fullname;user_defaults=profile.defaults;user_roles=profile.roles;user_email=profile.email;sys_defaults=wn.boot.sysdefaults;},set_as_guest:function(){profile={name:'Guest'};user='Guest';user_fullname='Guest';user_defaults={};user_roles=['Guest'];user_email='';sys_defaults={};},make_page_container:function(){wn.container=new wn.views.Container();wn.views.make_403();wn.views.make_404();},make_nav_bar:function(){if(wn.boot){wn.container.wntoolbar=new wn.ui.toolbar.Toolbar();}},logout:function(){var me=this;me.logged_out=true;wn.call({method:'logout',callback:function(r){if(r.exc){console.log(r.exc);}
+me.redirect_to_login();}})},redirect_to_login:function(){window.location.href='index.html';},set_favicon:function(){var link=$('link[type="image/x-icon"]').remove().attr("href");var favicon='\
+   <link rel="shortcut icon" href="'+link+'" type="image/x-icon"> \
+   <link rel="icon" href="'+link+'" type="image/x-icon">'
+$(favicon).appendTo('head');}})
 
 /*
  *	lib/js/legacy/globals.js
@@ -524,18 +436,257 @@ crumb.appendTo(this.$breadcrumbs);},clear_breadcrumbs:function(){this.$breadcrum
   </div>');}
 opts.parent.appframe=new wn.ui.AppFrame($(opts.parent).find('.layout-appframe'));if(opts.title)opts.parent.appframe.title(opts.title);}
 /*
- *	lib/js/wn/ui/dialog.js
- */
-wn.ui.Dialog=Class.extend({init:function(opts){$.extend(this,opts);this.display=false;if(!this.width)this.width=640;if(!$('#dialog-container').length){$('<div id="dialog-container">').appendTo('body');}
-this.wrapper=$('<div class="dialog_wrapper">').appendTo('#dialog-container').get(0);this.wrapper.style.width=this.width+'px';this.make_head();this.body=$('<div class="dialog_body">').appendTo(this.wrapper).get(0);},make_head:function(){var me=this;this.appframe=new wn.ui.AppFrame(this.wrapper);this.appframe.$titlebar.find('.close').unbind('click').click(function(){if(me.oncancel)me.oncancel();me.hide();});this.set_title(this.title);},set_title:function(t){this.appframe.$titlebar.find('.appframe-title').html(t||'');},set_postion:function(){this.wrapper.style.left=(($(window).width()-parseInt(this.wrapper.style.width))/2)+'px';this.wrapper.style.top=($(window).scrollTop()+60)+'px';top_index++;$(this.wrapper).css('z-index',top_index);},show:function(){if(this.display)return;this.set_postion()
-$(this.wrapper).toggle(true);freeze();this.display=true;wn.ui.cur_dialog=this;if(this.onshow)this.onshow();},hide:function(){if(this.onhide)this.onhide();unfreeze();$(this.wrapper).toggle(false);this.display=false;wn.ui.cur_dialog=null;},no_cancel:function(){this.appframe.$titlebar.find('.close').toggle(false);}});wn.ui.cur_dialog=null;$(document).bind('keydown',function(e){if(wn.ui.cur_dialog&&!wn.ui.cur_dialog.no_cancel_flag&&e.which==27){wn.ui.cur_dialog.hide();}});
-/*
  *	lib/js/wn/ui/button.js
  */
 wn.ui.Button=function(args){var me=this;$.extend(this,{make:function(){me.btn=wn.dom.add(args.parent,'button','btn btn-small '+(args.css_class||''));me.btn.args=args;me.loading_img=wn.dom.add(me.btn.args.parent,'img','',{margin:'0px 4px -2px 4px',display:'none'});me.loading_img.src='images/lib/ui/button-load.gif';me.btn.innerHTML=args.label;me.btn.user_onclick=args.onclick;$(me.btn).bind('click',function(){if(!this.disabled&&this.user_onclick)
 this.user_onclick(this);})
 me.btn.set_working=me.set_working;me.btn.done_working=me.done_working;if(me.btn.args.style)
 wn.dom.css(me.btn,args.style);},set_working:function(){me.btn.disabled='disabled';$(me.loading_img).css('display','inline');},done_working:function(){me.btn.disabled=false;$(me.loading_img).toggle(false);}});this.make();}
+/*
+ *	lib/js/wn/ui/dialog.js
+ */
+wn.ui.Dialog=Class.extend({init:function(opts){$.extend(this,opts);this.display=false;if(!this.width)this.width=640;if(!$('#dialog-container').length){$('<div id="dialog-container">').appendTo('body');}
+this.wrapper=$('<div class="dialog_wrapper">').appendTo('#dialog-container').get(0);this.wrapper.style.width=this.width+'px';this.make_head();this.body=$('<div class="dialog_body">').appendTo(this.wrapper).get(0);},make_head:function(){var me=this;this.appframe=new wn.ui.AppFrame(this.wrapper);this.appframe.$titlebar.find('.close').unbind('click').click(function(){if(me.oncancel)me.oncancel();me.hide();});this.set_title(this.title);},set_title:function(t){this.appframe.$titlebar.find('.appframe-title').html(t||'');},set_postion:function(){this.wrapper.style.left=(($(window).width()-parseInt(this.wrapper.style.width))/2)+'px';this.wrapper.style.top=($(window).scrollTop()+60)+'px';top_index++;$(this.wrapper).css('z-index',top_index);},show:function(){if(this.display)return;this.set_postion()
+$(this.wrapper).toggle(true);freeze();this.display=true;wn.ui.cur_dialog=this;if(this.onshow)this.onshow();},hide:function(){if(this.onhide)this.onhide();unfreeze();$(this.wrapper).toggle(false);this.display=false;wn.ui.cur_dialog=null;},no_cancel:function(){this.appframe.$titlebar.find('.close').toggle(false);}});wn.ui.cur_dialog=null;$(document).bind('keydown',function(e){if(wn.ui.cur_dialog&&!wn.ui.cur_dialog.no_cancel_flag&&e.which==27){wn.ui.cur_dialog.hide();}});
+/*
+ *	lib/js/wn/ui/filters.js
+ */
+wn.ui.FilterList=Class.extend({init:function(opts){$.extend(this,opts);this.filters=[];this.$w=this.$parent;this.set_events();},set_events:function(){var me=this;this.$w.find('.add-filter-btn').bind('click',function(){me.add_filter();});this.$w.find('.search-btn').bind('click',function(){me.listobj.run();});},show_filters:function(){this.$w.find('.show_filters').toggle();if(!this.filters.length)
+this.add_filter();},add_filter:function(fieldname,condition,value){this.push_new_filter(fieldname,condition,value);if(fieldname){this.$w.find('.show_filters').toggle(true);}},push_new_filter:function(fieldname,condition,value){this.filters.push(new wn.ui.Filter({flist:this,fieldname:fieldname,condition:condition,value:value}));},get_filters:function(){var values=[];$.each(this.filters,function(i,f){if(f.field)
+values.push(f.get_value());})
+return values;},update_filters:function(){var fl=[];$.each(this.filters,function(i,f){if(f.field)fl.push(f);})
+this.filters=fl;},get_filter:function(fieldname){for(var i in this.filters){if(this.filters[i].field.docfield.fieldname==fieldname)
+return this.filters[i];}}});wn.ui.Filter=Class.extend({init:function(opts){$.extend(this,opts);this.doctype=this.flist.doctype;this.make();this.make_select();this.set_events();},make:function(){this.flist.$w.find('.filter_area').append('<div class="list_filter">\
+  <span class="fieldname_select_area"></span>\
+  <select class="condition">\
+   <option value="=">Equals</option>\
+   <option value="like">Like</option>\
+   <option value=">=">Greater or equals</option>\
+   <option value="<=">Less or equals</option>\
+   <option value=">">Greater than</option>\
+   <option value="<">Less than</option>\
+   <option value="in">In</option>\
+   <option value="!=">Not equals</option>\
+  </select>\
+  <span class="filter_field"></span>\
+  <a class="close">&times;</a>\
+  </div>');this.$w=this.flist.$w.find('.list_filter:last-child');},make_select:function(){this.fieldselect=new wn.ui.FieldSelect(this.$w.find('.fieldname_select_area'),this.doctype,this.filter_fields);},set_events:function(){var me=this;this.fieldselect.$select.bind('change',function(){me.set_field(this.value);});this.$w.find('a.close').bind('click',function(){me.$w.css('display','none');var value=me.field.get_value();me.field=null;if(!me.flist.get_filters().length){me.flist.$w.find('.set_filters').toggle(true);me.flist.$w.find('.show_filters').toggle(false);}
+if(value){me.flist.listobj.run();}
+me.flist.update_filters();return false;});me.$w.find('.condition').change(function(){if($(this).val()=='in'){me.set_field(me.field.docfield.fieldname,'Data');if(!me.field.desc_area)
+me.field.desc_area=$a(me.field.wrapper,'span','help',null,'values separated by comma');}else{me.set_field(me.field.docfield.fieldname);}});if(me.fieldname){this.set_values(me.fieldname,me.condition,me.value);}else{me.set_field('name');}},set_values:function(fieldname,condition,value){this.set_field(fieldname);if(condition)this.$w.find('.condition').val(condition).change();if(value)this.field.set_input(value)},set_field:function(fieldname,fieldtype){var me=this;var cur=me.field?{fieldname:me.field.docfield.fieldname,fieldtype:me.field.docfield.fieldtype}:{}
+var df=me.fieldselect.fields_by_name[fieldname];this.set_fieldtype(df,fieldtype);if(me.field&&cur.fieldname==fieldname&&df.fieldtype==cur.fieldtype){return;}
+me.fieldselect.$select.val(fieldname);var field_area=me.$w.find('.filter_field').empty().get(0);me.field=wn.ui.make_control({docfield:df,parent:field_area});me.field.as_inline();me.field.hide_label();this.set_default_condition(df,fieldtype);$(me.field.wrapper).find(':input').keydown(function(ev){if(ev.which==13){me.flist.listobj.run();}})},set_fieldtype:function(df,fieldtype){if(df.original_type)
+df.fieldtype=df.original_type;else
+df.original_type=df.fieldtype;df.description='';df.reqd=0;if(fieldtype){df.fieldtype=fieldtype;return;}
+if(df.fieldtype=='Check'){df.fieldtype='Select';df.options='No\nYes';}else if(['Text','Text Editor','Code','Link'].indexOf(df.fieldtype)!=-1){df.fieldtype='Data';}},set_default_condition:function(df,fieldtype){if(!fieldtype){if(df.fieldtype=='Data'){this.$w.find('.condition').val('like');}else{this.$w.find('.condition').val('=');}}},get_value:function(){var me=this;var val=me.field.get_value();var cond=me.$w.find('.condition').val();if(me.field.docfield.original_type=='Check'){val=(val=='Yes'?1:0);}
+if(cond=='like'){val=val+'%';}
+return[me.fieldselect.$select.find('option:selected').attr('table'),me.field.docfield.fieldname,me.$w.find('.condition').val(),cstr(val)];}});wn.ui.FieldSelect=Class.extend({init:function(parent,doctype,filter_fields,with_blank){this.doctype=doctype;this.fields_by_name={};this.with_blank=with_blank;this.$select=$('<select>').appendTo(parent);if(filter_fields){for(var i in filter_fields)
+this.add_field_option(this.filter_fields[i])}else{this.build_options();}},build_options:function(){var me=this;me.table_fields=[];var std_filters=[{fieldname:'name',fieldtype:'Data',label:'ID',parent:me.doctype},{fieldname:'modified',fieldtype:'Date',label:'Last Modified',parent:me.doctype},{fieldname:'owner',fieldtype:'Data',label:'Created By',parent:me.doctype},{fieldname:'creation',fieldtype:'Date',label:'Created On',parent:me.doctype},{fieldname:'_user_tags',fieldtype:'Data',label:'Tags',parent:me.doctype},{fieldname:'docstatus',fieldtype:'Int',label:'Doc Status',parent:me.doctype},];var doctype_obj=locals['DocType'][me.doctype];if(doctype_obj&&cint(doctype_obj.istable)){std_filters=std_filters.concat([{fieldname:'parent',fieldtype:'Data',label:'Parent',parent:me.doctype}]);}
+if(this.with_blank){this.$select.append($('<option>',{value:''}).text(''));}
+$.each(std_filters.concat(wn.model.get('DocType',me.doctype).get('DocField')),function(i,df){me.add_field_option(df);});$.each(me.table_fields,function(i,table_df){if(table_df.options){$.each(wn.model.get('DocType',me.doctype).get('DocField'),function(i,df){me.add_field_option(df);});}});},add_field_option:function(df){var me=this;if(me.doctype&&df.parent==me.doctype){var label=df.label;var table=me.doctype;if(df.fieldtype=='Table')me.table_fields.push(df);}else{var label=df.label+' ('+df.parent+')';var table=df.parent;}
+if(wn.model.no_value_type.indexOf(df.fieldtype)==-1&&!(me.fields_by_name[df.fieldname]&&me.fields_by_name[df.fieldname]['parent']==df.parent)){this.$select.append($('<option>',{value:df.fieldname,table:table}).text(label));me.fields_by_name[df.fieldname]=df;}}})
+/*
+ *	lib/js/wn/ui/listing.js
+ */
+wn.provide('wn.ui');wn.ui.Listing=Class.extend({init:function(opts){this.opts=opts||{};this.page_length=20;this.start=0;this.data=[];if(opts){this.make();}},prepare_opts:function(){if(this.opts.new_doctype){if(wn.boot.profile.can_read.indexOf(this.opts.new_doctype)==-1){this.opts.new_doctype=null;}else{this.opts.new_doctype=get_doctype_label(this.opts.new_doctype);}}
+if(!this.opts.no_result_message){this.opts.no_result_message='Nothing to show'}},make:function(opts){if(opts){this.opts=opts;}
+this.prepare_opts();$.extend(this,this.opts);$(this.parent).html(repl('\
+   <div class="wnlist">\
+    <h3 class="title hide">%(title)s</h3>\
+    \
+    <div class="list-filters hide">\
+     <div class="show_filters well">\
+      <div class="filter_area"></div>\
+      <div>\
+       <button class="btn btn-small btn-info search-btn">\
+        <i class="icon-refresh icon-white"></i> Search</button>\
+       <button class="btn btn-small add-filter-btn">\
+        <i class="icon-plus"></i> Add Filter</button>\
+      </div>\
+     </div>\
+    </div>\
+    \
+    <div style="margin-bottom:9px" class="list-toolbar-wrapper">\
+     <div class="list-toolbar" style="display:inline-block; margin-right: 10px;">\
+     </div>\
+     <div style="display:inline-block; width: 24px; margin-left: 4px">\
+      <img src="images/lib/ui/button-load.gif" \
+      class="img-load"/></div>\
+    </div><div style="clear:both"></div>\
+    \
+    <div class="no-result help hide">\
+     %(no_result_message)s\
+    </div>\
+    \
+    <div class="result">\
+     <div class="result-list"></div>\
+    </div>\
+    \
+    <div class="paging-button">\
+     <button class="btn btn-small btn-more hide">More...</div>\
+    </div>\
+   </div>\
+  ',this.opts));this.$w=$(this.parent).find('.wnlist');this.set_events();if(this.appframe){this.$w.find('.list-toolbar-wrapper').toggle(false);}
+if(this.show_filters){this.make_filters();}},add_button:function(label,click,icon){if(this.appframe){return this.appframe.add_button(label,click,icon)}else{$button=$('<button class="btn btn-small"></button>').appendTo(this.$w.find('.list-toolbar'))
+if(icon){$('<i>').addClass(icon).appendTo($button);}
+$button.html(label).click(click);return $button}},show_view:function($btn,$div,$btn_unsel,$div_unsel){$btn_unsel.removeClass('btn-info');$btn_unsel.find('i').removeClass('icon-white');$div_unsel.toggle(false);$btn.addClass('btn-info');$btn.find('i').addClass('icon-white');$div.toggle(true);},set_events:function(){var me=this;this.$w.find('.btn-more').click(function(){me.run({append:true});});if(this.title){this.$w.find('h3').html(this.title).toggle(true);}
+if(!(this.hide_refresh||this.no_refresh)){this.add_button('Refresh',function(){me.run();},'icon-refresh');}
+if(this.new_doctype){this.add_button('New '+this.new_doctype,function(){me.make_new_doc(me.new_doctype);},'icon-plus');}
+if(me.show_filters){this.add_button('Show Filters',function(){me.filter_list.show_filters();},'icon-search').addClass('btn-filter');}
+if(me.no_toolbar||me.hide_toolbar){me.$w.find('.list-toolbar-wrapper').toggle(false);}},make_new_doc:function(new_doctype){new_doc(new_doctype);},make_filters:function(){this.filter_list=new wn.ui.FilterList({listobj:this,$parent:this.$w.find('.list-filters').toggle(true),doctype:this.doctype,filter_fields:this.filter_fields});},clear:function(){this.data=[];this.$w.find('.result-list').empty();this.$w.find('.result').toggle(true);this.$w.find('.no-result').toggle(false);this.start=0;},run:function(){var me=this;var a0=arguments[0];var a1=arguments[1];if(a0&&typeof a0=='function')
+this.onrun=a0;if(a0&&a0.callback)
+this.onrun=a0.callback;if(!a1&&!(a0&&a0.append))
+this.start=0;me.set_working(true);wn.call({method:this.opts.method||'webnotes.widgets.query_builder.runquery',args:this.get_call_args(a0),callback:function(r){me.set_working(false);me.render_results(r)},no_spinner:this.opts.no_loading});},set_working:function(flag){this.$w.find('.img-load').toggle(flag);},get_call_args:function(opts){if(!this.method){var query=this.get_query?this.get_query():this.query;query=this.add_limits(query);var args={query_max:this.query_max,as_dict:1}
+args.simple_query=query;}else{var args={limit_start:this.start,limit_page_length:this.page_length}}
+if(this.args)
+$.extend(args,this.args)
+if(this.get_args){$.extend(args,this.get_args(opts));}
+return args;},render_results:function(r){if(this.start==0)this.clear();this.$w.find('.btn-more').toggle(false);if(r.message)r.values=r.message;if(r.values&&r.values.length){this.data=this.data.concat(r.values);this.render_list(r.values);this.update_paging(r.values);}else{if(this.start==0){this.$w.find('.result').toggle(false);this.$w.find('.no-result').toggle(true);}}
+if(this.onrun)this.onrun();if(this.callback)this.callback(r);},render_list:function(values){var m=Math.min(values.length,this.page_length);for(var i=0;i<m;i++){this.render_row(this.add_row(),values[i],this,i);}},update_paging:function(values){if(values.length>=this.page_length){this.$w.find('.btn-more').toggle(true);this.start+=this.page_length;}},add_row:function(){return $('<div class="list-row">').appendTo(this.$w.find('.result-list')).get(0);},refresh:function(){this.run();},add_limits:function(query){query+=' LIMIT '+this.start+','+(this.page_length+1);return query}});
+/*
+ *	lib/js/wn/ui/overlay.js
+ */
+wn.ui.Overlay=function(ele){wn.require('lib/css/ui/overlay.css');var me=this;$.extend(this,{render:function(){me.wrap=wn.dom.add(wn.dom.add(wn.dom.add($('body').get(0),'div','overlay'),'div','wrap-outer'),'div','wrap');me.wrap.appendChild(ele);$('body').addClass('overlaid');},hide:function(){wn.dom.hide(me.wrap);$('body').removeClass('overlaid');}});me.render();}
+/*
+ *	lib/js/wn/ui/search.js
+ */
+wn.ui.Search=Class.extend({init:function(opts){$.extend(this,opts);var me=this;wn.model.with_doctype(this.doctype,function(r){me.make();me.dialog.show();me.list.$w.find('.list-filters input[type="text"]').focus();});},make:function(){var me=this;this.dialog=new wn.ui.Dialog({title:this.doctype+' Search',width:500});if(this.with_filters&&this.with_filters.length){this.msg_area=$('<div class="help-box">\
+    <div><b>Results containing: </b></div>\
+    </div>').appendTo(this.dialog.body);$.each(this.with_filters,function(i,f){var label=wn.model.get('DocType',me.doctype).get({fieldname:f[1],doctype:'DocField'}).label;$('<div>"'+label+'" '+
+f[2]+' "'+f[3]+'"</div>').appendTo(me.msg_area);})}
+this.list=new wn.ui.Listing({parent:$('<div>').appendTo(this.dialog.body),appframe:this.dialog.appframe,new_doctype:this.doctype,doctype:this.doctype,method:'webnotes.widgets.doclistview.get',show_filters:true,style:'compact',get_args:function(){if(me.query){me.page_length=50;return{query:me.query}}else{var filters=me.list.filter_list.get_filters()||[];if(me.with_filters){filters=filters.concat(me.with_filters);}
+me.search_fields=cstr(wn.model.get("DocType",me.doctype).doc.get('search_fields')).split(",");return{doctype:me.doctype,fields:$.map(["name"].concat(me.search_fields),function(v){return"`tab"+me.doctype+"`."+strip(v);}),filters:filters,docstatus:['0','1']}}},render_row:function(parent,data){$(parent).append($(repl("<a style=\"cursor: pointer;\" data-name=\"%(name)s\">%(name)s</a>",data)).click(function(){var val=$(this).attr('data-name');me.dialog.hide();if(me.callback)
+me.callback(val);else
+wn.set_route('Form',me.doctype,val);}));if(me.search_fields){$(parent).append(repl("<div class=\"help small\" style=\"margin-top: 5px;\">%(info)s</div>",{"info":$.map(me.search_fields,function(v){return data[v];}).join(", ")}));}}});this.list.filter_list.add_filter('name','like');if(this.txt)
+this.list.$w.find('.list-filters input[type="text"]').val(this.txt)
+this.list.run();}})
+/*
+ *	lib/js/wn/ui/toolbar.min.js
+ */
+
+/*
+ *	lib/js/wn/ui/toolbar/selector_dialog.js
+ */
+wn.provide('wn.ui.toolbar');wn.ui.toolbar.SelectorDialog=Class.extend({init:function(opts){this.opts=opts;try{this.make_dialog();}catch(e){console.log(e);}
+this.bind_events();},make_dialog:function(){this.dialog=new wn.views.FormDialog({title:this.opts.title,width:480,fields:[{fieldtype:'Select',fieldname:'doctype',options:'Select...',label:'Select Type'},{fieldtype:'Button',label:'Go',fieldname:'go'}]});},bind_events:function(){var me=this;this.dialog.form.controls.go.$input.click(function(){if(!me.dialog.display)return;me.dialog.hide();me.opts.execute(me.dialog.form.controls.doctype.get_value());return false;});this.dialog.form.controls.doctype.$input.change(function(){me.dialog.form.controls.go.$input.click();}).keypress(function(ev){if(ev.which==13){me.dialog.form.controls.go.$input.click();}});},show:function(){this.dialog.show();this.dialog.form.controls.doctype.$input.focus();return false;},set_values:function(lst){var $sel=this.dialog.form.controls.doctype.$input;$sel.empty().add_options(lst.sort());}})
+/*
+ *	lib/js/wn/ui/toolbar/new.js
+ */
+wn.ui.toolbar.NewDialog=wn.ui.toolbar.SelectorDialog.extend({init:function(){this._super({title:"New Record",execute:function(val){new_doc(val);},});this.set_values(profile.can_create.join(',').split(','));}});
+/*
+ *	lib/js/wn/ui/toolbar/search.js
+ */
+wn.ui.toolbar.Search=wn.ui.toolbar.SelectorDialog.extend({init:function(){this._super({title:"Search",execute:function(val){new wn.ui.Search({doctype:val});},});this.set_values(wn.boot.profile.can_search.join(',').split(','));}});
+/*
+ *	lib/js/wn/ui/toolbar/report.js
+ */
+wn.ui.toolbar.Report=wn.ui.toolbar.SelectorDialog.extend({init:function(){this._super({title:"Start Report For",execute:function(val){wn.set_route('Report2',val);},});this.set_values(profile.can_get_report.join(',').split(','));}});
+/*
+ *	lib/js/wn/ui/toolbar/recent.js
+ */
+wn.ui.toolbar.RecentDocs=Class.extend({init:function(){$('.navbar .nav:first').append('<li class="dropdown">\
+   <a class="dropdown-toggle" data-toggle="dropdown" href="#" \
+    onclick="return false;">Recent<b class="caret"></b></a>\
+   <ul class="dropdown-menu" id="toolbar-recent"></ul>\
+  </li>');this.setup();this.bind_events();},bind_events:function(){var me=this;$(document).bind('rename',function(event,dt,old_name,new_name){me.rename_notify(dt,old_name,new_name)});},rename_notify:function(dt,old,name){this.remove(dt,old);this.add(dt,name,1);},add:function(dt,dn,on_top){if(this.istable(dt))return;this.remove(dt,dn);var html=repl('<li data-docref="%(dt)s/%(dn)s">\
+   <a href="#Form/%(dt)s/%(dn)s">\
+    %(dn)s <span style="font-size: 10px">(%(dt)s)</span>\
+   </a></li>',{dt:dt,dn:dn});if(on_top){$('#toolbar-recent').prepend(html);}else{$('#toolbar-recent').append(html);}},istable:function(dt){var dtl=wn.model.get('DocType',dt);return dtl?dtl.doc.get('istable'):false;},remove:function(dt,dn){$(repl('#toolbar-recent li[data-docref="%(dt)s/%(dn)s"]',{dt:dt,dn:dn})).remove();},setup:function(){var rlist=JSON.parse(profile.recent||"[]");var m=rlist.length;if(m>15)m=15;for(var i=0;i<m;i++){var rd=rlist[i]
+if(rd[1]){var dt=rd[0];var dn=rd[1];this.add(dt,dn,0);}}}});
+/*
+ *	lib/js/wn/ui/toolbar/toolbar.js
+ */
+wn.ui.toolbar.Toolbar=Class.extend({init:function(){this.make();this.make_home();this.make_document();wn.ui.toolbar.recent=new wn.ui.toolbar.RecentDocs();this.make_tools();this.set_user_name();this.make_logout();$('.dropdown-toggle').dropdown();$(document).trigger('toolbar_setup');},make:function(){$('header').append('<div class="navbar navbar-fixed-top">\
+   <div class="navbar-inner">\
+   <div class="container">\
+    <a class="brand"></a>\
+    <ul class="nav">\
+    </ul>\
+    <img src="images/lib/ui/spinner.gif" id="spinner"/>\
+    <ul class="nav pull-right">\
+     <li class="dropdown">\
+      <a class="dropdown-toggle" data-toggle="dropdown" href="#" \
+       onclick="return false;" id="toolbar-user-link"></a>\
+      <ul class="dropdown-menu" id="toolbar-user">\
+      </ul>\
+     </li>\
+    </ul>\
+   </div>\
+   </div>\
+   </div>');},make_home:function(){$('.navbar .brand').attr('href',"#");},make_document:function(){wn.ui.toolbar.new_dialog=new wn.ui.toolbar.NewDialog();wn.ui.toolbar.search=new wn.ui.toolbar.Search();wn.ui.toolbar.report=new wn.ui.toolbar.Report();$('.navbar .nav:first').append('<li class="dropdown">\
+   <a class="dropdown-toggle" href="#"  data-toggle="dropdown"\
+    onclick="return false;">Document<b class="caret"></b></a>\
+   <ul class="dropdown-menu" id="toolbar-document">\
+    <li><a href="#" onclick="return wn.ui.toolbar.new_dialog.show();">\
+     <i class="icon-plus"></i> New</a></li>\
+    <li><a href="#" onclick="return wn.ui.toolbar.search.show();">\
+     <i class="icon-search"></i> Search</a></li>\
+    <li><a href="#" onclick="return wn.ui.toolbar.report.show();">\
+     <i class="icon-list"></i> Report</a></li>\
+   </ul>\
+  </li>');},make_tools:function(){$('.navbar .nav:first').append('<li class="dropdown">\
+   <a class="dropdown-toggle" data-toggle="dropdown" href="#" \
+    onclick="return false;">Tools<b class="caret"></b></a>\
+   <ul class="dropdown-menu" id="toolbar-tools">\
+    <li><a href="#" onclick="return wn.ui.toolbar.clear_cache();">Clear Cache & Refresh</a></li>\
+    <li><a href="#" onclick="return wn.ui.toolbar.show_about();">About</a></li>\
+   </ul>\
+  </li>');if(has_common(user_roles,['Administrator','System Manager'])){$('#toolbar-tools').append('<li><a href="#" \
+    onclick="return wn.ui.toolbar.download_backup();">\
+    Download Backup</a></li>');}},set_user_name:function(){var fn=user_fullname;if(fn.length>15)fn=fn.substr(0,12)+'...';$('#toolbar-user-link').html(fn+'<b class="caret"></b>');},make_logout:function(){$('#toolbar-user').append('<li><a href="#" onclick="return wn.app.logout();">Logout</a></li>');}});wn.ui.toolbar.clear_cache=function(){localStorage&&localStorage.clear();$c('webnotes.session_cache.clear',{},function(r,rt){if(!r.exc){show_alert(r.message);location.reload();}});return false;}
+wn.ui.toolbar.download_backup=function(){$c('webnotes.utils.backups.get_backup',{},function(r,rt){});return false;}
+wn.ui.toolbar.show_about=function(){try{wn.ui.misc.about();}catch(e){console.log(e);}
+return false;}
+
+/*
+ *	lib/js/wn/ui/tree.js
+ */
+wn.ui.Tree=Class.extend({init:function(args){$.extend(this,args);this.nodes={};this.$w=$('<div class="tree">').appendTo(this.parent);this.rootnode=new wn.ui.TreeNode({tree:this,parent:this.$w,label:this.label,expandable:true});this.set_style();},set_style:function(){wn.dom.set_style("\
+   .tree li { list-style: none; }\
+   .tree ul { margin-top: 2px; }\
+   .tree-link { cursor: pointer; }\
+  ")}})
+wn.ui.TreeNode=Class.extend({init:function(args){var me=this;$.extend(this,args);this.loaded=false;this.expanded=false;this.tree.nodes[this.label]=this;this.$a=$('<a class="tree-link">').click(function(){if(me.expandable&&me.tree.method&&!me.loaded){me.load()}else{me.selectnode();}
+if(me.tree.click)me.tree.click(this);}).bind('reload',function(){me.reload();}).data('label',this.label).appendTo(this.parent);if(this.expandable){this.$a.append('<i class="icon-folder-close"></i> '+this.label);}else{this.$a.append('<i class="icon-file"></i> '+this.label);}
+if(this.tree.onrender){this.tree.onrender(this);}},selectnode:function(){if(this.$ul){this.$ul.toggle();this.$a.find('i').removeClass();if(this.$ul.css('display').toLowerCase()=='block'){this.$a.find('i').addClass('icon-folder-open');}else{this.$a.find('i').addClass('icon-folder-close');}}
+this.tree.$w.find('a.selected').removeClass('selected');this.$a.toggleClass('selected');this.expanded=!this.expanded;},reload:function(){if(this.expanded){this.$a.click();}
+if(this.$ul){this.$ul.empty();}
+this.load();},addnode:function(data){if(!this.$ul){this.$ul=$('<ul>').toggle(false).appendTo(this.parent);}
+return new wn.ui.TreeNode({tree:this.tree,parent:$('<li>').appendTo(this.$ul),label:data.value,expandable:data.expandable,data:data});},load:function(){var me=this;args=$.extend(this.tree.args,{parent:this.label});$(me.$a).set_working();wn.call({method:this.tree.method,args:args,callback:function(r){$(me.$a).done_working();$.each(r.message,function(i,v){node=me.addnode(v);node.$a.data('node-data',v);});me.loaded=true;me.selectnode();}})}})
+/*
+ *	lib/js/wn/views/container.js
+ */
+wn.views.Container=Class.extend({init:function(){this.container=$('#body_div').get(0);this.page=null;this.pagewidth=$('#body_div').width();this.pagemargin=50;},add_page:function(label,onshow,onhide){var page=$('<div class="content"></div>').attr('id',"page-"+label).appendTo(this.container).get(0);if(onshow)
+$(page).bind('show',onshow);if(onshow)
+$(page).bind('hide',onhide);page.label=label;wn.contents[label]=page;return page;},change_to:function(label){if(this.page&&this.page.label==label){return;}
+var me=this;if(label.tagName){var page=label;}else{var page=wn.contents[label];}
+if(!page){console.log('Page not found '+label);return;}
+if(this.page){$(this.page).toggle(false);$(this.page).trigger('hide');}
+this.page=page;$(this.page).fadeIn();$(this.page).trigger('show');this.page._route=window.location.hash;document.title=this.page.label;scroll(0,0);return this.page;}});wn.views.add_module_btn=function(parent,module){$(parent).append(repl('<span class="label" style="margin-right: 8px; cursor: pointer;"\
+     onclick="wn.set_route(\'%(module_small)s-home\')">\
+     <i class="icon-home icon-white"></i> %(module)s Home\
+    </span>',{module:module,module_small:module.toLowerCase()}));}
+wn.views.add_list_btn=function(parent,doctype){$(parent).append(repl('<span class="label" style="margin-right: 8px; cursor: pointer;"\
+     onclick="wn.set_route(\'List\', \'%(doctype)s\')">\
+     <i class="icon-list icon-white"></i> %(doctype)s List\
+    </span>',{doctype:doctype}));}
+/*
+ *	lib/js/wn/views/pageview.js
+ */
+wn.provide('wn.views.pageview');wn.provide('wn.pages');wn.views.pageview={with_page:function(name,callback){if(!wn.model.has('Page',name)){wn.call({method:'webnotes.widgets.page.getpage',args:{'name':name},callback:function(r){wn.model.sync(r.docs);callback();}});}else{callback();}},show:function(name){if(!name)
+name=(wn.boot?wn.boot.home_page:window.page_name);wn.views.pageview.with_page(name,function(r){if(r&&r.exc){if(!r['403'])wn.container.change_to('404');}else if(!wn.pages[name]){new wn.views.Page(name);}
+wn.container.change_to(name);});}}
+wn.views.Page=Class.extend({init:function(name,wrapper){this.name=name;var me=this;wn.pages[name]=this;if(name==window.page_name){this.wrapper=$('#page-'+name).get(0);this.wrapper.label=document.title||window.page_name;this.wrapper.page_name=window.page_name;wn.contents[window.page_name]=this.wrapper;}else{this.pagedoc=wn.model.get('Page',this.name).doc;this.wrapper=wn.container.add_page(this.name);this.wrapper.label=this.pagedoc.get('title')||this.pagedoc.get('name');this.wrapper.page_name=this.pagedoc.get('name');this.wrapper.innerHTML=this.pagedoc.get('content');wn.dom.eval(this.pagedoc.get('script',''));wn.dom.set_style(this.pagedoc.get('style',''));this.trigger('load',this.wrapper);}
+$(this.wrapper).bind('show',function(){cur_frm=null;me.trigger('show',this.wrapper);me.trigger('refresh',this.wrapper);});}})
+wn.views.make_404=function(){var page=wn.container.add_page('404');$(page).html('<div class="layout-wrapper">\
+  <h1>Not Found</h1><br>\
+  <p>Sorry we were unable to find what you were looking for.</p>\
+  <p><a href="#">Go back to home</a></p>\
+  </div>').toggle(false);};wn.views.make_403=function(){var page=wn.container.add_page('403');$(page).html('<div class="layout-wrapper">\
+  <h1>Not Permitted</h1><br>\
+  <p>Sorry you are not permitted to view this page.</p>\
+  <p><a href="#">Go back to home</a></p>\
+  </div>').toggle(false);};
 /*
  *	lib/js/legacy/webpage/page_header.js
  */
@@ -648,16 +799,6 @@ if(f.df.hidden){msgprint('Oops, field "'+f.df.label+'" is both hidden and mandat
 if(all_clear)all_clear=false;}}
 if(errfld.length)msgprint('<b>Mandatory fields required in '+
 (doc.parenttype?(wn.meta.docfield_map[doc.parenttype][doc.parentfield].label+' (Table)'):doc.doctype)+':</b>\n'+errfld.join('\n'));return all_clear;}
-/*
- *	lib/js/wn/app.js
- */
-wn.Application=Class.extend({init:function(){var me=this;if(window.app){wn.call({method:'startup',callback:function(r,rt){wn.provide('wn.boot');wn.boot=r;if(wn.boot.profile.name=='Guest'){window.location='index.html';return;}
-me.startup();}})}else{this.startup();}},startup:function(){this.load_bootinfo();this.make_page_container();this.make_nav_bar();this.set_favicon();$(document).trigger('startup');if(wn.boot){wn.route();}
-$(document).trigger('app_ready');},load_bootinfo:function(){if(wn.boot){wn.model.sync(wn.boot.docs);wn.control_panel=wn.boot.control_panel;this.set_globals();}else{this.set_as_guest();}},set_globals:function(){profile=wn.boot.profile;user=wn.boot.profile.name;user_fullname=wn.user_info(user).fullname;user_defaults=profile.defaults;user_roles=profile.roles;user_email=profile.email;sys_defaults=wn.boot.sysdefaults;},set_as_guest:function(){profile={name:'Guest'};user='Guest';user_fullname='Guest';user_defaults={};user_roles=['Guest'];user_email='';sys_defaults={};},make_page_container:function(){wn.container=new wn.views.Container();wn.views.make_403();wn.views.make_404();},make_nav_bar:function(){if(wn.boot){wn.container.wntoolbar=new wn.ui.toolbar.Toolbar();}},logout:function(){var me=this;me.logged_out=true;wn.call({method:'logout',callback:function(r){if(r.exc){console.log(r.exc);}
-me.redirect_to_login();}})},redirect_to_login:function(){window.location.href='index.html';},set_favicon:function(){var link=$('link[type="image/x-icon"]').remove().attr("href");var favicon='\
-   <link rel="shortcut icon" href="'+link+'" type="image/x-icon"> \
-   <link rel="icon" href="'+link+'" type="image/x-icon">'
-$(favicon).appendTo('head');}})
 /*
  *	erpnext/startup/startup.js
  */

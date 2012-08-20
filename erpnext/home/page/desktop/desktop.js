@@ -133,7 +133,6 @@ erpnext.desktop.show_pending_notifications = function() {
 }
 
 wn.pages.desktop.on('load', function() {
-	console.log(1)
 	// load desktop
 	erpnext.desktop.refresh();	
 })

@@ -134,7 +134,7 @@ erpnext.blog.add_comment = function(wrapper) {
 
 	if(!args) return;
 	
-	args.comment_doctype = 'Blog';
+	args.parenttype = 'Blog';
 	args.comment_docname = '{{ name }}';
 	args.page_name = '{{ page_name }}';
 	

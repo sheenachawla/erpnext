@@ -27,21 +27,21 @@ def get_list(arg=None):
 	if webnotes.form['contact'] == webnotes.session['user']:
 		# set all messages as read
 		webnotes.conn.sql("""UPDATE `tabComment`
-		set docstatus = 1 where comment_doctype in ('My Company', 'Message')
-		and comment_docname = %s
+		set docstatus = 1 where parenttype in ('My Company', 'Message')
+		and parent = %s
 		""", webnotes.user.name)
 				
 		# return messages
 		return webnotes.conn.sql("""select * from `tabComment` 
-		where (owner=%(contact)s or comment_docname=%(user)s)
-		and comment_doctype in ('My Company', 'Message')
+		where (owner=%(contact)s or parent=%(user)s)
+		and parenttype in ('My Company', 'Message')
 		order by creation desc
 		limit %(limit_start)s, %(limit_page_length)s""", webnotes.form, as_dict=1)		
 	else:
 		return webnotes.conn.sql("""select * from `tabComment` 
-		where (owner=%(contact)s and comment_docname=%(user)s)
-		or (owner=%(user)s and comment_docname=%(contact)s)
-		and comment_doctype in ('My Company', 'Message')
+		where (owner=%(contact)s and parent=%(user)s)
+		or (owner=%(user)s and parent=%(contact)s)
+		and parenttype in ('My Company', 'Message')
 		order by creation desc
 		limit %(limit_start)s, %(limit_page_length)s""", webnotes.form, as_dict=1)
 		
@@ -67,8 +67,8 @@ def post(arg=None):
 	from webnotes.model.doc import Document
 	d = Document('Comment')
 	d.comment = arg['txt']
-	d.comment_docname = arg['contact']
-	d.comment_doctype = 'Message'
+	d.parent = arg['contact']
+	d.parenttype = 'Message'
 	d.save()
 
 	import webnotes.utils
