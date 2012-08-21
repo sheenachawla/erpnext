@@ -1,0 +1,210 @@
+# DocType, Party
+[
+
+	# These values are common in all dictionaries
+	{
+		u'creation': '2012-08-20 18:28:34',
+		u'docstatus': 0,
+		u'modified': '2012-08-20 19:35:50',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
+	},
+
+	# These values are common for all DocType
+	{
+		'autoname': u'Prompt',
+		'doctype': u'DocType',
+		'document_type': u'Master',
+		'module': u'Accounts',
+		u'name': u'__common__',
+		'search_fields': u'party_type, party_group'
+	},
+
+	# These values are common for all DocField
+	{
+		'doctype': u'DocField',
+		u'name': u'__common__',
+		'parent': u'Party',
+		'parentfield': u'fields',
+		'parenttype': u'DocType',
+		'permlevel': 0
+	},
+
+	# These values are common for all DocPerm
+	{
+		'doctype': u'DocPerm',
+		u'name': u'__common__',
+		'parent': u'Party',
+		'parentfield': u'permissions',
+		'parenttype': u'DocType'
+	},
+
+	# DocType, Party
+	{
+		u'doctype': u'DocType',
+		'name': u'Party'
+	},
+
+	# DocField
+	{
+		u'doctype': u'DocField',
+		'fieldname': u'party_type',
+		'fieldtype': u'Select',
+		'label': u'Party Type',
+		'options': u'\nCustomer\nSupplier\nEmployee',
+		'reqd': 0
+	},
+
+	# DocField
+	{
+		u'doctype': u'DocField',
+		'fieldname': u'party_group',
+		'fieldtype': u'Link',
+		'label': u'Party Group',
+		'options': u'Party Group',
+		'reqd': 0
+	},
+
+	# DocField
+	{
+		u'doctype': u'DocField',
+		'fieldname': u'territory',
+		'fieldtype': u'Link',
+		'label': u'Territory',
+		'options': u'Territory'
+	},
+
+	# DocField
+	{
+		u'doctype': u'DocField',
+		'fieldname': u'default_price_list',
+		'fieldtype': u'Link',
+		'label': u'Default Price List',
+		'options': u'Price List'
+	},
+
+	# DocField
+	{
+		u'doctype': u'DocField',
+		'fieldname': u'default_currency',
+		'fieldtype': u'Link',
+		'label': u'Default Currency',
+		'options': u'Currency'
+	},
+
+	# DocField
+	{
+		u'doctype': u'DocField',
+		'fieldname': u'default_terms_and_conditions',
+		'fieldtype': u'Link',
+		'label': u'Default Terms and Conditions',
+		'options': u'Terms and Conditions'
+	},
+
+	# DocField
+	{
+		u'doctype': u'DocField',
+		'fieldname': u'credit_limit',
+		'fieldtype': u'Currency',
+		'label': u'Credit Limit'
+	},
+
+	# DocField
+	{
+		'depends_on': u"eval:doc.party_type=='Customer'",
+		u'doctype': u'DocField',
+		'fieldname': u'credit_days',
+		'fieldtype': u'Currency',
+		'label': u'Credit Days'
+	},
+
+	# DocField
+	{
+		'depends_on': u"eval:doc.party_type=='Customer'",
+		u'doctype': u'DocField',
+		'fieldname': u'lead_id',
+		'fieldtype': u'Link',
+		'label': u'Lead Id',
+		'options': u'Lead'
+	},
+
+	# DocPerm
+	{
+		'cancel': 0,
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'read': 0,
+		'role': u'System Manager',
+		'write': 0
+	},
+
+	# DocPerm
+	{
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'read': 0,
+		'role': u'Sales Master Manager',
+		'write': 0
+	},
+
+	# DocPerm
+	{
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'read': 0,
+		'role': u'Purchase Master Manager',
+		'write': 0
+	},
+
+	# DocPerm
+	{
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'read': 0,
+		'role': u'Accounts User',
+		'write': 0
+	},
+
+	# DocPerm
+	{
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'read': 0,
+		'role': u'Accounts Manager',
+		'write': 0
+	},
+
+	# DocPerm
+	{
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'read': 0,
+		'role': u'HR User',
+		'write': 0
+	},
+
+	# DocPerm
+	{
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'read': 0,
+		'role': u'HR Manager',
+		'write': 0
+	},
+
+	# DocPerm
+	{
+		'create': 1,
+		u'doctype': u'DocPerm',
+		'read': 1,
+		'role': u'Administrator',
+		'write': 1
+	}
+]
