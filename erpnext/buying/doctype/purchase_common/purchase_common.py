@@ -614,13 +614,13 @@ class DocType(TransactionBase):
 			sql("update `tab%s` set %s = '%s', modified = '%s' where name = '%s'" % (self.ref_doctype_dict[ref_dn][0], self.update_percent_field[self.ref_doctype_dict[ref_dn][2]], percent_complete, obj.doc.modified, ref_dn))
 			
 			
-	def validate_fiscal_year(self, fiscal_year, transaction_date, dn):
-		fy=sql("select year_start_date from `tabFiscal Year` where name='%s'"%fiscal_year)
-		ysd=fy and fy[0][0] or ""
-		yed=add_days(str(ysd),365)		
-		if str(transaction_date) < str(ysd) or str(transaction_date) > str(yed):
-			msgprint("'%s' Not Within The Fiscal Year"%(dn))
-			raise Exception			
+	# def validate_fiscal_year(self, fiscal_year, transaction_date, dn):
+	# 	fy=sql("select year_start_date from `tabFiscal Year` where name='%s'"%fiscal_year)
+	# 	ysd=fy and fy[0][0] or ""
+	# 	yed=add_days(str(ysd),365)		
+	# 	if str(transaction_date) < str(ysd) or str(transaction_date) > str(yed):
+	# 		msgprint("'%s' Not Within The Fiscal Year"%(dn))
+	# 		raise Exception			
 
 
 #---Other charges starting point------------------------
