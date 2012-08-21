@@ -411,7 +411,7 @@ msg_dialog.msg_area.append('<p>'+msg+'</p>');msg_dialog.show();}
 function show_alert(txt,add_class){if(!$('#dialog-container').length){$('<div id="dialog-container">').appendTo('body');}
 if(!$('.growl').length){$('<div class="growl" style="position: fixed; bottom: 8px; right: 8px; \
    z-index: 10;"></div>').appendTo('#dialog-container');}
-$('<div class="alert">'+txt+'\
+return $('<div class="alert">'+txt+'\
   <button type="button" class="close" data-dismiss="alert">&times;</button></div>').appendTo($('.growl')).alert().addClass(add_class);}
 /*
  *	lib/js/wn/ui/appframe.js

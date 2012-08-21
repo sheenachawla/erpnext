@@ -506,7 +506,7 @@ msg_dialog.msg_area.append('<p>'+msg+'</p>');msg_dialog.show();}
 function show_alert(txt,add_class){if(!$('#dialog-container').length){$('<div id="dialog-container">').appendTo('body');}
 if(!$('.growl').length){$('<div class="growl" style="position: fixed; bottom: 8px; right: 8px; \
    z-index: 10;"></div>').appendTo('#dialog-container');}
-$('<div class="alert">'+txt+'\
+return $('<div class="alert">'+txt+'\
   <button type="button" class="close" data-dismiss="alert">&times;</button></div>').appendTo($('.growl')).alert().addClass(add_class);}
 /*
  *	lib/js/legacy/utils/printElement.js
@@ -999,7 +999,8 @@ this._super(wn.markdown(val));}});wn.ui.SelectControl=wn.ui.Control.extend({make
 /*
  *	lib/js/wn/form/control_link.js
  */
-wn.ui.LinkControl=wn.ui.Control.extend({make_input:function(){var me=this;this.$input_wrap=$('<div class="input-append">').appendTo(this.$w.find('.controls'));this.$input=$('<input type="text" size="16"/>').appendTo(this.$input_wrap);this.$button=$('<button class="btn"><i class="icon-search"></i></button>').appendTo(this.$input_wrap).click(function(){me.search_dialog=new wn.ui.Search({doctype:me.docfield.options,txt:me.$input.val(),with_filters:me.filters,df:me.docfield,callback:function(val){me.set(val);}});return false;});},toggle_input:function(show){this.$input_wrap.toggle(show);}});
+wn.ui.LinkControl=wn.ui.Control.extend({make_input:function(){var me=this;this.$input_wrap=$('<div class="input-append">').appendTo(this.$w.find('.controls'));this.$input=$('<input type="text" size="16"/>').appendTo(this.$input_wrap);this.$button=$('<button class="btn"><i class="icon-search"></i></button>').appendTo(this.$input_wrap).click(function(){me.search_dialog=new wn.ui.Search({doctype:me.docfield.options,txt:me.$input.val(),with_filters:me.filters,df:me.docfield,callback:function(val){me.set(val);}});return false;});this.make_autocomplete();},make_autocomplete:function(){var me=this;this.$input.autocomplete({source:function(request,response){var tab_name="`tab"+me.docfield.options+"`"
+var filters=[[me.docfield.options,"name","like",request.term+'%']].concat(me.filters||[]);var search_fields=me.docfield.search_fields||[];wn.call({method:'webnotes.widgets.doclistview.get',args:{'docstatus':["0","1"],"fields":$.map(["name"].concat(search_fields),function(v){return"`tab"+me.docfield.options+"`."+strip(v);}),"filters":filters,'doctype':me.docfield.options},callback:function(r){response($.map(r.message,function(v){return{"label":v.name,"info":$.map(search_fields,function(f){return v[f];}).join(", "),}}));}});},select:function(event,ui){me.set_input(ui.item.value);}}).data('autocomplete')._renderItem=function(ul,item){return $('<li></li>').data('item.autocomplete',item).append(repl('<a>%(label)s<br><span style="font-size:10px">%(info)s</span></a>',item)).appendTo(ul);};},toggle_input:function(show){this.$input_wrap.toggle(show);}});
 /*
  *	lib/js/wn/form/control_richtext.js
  */
@@ -1043,7 +1044,7 @@ wn.ui.Comments=Class.extend({init:function(opts){$.extend(this,opts);this.make_b
 /*
  *	lib/js/wn/form/form_dialog.js
  */
-wn.views.FormDialog=wn.ui.Dialog.extend({init:function(opts){$.extend(this,opts);wn.get_or_set(this,'width',600);wn.get_or_set(this,'title',this.name);wn.get_or_set(this,'form_class',wn.ui.Form);this._super();opts.parent=this.body;opts.dialog=this;opts.appframe=this.appframe;this.form=new this.form_class(opts);}})
+wn.views.FormDialog=wn.ui.Dialog.extend({init:function(opts){$.extend(this,opts);wn.get_or_set(this,'width',700);wn.get_or_set(this,'title',this.name);wn.get_or_set(this,'form_class',wn.ui.Form);this._super();opts.parent=this.body;opts.dialog=this;opts.appframe=this.appframe;this.form=new this.form_class(opts);}})
 wn.views.RowEditFormDialog=wn.views.FormDialog.extend({init:function(opts){opts.form_class=wn.ui.RowEditForm;this._super(opts);this.make_toolbar();},make_toolbar:function(){var me=this;var save_btn=this.appframe.add_button('Close',function(){me.control_grid.set();me.hide();});save_btn.addClass('btn-info');var delete_btn=this.appframe.add_button('Delete',function(){me.control_grid.doc.doclist.remove_child(me.doc);me.control_grid.set();me.hide();},'icon-remove');delete_btn.parent().css('float','right');}});
 /*
  *	lib/js/wn/form/form_page.js
@@ -1227,7 +1228,7 @@ if(user_roles.indexOf("Accounts Manager")!=-1){$('.navbar .modules').append('<li
 if(user_roles.indexOf("System Manager")!=-1){$('.navbar .modules').append('<li class="divider"></li>\
   <li><a href="#!Setup" data-module="Setup">Setup</a></li>');}}
 erpnext.toolbar.set_new_comments=function(new_comments){var navbar_nc=$('.navbar-new-comments');if(new_comments&&new_comments.length>0){navbar_nc.text(new_comments.length);navbar_nc.addClass('navbar-new-comments-true')
-$.each(new_comments,function(i,v){var msg='New Message: '+(v[1].length<=100?v[1]:(v[1].substr(0,100)+"..."));var id=v[0].replace('/','-');if(!$('#'+id)[0]){show_alert(msg,id);}})}else{navbar_nc.removeClass('navbar-new-comments-true');navbar_nc.text(0);}}
+$.each(new_comments,function(i,v){var msg='New Message: '+(v[1].length<=100?v[1]:(v[1].substr(0,100)+"..."));var id=v[0].replace('/','-');if(!$('#'+id)[0]){var alert_msg=show_alert(msg);alert_msg.attr('id',id);}})}else{navbar_nc.removeClass('navbar-new-comments-true');navbar_nc.text(0);}}
 /*
  *	erpnext/startup/js/feature_setup.js
  */
