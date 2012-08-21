@@ -14,215 +14,111 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+
+# Notes
+# For stop / unstop, set status = "Stop"/"Unstop" and save the form
+
 from __future__ import unicode_literals
 import webnotes
+import webnotes.model
+from webnotes.utils import getdate, now_datetime, comma_and, flt
+from webnotes.model.controller import DocListController
 
-from webnotes.utils import cstr, date_diff, flt, get_defaults, now
-
-from webnotes.model.doc import make_autoname
-from webnotes.model.controller import getlist
-from webnotes.model.code import get_obj
-from webnotes import msgprint
-
-sql = webnotes.conn.sql
-	
-
-
-class DocType:
-	def __init__(self, doc, doclist=[]):
-		self.doc = doc
-		self.doclist = doclist
-		self.defaults = get_defaults()
-		self.tname = 'Purchase Request Item'
-		self.fname = 'indent_details'
-
-	# Autoname
-	# ---------
-	def autoname(self):
-		self.doc.name = make_autoname(self.doc.naming_series+'.#####')
-
-
-	def get_default_schedule_date(self):
-		get_obj(dt = 'Purchase Common').get_default_schedule_date(self)
-	
-	# get available qty at warehouse
-	def get_bin_details(self, arg = ''):
-		return get_obj(dt='Purchase Common').get_bin_details(arg)
-
-	# Pull Sales Order Items
-	# -------------------------
-	def pull_so_details(self):
-		self.check_if_already_pulled()
-		if self.doc.sales_order_no:
-			get_obj('DocType Mapper', 'Sales Order-Purchase Request', with_children=1).dt_map('Sales Order', 'Purchase Request', self.doc.sales_order_no, self.doc, self.doclist, "[['Sales Order', 'Purchase Request'],['Sales Order Item', 'Purchase Request Item']]")
-			self.get_item_defaults()
-		else:
-			msgprint("Please select Sales Order whose details need to pull")
-
-	def check_if_already_pulled(self):
-		pass#if self.[d.sales_order_no for d in getlist(self.doclist, 'indent_details')]
-
-
-	# Get item's other details
-	#- ------------------------
-	def get_item_defaults(self):
-		self.get_default_schedule_date()
-		for d in getlist(self.doclist, 'indent_details'):
-			det = sql("select min_order_qty from tabItem where name = '%s'" % d.item_code)
-			d.min_order_qty = det and flt(det[0][0]) or 0
-
-	# Validate so items
-	# ----------------------------
-	def validate_qty_against_so(self):
-		so_items = {} # Format --> {'SO/00001': {'Item/001': 120, 'Item/002': 24}}
-		for d in getlist(self.doclist, 'indent_details'):
-			if d.sales_order_no:
-				if not so_items.has_key(d.sales_order_no):
-					so_items[d.sales_order_no] = {d.item_code: flt(d.qty)}
-				else:
-					if not so_items[d.sales_order_no].has_key(d.item_code):
-						so_items[d.sales_order_no][d.item_code] = flt(d.qty)
-					else:
-						so_items[d.sales_order_no][d.item_code] += flt(d.qty)
-		
-		for so_no in so_items.keys():
-			for item in so_items[so_no].keys():
-				already_indented = sql("select sum(qty) from `tabPurchase Request Item` where item_code = '%s' and sales_order_no = '%s' and docstatus = 1 and parent != '%s'" % (item, so_no, self.doc.name))
-				already_indented = already_indented and flt(already_indented[0][0]) or 0
-				
-				actual_so_qty = sql("select sum(qty) from `tabSales Order Item` where parent = '%s' and item_code = '%s' and docstatus = 1 group by parent" % (so_no, item))
-				actual_so_qty = actual_so_qty and flt(actual_so_qty[0][0]) or 0
-
-				if flt(so_items[so_no][item]) + already_indented > actual_so_qty:
-					msgprint("You can raise indent of maximum qty: %s for item: %s against sales order: %s\n Anyway, you can add more qty in new row for the same item." % (actual_so_qty - already_indented, item, so_no), raise_exception=1)
-				
-		
-	# Validate fiscal year
-	# ----------------------------
-	def validate_fiscal_year(self):
-		get_obj(dt = 'Purchase Common').validate_fiscal_year(self.doc.fiscal_year,self.doc.transaction_date,'Purchase Request Date')
-
-	# get item details
-	# ---------------------------------
-	def get_item_details(self, arg =''):
-		if arg:
-			return get_obj(dt='Purchase Common').get_item_details(self,arg)
-		else:
-			obj = get_obj('Purchase Common')
-			for doc in self.doclist:
-				if doc.get('item_code'):
-					temp = {
-						'item_code': doc.get('item_code'),
-						'warehouse': doc.get('warehouse')
-					}
-					ret = obj.get_item_details(self, json.dumps(temp))
-					for r in ret:
-						if not doc.get(r):
-							doc[r] = ret[r]
-
-
-	# Get UOM Details
-	# ---------------------------------
-	def get_uom_details(self, arg = ''):
-		return get_obj(dt='Purchase Common').get_uom_details(arg)
-
-	# GET TERMS & CONDITIONS
-	#-----------------------------
-	def get_tc_details(self):
-		return get_obj('Purchase Common').get_tc_details(self)
-		
-	# Validate Schedule Date
-	#--------------------------------
-	def validate_schedule_date(self):
-		 #:::::::: validate schedule date v/s indent date ::::::::::::
-		for d in getlist(self.doclist, 'indent_details'):
-			if d.schedule_date < self.doc.transaction_date:
-				msgprint("Expected Schedule Date cannot be before Purchase Request Date")
-				raise Exception
-				
-	# Validate
-	# ---------------------
+class PurchaseRequestController(DocListController):
 	def validate(self):
-		self.validate_schedule_date()
-		self.validate_fiscal_year()
+		# TODO: DocType Validator: d.schedule_date < self.doc.transaction_date
+		# TODO: DocType Validator: if amended_from, amendment_date is mandatory
+		# TODO: DocType Validator: d.qty > 0
 		
-		# set status as "Draft"
-		webnotes.conn.set(self.doc, 'status', 'Draft')
-
-		# Get Purchase Common Obj
-		pc_obj = get_obj(dt='Purchase Common')
-
-		# Validate Mandatory
-		pc_obj.validate_mandatory(self)
-
-		# Validate for items
-		pc_obj.validate_for_items(self)
+		if self.doc.docstatus != 2: # validation for draft, submit
+			self.validate_items()
+			self.validate_qty()
+		elif self.doc.docstatus == 2: # validation for cancel
+			# Check if Purchase Order has been submitted against current Purchase Request
+			is_next_submitted("Purchase Order Item", "prevdoc_docname")
+			
+			# Check if Supplier Quotation has been submitted against current Purchase Request?
+			is_next_submitted("Supplier Quotation Item", "prevdoc_docname")
 		
-		# Validate qty against SO
-		self.validate_qty_against_so()
+		# set status field
+		if self.doc.docstatus == 0 and not self.doc.status:
+			self.doc.status = "Draft"
+		elif self.doc.docstatus == 1 and (not self.doc.status or self.doc.status == "Draft"):
+			self.doc.status = "Submitted"
+		elif self.doc.docstatus == 2:
+			self.doc.status = "Cancelled"
+		
+	def validate_items(self):
+		for child in self.doclist.get({"parentfield": "indent_details"}):
+			# get item controller. Also raises error if item not found
+			itemcon = webnotes.model.get_controller("Item", child.item_code)
 
+			# check if purchase item
+			if itemcon.doc.is_purchase_item != "Yes":
+				webnotes.msgprint("""Item "%s" is not a Purchase Item""", raise_exception=1)
 
-	# On Submit Functions
-	#----------------------------------------------------------------------------
+			# check if end of life has reached
+			if itemcon.doc.end_of_life and getdate(itemcon.doc.end_of_life) <= now_datetime().date():
+				import stock
+				webnotes.msgprint("""Item "%s" has reached its end of life""",
+					raise_exception=stock.ItemEndOfLifeError)
+
+			# check if warehouse is required
+			if itemcon.doc.is_stock_item == "Yes" and not child.warehouse:
+				webnotes.msgprint("""Warehouse is Mandatory for Item "%s", as it is a Stock Item""" % \
+					child.item_code, raise_exception=webnotes.MandatoryError)
 	
-	# Update Quantity Requested for Purchase in Bin
-	def update_bin(self, is_submit, is_stopped):
-		for d in getlist(self.doclist, 'indent_details'):
-			# Step 1:=> Check if is_stock_item == 'Yes'
-			if cstr(sql("select is_stock_item from `tabItem` where name = '%s'" % cstr(d.item_code))[0][0]) == 'Yes':
-				if not d.warehouse:
-					msgprint('Please Enter Warehouse for Item %s as it is stock item.' % cstr(d.item_code))
-					raise Exception
-				# Step 2:=> Set Qty 
-				qty =flt(d.qty)
-				if is_stopped:
-					qty = (d.qty > d.ordered_qty) and flt(flt(d.qty) - flt(d.ordered_qty)) or 0 
-				# Step 3 :=> Update Bin's Purchase Request Qty by +- qty 
-				get_obj('Warehouse', d.warehouse).update_bin(0, 0, 0, (is_submit and 1 or -1) * flt(qty), 0, d.item_code, self.doc.transaction_date)		
+	def validate_qty(self):
+		"""Do not request for more quantity than that in Sales Order"""
+		# collate item quantity against sales order
+		item_qty_per_so = {}
+		for child in self.doclist.get({"parentfield": "indent_details"}):
+			if child.sales_order_no:
+				so = item_qty_per_so.setdefault(child.sales_order_no, {})
+				so[child.item_code] = so.setdefault(child.item_code, 0) + flt(child.qty)
 		
-	# On Submit			
-	#---------------------------------------------------------------------------
-	def on_submit(self):
-		# Step 1:=> Set Status
-		webnotes.conn.set(self.doc,'status','Submitted')
-
-		# Step 2:=> Update Bin
-		self.update_bin(is_submit = 1, is_stopped = 0)
+		for so in item_qty_per_so:
+			# get quantities for all items in a single query
+			sales_order_qty = webnotes.conn.sql("""select item_code, sum(ifnull(qty, 0))
+				from `tabSales Order Item` where parent = %s and docstatus = 1
+				group by item_code""", so)
+			
+			requested_qty = webnotes.conn.sql("""select item_code, sum(ifnull(qty, 0))
+				from `tabPurchase Request Item` where sales_order_no = %s and parent != %s 
+				and docstatus = 1 group by item_code""", (so, self.doc.name))
+			
+			sales_order_qty = sales_order_qty and dict(sales_order_qty) or {}
+			requested_qty = requested_qty and dict(requested_qty) or {}
+			
+			for item in item_qty_per_so[so]:
+				# [anandpdoshi]
+				# this error will rarely occur as it is fetched through mapper
+				# But I thought it would be a good practice to validate it
+				# It is not costing any extra query
+				if item not in sales_order_qty:
+					webnotes.msgprint("""Item "%s" not found in Sales Order "%s" """ % \
+						(item, so), raise_exception=webnotes.NameError)
+				
+				if (flt(item_qty_per_so[so][item]) + flt(requested_qty.get(item))) > \
+						flt(sales_order_qty.get(item)):
+					import buying
+					max_request = flt(sales_order_qty.get(item)) - flt(requested_qty.get(item))
+					additional_request = flt(item_qty_per_so[so][item]) - max_request
+					webnotes.msgprint("""You can request upto %d "%s" against Sales Order "%s".
+						For additional request, add "%s" as a separate row with quantity as %d""" % \
+						(max_request, item, so, item, additional_request),
+						raise_exception=buying.OverRequestError)
 	
-	def check_modified_date(self):
-		mod_db = sql("select modified from `tabPurchase Request` where name = '%s'" % self.doc.name)
-		date_diff = sql("select TIMEDIFF('%s', '%s')" % ( mod_db[0][0],cstr(self.doc.modified)))
-		
-		if date_diff and date_diff[0][0]:
-			msgprint(cstr(self.doc.doctype) +" => "+ cstr(self.doc.name) +" has been modified. Please Refresh. ")
-			raise Exception
+	def is_next_submitted(self, childtype, reference_field):
+		"""Validate if current doc's next step has already been submitted"""
+		submitted = webnotes.conn.sql("""select distinct parent from `tab%s`
+			where `%s` = %s and docstatus = 1""", (childtype, reference_field, "%s"), self.doc.name)
+		if submitted:
+			if len(submitted) > 1:
+				webnotes.msgprint("""%s: "%s" has already been submitted""" % \
+					(doctype, submitted[0][0]), raise_exception=webnotes.DependencyError)
+			else:
+				webnotes.msgprint("""%s: %s have already been submitted""", % \
+					(doctype, comma_and(["\"%s\"" % d[0] for d in submitted])),
+					raise_exception=webnotes.DependencyError)
 	
-	# On Stop / unstop
-	#------------------------------------------------------------------------------
-	def update_status(self, status):
-		self.check_modified_date()
-		# Step 1:=> Update Bin
-		self.update_bin(is_submit = (status == 'Submitted') and 1 or 0, is_stopped = 1)
-
-		# Step 2:=> Set status 
-		webnotes.conn.set(self.doc,'status',cstr(status))
-		
-		# Step 3:=> Acknowledge User
-		msgprint(self.doc.doctype + ": " + self.doc.name + " has been %s." % ((status == 'Submitted') and 'Unstopped' or cstr(status)) )
- 
-	# On Cancel
-	#-----------------------------------------------------------------------------
-	def on_cancel(self):
-		# Step 1:=> Get Purchase Common Obj
-		pc_obj = get_obj(dt='Purchase Common')
-		
-		# Step 2:=> Check for stopped status
-		pc_obj.check_for_stopped_status( self.doc.doctype, self.doc.name)
-		
-		# Step 3:=> Check if Purchase Order has been submitted against current Purchase Request
-		pc_obj.check_docstatus(check = 'Next', doctype = 'Purchase Order', docname = self.doc.name, detail_doctype = 'Purchase Order Item')
-		# Step 4:=> Update Bin
-		self.update_bin(is_submit = 0, is_stopped = (cstr(self.doc.status) == 'Stopped') and 1 or 0)
-		
-		# Step 5:=> Set Status
-		webnotes.conn.set(self.doc,'status','Cancelled')
