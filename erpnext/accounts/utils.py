@@ -18,7 +18,7 @@ from __future__ import unicode_literals
 import webnotes
 import webnotes.model
 from webnotes.utils import flt
-from webnotes.model.controller import getlist
+from webnotes.model.utils import getlist
 from webnotes.model.controller import DocListController
 	
 def get_balance_on(account, dt):

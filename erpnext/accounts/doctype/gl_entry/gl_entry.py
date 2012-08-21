@@ -27,7 +27,6 @@ class GLEntryController(DocListController):
 		self.check_mandatory()
 		self.validate_zero_value_transaction()
 		self.pl_must_have_cost_center()
-		self.validate_posting_date()
 		self.check_credit_limit()
 		self.no_opening_entry_against_pl_account()
 	

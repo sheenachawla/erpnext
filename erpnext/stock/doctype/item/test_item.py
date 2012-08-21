@@ -41,7 +41,7 @@ def make_item_groups():
 		
 class TestItem(TestBase):
 	def setUp(self):
-		TestBase.setUp(self)
+		super(TestItem, self).setUp()
 		make_item_groups()
 		
 	def test_item_creation(self):

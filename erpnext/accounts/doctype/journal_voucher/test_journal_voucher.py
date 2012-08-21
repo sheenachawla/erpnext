@@ -25,8 +25,18 @@ base_party = {
 }
 
 base_acc = [
-	{'doctype': 'Account', 'account_name': 'Party Account', 'company': 'East Wind Corporation'},
-	{'doctype': 'Account', 'account_name': 'Bank Account', 'company': 'East Wind Corporation'}
+	{
+		"doctype": "Account", "account_name": "test_party_account",
+		"parent_account": "Accounts Receivable - EW",
+		"group_or_ledger": "Ledger", "debit_or_credit": "Debit",
+		"is_pl_account": "No", "company": "East Wind Corporation"
+	},
+	{
+		"doctype": "Account", "account_name": "test_bank_account",
+		"parent_account": "Bank Accounts - EW",
+		"group_or_ledger": "Ledger", "debit_or_credit": "Debit",
+		"is_pl_account": "No", "company": "East Wind Corporation"
+	}
 ]
 
 base_jv = {
@@ -36,9 +46,10 @@ base_jv = {
 
 class TestJournalVoucher(TestBase):
 	def setUp(self):
-		super(TestJournalVoucher).setUp()
+		super(TestJournalVoucher, self).setUp()
 		webnotes.model.insert(base_party)
 		webnotes.model.insert(base_acc)
+			
 		
 	def test_jv_creation(self):
 		entry_line1 = {
@@ -50,7 +61,5 @@ class TestJournalVoucher(TestBase):
 			'debit': 100
 		}
 		webnotes.model.insert([base_jv, entry_line1, entry_line2])
-		print webnotes.conn.get_value('Journal Voucher', \
-			{'total_debit': 100, 'total_credit': 100})
 		self.assertTrue(webnotes.conn.exists('Journal Voucher', \
-			{'name': 'JV00001', 'total_debit': 100, 'total_credit': 100}))
+			{'total_debit': 100, 'total_credit': 100}))

@@ -17,7 +17,7 @@
 from __future__ import unicode_literals
 import webnotes
 from webnotes.utils import flt
-from webnotes.model.controller import getlist
+from webnotes.model.utils import getlist
 from webnotes import msgprint	
 from accounts.utils import GLController
 
@@ -28,8 +28,8 @@ class JVController(GLController):
 		
 	def get_total(self):
 		for d in getlist(self.doclist, 'entries'):
-			self.doc.debit += flt(d.debit)
-			self.doc.credit += flt(d.credit)
+			self.doc.total_debit += flt(d.debit)
+			self.doc.total_credit += flt(d.credit)
 		
 	def manage_opening_entry(self):
 		if not self.doc.is_opening:

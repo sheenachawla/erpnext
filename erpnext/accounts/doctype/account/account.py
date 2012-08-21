@@ -22,7 +22,7 @@ from webnotes.model.controller import DocListController
 
 class AccountController(DocListController):
 	def __init__(self, dt=None, dn=None):
-		DocListController.__init__(self, dt, dn)
+		super(AccountController, self).__init__(dt, dn)
 		self.nsm_parent_field = 'parent_account'
 
 	def autoname(self):
