@@ -64,7 +64,7 @@ class PartyController(DocListController):
 			Update lead statusto Open, party created from Lead
 		"""
 		self.delete_party_address_and_contact()
-		#self.delete_party_communication()
+		self.delete_party_communication()
 		if self.doc.party_type == 'Customer':
 			self.update_lead_status('Open')
 

@@ -21,10 +21,8 @@ import webnotes.model.controller
 
 class ContactController(webnotes.model.controller.DocListController):
 	def autoname(self):
-		if self.doc.customer:
-			self.doc.name = self.doc.first_name + (self.doc.last_name and ' ' + self.doc.last_name or '') + '-' + self.doc.customer
-		elif self.doc.supplier:
-			self.doc.name = self.doc.first_name + (self.doc.last_name and ' ' + self.doc.last_name or '') + '-' + self.doc.supplier
+		if self.doc.party:
+			self.doc.name = self.doc.first_name + (self.doc.last_name and ' ' + self.doc.last_name or '') + '-' + self.doc.party
 		elif self.doc.sales_partner:
 			self.doc.name = self.doc.first_name + (self.doc.last_name and ' ' + self.doc.last_name or '') + '-' + self.doc.sales_partner	
 		else:
