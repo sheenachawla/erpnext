@@ -673,38 +673,6 @@ def create_default_master_records():
 		{'state_name': 'Xian', 'country': 'China', 'doctype': 'State', 'name': 'Xian'}, 
 		{'state_name': 'Zhongshan ', 'country': 'China', 'doctype': 'State', 'name': 'Zhongshan'},
 		
-		# TDS Category
-		{'category_name': '194J - Professional Fees - Non Company', 'doctype': 'TDS Category', 'name': '194J - Professional Fees - Non Company'}, 
-		{'category_name': 'Commission Brokerage - for Companies', 'doctype': 'TDS Category', 'name': 'Commission Brokerage - for Companies'}, 
-		{'category_name': 'Commission Brokerage - for Individuals', 'doctype': 'TDS Category', 'name': 'Commission Brokerage - for Individuals'}, 
-		{'category_name': 'Contractors - 194C - for Companies', 'doctype': 'TDS Category', 'name': 'Contractors - 194C - for Companies'}, 
-		{'category_name': 'Contractors - 194C - for Individuals', 'doctype': 'TDS Category', 'name': 'Contractors - 194C - for Individuals'}, 
-		{'category_name': 'Pay to Advt Or Sub Contr - for Companies', 'doctype': 'TDS Category', 'name': 'Pay to Advt Or Sub Contr - for Companies'}, 
-		{'category_name': 'Pay to Advt Or Sub Contr - for Individuals', 'doctype': 'TDS Category', 'name': 'Pay to Advt Or Sub Contr - for Individuals'}, 
-		{'category_name': 'Professional Fees - 194J - for Companies', 'doctype': 'TDS Category', 'name': 'Professional Fees - 194J - for Companies'}, 
-		{'category_name': 'Professional Fees - 194J - for Individuals', 'doctype': 'TDS Category', 'name': 'Professional Fees - 194J - for Individuals'}, 
-		{'category_name': 'T.D.S on Other Interest - for Individuals', 'doctype': 'TDS Category', 'name': 'T.D.S on Other Interest - for Individuals'}, 
-		{'category_name': 'T.D.S on Rent - for Companies', 'doctype': 'TDS Category', 'name': 'T.D.S on Rent - for Companies'}, 
-		{'category_name': 'T.D.S on Rent - for Individuals', 'doctype': 'TDS Category', 'name': 'T.D.S on Rent - for Individuals'}, 
-		{'category_name': 'TDS on ECB Loan', 'doctype': 'TDS Category', 'name': 'TDS on ECB Loan'}, 
-		{'category_name': 'TDS on Rent (Machinery)', 'doctype': 'TDS Category', 'name': 'TDS on Rent (Machinery)'},
-		
-		# TDS Rate Chart
-		{'applicable_from': '2010-07-01', 'name': 'Rate chart (01-07-2010)', 'module': 'Accounts', 'doctype': 'TDS Rate Chart'}, 
-		{'category': 'Professional Fees - 194J - for Companies', 'parent': 'Rate chart (01-07-2010)', 'doctype': 'TDS Rate Detail', 'idx': '1', 'parenttype': 'TDS Rate Chart', 'rate_without_pan': '20.0', 'rate': '10.0', 'slab_from': '30000.0', 'parentfield': 'rate_chart_detail'}, 
-		{'category': 'Professional Fees - 194J - for Individuals', 'parent': 'Rate chart (01-07-2010)', 'doctype': 'TDS Rate Detail', 'idx': '2', 'parenttype': 'TDS Rate Chart', 'rate_without_pan': '20.0', 'rate': '10.0', 'slab_from': '30000.0', 'parentfield': 'rate_chart_detail'}, 
-		{'category': 'Contractors - 194C - for Companies', 'parent': 'Rate chart (01-07-2010)', 'doctype': 'TDS Rate Detail', 'idx': '3', 'parenttype': 'TDS Rate Chart', 'rate_without_pan': '20.0', 'rate': '2.0', 'slab_from': '30000.0', 'parentfield': 'rate_chart_detail'}, 
-		{'category': 'Contractors - 194C - for Individuals', 'parent': 'Rate chart (01-07-2010)', 'doctype': 'TDS Rate Detail', 'idx': '4', 'parenttype': 'TDS Rate Chart', 'rate_without_pan': '20.0', 'rate': '1.0', 'slab_from': '30000.0', 'parentfield': 'rate_chart_detail'}, 
-		{'category': 'T.D.S on Other Interest - for Individuals', 'parent': 'Rate chart (01-07-2010)', 'doctype': 'TDS Rate Detail', 'idx': '5', 'parenttype': 'TDS Rate Chart', 'rate_without_pan': '20.0', 'rate': '10.0', 'slab_from': '5000.0', 'parentfield': 'rate_chart_detail'}, 
-		{'category': 'Pay to Advt Or Sub Contr - for Companies', 'parent': 'Rate chart (01-07-2010)', 'doctype': 'TDS Rate Detail', 'idx': '6', 'parenttype': 'TDS Rate Chart', 'rate_without_pan': '20.0', 'rate': '2.0', 'slab_from': '30000.0', 'parentfield': 'rate_chart_detail'}, 
-		{'category': 'Pay to Advt Or Sub Contr - for Individuals', 'parent': 'Rate chart (01-07-2010)', 'doctype': 'TDS Rate Detail', 'idx': '7', 'parenttype': 'TDS Rate Chart', 'rate_without_pan': '20.0', 'rate': '1.0', 'slab_from': '30000.0', 'parentfield': 'rate_chart_detail'}, 
-		{'category': 'Commission Brokerage - for Companies', 'parent': 'Rate chart (01-07-2010)', 'doctype': 'TDS Rate Detail', 'idx': '8', 'parenttype': 'TDS Rate Chart', 'rate_without_pan': '20.0', 'rate': '10.0', 'slab_from': '5000.0', 'parentfield': 'rate_chart_detail'}, 
-		{'category': 'Commission Brokerage - for Individuals', 'parent': 'Rate chart (01-07-2010)', 'doctype': 'TDS Rate Detail', 'idx': '9', 'parenttype': 'TDS Rate Chart', 'rate_without_pan': '20.0', 'rate': '10.0', 'slab_from': '5000.0', 'parentfield': 'rate_chart_detail'}, 
-		{'category': 'T.D.S on Rent - for Companies', 'parent': 'Rate chart (01-07-2010)', 'doctype': 'TDS Rate Detail', 'idx': '10', 'parenttype': 'TDS Rate Chart', 'rate_without_pan': '20.0', 'rate': '10.0', 'slab_from': '180000.0', 'parentfield': 'rate_chart_detail'}, 
-		{'category': 'T.D.S on Rent - for Individuals', 'parent': 'Rate chart (01-07-2010)', 'doctype': 'TDS Rate Detail', 'idx': '11', 'parenttype': 'TDS Rate Chart', 'rate_without_pan': '20.0', 'rate': '10.0', 'slab_from': '180000.0', 'parentfield': 'rate_chart_detail'}, 
-		{'category': 'TDS on ECB Loan', 'parent': 'Rate chart (01-07-2010)', 'doctype': 'TDS Rate Detail', 'idx': '12', 'parenttype': 'TDS Rate Chart', 'rate_without_pan': '20.0', 'rate': '10.0', 'slab_from': '5000.0', 'parentfield': 'rate_chart_detail'}, 
-		{'category': 'TDS on Rent (Machinery)', 'parent': 'Rate chart (01-07-2010)', 'doctype': 'TDS Rate Detail', 'idx': '13', 'parenttype': 'TDS Rate Chart', 'rate_without_pan': '20.0', 'rate': '2.0', 'slab_from': '180000.0', 'parentfield': 'rate_chart_detail'},
-		
 		# GL Mapper - JV
 		{'doc_type': 'Journal Voucher', 'name': 'Journal Voucher', 'doctype': 'GL Mapper'}, 
 		{'voucher_type': 'parent:doctype', 'doctype': 'GL Mapper Detail', 'cost_center': 'cost_center', 'voucher_no': 'parent:name', 'against_voucher': "value:d.against_voucher or d.against_invoice or d.against_jv or ''", 'table_field': 'entries', 'transaction_date': 'parent:voucher_date', 'debit': 'debit', 'parent': 'Journal Voucher', 'company': 'parent:company', 'aging_date': 'parent:aging_date', 'fiscal_year': 'parent:fiscal_year', 'is_advance': 'is_advance', 'remarks': 'parent:remark', 'account': 'account', 'idx': '1', 'against_voucher_type': "value:(d.against_voucher and 'Purchase Invoice') or (d.against_invoice and 'Sales Invoice') or (d.against_jv and 'Journal Voucher') or ''", 'against': 'against_account', 'credit': 'credit', 'parenttype': 'GL Mapper', 'is_opening': 'parent:is_opening', 'posting_date': 'parent:posting_date', 'parentfield': 'fields'}, 

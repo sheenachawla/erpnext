@@ -55,8 +55,8 @@ class TestParty(TestBase):
 	def setUp(self):
 		super(TestParty).setUp(self)
 		webnotes.model.insert(base_party_group)
-		#make_party_groups()
-		#make_territories()
+		# make_party_groups()
+		# make_territories()
 		make_lead()
 		
 	def test_party_creation(self):

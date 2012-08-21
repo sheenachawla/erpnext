@@ -36,7 +36,13 @@ stages = {
 			"accounts.doctype.party.test_party",
 			"accounts.doctype.journal_voucher.test_journal_voucher",
 		],
-	}
+	},
+	"Buying": {
+		"stages": ["Master"],
+		"tests": [
+			"buying.doctype.purchase_request.purchase_request",
+		],
+	},
 }
 
 import webnotes
@@ -57,7 +63,7 @@ def upto(stage, with_tests=False):
 	# commit data or test files required for this stage
 	if "data" in stagedata:
 		for data_module_name in stagedata["data"]:
-			module = __import__(data_module_name, fromlist = True)
+			module = __import__(data_module_name, fromlist = [data_module_name.split(".")[-1]])
 			if hasattr(module, 'load_data'):
 				webnotes.conn.begin()
 				module.load_data()
@@ -69,7 +75,7 @@ def upto(stage, with_tests=False):
 	# commit data in all test files
 	if "tests" in stagedata:
 		for test_module_name in stagedata["tests"]:
-			module = __import__(test_module_name, fromlist = True)
+			module = __import__(test_module_name, fromlist = [test_module_name.split(".")[-1]])
 			if hasattr(module, 'load_data'):
 				webnotes.conn.begin()
 				module.load_data()
