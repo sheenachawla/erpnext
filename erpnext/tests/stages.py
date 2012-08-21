@@ -34,7 +34,7 @@ stages = {
 			"accounts.doctype.account.test_account",
 			"accounts.doctype.cost_center.test_cost_center",
 			"accounts.doctype.party.test_party",
-			
+			"accounts.doctype.journal_voucher.test_journal_voucher",
 		],
 	}
 }

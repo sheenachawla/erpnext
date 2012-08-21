@@ -17,6 +17,9 @@
 from __future__ import unicode_literals
 import webnotes
 import webnotes.model
+from webnotes.utils import flt
+from webnotes.model.controller import getlist
+from webnotes.model.controller import DocListController
 	
 def get_balance_on(account, dt):
 	acc = webnotes.conn.get_value('Account', account, \
@@ -45,4 +48,48 @@ def add_account(args):
 
 def add_cost_center(args):
 	args.update({"doctype": "Cost Center"})
-	return webnotes.model.insert(args)	
+	return webnotes.model.insert(args)
+
+class GLController(DocListController):
+	def make_gl_entries(self, mappers):
+		for each in mappers:
+			for fld in mappers[each]:
+				if fld.get('table_field'):
+					for row in getlist(obj.doclist, fld.get('table_field')):
+						if fld.get('table_field') != 'purchase_tax_details' or row.get('category') != 'For Valuation':
+							self.make_single_gl_entry(mappers[each], child_obj = row)
+				else:
+					self.make_single_gl_entry(mappers[each])
+					
+		self.validate_total_debit_credit()
+
+	def make_single_gl_entry(self, mapper, child_obj):
+		gle = {}
+		for k in mapper:
+			gle[k] = self.get_value(mapper[k], child_obj)
+		
+		if flt(gle['debit']) < 0 or flt(gle['credit']) < 0:
+			tmp=gle['debit']
+			gle['debit'], gle['credit'] = abs(flt(gle['credit'])), abs(flt(tmp))
+		
+		# insert gl entry
+		webnotes.model.insert_variants('GL Entry', [gle])
+		
+		# add to total_debit, total_credit
+		self.total_debit += flt(gle['debit'])
+		self.total_credit += flt(gle['credit'])
+		
+	def get_value(self, fld, child_obj):
+		if fld.startswith('par:'):
+			return self.doc.get(fld[4:])
+		else:
+			return child_obj.get(fld)
+		
+	def validate_total_debit_credit(self):
+		if abs(self.total_debit - self.total_credit) > 0.001:
+			msgprint("Debit and Credit not equal for this voucher: Diff(Dr) is %s" 
+				% (self.total_debit - self.total_credit), raise_exception=webnotes.ValidationError)
+				
+	def delete_gl_entries(self):
+		webnotes.conn.sql("delete from `tabGL Entry` where voucher_type = %s \
+			and voucher_no = %s", (self.doc.doctype, self.doc.name))

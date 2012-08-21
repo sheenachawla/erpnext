@@ -23,22 +23,17 @@ from webnotes.model import get_controller
 
 class GLEntryController(DocListController):
 	def validate(self):	
-		"""
-			validates gl entry values
-			not called on cancel
-			is_cancelled=No, will be reset by GL Control if cancelled
-		"""
+		"""	validates gl entry values"""
 		self.check_mandatory()
 		self.validate_zero_value_transaction()
 		self.pl_must_have_cost_center()
 		self.validate_posting_date()
-		self.doc.is_cancelled = 'No'
 		self.check_credit_limit()
 		self.no_opening_entry_against_pl_account()
 	
 	def check_mandatory(self):
 		# Following fields are mandatory in GL Entry
-		mandatory = ['account','remarks','voucher_type','voucher_no','fiscal_year','company', 'posting_date']
+		mandatory = ['account', 'voucher_type','voucher_no', 'company', 'posting_date']
 		for k in mandatory:
 			if not self.doc.get(k):
 				msgprint("%s is mandatory for GL Entry" % k,
@@ -60,24 +55,17 @@ class GLEntryController(DocListController):
 		else: # not pl
 			if self.doc.cost_center:
 				self.doc.cost_center = ''
-
-	def validate_posting_date(self):
-		"""Posting date must be in selected fiscal year"""
-		fy_controller = get_controller('Fiscal Year', self.doc.fiscal_year)
-		fy_controller.validate_date_within_year(self.doc.posting_date, 'Posting Date')		
 		
 	def check_credit_limit(self):
 		"""Total outstanding can not be greater than credit limit for any time for any customer"""
-		cust_acc = webnotes.conn.get_value("Account", self.doc.account, "customer")
-		if cust_acc:
+		if self.doc.party:
 			tot_outstanding = 0
 			dbcr = webnotes.conn.sql("select sum(debit), sum(credit) from `tabGL Entry` \
-				where account = '%s' and is_cancelled='No'" % self.doc.account)
+				where party = '%s' and company = %s", (self.doc.party, self.doc.company))
 			if dbcr:
 				tot_outstanding = flt(dbcr[0][0]) - flt(dbcr[0][1]) + flt(self.doc.debit) - flt(self.doc.credit)
 
-			get_controller('Account',self.doc.account).check_credit_limit(self.doc.account, \
-				self.doc.company, tot_outstanding)
+			get_controller('Party',self.doc.party).check_credit_limit(self.doc.company, tot_outstanding)
 
 	def no_opening_entry_against_pl_account(self):
 		if self.doc.is_opening=='Yes':
@@ -85,17 +73,11 @@ class GLEntryController(DocListController):
 				msgprint("For opening balance entry account can not be a PL account"\
 					, raise_exception=webnotes.ValidationError)
 		
-	def on_update(self,adv_adj=0, cancel=0, update_outstanding = 'Yes'):
+	def on_update(self, adv_adj=0):
 		# Account must be ledger, active and not freezed
 		self.validate_account_details(adv_adj)
-
 		# Posting date must be after freezing date
 		self.check_freezing_date(adv_adj)
-
-		# Update outstanding amt on against voucher
-		if self.doc.against_voucher and self.doc.against_voucher_type not in ('Journal Voucher','POS') \
-			and update_outstanding == 'Yes':
-			self.update_outstanding_amt()
 		
 	def validate_account_details(self, adv_adj):
 		"""Account must be ledger, active and not freezed"""
@@ -127,23 +109,3 @@ class GLEntryController(DocListController):
 					and not acc_frozen_info['bde_auth_role'] in webnotes.user.get_roles():
 					msgprint("You are not authorized to do/modify back dated accounting entries before %s." 
 						% getdate(acc_frozen_info['acc_frozen_upto']).strftime('%d-%m-%Y'), raise_exception=webnotes.ValidationError)
-
-	def update_outstanding_amt(self):
-		bal = flt(webnotes.conn.sql("select sum(debit)-sum(credit) from `tabGL Entry` \
-			where against_voucher=%s and against_voucher_type=%s and ifnull(is_cancelled,'No') = 'No'"
-			, (self.doc.against_voucher, self.doc.against_voucher_type))[0][0])
-			
-		tds_amt = 0		
-		if self.doc.against_voucher_type=='Purchase Invoice':
-			bal = -bal			
-			# Check if tds applicable
-			tds_amt = webnotes.conn.get_value('Purchase Invoice', self.doc.against_voucher, 'total_tds_on_voucher')
-			
-		# Validation: Outstanding can not be negative
-		if bal < 0 and not tds_amt and self.doc.is_cancelled == 'No':
-			msgprint("Outstanding for Voucher %s will become %s. Outstanding cannot be \
-				less than zero. Please match exact outstanding." 
-				% (self.doc.against_voucher, fmt_money(bal)), raise_exception=webnotes.ValidationError)
-			
-		# Update outstanding amt on against voucher
-		webnotes.conn.set_value(self.doc.against_voucher_type, self.doc.against_voucher, 'outstanding_amount', bal)
