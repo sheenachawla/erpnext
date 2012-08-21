@@ -51,7 +51,7 @@ def make_lead():
 		"mobile_no": "1234567890", "email_id": "email@domain.com"
 	})
 
-class TestParty(TestBase):	
+class TestParty(TestBase):
 	def setUp(self):
 		TestBase.setUp(self)
 		webnotes.model.insert(base_party_group)
@@ -62,6 +62,7 @@ class TestParty(TestBase):
 	def test_party_creation(self):
 		webnotes.model.insert(base_party)
 		self.assertTrue(webnotes.conn.exists("Party", "test_party"))
+		self.assertTrue(webnotes.conn.exists("Party", "test_party"))
 		
 	def test_lead_status(self):
 		webnotes.model.insert_variants(base_party, [{'lead_id': 'LEAD001'}])
@@ -69,7 +70,6 @@ class TestParty(TestBase):
 
 	def test_address_and_contact(self):
 		webnotes.model.insert_variants(base_party, [{'lead_id': 'LEAD001'}])
-
 		self.assertTrue(
 			webnotes.conn.get_value("Address", {
 				"party": "test_party",

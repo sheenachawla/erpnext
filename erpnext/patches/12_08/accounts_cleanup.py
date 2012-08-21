@@ -3,10 +3,15 @@ import webnotes
 
 def execute():
 	remove_doctypes()
+	set_fy_end_date()
 	
 def remove_doctypes():
 	from webnotes.model import delete_doc
-	dt_list = ['Account Balance', 'Period', 'Reposting Tool', 'Lease Agreement', 'Lease Installment']
+	dt_list = [
+		'Account Balance', 'Period', 'Reposting Tool', 'Lease Agreement', 
+		'Lease Installment', 'Customer', 'Supplier', 'Form 16A', 'TDS Category',
+		'TDS Payment', 'TDS Return Acknowledgement', 'TDS Rate Chart', 'TDS Rate Chart', 'GL Control'
+	]
 	for dt in dt_list:
 		delete_doc('DocType', dt)
 		webnotes.conn.commit()
