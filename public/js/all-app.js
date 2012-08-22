@@ -956,7 +956,7 @@ me.list.run();});this.dialog.show();},add_column:function(c){var w=$('<div style
 /*
  *	lib/js/wn/form/control.js
  */
-wn.ui.make_control=function(opts){control_map={'Check':wn.ui.CheckControl,'Data':wn.ui.Control,'Int':wn.ui.IntControl,'Float':wn.ui.FloatControl,'Currency':wn.ui.CurrencyControl,'Link':wn.ui.LinkControl,'Select':wn.ui.SelectControl,'Table':wn.ui.GridControl,'Text':wn.ui.TextControl,'Text Editor':wn.ui.RichTextControl,'Button':wn.ui.ButtonControl}
+wn.ui.make_control=function(opts){control_map={'Check':wn.ui.CheckControl,'Data':wn.ui.Control,'Int':wn.ui.IntControl,'Float':wn.ui.FloatControl,'Currency':wn.ui.CurrencyControl,'Link':wn.ui.LinkControl,'Select':wn.ui.SelectControl,'Table':wn.ui.GridControl,'Text':wn.ui.TextControl,'Text Editor':wn.ui.RichTextControl,'Button':wn.ui.ButtonControl,'Date':wn.ui.DateControl}
 if(control_map[opts.docfield.fieldtype]){return new control_map[opts.docfield.fieldtype](opts);}else{return null;}}
 wn.ui.Control=Class.extend({init:function(opts){$.extend(this,opts);this.make();this.set_events();this.apply_hidden();this.apply_mandatory();this.set_init_value();this.set_change_event();},make:function(){if(this.docfield.vertical){this.make_body_vertical();}else{this.make_body();}
 this.make_input();this.make_label();},make_label:function(){if(this.docfield.label)
@@ -978,6 +978,10 @@ this.toggle_input(editable);this.$w.find('.control-static').toggle(!editable);th
    </div>\
    </div>').appendTo(this.parent);if(!this.docfield.label){this.$w.find('.vertical-label').toggle(false);}},help_block:function(text){if(!text)return;if(!this.$w.find('.help-block').length){this.$w.find('.controls').append('<div class="help-block">');}
 this.$w.find('.help-block').text(text);},apply_hidden:function(){this.$w.toggle(!this.docfield.hidden);},apply_mandatory:function(){var me=this;if(this.docfield.reqd){this.$input.change(function(){$(me.$w).toggleClass('error',!$(this).val())});}}});
+/*
+ *	lib/js/wn/form/control_date.js
+ */
+wn.ui.DateControl=wn.ui.Control.extend({make_input:function(){this.$input=$('<input type="text">').appendTo(this.$w.find('.controls'));var user_fmt=sys_defaults.date_format||'yy-mm-dd';this.$input.datepicker({dateFormat:user_fmt.replace('yyyy','yy'),altFormat:'yy-mm-dd',changeYear:true})},set_input:function(val){if(val==null)val='';else val=dateutil.str_to_user(val);$(this.$input).val(val);},get:function(){dateutil.user_to_str($(this.$input).val());}})
 /*
  *	lib/js/wn/form/control_grid.js
  */
