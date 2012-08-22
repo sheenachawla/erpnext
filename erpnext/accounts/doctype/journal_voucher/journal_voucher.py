@@ -36,8 +36,8 @@ class JournalVoucherController(GLController):
 		self.doc.aging_date = self.doc.posting_date
 
 	def on_submit(self):
-		from accounts.doctype.journal_voucher.gl_mapper import jv_gle
-		self.make_gl_entries(jv_gle)
+		from accounts.doctype.journal_voucher.gl_mapper import gl_mapper
+		self.make_gl_entries(gl_mapper)
 	
 	def on_cancel(self):
 		self.delete_gl_entries()

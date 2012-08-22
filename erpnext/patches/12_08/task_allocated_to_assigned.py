@@ -1,15 +1,18 @@
 from __future__ import unicode_literals
 import webnotes
+import webnotes.model
 
-def execute():
-	from webnotes.widgets.form.assign_to import add
+def execute():	
 	for t in webnotes.conn.sql("""select * from tabTask 
 		where ifnull(allocated_to, '')!=''""", as_dict=1):
-		add({
-			'doctype': "Task",
-			'name': t['name'],
-			'assign_to': t['allocated_to'],
+		
+		webnotes.model.insert({
+			'doctype':'ToDo',
+			'parenttype': "Task",
+			'parent': t['name'],
+			'owner': t['allocated_to'],
 			'assigned_by': t['owner'],
 			'description': t['subject'],
-			'date': t['creation']
+			'priority': 'Medium',
+			'creation': t['creation']		
 		})

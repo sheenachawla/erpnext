@@ -25,7 +25,7 @@ def get_balance_on(account, dt):
 	acc = webnotes.conn.get_value('Account', account, \
 		['lft', 'rgt', 'debit_or_credit', 'is_pl_account'], as_dict=1)
 	cond = ""
-	if acc['is_pl_account'] == 'Yes':
+	if acc.is_pl_account == 'Yes':
 		year_start_date = webnotes.conn.sql("select year_start_date from `tabFiscal Year` \
 			where year_start_date < %s order by year_start_date limit 1", dt)
 		year_start_date = year_start_date and year_start_date[0][0] or ''
@@ -56,19 +56,21 @@ class GLController(DocListController):
 		
 	def make_gl_entries(self, mappers):
 		for mapper in mappers:
-			if mapper.get('table_field'):
-				for row in self.doclist.get({'parentfield':mapper.get('table_field')}):
-					if mapper.get('table_field') != 'purchase_tax_details' or row.get('category') != 'For Valuation':
-						self.make_single_gl_entry(mapper, child_obj = row)
+			if mapper.get('__table_field'):
+				for row in self.doclist.get({'parentfield':mapper.get('__table_field')}):
+					if not mapper.get('__condition') or \
+						(mapper.get('__condition') and eval(mapper.get('__condition'))):
+						self.make_single_gl_entry(mapper, row)
 			else:
-				self.make_single_gl_entry(mapper)
+				self.make_single_gl_entry(mapper, self.doc)
 					
 		self.validate_total_debit_credit()
 
-	def make_single_gl_entry(self, mapper, child_obj):
+	def make_single_gl_entry(self, mapper, doc):
 		gle = {'doctype': 'GL Entry'}
 		for k in mapper:
-			gle[k] = self.get_value(mapper[k], child_obj)
+			if not k.startswith('__'):
+				gle[k] = self.get_value(mapper[k], doc)
 		
 		# if debit or credit is negative, swap value
 		if flt(gle['debit']) < 0 or flt(gle['credit']) < 0:
@@ -81,11 +83,11 @@ class GLController(DocListController):
 		self.total_debit += flt(gle['debit'])
 		self.total_credit += flt(gle['credit'])
 		
-	def get_value(self, fld, child_obj):
+	def get_value(self, fld, doc):
 		if fld.startswith('par:'):
 			return self.doc.get(fld[4:])
 		else:
-			return child_obj.get(fld)
+			return doc.get(fld)
 		
 	def validate_total_debit_credit(self):
 		if abs(self.total_debit - self.total_credit) > 0.001:

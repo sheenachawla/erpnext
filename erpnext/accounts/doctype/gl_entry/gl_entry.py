@@ -85,10 +85,10 @@ class GLEntryController(DocListController):
 			msgprint("Ledger Entry not allowed against Account %s as it is Group" 
 				% self.doc.account, raise_exception=webnotes.ValidationError)
 			
-		# Account has been freezed for other users except account manager
+		# Account has been frozen for other users except account manager
 		if acc[1]== 'Yes' and not adv_adj and 'Accounts Manager' not in webnotes.user.get_roles():
-			msgprint("Account %s has been freezed. Only Accounts Manager can do \
-				transaction against this account." % self.doc.account, raise_exception=webnotes.ValidationError)
+			msgprint("Account %s has been frozen. Only user with role 'Accounts Manager' can make \
+				transactions against this account." % self.doc.account, raise_exception=webnotes.ValidationError)
 			
 		# Check whether account is within the company
 		if acc[2] != self.doc.company:

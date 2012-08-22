@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 import webnotes
 
 def execute():
+	return
 	# add index
 	webnotes.conn.commit()
 	try:

@@ -149,7 +149,6 @@ patch_dict = {
 		'report_supplier_quotations',
 		'task_allocated_to_assigned',
 		'change_profile_permission',
-		'accounts_cleanup',
 	],
 
 }

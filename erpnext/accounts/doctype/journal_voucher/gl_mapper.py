@@ -1,6 +1,6 @@
-jv_gle = [
+gl_mapper = [
 	{
-		'table_field'		: 'entries',
+		'__table_field'		: 'entries',
 		'account'			: 'account',
 		'party'				: 'party',
 		'debit'				: 'debit',
