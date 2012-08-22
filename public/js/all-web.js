@@ -679,7 +679,7 @@ wn.views.add_list_btn=function(parent,doctype){$(parent).append(repl('<span clas
 /*
  *	lib/js/wn/views/pageview.js
  */
-wn.provide('wn.views.pageview');wn.provide('wn.pages');wn.views.pageview={with_page:function(name,callback){if(!wn.model.has('Page',name)){wn.call({method:'webnotes.widgets.page.getpage',args:{'name':name},callback:function(r){wn.model.sync(r.docs);callback();}});}else{callback();}},show:function(name){if(!name)
+wn.provide('wn.views.pageview');wn.provide('wn.pages');wn.views.pageview={with_page:function(name,callback){if(!wn.model.has('Page',name)){wn.call({method:'core.doctype.page.page.get',args:{'page_name':name},callback:function(r){wn.model.sync(r.message);callback();}});}else{callback();}},show:function(name){if(!name)
 name=(wn.boot?wn.boot.home_page:window.page_name);wn.views.pageview.with_page(name,function(r){if(r&&r.exc){if(!r['403'])wn.container.change_to('404');}else if(!wn.pages[name]){new wn.views.Page(name);}
 wn.container.change_to(name);});}}
 wn.views.Page=Class.extend({init:function(name,wrapper){this.name=name;var me=this;wn.pages[name]=this;if(name==window.page_name){this.wrapper=$('#page-'+name).get(0);this.wrapper.label=document.title||window.page_name;this.wrapper.page_name=window.page_name;wn.contents[window.page_name]=this.wrapper;}else{this.pagedoc=wn.model.get('Page',this.name).doc;this.wrapper=wn.container.add_page(this.name);this.wrapper.label=this.pagedoc.get('title')||this.pagedoc.get('name');this.wrapper.page_name=this.pagedoc.get('name');this.wrapper.innerHTML=this.pagedoc.get('content');wn.dom.eval(this.pagedoc.get('script',''));wn.dom.set_style(this.pagedoc.get('style',''));this.trigger('load',this.wrapper);}
