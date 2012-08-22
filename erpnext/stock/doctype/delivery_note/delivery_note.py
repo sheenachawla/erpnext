@@ -21,6 +21,7 @@ from webnotes.model.doc import make_autoname
 from webnotes.model.controller import getlist
 from webnotes.model.code import get_obj
 from webnotes import msgprint
+from webnotes.model import get_controller
 
 import webnotes.model
 from utilities.transaction_base import TransactionBase
@@ -250,7 +251,7 @@ class DeliveryNoteController(TransactionBase):
 		# create stock ledger entry
 		self.update_stock_ledger(update_stock = 1)
 
-		self.credit_limit()
+		self.check_credit_limit()
 
 		# set DN status
 		webnotes.conn.set(self.doc, 'status', 'Submitted')
@@ -367,15 +368,16 @@ class DeliveryNoteController(TransactionBase):
 		})
 
 
-	def credit_limit(self):
+	def check_credit_limit(self):
 		"""check credit limit of items in DN Detail which are not fetched from sales order"""
-		amount, total = 0, 0
-		for d in getlist(self.doclist, 'delivery_note_details'):
+		amount = 0
+		for d in self.doclist.get({'parentfield': 'delivery_note_details'}):
 			if not d.prevdoc_docname:
 				amount += d.amount
-		if amount != 0:
+		if amount > 0:
 			total = (amount/self.doc.net_total)*self.doc.grand_total
-			get_obj('Sales Common').check_credit(self, total)
+			get_controller('Party',self.doc.party).check_credit_limit(self.doc.company, total)
+			
 
 
 	def on_update(self):

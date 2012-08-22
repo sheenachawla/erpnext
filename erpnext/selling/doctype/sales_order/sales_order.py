@@ -23,6 +23,8 @@ from webnotes.model.doc import make_autoname
 from webnotes.model.controller import getlist
 from webnotes.model.code import get_obj
 from webnotes import msgprint
+from webnotes.model import get_controller
+
 	
 
 from utilities.transaction_base import TransactionBase
@@ -373,8 +375,7 @@ class DocType(TransactionBase):
 	def on_submit(self):
 		self.check_prev_docstatus()		
 		self.update_stock_ledger(update_stock = 1)
-		get_obj('Sales Common').check_credit(self,self.doc.grand_total)
-		
+		get_controller('Party',self.doc.party).check_credit_limit(self.doc.company, self.doc.grand_total)
 		# Check for Approving Authority
 		get_obj('Authorization Control').validate_approving_authority(self.doc.doctype, self.doc.grand_total, self)
 		

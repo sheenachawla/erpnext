@@ -116,22 +116,7 @@ class AccountController(DocListController):
 		import webnotes
 		import webnotes.utils.nestedset
 		webnotes.utils.nestedset.update_nsm(self)		
-			
-	def check_credit_limit(self, account, company, tot_outstanding=0):
-		# Get credit limit
-		credit_limit_from = 'Customer'
-		credit_limit = webnotes.conn.get_value('Account', account, 'credit_limit')
-		if not credit_limit:
-			credit_limit = webnotes.conn.get_value('Company', company, 'credit_limit')
-			credit_limit_from = 'Company'
-		
-		# If outstanding greater than credit limit and not authorized person raise exception
-		if credit_limit > 0 and flt(tot_outstanding) > credit_limit and not self.get_authorized_user():
-			msgprint("Total Outstanding amount (%s) for <b>%s</b> can not be greater than \
-				credit limit (%s). To change your credit limit settings, please update the <b>%s</b>" \
-				% (fmt_money(tot_outstanding), account, fmt_money(credit_limit), 
-				credit_limit_from), raise_exception=webnotes.ValidationError)
-			
+					
 	def get_authorized_user(self):
 		if webnotes.conn.get_value('Global Defaults', None, 'credit_controller') in webnotes.user.get_roles():
 			return 1

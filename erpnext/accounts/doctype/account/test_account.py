@@ -106,14 +106,7 @@ class TestAccount(TestBase):
 		
 	def get_rgt(self, acc):
 		return webnotes.conn.get_value("Account", acc, "rgt")
-		
-	def test_credit_limit(self):
-		acc = base_account.copy()
-		acc.update({'credit_limit': 100000})
-		acc_controller = webnotes.model.insert(acc)
-		self.assertRaises(webnotes.ValidationError, acc_controller.check_credit_limit, \
-			acc_controller.doc.name, acc_controller.doc.company, 200000)
-			
+					
 	def test_account_deletion(self):		
 		# successfull deletion
 		acc = webnotes.model.insert(base_account)

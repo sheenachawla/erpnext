@@ -57,14 +57,10 @@ class GLEntryController(DocListController):
 		
 	def check_credit_limit(self):
 		"""Total outstanding can not be greater than credit limit for any time for any customer"""
-		if self.doc.party:
-			tot_outstanding = 0
-			dbcr = webnotes.conn.sql("select sum(debit), sum(credit) from `tabGL Entry` \
-				where party = '%s' and company = %s", (self.doc.party, self.doc.company))
-			if dbcr:
-				tot_outstanding = flt(dbcr[0][0]) - flt(dbcr[0][1]) + flt(self.doc.debit) - flt(self.doc.credit)
-
-			get_controller('Party',self.doc.party).check_credit_limit(self.doc.company, tot_outstanding)
+		if self.doc.party and flt(self.doc.debit) > flt(self.doc.credit) \
+			and webnotes.conn.get_value('Party', self.doc.party, 'party_type') == 'Customer':
+			curr_amt = flt(self.doc.debit) - flt(self.doc.credit)
+			get_controller('Party',self.doc.party).check_credit_limit(self.doc.company, curr_amt)
 
 	def no_opening_entry_against_pl_account(self):
 		if self.doc.is_opening=='Yes':
