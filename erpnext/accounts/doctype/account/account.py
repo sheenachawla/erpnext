@@ -16,7 +16,7 @@
 
 from __future__ import unicode_literals
 import webnotes
-from webnotes.utils import flt, fmt_money
+from webnotes.utils import flt
 from webnotes import msgprint
 from webnotes.model.controller import DocListController
 
@@ -49,10 +49,12 @@ class AccountController(DocListController):
 				msgprint("You can not assign itself as parent account"
 					, raise_exception=webnotes.CircularLinkError)
 			elif not self.doc.is_pl_account or not self.doc.debit_or_credit:
-				par = webnotes.conn.get_value("Account", self.doc.parent_account, ["is_pl_account", "debit_or_credit"])
+				par = webnotes.conn.get_value("Account", \
+					self.doc.parent_account, ["is_pl_account", "debit_or_credit"])
 				self.doc.is_pl_account = par[0]
 				self.doc.debit_or_credit = par[1]
-		elif self.doc.account_name not in ['Income','Source of Funds (Liabilities)', 'Expenses','Application of Funds (Assets)']:
+		elif self.doc.account_name not in ['Income','Source of Funds (Liabilities)',\
+		 	'Expenses','Application of Funds (Assets)']:
 			msgprint("Parent Account is mandatory", raise_exception=webnotes.MandatoryError)
 	
 	def validate_duplicate_account(self):
@@ -107,7 +109,7 @@ class AccountController(DocListController):
 			return 1
 
 	def check_gle_exists(self):
-		return webnotes.conn.exists("GL Entry", {"account": self.doc.name, "is_cancelled": "No"})
+		return webnotes.conn.exists("GL Entry", {"account": self.doc.name})
 
 	def on_update(self):
 		self.update_nsm_model()		
@@ -117,9 +119,11 @@ class AccountController(DocListController):
 		import webnotes.utils.nestedset
 		webnotes.utils.nestedset.update_nsm(self)		
 					
-	def get_authorized_user(self):
-		if webnotes.conn.get_value('Global Defaults', None, 'credit_controller') in webnotes.user.get_roles():
-			return 1
+	def on_trash(self): 
+		self.validate_before_trash()
+		# rebuild tree
+		from webnotes.utils.nestedset import update_remove_node
+		update_remove_node('Account', self.doc.name)
 
 	def validate_before_trash(self):
 		"""Account with with existing gl entries cannot be inactive"""
@@ -130,16 +134,6 @@ class AccountController(DocListController):
 		if webnotes.conn.exists("Account", {'parent_account': self.doc.name}):
 			msgprint("Child account exists for this account. You can not trash this account."
 				, raise_exception=webnotes.ValidationError)
-
-	def on_trash(self): 
-		self.validate_before_trash()
-		# rebuild tree
-		from webnotes.utils.nestedset import update_remove_node
-		update_remove_node('Account', self.doc.name)
-		
-		# delete all cancelled gl entry of this account
-		webnotes.conn.sql("delete from `tabGL Entry` where account = %s \
-			and ifnull(is_cancelled, 'No') = 'Yes'", self.doc.name)
 	
 	def on_rename(self,newdn,olddn):
 		new_name = newdn.split(" - ")

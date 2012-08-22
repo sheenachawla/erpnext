@@ -28,7 +28,6 @@ class GLEntryController(DocListController):
 		self.validate_zero_value_transaction()
 		self.pl_must_have_cost_center()
 		self.check_credit_limit()
-		self.no_opening_entry_against_pl_account()
 	
 	def check_mandatory(self):
 		# Following fields are mandatory in GL Entry
@@ -61,12 +60,6 @@ class GLEntryController(DocListController):
 			and webnotes.conn.get_value('Party', self.doc.party, 'party_type') == 'Customer':
 			curr_amt = flt(self.doc.debit) - flt(self.doc.credit)
 			get_controller('Party',self.doc.party).check_credit_limit(self.doc.company, curr_amt)
-
-	def no_opening_entry_against_pl_account(self):
-		if self.doc.is_opening=='Yes':
-			if webnotes.conn.get_value('Account', self.doc.account, 'is_pl_account') == 'Yes':
-				msgprint("For opening balance entry account can not be a PL account"\
-					, raise_exception=webnotes.ValidationError)
 		
 	def on_update(self, adv_adj=0):
 		# Account must be ledger, active and not freezed
@@ -78,20 +71,20 @@ class GLEntryController(DocListController):
 		"""Account must be ledger, active and not freezed"""
 		
 		acc = webnotes.conn.get_value('Account', self.doc.account, \
-			['group_or_ledger', 'freeze_account', 'company'])
+			['group_or_ledger', 'freeze_account', 'company'], as_dict=1)
 		
 		# Checks whether Account is a ledger
-		if acc[0]=='Group':
+		if acc.group_or_ledger=='Group':
 			msgprint("Ledger Entry not allowed against Account %s as it is Group" 
 				% self.doc.account, raise_exception=webnotes.ValidationError)
 			
 		# Account has been frozen for other users except account manager
-		if acc[1]== 'Yes' and not adv_adj and 'Accounts Manager' not in webnotes.user.get_roles():
+		if acc.freeze_account== 'Yes' and not adv_adj and 'Accounts Manager' not in webnotes.get_roles():
 			msgprint("Account %s has been frozen. Only user with role 'Accounts Manager' can make \
 				transactions against this account." % self.doc.account, raise_exception=webnotes.ValidationError)
 			
 		# Check whether account is within the company
-		if acc[2] != self.doc.company:
+		if acc.company != self.doc.company:
 			msgprint("Account: %s does not belong to the company: %s" 
 				% (self.doc.account, self.doc.company), raise_exception=webnotes.ValidationError)
 			
@@ -99,8 +92,8 @@ class GLEntryController(DocListController):
 		"""If posting date is before freezing date, GL Entry restricted to authorized person"""
 		if not adv_adj:
 			acc_frozen_info = webnotes.conn.get_value('Global Defaults', None, ['acc_frozen_upto', 'bde_auth_role'], as_dict=1)
-			if acc_frozen_info and acc_frozen_info['acc_frozen_upto']:
-				if getdate(self.doc.posting_date) <= getdate(acc_frozen_info['acc_frozen_upto']) \
-					and not acc_frozen_info['bde_auth_role'] in webnotes.user.get_roles():
+			if acc_frozen_info and acc_frozen_info.get('acc_frozen_upto'):
+				if getdate(self.doc.posting_date) <= getdate(acc_frozen_info.get('acc_frozen_upto')) \
+					and not acc_frozen_info.get('bde_auth_role') in webnotes.get_roles():
 					msgprint("You are not authorized to do/modify back dated accounting entries before %s." 
-						% getdate(acc_frozen_info['acc_frozen_upto']).strftime('%d-%m-%Y'), raise_exception=webnotes.ValidationError)
+						% getdate(acc_frozen_info.get('acc_frozen_upto')).strftime('%d-%m-%Y'), raise_exception=webnotes.ValidationError)
