@@ -10,8 +10,6 @@ jv_gle = [
 		'voucher_type'		: 'par:doctype',
 		'voucher_no'		: 'par:name',
 		'aging_date'		: 'par:aging_date',
-		'against_voucher'	: 'par:doctype',
-		'against_voucher_no': 'par:name',
 		'company'			: 'par:company',
 		'is_opening'		: 'par:is_opening',
 		'remarks'			: 'par:remarks'

@@ -590,19 +590,6 @@ class DocType(TransactionBase):
 					raise Exception
 
 
-# **************************************************************************************************************************************************
-
-	def check_credit(self,obj,grand_total):
-		acc_head = webnotes.conn.sql("select name from `tabAccount` where company = '%s' and master_name = '%s'"%(obj.doc.company, obj.doc.customer))
-		if acc_head:
-			tot_outstanding = 0
-			dbcr = webnotes.conn.sql("select sum(debit), sum(credit) from `tabGL Entry` where account = '%s' and ifnull(is_cancelled, 'No')='No'" % acc_head[0][0])
-			if dbcr:
-				tot_outstanding = flt(dbcr[0][0])-flt(dbcr[0][1])
-
-			exact_outstanding = flt(tot_outstanding) + flt(grand_total)
-			get_obj('Account',acc_head[0][0]).check_credit_limit(acc_head[0][0], obj.doc.company, exact_outstanding)
-
 	def validate_fiscal_year(self,fiscal_year,transaction_date,field_label):
 		fy=webnotes.conn.sql("select year_start_date from `tabFiscal Year` where name='%s'"%fiscal_year)
 		ysd=fy and fy[0][0] or ""

@@ -17,17 +17,16 @@
 from __future__ import unicode_literals
 import webnotes
 from webnotes.utils import flt
-from webnotes.model.utils import getlist
-from webnotes import msgprint	
 from accounts.utils import GLController
 
-class JVController(GLController):
+class JournalVoucherController(GLController):
 	def validate(self):
 		self.get_total()
 		self.manage_opening_entry()
 		
 	def get_total(self):
-		for d in getlist(self.doclist, 'entries'):
+		self.doc.total_debit, self.doc.total_credit = 0, 0
+		for d in self.doclist.get({'parentfield': 'entries'}):
 			self.doc.total_debit += flt(d.debit)
 			self.doc.total_credit += flt(d.credit)
 		
@@ -38,10 +37,10 @@ class JVController(GLController):
 
 	def on_submit(self):
 		from accounts.doctype.journal_voucher.gl_mapper import jv_gle
-		make_gl_entries(jv_gle)
+		self.make_gl_entries(jv_gle)
 	
 	def on_cancel(self):
-		delete_gl_entries()
+		self.delete_gl_entries()
 		
 		
 # TODO : 

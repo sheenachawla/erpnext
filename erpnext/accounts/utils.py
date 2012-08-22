@@ -18,7 +18,7 @@ from __future__ import unicode_literals
 import webnotes
 import webnotes.model
 from webnotes.utils import flt
-from webnotes.model.utils import getlist
+from webnotes import msgprint
 from webnotes.model.controller import DocListController
 	
 def get_balance_on(account, dt):
@@ -51,29 +51,31 @@ def add_cost_center(args):
 	return webnotes.model.insert(args)
 
 class GLController(DocListController):
+	def setup(self):
+		self.total_debit, self.total_credit = 0, 0
+		
 	def make_gl_entries(self, mappers):
-		for each in mappers:
-			for fld in mappers[each]:
-				if fld.get('table_field'):
-					for row in getlist(obj.doclist, fld.get('table_field')):
-						if fld.get('table_field') != 'purchase_tax_details' or row.get('category') != 'For Valuation':
-							self.make_single_gl_entry(mappers[each], child_obj = row)
-				else:
-					self.make_single_gl_entry(mappers[each])
+		for mapper in mappers:
+			if mapper.get('table_field'):
+				for row in self.doclist.get({'parentfield':mapper.get('table_field')}):
+					if mapper.get('table_field') != 'purchase_tax_details' or row.get('category') != 'For Valuation':
+						self.make_single_gl_entry(mapper, child_obj = row)
+			else:
+				self.make_single_gl_entry(mapper)
 					
 		self.validate_total_debit_credit()
 
 	def make_single_gl_entry(self, mapper, child_obj):
-		gle = {}
+		gle = {'doctype': 'GL Entry'}
 		for k in mapper:
 			gle[k] = self.get_value(mapper[k], child_obj)
 		
+		# if debit or credit is negative, swap value
 		if flt(gle['debit']) < 0 or flt(gle['credit']) < 0:
 			tmp=gle['debit']
 			gle['debit'], gle['credit'] = abs(flt(gle['credit'])), abs(flt(tmp))
-		
-		# insert gl entry
-		webnotes.model.insert_variants('GL Entry', [gle])
+		# insert gl entry		
+		webnotes.model.insert(gle)
 		
 		# add to total_debit, total_credit
 		self.total_debit += flt(gle['debit'])
