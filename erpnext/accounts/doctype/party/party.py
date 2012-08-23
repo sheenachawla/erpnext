@@ -17,7 +17,7 @@
 from __future__ import unicode_literals
 import webnotes
 import webnotes.model
-from webnotes.utils import cstr, get_defaults
+from webnotes.utils import cstr, get_defaults, flt, fmt_money
 from webnotes.model.doc import Document, make_autoname
 from webnotes import msgprint
 from webnotes.model.controller import DocListController
@@ -66,12 +66,15 @@ class PartyController(DocListController):
 		total_outstanding = flt(prev_outstanding) + flt(current_amount)
 		
 		# If outstanding greater than credit limit and not authorized person raise exception
-		if credit_limit > 0 and flt(tot_outstanding) > credit_limit and not self.get_authorized_user():
+		if credit_limit > 0 and flt(total_outstanding) > credit_limit and not self.get_authorized_user():
 			msgprint("Total Outstanding amount (%s) for <b>%s</b> can not be greater than \
 				credit limit (%s). To change your credit limit settings, please update the <b>%s</b>" \
-				% (fmt_money(tot_outstanding), account, fmt_money(credit_limit), 
+				% (fmt_money(total_outstanding), self.doc.name, fmt_money(credit_limit), 
 				self.doc.credit_limit and 'Customer' or 'Company'), raise_exception=webnotes.ValidationError)
 
+	def get_authorized_user(self):
+		if webnotes.conn.get_value('Global Defaults', None, 'credit_controller') in webnotes.user.get_roles():
+			return 1
 
 	def on_trash(self):
 		"""

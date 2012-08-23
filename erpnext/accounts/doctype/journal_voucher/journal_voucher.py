@@ -21,8 +21,8 @@ from accounts.utils import GLController
 
 class JournalVoucherController(GLController):
 	def validate(self):
-		self.get_total()
-		self.manage_opening_entry()
+		if self.doc.docstatus == 0:
+			self.get_total()
 		
 	def get_total(self):
 		self.doc.total_debit, self.doc.total_credit = 0, 0
@@ -30,11 +30,6 @@ class JournalVoucherController(GLController):
 			self.doc.total_debit += flt(d.debit)
 			self.doc.total_credit += flt(d.credit)
 		
-	def manage_opening_entry(self):
-		if not self.doc.is_opening:
-			self.doc.is_opening='No'
-		self.doc.aging_date = self.doc.posting_date
-
 	def on_submit(self):
 		from accounts.doctype.journal_voucher.gl_mapper import gl_mapper
 		self.make_gl_entries(gl_mapper)

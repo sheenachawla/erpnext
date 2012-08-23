@@ -40,11 +40,6 @@ base_acc = [
 	}
 ]
 
-base_jv = {
-	'doctype': 'Journal Voucher', 'naming_series': 'JV',
-	'posting_date': '2012-04-01', 'company': 'East Wind Corporation', '__islocal': 1
-}
-
 class TestJournalVoucher(TestBase):
 	def setUp(self):
 		super(TestJournalVoucher, self).setUp()
@@ -52,23 +47,29 @@ class TestJournalVoucher(TestBase):
 		for acc in base_acc:
 			webnotes.model.insert(acc)
 			
-	def get_jv_doclist(self):
-		entry_line1 = {
-			'doctype': 'Journal Voucher Detail', 'account': 'test_party_account - EW',
-			'party': 'test_party', 'credit': 100, 'parentfield': 'entries', '__islocal': 1
-		}
-		entry_line2 = {
-			'doctype': 'Journal Voucher Detail', 'account': 'test_bank_account - EW',
-			'debit': 100, 'parentfield': 'entries', '__islocal': 1
-		}
-		return [base_jv, entry_line1, entry_line2]
+	def get_base_jv(self):
+		jv = [
+			{
+				'doctype': 'Journal Voucher', 'naming_series': 'JV',
+				'posting_date': '2012-04-01', 'company': 'East Wind Corporation', '__islocal': 1
+			},
+			{
+				'doctype': 'Journal Voucher Detail', 'account': 'test_party_account - EW',
+				'party': 'test_party', 'credit': 100, 'parentfield': 'entries', '__islocal': 1
+			},
+			{
+				'doctype': 'Journal Voucher Detail', 'account': 'test_bank_account - EW',
+				'debit': 100, 'parentfield': 'entries', '__islocal': 1
+			}
+		]
+		return jv
 				
 	def test_jv_creation(self):
-		webnotes.model.insert(self.get_jv_doclist())
+		webnotes.model.insert(self.get_base_jv())
 		self.assertTrue(webnotes.conn.exists('Journal Voucher', 'JV00001'))
 		
 	def test_jv_submission(self):
-		jv_ctlr = get_controller(self.get_jv_doclist())
+		jv_ctlr = get_controller(self.get_base_jv())
 		jv_ctlr.submit()
 		
 		#check gl entry record
@@ -84,10 +85,28 @@ class TestJournalVoucher(TestBase):
 		}))
 		
 	def test_jv_cancellation(self):
-		jv_ctlr = get_controller(self.get_jv_doclist())
+		jv_ctlr = get_controller(self.get_base_jv())
 		jv_ctlr.submit()
 		jv_ctlr.cancel()
 		# no gl entry
 		self.assertFalse(webnotes.conn.exists('GL Entry', {
 			'voucher_type': 'Journal Voucher', 'voucher_no': 'JV00001'
+		}))
+	
+	def test_debit_equals_credit(self):
+		jv = self.get_base_jv()
+		jv[1].update({'credit': 200})
+		self.assertRaises(webnotes.ValidationError, get_controller(jv).submit)
+		
+		
+	def test_negative_debit_credit(self):
+		jv = self.get_base_jv()
+		jv[1].update({'credit': -100})
+		jv[2].update({'debit': -100})
+		get_controller(jv).submit()
+		
+		self.assertTrue(webnotes.conn.exists('GL Entry', {
+			'account': 'test_bank_account - EW', 'credit': 100, 
+			'posting_date': '2012-04-01', 'voucher_type': 'Journal Voucher',
+			'voucher_no': 'JV00001', 'company': 'East Wind Corporation'
 		}))
