@@ -6006,6 +6006,10 @@ div.dialog_row table td textarea {
 	Filter:alpha(opacity=100); /* For IE8 and earlier */
 }
 
+.slick-mandatory-column {
+	background-color: #ffe;
+}
+
 /*
  *	lib/css/ui/fonts.css
  */
