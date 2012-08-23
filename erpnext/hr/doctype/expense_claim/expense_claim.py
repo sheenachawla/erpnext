@@ -18,9 +18,6 @@ from __future__ import unicode_literals
 import webnotes
 
 from webnotes.utils import add_days, cstr, flt
-
-from webnotes.model.controller import getlist
-from webnotes.model.code import get_obj
 from webnotes import session, form, msgprint
 
 sql = webnotes.conn.sql
