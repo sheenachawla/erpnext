@@ -5,7 +5,7 @@
 	{
 		u'creation': '2012-08-20 18:28:34',
 		u'docstatus': 0,
-		u'modified': '2012-08-24 14:36:58',
+		u'modified': '2012-08-24 14:40:38',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -116,7 +116,7 @@
 	# DocField
 	{
 		'depends_on': u"eval:doc.party_type=='Customer'",
-		'description': u'Credit applicable for the period',
+		'description': u'Credit applicable for this period',
 		u'doctype': u'DocField',
 		'fieldname': u'credit_days',
 		'fieldtype': u'Currency',
