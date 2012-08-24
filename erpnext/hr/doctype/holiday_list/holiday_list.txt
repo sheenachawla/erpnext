@@ -3,21 +3,21 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-03-27 14:35:57',
-		'docstatus': 0,
-		'modified': '2012-03-27 14:35:57',
-		'modified_by': u'Administrator',
-		'owner': u'Administrator'
+		u'creation': '2012-07-03 13:30:39',
+		u'docstatus': 0,
+		u'modified': '2012-08-24 18:23:15',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
 	},
 
 	# These values are common for all DocType
 	{
 		'allow_trash': 1,
 		'colour': u'White:FFF',
-		'doctype': 'DocType',
-		'document_type': u'Master',
+		'doctype': u'DocType',
+		'document_type': u'Setup',
 		'module': u'HR',
-		'name': '__common__',
+		u'name': u'__common__',
 		'section_style': u'Simple',
 		'server_code_error': u' ',
 		'show_in_menu': 0,
@@ -27,7 +27,7 @@
 	# These values are common for all DocField
 	{
 		'doctype': u'DocField',
-		'name': '__common__',
+		u'name': u'__common__',
 		'parent': u'Holiday List',
 		'parentfield': u'fields',
 		'parenttype': u'DocType'
@@ -38,7 +38,7 @@
 		'cancel': 1,
 		'create': 1,
 		'doctype': u'DocPerm',
-		'name': '__common__',
+		u'name': u'__common__',
 		'parent': u'Holiday List',
 		'parentfield': u'permissions',
 		'parenttype': u'DocType',
@@ -50,18 +50,13 @@
 
 	# DocType, Holiday List
 	{
-		'doctype': 'DocType',
+		u'doctype': u'DocType',
 		'name': u'Holiday List'
-	},
-
-	# DocPerm
-	{
-		'doctype': u'DocPerm'
 	},
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'trash_reason',
 		'fieldtype': u'Small Text',
 		'label': u'Trash Reason',
@@ -72,7 +67,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'holiday_list_name',
 		'fieldtype': u'Data',
 		'label': u'Holiday List Name',
@@ -84,7 +79,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'is_default',
 		'fieldtype': u'Check',
 		'label': u'Default',
@@ -93,7 +88,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'fiscal_year',
 		'fieldtype': u'Select',
 		'in_filter': 1,
@@ -107,7 +102,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'weekly_off',
 		'fieldtype': u'Select',
 		'label': u'Weekly Off',
@@ -120,7 +115,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'get_weekly_off_dates',
 		'fieldtype': u'Button',
 		'label': u'Get Weekly Off Dates',
@@ -130,7 +125,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'holiday_list_details',
 		'fieldtype': u'Table',
 		'label': u'Holidays',
@@ -143,11 +138,16 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'clear_table',
 		'fieldtype': u'Button',
 		'label': u'Clear Table',
 		'options': u'clear_table',
 		'permlevel': 0
+	},
+
+	# DocPerm
+	{
+		u'doctype': u'DocPerm'
 	}
 ]

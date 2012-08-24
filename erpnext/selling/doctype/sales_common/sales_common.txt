@@ -3,20 +3,22 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-03-27 14:36:14',
-		'docstatus': 0,
-		'modified': '2012-03-27 14:36:14',
-		'modified_by': u'Administrator',
-		'owner': u'Administrator'
+		u'creation': '2012-07-03 13:30:36',
+		u'docstatus': 0,
+		u'modified': '2012-08-24 18:07:42',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
 	},
 
 	# These values are common for all DocType
 	{
 		'colour': u'White:FFF',
-		'doctype': 'DocType',
+		'description': u'Deprecated',
+		'doctype': u'DocType',
+		'document_type': u'System',
 		'issingle': 1,
 		'module': u'Selling',
-		'name': '__common__',
+		u'name': u'__common__',
 		'section_style': u'Simple',
 		'server_code_error': u' ',
 		'show_in_menu': 0,
@@ -25,7 +27,7 @@
 
 	# DocType, Sales Common
 	{
-		'doctype': 'DocType',
+		u'doctype': u'DocType',
 		'name': u'Sales Common'
 	}
 ]

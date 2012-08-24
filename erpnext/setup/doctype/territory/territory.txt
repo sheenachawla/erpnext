@@ -3,11 +3,11 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-07-03 13:30:55',
-		'docstatus': 0,
-		'modified': '2012-07-12 10:01:47',
-		'modified_by': u'Administrator',
-		'owner': u'Administrator'
+		u'creation': '2012-07-03 13:30:55',
+		u'docstatus': 0,
+		u'modified': '2012-08-24 18:25:51',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
 	},
 
 	# These values are common for all DocType
@@ -18,11 +18,11 @@
 		'colour': u'White:FFF',
 		'default_print_format': u'Standard',
 		'description': u'You can create **Territories** If your organization operates in multiple regions (could be countries, states or cities). Once you group **Customers** by **Territories**, you can set annual targets for each **Item Group** and get reports that will show your actual performance in the territory v/s what you had planned.',
-		'doctype': 'DocType',
-		'document_type': u'Master',
+		'doctype': u'DocType',
+		'document_type': u'Setup',
 		'in_create': 1,
 		'module': u'Setup',
-		'name': '__common__',
+		u'name': u'__common__',
 		'name_case': u'Title Case',
 		'read_only': 1,
 		'search_fields': u'name,parent_territory,territory_manager',
@@ -35,7 +35,7 @@
 	# These values are common for all DocField
 	{
 		'doctype': u'DocField',
-		'name': '__common__',
+		u'name': u'__common__',
 		'parent': u'Territory',
 		'parentfield': u'fields',
 		'parenttype': u'DocType'
@@ -45,7 +45,7 @@
 	{
 		'amend': 0,
 		'doctype': u'DocPerm',
-		'name': '__common__',
+		u'name': u'__common__',
 		'parent': u'Territory',
 		'parentfield': u'permissions',
 		'parenttype': u'DocType',
@@ -55,73 +55,13 @@
 
 	# DocType, Territory
 	{
-		'doctype': 'DocType',
+		u'doctype': u'DocType',
 		'name': u'Territory'
-	},
-
-	# DocPerm
-	{
-		'cancel': 0,
-		'create': 0,
-		'doctype': u'DocPerm',
-		'permlevel': 1,
-		'role': u'Sales Manager',
-		'write': 0
-	},
-
-	# DocPerm
-	{
-		'cancel': 0,
-		'create': 0,
-		'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'Sales Manager',
-		'write': 0
-	},
-
-	# DocPerm
-	{
-		'cancel': 0,
-		'create': 0,
-		'doctype': u'DocPerm',
-		'permlevel': 1,
-		'role': u'Sales Master Manager',
-		'write': 0
-	},
-
-	# DocPerm
-	{
-		'cancel': 0,
-		'create': 0,
-		'doctype': u'DocPerm',
-		'permlevel': 1,
-		'role': u'Sales User',
-		'write': 0
-	},
-
-	# DocPerm
-	{
-		'cancel': 0,
-		'create': 0,
-		'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'Sales User',
-		'write': 0
-	},
-
-	# DocPerm
-	{
-		'cancel': 1,
-		'create': 1,
-		'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'Sales Master Manager',
-		'write': 1
 	},
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'trash_reason',
 		'fieldtype': u'Small Text',
 		'label': u'Trash Reason',
@@ -132,7 +72,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'territory_name',
 		'fieldtype': u'Data',
 		'label': u'Territory Name',
@@ -145,7 +85,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'parent_territory',
 		'fieldtype': u'Link',
 		'label': u'Parent Territory',
@@ -161,7 +101,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'Only leaf nodes are allowed in transaction',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'is_group',
 		'fieldtype': u'Select',
 		'label': u'Has Child Node',
@@ -174,7 +114,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'cb0',
 		'fieldtype': u'Column Break',
 		'permlevel': 0
@@ -184,7 +124,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'For reference',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'territory_manager',
 		'fieldtype': u'Link',
 		'in_filter': 1,
@@ -198,7 +138,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'lft',
 		'fieldtype': u'Int',
 		'hidden': 1,
@@ -215,7 +155,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'rgt',
 		'fieldtype': u'Int',
 		'hidden': 1,
@@ -232,7 +172,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'old_parent',
 		'fieldtype': u'Link',
 		'hidden': 1,
@@ -250,7 +190,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'Set Item Group-wise budgets on this Territory. You can also include seasonality by setting the Distribution.',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'target_details_section_break',
 		'fieldtype': u'Section Break',
 		'label': u'Territory Targets',
@@ -260,7 +200,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'target_details',
 		'fieldtype': u'Table',
 		'label': u'Target Details',
@@ -274,7 +214,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'Select Budget Distribution to unevenly distribute targets across months.',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'distribution_id',
 		'fieldtype': u'Link',
 		'label': u'Target Distribution',
@@ -282,5 +222,65 @@
 		'oldfieldtype': u'Link',
 		'options': u'Budget Distribution',
 		'permlevel': 0
+	},
+
+	# DocPerm
+	{
+		'cancel': 0,
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'permlevel': 1,
+		'role': u'Sales Manager',
+		'write': 0
+	},
+
+	# DocPerm
+	{
+		'cancel': 0,
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'Sales Manager',
+		'write': 0
+	},
+
+	# DocPerm
+	{
+		'cancel': 0,
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'permlevel': 1,
+		'role': u'Sales Master Manager',
+		'write': 0
+	},
+
+	# DocPerm
+	{
+		'cancel': 0,
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'permlevel': 1,
+		'role': u'Sales User',
+		'write': 0
+	},
+
+	# DocPerm
+	{
+		'cancel': 0,
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'Sales User',
+		'write': 0
+	},
+
+	# DocPerm
+	{
+		'cancel': 1,
+		'create': 1,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'Sales Master Manager',
+		'write': 1
 	}
 ]

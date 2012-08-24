@@ -3,11 +3,11 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-04-13 11:56:31',
-		'docstatus': 0,
-		'modified': '2012-06-07 18:41:50',
-		'modified_by': u'Administrator',
-		'owner': u'Administrator'
+		u'creation': '2012-07-03 13:30:54',
+		u'docstatus': 0,
+		u'modified': '2012-08-24 18:25:35',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
 	},
 
 	# These values are common for all DocType
@@ -15,10 +15,11 @@
 		'_last_update': u'1323840127',
 		'colour': u'White:FFF',
 		'default_print_format': u'Standard',
-		'doctype': 'DocType',
+		'doctype': u'DocType',
+		'document_type': u'Setup',
 		'issingle': 1,
 		'module': u'Setup',
-		'name': '__common__',
+		u'name': u'__common__',
 		'name_case': u'Title Case',
 		'section_style': u'Simple',
 		'show_in_menu': 1,
@@ -28,7 +29,7 @@
 	# These values are common for all DocField
 	{
 		'doctype': u'DocField',
-		'name': '__common__',
+		u'name': u'__common__',
 		'parent': u'Features Setup',
 		'parentfield': u'fields',
 		'parenttype': u'DocType',
@@ -39,7 +40,7 @@
 	{
 		'create': 1,
 		'doctype': u'DocPerm',
-		'name': '__common__',
+		u'name': u'__common__',
 		'parent': u'Features Setup',
 		'parentfield': u'permissions',
 		'parenttype': u'DocType',
@@ -50,25 +51,13 @@
 
 	# DocType, Features Setup
 	{
-		'doctype': 'DocType',
+		u'doctype': u'DocType',
 		'name': u'Features Setup'
-	},
-
-	# DocPerm
-	{
-		'doctype': u'DocPerm',
-		'role': u'System Manager'
-	},
-
-	# DocPerm
-	{
-		'doctype': u'DocPerm',
-		'role': u'Administrator'
 	},
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'materials',
 		'fieldtype': u'Section Break',
 		'label': u'Materials'
@@ -78,7 +67,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'To track item in sales and purchase documents based on their serial nos. This is can also used to track warranty details of the product.',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'fs_item_serial_nos',
 		'fieldtype': u'Check',
 		'label': u'Item Serial Nos'
@@ -88,7 +77,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'To track items in sales and purchase documents with batch nos<br><b>Preferred Industry: Chemicals etc</b>',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'fs_item_batch_nos',
 		'fieldtype': u'Check',
 		'label': u'Item Batch Nos'
@@ -98,7 +87,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'To track brand name in the following documents<br>\nDelivery Note, Enuiry, Purchase Request, Item, Purchase Order, Purchase Voucher, Purchaser Receipt, Quotation, Sales Invoice, Sales BOM, Sales Order, Serial No',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'fs_brands',
 		'fieldtype': u'Check',
 		'label': u'Brands'
@@ -107,7 +96,7 @@
 	# DocField
 	{
 		'description': u'To track items using barcode. You will be able to enter items in Delivery Note and Sales Invoice by scanning barcode of item.',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'fs_item_barcode',
 		'fieldtype': u'Check',
 		'label': u'Item Barcode'
@@ -115,7 +104,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'column_break0',
 		'fieldtype': u'Column Break'
 	},
@@ -124,7 +113,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'1. To maintain the customer wise item code and to make them searchable based on their code use this option',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'fs_item_advanced',
 		'fieldtype': u'Check',
 		'label': u'Item Advanced'
@@ -134,7 +123,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'If Sale BOM is defined, the actual BOM of the Pack is displayed as table.\nAvailable in Delivery Note and Sales Order',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'fs_packing_details',
 		'fieldtype': u'Check',
 		'label': u'Packing Detials'
@@ -144,7 +133,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'To get Item Group in details table',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'fs_item_group_in_details',
 		'fieldtype': u'Check',
 		'label': u'Item Groups in Details'
@@ -152,7 +141,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'sales_and_purchase',
 		'fieldtype': u'Section Break',
 		'label': u'Sales and Purchase'
@@ -162,7 +151,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'All export related fields like currency, conversion rate, export total, export grand total etc are available in <br>\nDelivery Note, POS, Quotation, Sales Invoice, Sales Order etc.',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'fs_exports',
 		'fieldtype': u'Check',
 		'label': u'Exports'
@@ -172,7 +161,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'All import related fields like currency, conversion rate, import total, import grand total etc are available in <br>\nPurchase Receipt, Supplier Quotation, Purchase Invoice, Purchase Order etc.',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'fs_imports',
 		'fieldtype': u'Check',
 		'label': u'Imports'
@@ -180,7 +169,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'column_break1',
 		'fieldtype': u'Column Break'
 	},
@@ -189,7 +178,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'Field available in Delivery Note, Quotation, Sales Invoice, Sales Order',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'fs_discounts',
 		'fieldtype': u'Check',
 		'label': u'Sales Discounts'
@@ -199,7 +188,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'Discount Fields will be available in Purchase Order, Purchase Receipt, Purchase Invoice',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'fs_purchase_discounts',
 		'fieldtype': u'Check',
 		'label': u'Purchase Discounts'
@@ -209,7 +198,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'To track any installation or commissioning related work after sales',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'fs_after_sales_installations',
 		'fieldtype': u'Check',
 		'label': u'After Sale Installations'
@@ -218,7 +207,7 @@
 	# DocField
 	{
 		'description': u'Available in \nBOM, Delivery Note, Purchase Invoice, Production Order, Purchase Order, Purchase Receipt, Sales Invoice, Sales Order, Stock Entry, Timesheet',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'fs_projects',
 		'fieldtype': u'Check',
 		'label': u'Projects'
@@ -228,7 +217,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'If you have Sales Team and Sale Partners (Channel Partners)  they can be tagged and maintain their contribution in the sales activity',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'fs_sales_extras',
 		'fieldtype': u'Check',
 		'label': u'Sales Extras'
@@ -236,7 +225,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'accounts',
 		'fieldtype': u'Section Break',
 		'label': u'Accounts'
@@ -246,7 +235,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'Check if you need automatic recurring invoices. After submitting any sales invoice, Recurring section will be visible.',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'fs_recurring_invoice',
 		'fieldtype': u'Check',
 		'label': u'Recurring Invoice'
@@ -254,7 +243,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'column_break2',
 		'fieldtype': u'Column Break'
 	},
@@ -263,7 +252,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'To enable <b>Point of Sale</b> features',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'fs_pos',
 		'fieldtype': u'Check',
 		'label': u'Point of Sale'
@@ -271,7 +260,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'production',
 		'fieldtype': u'Section Break',
 		'label': u'Production'
@@ -281,7 +270,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'If you involve in manufacturing activity<br>\nEnables item <b>Is Manufactured</b>',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'fs_manufacturing',
 		'fieldtype': u'Check',
 		'label': u'Manufacturing'
@@ -289,7 +278,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'column_break3',
 		'fieldtype': u'Column Break'
 	},
@@ -298,7 +287,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'If you follow Quality Inspection<br>\nEnables item QA Required and QA No in Purchase Receipt',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'fs_quality',
 		'fieldtype': u'Check',
 		'label': u'Quality'
@@ -306,7 +295,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'miscelleneous',
 		'fieldtype': u'Section Break',
 		'label': u'Miscelleneous'
@@ -316,7 +305,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'If you have long print formats, this feature can be used to split the page to be printed on multiple pages with all headers and footers on each page',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'fs_page_break',
 		'fieldtype': u'Check',
 		'label': u'Page Break'
@@ -324,7 +313,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'column_break4',
 		'fieldtype': u'Column Break'
 	},
@@ -333,9 +322,21 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'Enables <b>More Info.</b> in all documents',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'fs_more_info',
 		'fieldtype': u'Check',
 		'label': u'More Info'
+	},
+
+	# DocPerm
+	{
+		u'doctype': u'DocPerm',
+		'role': u'System Manager'
+	},
+
+	# DocPerm
+	{
+		u'doctype': u'DocPerm',
+		'role': u'Administrator'
 	}
 ]

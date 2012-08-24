@@ -3,20 +3,21 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-03-27 14:36:00',
-		'docstatus': 0,
-		'modified': '2012-03-27 14:36:00',
-		'modified_by': u'Administrator',
-		'owner': u'Administrator'
+		u'creation': '2012-07-03 13:30:40',
+		u'docstatus': 0,
+		u'modified': '2012-08-24 18:24:09',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
 	},
 
 	# These values are common for all DocType
 	{
 		'_last_update': u'1311621379',
 		'colour': u'White:FFF',
-		'doctype': 'DocType',
+		'doctype': u'DocType',
+		'document_type': u'Setup',
 		'module': u'HR',
-		'name': '__common__',
+		u'name': u'__common__',
 		'section_style': u'Simple',
 		'server_code_error': u' ',
 		'show_in_menu': 0,
@@ -27,7 +28,7 @@
 	# These values are common for all DocField
 	{
 		'doctype': u'DocField',
-		'name': '__common__',
+		u'name': u'__common__',
 		'parent': u'Salary Structure',
 		'parentfield': u'fields',
 		'parenttype': u'DocType'
@@ -37,7 +38,7 @@
 	{
 		'amend': 0,
 		'doctype': u'DocPerm',
-		'name': '__common__',
+		u'name': u'__common__',
 		'parent': u'Salary Structure',
 		'parentfield': u'permissions',
 		'parenttype': u'DocType',
@@ -46,97 +47,13 @@
 
 	# DocType, Salary Structure
 	{
-		'doctype': 'DocType',
+		u'doctype': u'DocType',
 		'name': u'Salary Structure'
-	},
-
-	# DocPerm
-	{
-		'cancel': 0,
-		'create': 0,
-		'doctype': u'DocPerm',
-		'match': u'owner',
-		'permlevel': 0,
-		'submit': 0,
-		'write': 0
-	},
-
-	# DocPerm
-	{
-		'cancel': 0,
-		'create': 0,
-		'doctype': u'DocPerm',
-		'match': u'owner',
-		'permlevel': 0,
-		'submit': 0,
-		'write': 0
-	},
-
-	# DocPerm
-	{
-		'cancel': 0,
-		'create': 0,
-		'doctype': u'DocPerm',
-		'match': u'owner',
-		'permlevel': 0,
-		'submit': 0,
-		'write': 0
-	},
-
-	# DocPerm
-	{
-		'cancel': 0,
-		'create': 0,
-		'doctype': u'DocPerm',
-		'match': u'owner',
-		'permlevel': 0,
-		'submit': 0,
-		'write': 0
-	},
-
-	# DocPerm
-	{
-		'doctype': u'DocPerm',
-		'permlevel': 1,
-		'role': u'All',
-		'write': 0
-	},
-
-	# DocPerm
-	{
-		'create': 1,
-		'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'HR User',
-		'write': 1
-	},
-
-	# DocPerm
-	{
-		'create': 1,
-		'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'HR Manager',
-		'write': 1
-	},
-
-	# DocPerm
-	{
-		'doctype': u'DocPerm',
-		'permlevel': 1,
-		'role': u'HR Manager'
-	},
-
-	# DocPerm
-	{
-		'doctype': u'DocPerm',
-		'permlevel': 1,
-		'role': u'HR User'
 	},
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'basic_info',
 		'fieldtype': u'Section Break',
 		'label': u'Basic Info',
@@ -147,7 +64,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'column_break0',
 		'fieldtype': u'Column Break',
 		'permlevel': 0,
@@ -157,7 +74,7 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'employee',
 		'fieldtype': u'Link',
 		'in_filter': 1,
@@ -172,7 +89,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'employee_name',
 		'fieldtype': u'Data',
 		'label': u'Employee Name',
@@ -184,7 +101,7 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'branch',
 		'fieldtype': u'Select',
 		'in_filter': 1,
@@ -199,7 +116,7 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'designation',
 		'fieldtype': u'Select',
 		'in_filter': 1,
@@ -214,7 +131,7 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'department',
 		'fieldtype': u'Select',
 		'in_filter': 1,
@@ -229,7 +146,7 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'grade',
 		'fieldtype': u'Select',
 		'in_filter': 1,
@@ -243,7 +160,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'column_break1',
 		'fieldtype': u'Column Break',
 		'permlevel': 0,
@@ -254,7 +171,7 @@
 	{
 		'colour': u'White:FFF',
 		'default': u'Yes',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'is_active',
 		'fieldtype': u'Select',
 		'in_filter': 1,
@@ -268,7 +185,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'from_date',
 		'fieldtype': u'Date',
 		'label': u'From Date',
@@ -280,7 +197,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'to_date',
 		'fieldtype': u'Date',
 		'label': u'To Date',
@@ -293,7 +210,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'Cost to Company',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'ctc',
 		'fieldtype': u'Currency',
 		'in_filter': 1,
@@ -306,7 +223,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'company',
 		'fieldtype': u'Select',
 		'in_filter': 1,
@@ -319,7 +236,7 @@
 	# DocField
 	{
 		'description': u'You can create more earning and deduction type from Setup --> HR',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'earning_deduction',
 		'fieldtype': u'Section Break',
 		'label': u'Earning & Deduction',
@@ -331,7 +248,7 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'earning',
 		'fieldtype': u'Column Break',
 		'hidden': 0,
@@ -345,7 +262,7 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'earning_details',
 		'fieldtype': u'Table',
 		'hidden': 0,
@@ -359,7 +276,7 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'deduction',
 		'fieldtype': u'Column Break',
 		'hidden': 0,
@@ -373,7 +290,7 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'deduction_details',
 		'fieldtype': u'Table',
 		'hidden': 0,
@@ -386,7 +303,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'section_break0',
 		'fieldtype': u'Section Break',
 		'options': u'Simple',
@@ -395,7 +312,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'column_break2',
 		'fieldtype': u'Column Break',
 		'permlevel': 0,
@@ -404,7 +321,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'total_earning',
 		'fieldtype': u'Currency',
 		'label': u'Total Earning',
@@ -415,7 +332,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'total_deduction',
 		'fieldtype': u'Currency',
 		'label': u'Total Deduction',
@@ -426,7 +343,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'column_break3',
 		'fieldtype': u'Column Break',
 		'permlevel': 0,
@@ -435,10 +352,74 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'net_pay',
 		'fieldtype': u'Currency',
 		'label': u'Net Pay',
 		'permlevel': 1
+	},
+
+	# DocPerm
+	{
+		u'doctype': u'DocPerm',
+		'permlevel': 1,
+		'role': u'All',
+		'write': 0
+	},
+
+	# DocPerm
+	{
+		'create': 1,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'HR User',
+		'write': 1
+	},
+
+	# DocPerm
+	{
+		'create': 1,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'HR Manager',
+		'write': 1
+	},
+
+	# DocPerm
+	{
+		u'doctype': u'DocPerm',
+		'permlevel': 1,
+		'role': u'HR Manager'
+	},
+
+	# DocPerm
+	{
+		u'doctype': u'DocPerm',
+		'permlevel': 1,
+		'role': u'HR User'
+	},
+
+	# DocPerm
+	{
+		'cancel': 0,
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'match': u'owner',
+		'permlevel': 0,
+		'role': u'Employee',
+		'submit': 0,
+		'write': 0
+	},
+
+	# DocPerm
+	{
+		'cancel': 0,
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'match': u'owner',
+		'permlevel': 0,
+		'role': u'Employee',
+		'submit': 0,
+		'write': 0
 	}
 ]

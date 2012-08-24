@@ -3,11 +3,11 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-03-27 14:35:59',
-		'docstatus': 0,
-		'modified': '2012-03-27 14:35:59',
-		'modified_by': u'Administrator',
-		'owner': u'Administrator'
+		u'creation': '2012-07-03 13:30:40',
+		u'docstatus': 0,
+		u'modified': '2012-08-24 18:24:00',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
 	},
 
 	# These values are common for all DocType
@@ -15,10 +15,10 @@
 		'allow_trash': 1,
 		'autoname': u'field:leave_type_name',
 		'colour': u'White:FFF',
-		'doctype': 'DocType',
-		'document_type': u'Master',
+		'doctype': u'DocType',
+		'document_type': u'Setup',
 		'module': u'HR',
-		'name': '__common__',
+		u'name': u'__common__',
 		'section_style': u'Simple',
 		'server_code_error': u' ',
 		'show_in_menu': 0,
@@ -28,7 +28,7 @@
 	# These values are common for all DocField
 	{
 		'doctype': u'DocField',
-		'name': '__common__',
+		u'name': u'__common__',
 		'parent': u'Leave Type',
 		'parentfield': u'fields',
 		'parenttype': u'DocType'
@@ -39,7 +39,7 @@
 		'cancel': 1,
 		'create': 1,
 		'doctype': u'DocPerm',
-		'name': '__common__',
+		u'name': u'__common__',
 		'parent': u'Leave Type',
 		'parentfield': u'permissions',
 		'parenttype': u'DocType',
@@ -50,31 +50,13 @@
 
 	# DocType, Leave Type
 	{
-		'doctype': 'DocType',
+		u'doctype': u'DocType',
 		'name': u'Leave Type'
-	},
-
-	# DocPerm
-	{
-		'doctype': u'DocPerm',
-		'role': u'System Manager'
-	},
-
-	# DocPerm
-	{
-		'doctype': u'DocPerm',
-		'role': u'HR User'
-	},
-
-	# DocPerm
-	{
-		'doctype': u'DocPerm',
-		'role': u'HR Manager'
 	},
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'trash_reason',
 		'fieldtype': u'Small Text',
 		'label': u'Trash Reason',
@@ -85,7 +67,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'leave_type_name',
 		'fieldtype': u'Data',
 		'label': u'Leave Type Name',
@@ -97,7 +79,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'max_days_allowed',
 		'fieldtype': u'Data',
 		'label': u'Max Days Leave Allowed',
@@ -109,7 +91,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'is_carry_forward',
 		'fieldtype': u'Check',
 		'label': u'Is Carry Forward',
@@ -120,7 +102,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'is_encash',
 		'fieldtype': u'Check',
 		'hidden': 1,
@@ -134,10 +116,28 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'is_lwp',
 		'fieldtype': u'Check',
 		'label': u'Is LWP',
 		'permlevel': 0
+	},
+
+	# DocPerm
+	{
+		u'doctype': u'DocPerm',
+		'role': u'System Manager'
+	},
+
+	# DocPerm
+	{
+		u'doctype': u'DocPerm',
+		'role': u'HR User'
+	},
+
+	# DocPerm
+	{
+		u'doctype': u'DocPerm',
+		'role': u'HR Manager'
 	}
 ]

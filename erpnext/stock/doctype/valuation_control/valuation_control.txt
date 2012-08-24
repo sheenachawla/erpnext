@@ -3,21 +3,22 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-03-27 14:36:40',
-		'docstatus': 0,
-		'modified': '2012-03-27 14:36:40',
-		'modified_by': u'Administrator',
-		'owner': u'Administrator'
+		u'creation': '2012-07-03 13:30:44',
+		u'docstatus': 0,
+		u'modified': '2012-08-24 16:20:54',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
 	},
 
 	# These values are common for all DocType
 	{
 		'colour': u'White:FFF',
-		'doctype': 'DocType',
+		'doctype': u'DocType',
+		'document_type': u'System',
 		'in_create': 1,
 		'issingle': 1,
 		'module': u'Stock',
-		'name': '__common__',
+		u'name': u'__common__',
 		'section_style': u'Simple',
 		'server_code_error': u' ',
 		'version': 4
@@ -25,7 +26,7 @@
 
 	# DocType, Valuation Control
 	{
-		'doctype': 'DocType',
+		u'doctype': u'DocType',
 		'name': u'Valuation Control'
 	}
 ]

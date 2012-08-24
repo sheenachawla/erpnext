@@ -3,11 +3,11 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-07-03 13:30:55',
-		'docstatus': 0,
-		'modified': '2012-07-11 16:11:45',
-		'modified_by': u'Administrator',
-		'owner': u'Administrator'
+		u'creation': '2012-07-03 13:30:55',
+		u'docstatus': 0,
+		u'modified': '2012-08-24 18:25:42',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
 	},
 
 	# These values are common for all DocType
@@ -16,10 +16,11 @@
 		'autoname': u'field:currency_name',
 		'colour': u'White:FFF',
 		'description': u'**Currency** Master',
-		'doctype': 'DocType',
+		'doctype': u'DocType',
+		'document_type': u'Setup',
 		'in_create': 0,
 		'module': u'Setup',
-		'name': '__common__',
+		u'name': u'__common__',
 		'read_only': 0,
 		'section_style': u'Simple',
 		'server_code_error': u' ',
@@ -33,7 +34,7 @@
 		'fieldname': u'currency_name',
 		'fieldtype': u'Data',
 		'label': u'Currency Name',
-		'name': '__common__',
+		u'name': u'__common__',
 		'oldfieldname': u'currency_name',
 		'oldfieldtype': u'Data',
 		'parent': u'Currency',
@@ -47,7 +48,7 @@
 	{
 		'create': 1,
 		'doctype': u'DocPerm',
-		'name': '__common__',
+		u'name': u'__common__',
 		'parent': u'Currency',
 		'parentfield': u'permissions',
 		'parenttype': u'DocType',
@@ -58,14 +59,19 @@
 
 	# DocType, Currency
 	{
-		'doctype': 'DocType',
+		u'doctype': u'DocType',
 		'name': u'Currency'
+	},
+
+	# DocField
+	{
+		u'doctype': u'DocField'
 	},
 
 	# DocPerm
 	{
 		'cancel': 1,
-		'doctype': u'DocPerm',
+		u'doctype': u'DocPerm',
 		'role': u'Accounts Manager'
 	},
 
@@ -73,7 +79,7 @@
 	{
 		'amend': 0,
 		'cancel': 1,
-		'doctype': u'DocPerm',
+		u'doctype': u'DocPerm',
 		'role': u'Sales Master Manager',
 		'submit': 0
 	},
@@ -82,13 +88,8 @@
 	{
 		'amend': 0,
 		'cancel': 0,
-		'doctype': u'DocPerm',
+		u'doctype': u'DocPerm',
 		'role': u'Purchase Master Manager',
 		'submit': 0
-	},
-
-	# DocField
-	{
-		'doctype': u'DocField'
 	}
 ]

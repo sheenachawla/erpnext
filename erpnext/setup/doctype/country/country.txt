@@ -3,22 +3,22 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-03-27 14:36:19',
-		'docstatus': 0,
-		'modified': '2012-03-27 14:36:19',
-		'modified_by': u'Administrator',
-		'owner': u'Administrator'
+		u'creation': '2012-07-03 13:30:54',
+		u'docstatus': 0,
+		u'modified': '2012-08-24 18:24:32',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
 	},
 
 	# These values are common for all DocType
 	{
 		'autoname': u'field:country_name',
 		'colour': u'White:FFF',
-		'doctype': 'DocType',
-		'document_type': u'Master',
+		'doctype': u'DocType',
+		'document_type': u'Setup',
 		'in_create': 0,
 		'module': u'Setup',
-		'name': '__common__',
+		u'name': u'__common__',
 		'read_only': 0,
 		'section_style': u'Simple',
 		'server_code_error': u' ',
@@ -32,7 +32,7 @@
 		'fieldname': u'country_name',
 		'fieldtype': u'Data',
 		'label': u'Country Name',
-		'name': '__common__',
+		u'name': u'__common__',
 		'oldfieldname': u'country_name',
 		'oldfieldtype': u'Data',
 		'parent': u'Country',
@@ -46,7 +46,7 @@
 	{
 		'create': 1,
 		'doctype': u'DocPerm',
-		'name': '__common__',
+		u'name': u'__common__',
 		'parent': u'Country',
 		'parentfield': u'permissions',
 		'parenttype': u'DocType',
@@ -57,39 +57,39 @@
 
 	# DocType, Country
 	{
-		'doctype': 'DocType',
+		u'doctype': u'DocType',
 		'name': u'Country'
+	},
+
+	# DocField
+	{
+		u'doctype': u'DocField'
 	},
 
 	# DocPerm
 	{
 		'amend': 0,
 		'cancel': 0,
-		'doctype': u'DocPerm',
+		u'doctype': u'DocPerm',
 		'role': u'Sales Master Manager',
 		'submit': 0
 	},
 
 	# DocPerm
 	{
-		'doctype': u'DocPerm',
+		u'doctype': u'DocPerm',
 		'role': u'Purchase Master Manager'
 	},
 
 	# DocPerm
 	{
-		'doctype': u'DocPerm',
+		u'doctype': u'DocPerm',
 		'role': u'HR User'
 	},
 
 	# DocPerm
 	{
-		'doctype': u'DocPerm',
+		u'doctype': u'DocPerm',
 		'role': u'HR Manager'
-	},
-
-	# DocField
-	{
-		'doctype': u'DocField'
 	}
 ]
