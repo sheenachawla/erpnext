@@ -27,8 +27,8 @@ base_cost_center = {
 }
 
 base_gle = {'doctype': 'GL Entry', 'posting_date': '2012-06-02', 'debit': 100, \
-	'company': 'East Wind Corporation', 'fiscal_year': '2012-2013', 'remarks': 'testing', \
-	'voucher_type': 'Journal Voucher', 'voucher_no': 'JV001', 'is_cancelled': 'No'
+	'company': 'East Wind Corporation', 'remarks': 'testing', \
+	'voucher_type': 'Journal Voucher', 'voucher_no': 'JV001'
 }
 
 class TestCostCenter(TestBase):

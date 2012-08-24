@@ -5,7 +5,7 @@
 	{
 		u'creation': '2012-08-06 17:40:02',
 		u'docstatus': 0,
-		u'modified': '2012-08-21 10:57:35',
+		u'modified': '2012-08-24 12:33:54',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -146,6 +146,16 @@
 		'fieldname': u'column_break3',
 		'fieldtype': u'Column Break',
 		'label': u'Communication With / Related To',
+		'permlevel': 0
+	},
+
+	# DocField
+	{
+		u'doctype': u'DocField',
+		'fieldname': u'party',
+		'fieldtype': u'Link',
+		'label': u'Party',
+		'options': u'Party',
 		'permlevel': 0
 	},
 
@@ -320,16 +330,6 @@
 		'print_hide': 1
 	},
 
-	# DocField
-	{
-		u'doctype': u'DocField',
-		'fieldname': u'party',
-		'fieldtype': u'Link',
-		'label': u'Party',
-		'options': u'Party',
-		'permlevel': 0
-	},
-
 	# DocPerm
 	{
 		'cancel': 0,
@@ -359,20 +359,20 @@
 
 	# DocPerm
 	{
-		'cancel': 1,
-		'create': 0,
-		u'doctype': u'DocPerm',
-		'permlevel': 1,
-		'role': u'Support Manager'
-	},
-
-	# DocPerm
-	{
 		'cancel': 0,
 		'create': 0,
 		u'doctype': u'DocPerm',
 		'permlevel': 1,
 		'role': u'Sales Manager'
+	},
+
+	# DocPerm
+	{
+		'cancel': 1,
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'permlevel': 1,
+		'role': u'Support Manager'
 	},
 
 	# DocPerm

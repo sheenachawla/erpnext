@@ -9,9 +9,7 @@ gl_mapper = [
 		'posting_date'		: 'par:posting_date',
 		'voucher_type'		: 'par:doctype',
 		'voucher_no'		: 'par:name',
-		'aging_date'		: 'par:aging_date',
 		'company'			: 'par:company',
-		'is_opening'		: 'par:is_opening',
 		'remarks'			: 'par:remarks'
 	}
 ]

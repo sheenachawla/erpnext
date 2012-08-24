@@ -5,7 +5,7 @@
 	{
 		u'creation': '2012-08-07 18:11:42',
 		u'docstatus': 0,
-		u'modified': '2012-08-20 19:56:03',
+		u'modified': '2012-08-24 12:34:48',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -97,6 +97,15 @@
 
 	# DocField
 	{
+		u'doctype': u'DocField',
+		'fieldname': u'party',
+		'fieldtype': u'Link',
+		'label': u'Party',
+		'options': u'Party'
+	},
+
+	# DocField
+	{
 		'colour': u'White:FFF',
 		'default': u'0',
 		'depends_on': u'eval:(doc.customer || doc.supplier || doc.sales_partner)',
@@ -177,15 +186,6 @@
 		'fieldname': u'unsubscribed',
 		'fieldtype': u'Check',
 		'label': u'Unsubscribed'
-	},
-
-	# DocField
-	{
-		u'doctype': u'DocField',
-		'fieldname': u'party',
-		'fieldtype': u'Link',
-		'label': u'Party',
-		'options': u'Party'
 	},
 
 	# DocPerm

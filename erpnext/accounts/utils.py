@@ -76,7 +76,7 @@ class GLController(DocListController):
 		if flt(gle['debit']) < 0 or flt(gle['credit']) < 0:
 			tmp=gle['debit']
 			gle['debit'], gle['credit'] = abs(flt(gle['credit'])), abs(flt(tmp))
-		# insert gl entry		
+		# insert gl entry	
 		webnotes.model.insert(gle)
 		
 		# add to total_debit, total_credit
@@ -84,7 +84,11 @@ class GLController(DocListController):
 		self.total_credit += flt(gle['credit'])
 		
 	def get_value(self, fld, doc):
-		if fld.startswith('par:'):
+		if fld.startswith('val:'):
+			return fld[4:]
+		if fld.startswith('eval:'):
+			return eval(fld[5:])
+		elif fld.startswith('par:'):
 			return self.doc.get(fld[4:])
 		else:
 			return doc.get(fld)

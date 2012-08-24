@@ -62,7 +62,7 @@ class CostCenterController(NestedSetController):
 			return 1
 			
 	def convert_ledger_to_group(self):
-		if webnotes.conn.exists('GL Entry', {'cost_center': self.doc.name, 'is_cancelled': 'No'}):
+		if webnotes.conn.exists('GL Entry', {'cost_center': self.doc.name}):
 			msgprint("Cost Center with existing transaction can not be converted to group."
 				, raise_exception=webnotes.ValidationError)
 		else:
