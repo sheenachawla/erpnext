@@ -4,7 +4,7 @@
 	# These values are common in all dictionaries
 	{
 		u'creation': '2012-08-22 15:42:41',
-		u'modified': '2012-08-24 13:59:21',
+		u'modified': '2012-08-24 14:24:33',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -46,6 +46,7 @@
 
 	# DocField
 	{
+		'description': u'To manage multiple series please go to Setup > Numbering Series',
 		u'doctype': u'DocField',
 		'fieldname': u'naming_series',
 		'fieldtype': u'Select',
@@ -68,6 +69,7 @@
 
 	# DocField
 	{
+		'description': u'The date at which current entry will get or has actually executed.',
 		u'doctype': u'DocField',
 		'fieldname': u'posting_date',
 		'fieldtype': u'Date',
@@ -78,6 +80,7 @@
 
 	# DocField
 	{
+		'description': u'Party represents your Customer, Supplier etc',
 		u'doctype': u'DocField',
 		'fieldname': u'party',
 		'fieldtype': u'Link',
@@ -89,6 +92,7 @@
 
 	# DocField
 	{
+		'description': u'The ledger for maintaining outstanding position of Party',
 		u'doctype': u'DocField',
 		'fieldname': u'receivable_payable_account',
 		'fieldtype': u'Link',
@@ -130,6 +134,7 @@
 
 	# DocField
 	{
+		'description': u'Cheque No, Demand Draft, Reference No of online payments etc',
 		u'doctype': u'DocField',
 		'fieldname': u'reference_no',
 		'fieldtype': u'Data',
@@ -139,6 +144,7 @@
 
 	# DocField
 	{
+		'description': u'Cheque Date, Online payment date etc',
 		u'doctype': u'DocField',
 		'fieldname': u'reference_date',
 		'fieldtype': u'Date',
@@ -168,6 +174,7 @@
 
 	# DocField
 	{
+		'description': u'Invoice sent to Party against which payment has been made',
 		u'doctype': u'DocField',
 		'fieldname': u'sales_invoice',
 		'fieldtype': u'Link',
@@ -178,6 +185,7 @@
 
 	# DocField
 	{
+		'description': u'Invoice received from Party against which payment has been made',
 		u'doctype': u'DocField',
 		'fieldname': u'purchase_invoice',
 		'fieldtype': u'Link',
@@ -198,6 +206,7 @@
 
 	# DocField
 	{
+		'description': u'The date at which current entry is corrected in the system.',
 		u'doctype': u'DocField',
 		'fieldname': u'amendment_date',
 		'fieldtype': u'Date',
