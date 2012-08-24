@@ -5,7 +5,7 @@
 	{
 		u'creation': '2012-07-26 13:40:15',
 		u'docstatus': 0,
-		u'modified': '2012-08-24 15:23:03',
+		u'modified': '2012-08-24 18:14:02',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -48,7 +48,8 @@
 		u'name': u'__common__',
 		'parent': u'Sales Order',
 		'parentfield': u'permissions',
-		'parenttype': u'DocType'
+		'parenttype': u'DocType',
+		'read': 1
 	},
 
 	# DocType, Sales Order
@@ -107,22 +108,6 @@
 
 	# DocField
 	{
-		'colour': u'White:FFF',
-		'default': u'Sales',
-		u'doctype': u'DocField',
-		'fieldname': u'order_type',
-		'fieldtype': u'Select',
-		'label': u'Order Type',
-		'oldfieldname': u'order_type',
-		'oldfieldtype': u'Select',
-		'options': u'\nSales\nMaintenance',
-		'permlevel': 0,
-		'print_hide': 1,
-		'reqd': 1
-	},
-
-	# DocField
-	{
 		'default': u'Today',
 		'description': u'The date at which current entry is made in system.',
 		u'doctype': u'DocField',
@@ -171,21 +156,8 @@
 		u'doctype': u'DocField',
 		'fieldname': u'section_break0',
 		'fieldtype': u'Section Break',
+		'label': u'Price List & Currency',
 		'permlevel': 0
-	},
-
-	# DocField
-	{
-		u'doctype': u'DocField',
-		'fieldname': u'net_total',
-		'fieldtype': u'Currency',
-		'label': u'Net Total',
-		'oldfieldname': u'net_total',
-		'oldfieldtype': u'Currency',
-		'permlevel': 1,
-		'print_hide': 0,
-		'reqd': 0,
-		'width': u'150px'
 	},
 
 	# DocField
@@ -294,19 +266,6 @@
 	# DocField
 	{
 		u'doctype': u'DocField',
-		'fieldname': u'other_charges_total',
-		'fieldtype': u'Currency',
-		'label': u'Taxes and Charges Total*',
-		'oldfieldname': u'other_charges_total',
-		'oldfieldtype': u'Currency',
-		'permlevel': 1,
-		'print_hide': 1,
-		'width': u'150px'
-	},
-
-	# DocField
-	{
-		u'doctype': u'DocField',
 		'fieldname': u'other_charges_calculation',
 		'fieldtype': u'HTML',
 		'label': u'Taxes and Charges Calculation',
@@ -325,6 +284,33 @@
 		'oldfieldtype': u'Section Break',
 		'permlevel': 0,
 		'print_hide': 1
+	},
+
+	# DocField
+	{
+		u'doctype': u'DocField',
+		'fieldname': u'net_total',
+		'fieldtype': u'Currency',
+		'label': u'Net Total',
+		'oldfieldname': u'net_total',
+		'oldfieldtype': u'Currency',
+		'permlevel': 1,
+		'print_hide': 0,
+		'reqd': 0,
+		'width': u'150px'
+	},
+
+	# DocField
+	{
+		u'doctype': u'DocField',
+		'fieldname': u'other_charges_total',
+		'fieldtype': u'Currency',
+		'label': u'Taxes and Charges Total*',
+		'oldfieldname': u'other_charges_total',
+		'oldfieldtype': u'Currency',
+		'permlevel': 1,
+		'print_hide': 1,
+		'width': u'150px'
 	},
 
 	# DocField
@@ -352,21 +338,6 @@
 		'permlevel': 1,
 		'print_hide': 1,
 		'width': u'150px'
-	},
-
-	# DocField
-	{
-		'colour': u'White:FFF',
-		'description': u'In Words will be visible once you save the Sales Order.',
-		u'doctype': u'DocField',
-		'fieldname': u'in_words',
-		'fieldtype': u'Data',
-		'label': u'In Words',
-		'oldfieldname': u'in_words',
-		'oldfieldtype': u'Data',
-		'permlevel': 1,
-		'print_hide': 1,
-		'width': u'200px'
 	},
 
 	# DocField
@@ -400,20 +371,6 @@
 	{
 		'colour': u'White:FFF',
 		u'doctype': u'DocField',
-		'fieldname': u'in_words_export',
-		'fieldtype': u'Data',
-		'label': u'In Words (Export)',
-		'oldfieldname': u'in_words_export',
-		'oldfieldtype': u'Data',
-		'permlevel': 1,
-		'print_hide': 0,
-		'width': u'200px'
-	},
-
-	# DocField
-	{
-		'colour': u'White:FFF',
-		u'doctype': u'DocField',
 		'fieldname': u'terms_section_break',
 		'fieldtype': u'Section Break',
 		'label': u'Terms and Conditions',
@@ -436,31 +393,6 @@
 
 	# DocField
 	{
-		u'doctype': u'DocField',
-		'fieldname': u'customer_address',
-		'fieldtype': u'Link',
-		'hidden': 0,
-		'in_filter': 1,
-		'label': u'Customer Address',
-		'options': u'Address',
-		'permlevel': 0,
-		'print_hide': 1
-	},
-
-	# DocField
-	{
-		u'doctype': u'DocField',
-		'fieldname': u'contact_person',
-		'fieldtype': u'Link',
-		'in_filter': 1,
-		'label': u'Contact Person',
-		'options': u'Contact',
-		'permlevel': 0,
-		'print_hide': 1
-	},
-
-	# DocField
-	{
 		'colour': u'White:FFF',
 		'description': u'Filling in additional information about the Sales Order will help you analyze your data better.',
 		u'doctype': u'DocField',
@@ -470,6 +402,22 @@
 		'oldfieldtype': u'Section Break',
 		'permlevel': 0,
 		'print_hide': 1
+	},
+
+	# DocField
+	{
+		'colour': u'White:FFF',
+		'default': u'Sales',
+		u'doctype': u'DocField',
+		'fieldname': u'order_type',
+		'fieldtype': u'Select',
+		'label': u'Order Type',
+		'oldfieldname': u'order_type',
+		'oldfieldtype': u'Select',
+		'options': u'\nSales\nMaintenance',
+		'permlevel': 0,
+		'print_hide': 1,
+		'reqd': 1
 	},
 
 	# DocField
@@ -523,6 +471,82 @@
 		'print_hide': 0,
 		'reqd': 0,
 		'width': u'100px'
+	},
+
+	# DocField
+	{
+		u'doctype': u'DocField',
+		'fieldname': u'customer_address',
+		'fieldtype': u'Link',
+		'hidden': 0,
+		'in_filter': 1,
+		'label': u'Customer Address',
+		'options': u'Address',
+		'permlevel': 0,
+		'print_hide': 1
+	},
+
+	# DocField
+	{
+		u'doctype': u'DocField',
+		'fieldname': u'contact_person',
+		'fieldtype': u'Link',
+		'in_filter': 1,
+		'label': u'Contact Person',
+		'options': u'Contact',
+		'permlevel': 0,
+		'print_hide': 1
+	},
+
+	# DocField
+	{
+		'colour': u'White:FFF',
+		'description': u'Track this Sales Order against any Project',
+		u'doctype': u'DocField',
+		'fieldname': u'project_name',
+		'fieldtype': u'Link',
+		'in_filter': 1,
+		'label': u'Project Name',
+		'oldfieldname': u'project_name',
+		'oldfieldtype': u'Link',
+		'options': u'Project',
+		'permlevel': 0,
+		'search_index': 1,
+		'trigger': u'Client'
+	},
+
+	# DocField
+	{
+		'colour': u'White:FFF',
+		u'doctype': u'DocField',
+		'fieldname': u'source',
+		'fieldtype': u'Select',
+		'label': u'Source',
+		'oldfieldname': u'source',
+		'oldfieldtype': u'Select',
+		'options': u"\nExisting Customer\nReference\nAdvertisement\nCold Calling\nExhibition\nSupplier Reference\nMass Mailing\nCustomer's Vendor\nCampaign",
+		'permlevel': 0,
+		'print_hide': 1
+	},
+
+	# DocField
+	{
+		'colour': u'White:FFF',
+		'description': u'Select the relevant company name if you have multiple companies.',
+		u'doctype': u'DocField',
+		'fieldname': u'company',
+		'fieldtype': u'Link',
+		'in_filter': 1,
+		'label': u'Company',
+		'oldfieldname': u'company',
+		'oldfieldtype': u'Link',
+		'options': u'Company',
+		'permlevel': 0,
+		'print_hide': 1,
+		'reqd': 1,
+		'search_index': 1,
+		'trigger': u'Client',
+		'width': u'150px'
 	},
 
 	# DocField
@@ -590,71 +614,18 @@
 
 	# DocField
 	{
-		'colour': u'White:FFF',
-		'description': u'Select the relevant company name if you have multiple companies.',
 		u'doctype': u'DocField',
-		'fieldname': u'company',
-		'fieldtype': u'Link',
-		'in_filter': 1,
-		'label': u'Company',
-		'oldfieldname': u'company',
-		'oldfieldtype': u'Link',
-		'options': u'Company',
-		'permlevel': 0,
-		'print_hide': 1,
-		'reqd': 1,
-		'search_index': 1,
-		'trigger': u'Client',
-		'width': u'150px'
-	},
-
-	# DocField
-	{
-		'colour': u'White:FFF',
-		u'doctype': u'DocField',
-		'fieldname': u'source',
-		'fieldtype': u'Select',
-		'label': u'Source',
-		'oldfieldname': u'source',
-		'oldfieldtype': u'Select',
-		'options': u"\nExisting Customer\nReference\nAdvertisement\nCold Calling\nExhibition\nSupplier Reference\nMass Mailing\nCustomer's Vendor\nCampaign",
-		'permlevel': 0,
-		'print_hide': 1
-	},
-
-	# DocField
-	{
-		'colour': u'White:FFF',
-		'description': u'Track this Sales Order against any Project',
-		u'doctype': u'DocField',
-		'fieldname': u'project_name',
-		'fieldtype': u'Link',
-		'in_filter': 1,
-		'label': u'Project Name',
-		'oldfieldname': u'project_name',
-		'oldfieldtype': u'Link',
-		'options': u'Project',
-		'permlevel': 0,
-		'search_index': 1,
-		'trigger': u'Client'
-	},
-
-	# DocField
-	{
-		'default': u'Draft',
-		u'doctype': u'DocField',
-		'fieldname': u'status',
-		'fieldtype': u'Select',
-		'in_filter': 1,
-		'label': u'Status',
+		'fieldname': u'stopped',
+		'fieldtype': u'Check',
+		'in_filter': 0,
+		'label': u'Stopped?',
 		'no_copy': 1,
 		'oldfieldname': u'status',
 		'oldfieldtype': u'Select',
-		'options': u'\nDraft\nSubmitted\nStopped\nCancelled',
 		'permlevel': 1,
 		'print_hide': 1,
-		'reqd': 1,
-		'search_index': 1,
+		'reqd': 0,
+		'search_index': 0,
 		'width': u'100px'
 	},
 
@@ -689,12 +660,10 @@
 	# DocField
 	{
 		u'doctype': u'DocField',
-		'fieldname': u'sales_team_section_break',
+		'fieldname': u'sales_partner_section',
 		'fieldtype': u'Section Break',
-		'label': u'Sales Team',
-		'oldfieldtype': u'Section Break',
-		'permlevel': 0,
-		'print_hide': 1
+		'label': u'Sales Partner',
+		'permlevel': 0
 	},
 
 	# DocField
@@ -746,6 +715,17 @@
 	# DocField
 	{
 		u'doctype': u'DocField',
+		'fieldname': u'sales_team_section_break',
+		'fieldtype': u'Section Break',
+		'label': u'Sales Team',
+		'oldfieldtype': u'Section Break',
+		'permlevel': 0,
+		'print_hide': 1
+	},
+
+	# DocField
+	{
+		u'doctype': u'DocField',
 		'fieldname': u'sales_team',
 		'fieldtype': u'Table',
 		'label': u'Sales Team1',
@@ -770,33 +750,12 @@
 
 	# DocPerm
 	{
-		u'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'Production Manager'
-	},
-
-	# DocPerm
-	{
-		'amend': 0,
-		'cancel': 0,
-		'create': 0,
-		u'doctype': u'DocPerm',
-		'permlevel': 1,
-		'read': 1,
-		'role': u'Sales Manager',
-		'submit': 0,
-		'write': 0
-	},
-
-	# DocPerm
-	{
 		'amend': 1,
 		'cancel': 1,
 		'create': 1,
 		u'doctype': u'DocPerm',
 		'permlevel': 0,
-		'read': 1,
-		'role': u'Sales Manager',
+		'role': u'Sales User',
 		'submit': 1,
 		'write': 1
 	},
@@ -808,8 +767,7 @@
 		'create': 1,
 		u'doctype': u'DocPerm',
 		'permlevel': 0,
-		'read': 1,
-		'role': u'Sales User',
+		'role': u'Maintenance User',
 		'submit': 1,
 		'write': 1
 	},
@@ -821,28 +779,9 @@
 		'create': 0,
 		u'doctype': u'DocPerm',
 		'permlevel': 1,
-		'read': 1,
-		'role': u'Sales User',
+		'role': u'Maintenance Manager',
 		'submit': 0,
 		'write': 0
-	},
-
-	# DocPerm
-	{
-		u'doctype': u'DocPerm',
-		'match': u'customer_name',
-		'permlevel': 0,
-		'read': 1,
-		'role': u'Customer'
-	},
-
-	# DocPerm
-	{
-		u'doctype': u'DocPerm',
-		'permlevel': 2,
-		'read': 1,
-		'role': u'Accounts User',
-		'write': 1
 	},
 
 	# DocPerm
@@ -852,7 +791,6 @@
 		'create': 1,
 		u'doctype': u'DocPerm',
 		'permlevel': 0,
-		'read': 1,
 		'role': u'Maintenance Manager',
 		'submit': 1,
 		'write': 1
@@ -860,22 +798,74 @@
 
 	# DocPerm
 	{
-		u'doctype': u'DocPerm',
-		'permlevel': 1,
-		'read': 1,
-		'role': u'Maintenance Manager'
-	},
-
-	# DocPerm
-	{
 		'amend': 1,
 		'cancel': 1,
 		'create': 1,
 		u'doctype': u'DocPerm',
 		'permlevel': 0,
-		'read': 1,
-		'role': u'Maintenance User',
+		'role': u'Sales Manager',
 		'submit': 1,
 		'write': 1
+	},
+
+	# DocPerm
+	{
+		'amend': 0,
+		'cancel': 0,
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'permlevel': 1,
+		'role': u'Sales Manager',
+		'submit': 0,
+		'write': 0
+	},
+
+	# DocPerm
+	{
+		'amend': 0,
+		'cancel': 0,
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'permlevel': 2,
+		'role': u'Accounts User',
+		'submit': 0,
+		'write': 1
+	},
+
+	# DocPerm
+	{
+		'amend': 0,
+		'cancel': 0,
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'match': u'customer',
+		'permlevel': 0,
+		'role': u'Customer',
+		'submit': 0,
+		'write': 0
+	},
+
+	# DocPerm
+	{
+		'amend': 0,
+		'cancel': 0,
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'permlevel': 1,
+		'role': u'Sales User',
+		'submit': 0,
+		'write': 0
+	},
+
+	# DocPerm
+	{
+		'amend': 0,
+		'cancel': 0,
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'permlevel': 1,
+		'role': u'Maintenance User',
+		'submit': 0,
+		'write': 0
 	}
 ]

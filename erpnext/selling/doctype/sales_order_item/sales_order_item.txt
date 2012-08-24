@@ -5,7 +5,7 @@
 	{
 		u'creation': '2012-06-08 16:07:58',
 		u'docstatus': 0,
-		u'modified': '2012-08-24 15:18:08',
+		u'modified': '2012-08-24 18:13:42',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -81,20 +81,6 @@
 		'reqd': 1,
 		'trigger': u'Client',
 		'width': u'100px'
-	},
-
-	# DocField
-	{
-		u'doctype': u'DocField',
-		'fieldname': u'stock_uom',
-		'fieldtype': u'Data',
-		'hidden': 0,
-		'label': u'UOM',
-		'oldfieldname': u'stock_uom',
-		'oldfieldtype': u'Data',
-		'permlevel': 1,
-		'reqd': 0,
-		'width': u'70px'
 	},
 
 	# DocField
@@ -251,6 +237,38 @@
 		'permlevel': 1,
 		'print_hide': 1,
 		'search_index': 1
+	},
+
+	# DocField
+	{
+		u'doctype': u'DocField',
+		'fieldname': u'item_name',
+		'fieldtype': u'Data',
+		'label': u'Item Name',
+		'permlevel': 0
+	},
+
+	# DocField
+	{
+		u'doctype': u'DocField',
+		'fieldname': u'description',
+		'fieldtype': u'Text',
+		'label': u'Description',
+		'permlevel': 0
+	},
+
+	# DocField
+	{
+		u'doctype': u'DocField',
+		'fieldname': u'stock_uom',
+		'fieldtype': u'Data',
+		'hidden': 0,
+		'label': u'UOM',
+		'oldfieldname': u'stock_uom',
+		'oldfieldtype': u'Data',
+		'permlevel': 1,
+		'reqd': 0,
+		'width': u'70px'
 	},
 
 	# DocField
