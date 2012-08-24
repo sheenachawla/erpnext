@@ -5,7 +5,7 @@
 	{
 		u'creation': '2012-08-20 18:28:34',
 		u'docstatus': 0,
-		u'modified': '2012-08-24 12:33:47',
+		u'modified': '2012-08-24 14:36:58',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -76,6 +76,7 @@
 
 	# DocField
 	{
+		'description': u'This price list will get fetched in Sales/Purchase transactions of this party',
 		u'doctype': u'DocField',
 		'fieldname': u'default_price_list',
 		'fieldtype': u'Link',
@@ -85,6 +86,7 @@
 
 	# DocField
 	{
+		'description': u'This currency will get fetched in Sales/Purchase transactions of this party',
 		u'doctype': u'DocField',
 		'fieldname': u'default_currency',
 		'fieldtype': u'Link',
@@ -94,6 +96,7 @@
 
 	# DocField
 	{
+		'description': u'This Terms and Conditions will get fetched in Sales/Purchase transactions of this party',
 		u'doctype': u'DocField',
 		'fieldname': u'default_terms_and_conditions',
 		'fieldtype': u'Link',
@@ -103,6 +106,7 @@
 
 	# DocField
 	{
+		'description': u'The limit of credit given to customer',
 		u'doctype': u'DocField',
 		'fieldname': u'credit_limit',
 		'fieldtype': u'Currency',
@@ -112,6 +116,7 @@
 	# DocField
 	{
 		'depends_on': u"eval:doc.party_type=='Customer'",
+		'description': u'Credit applicable for the period',
 		u'doctype': u'DocField',
 		'fieldname': u'credit_days',
 		'fieldtype': u'Currency',
@@ -126,6 +131,15 @@
 		'fieldtype': u'Link',
 		'label': u'Lead Id',
 		'options': u'Lead'
+	},
+
+	# DocField
+	{
+		'description': u"Party's TAX registration numbers (if applicable) or any general information",
+		u'doctype': u'DocField',
+		'fieldname': u'party_details',
+		'fieldtype': u'Text',
+		'label': u'Party Details'
 	},
 
 	# DocPerm
