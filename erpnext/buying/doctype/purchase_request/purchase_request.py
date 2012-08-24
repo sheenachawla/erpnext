@@ -118,7 +118,7 @@ class PurchaseRequestController(DocListController):
 				webnotes.msgprint("""%s: "%s" has already been submitted""" % \
 					(doctype, submitted[0][0]), raise_exception=webnotes.DependencyError)
 			else:
-				webnotes.msgprint("""%s: %s have already been submitted""", % \
+				webnotes.msgprint("""%s: %s have already been submitted""" % \
 					(doctype, comma_and(["\"%s\"" % d[0] for d in submitted])),
 					raise_exception=webnotes.DependencyError)
 	

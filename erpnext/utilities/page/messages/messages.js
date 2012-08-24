@@ -16,10 +16,11 @@
 
 wn.provide('erpnext.messages');
 
-wn.pages.messages.onload = function(wrapper) {
+wn.pages.messages.on('load', function(wrapper) {
 	erpnext.messages.show_active_users();
 	erpnext.messages.make_list();
 	erpnext.update_messages('reset'); //Resets notification icons
+	erpnext.messages.last_post = new Date();
 	
 	// post message
 	$('#message-post').click(function() {
@@ -39,6 +40,7 @@ wn.pages.messages.onload = function(wrapper) {
 				},
 				btn: this
 			});
+			erpnext.messages.last_post = new Date();
 		}
 	});
 	
@@ -54,13 +56,13 @@ wn.pages.messages.onload = function(wrapper) {
 			$('#message-post').click();
 		}
 	})
-}
+});
 
-$(wn.pages.messages).bind('show', function() {
+wn.pages.messages.on('show', function() {
 	erpnext.messages.show();
 	setTimeout(erpnext.messages.refresh, 7000);
-	$('#message-post-text').focus();
-})
+	$('#message-post-text').focus();	
+});
 
 erpnext.messages = {
 	show: function() {
@@ -77,10 +79,15 @@ erpnext.messages = {
 		erpnext.messages.list.run();
 		
 	},
-	// check for updates every 5 seconds if page is active
 	refresh: function() {
-		setTimeout(erpnext.messages.refresh, 7000);
 		if(wn.container.page.label != 'Messages') return;
+
+		// refresh only for the next 15 seconds from a new post
+		if((new Date() - erpnext.messages.last_post) < 15000) {
+			setTimeout(erpnext.messages.refresh, 5000);
+		}
+
+		// refresh
 		erpnext.messages.show();
 	},
 	get_contact: function() {
@@ -98,6 +105,7 @@ erpnext.messages = {
 		erpnext.messages.list = new wn.ui.Listing({
 			parent: $('#message-list').get(0),
 			method: 'utilities.page.messages.messages.get_list',
+			discreet: true,
 			args: {
 				contact: null
 			},
@@ -147,7 +155,7 @@ erpnext.messages = {
 			page:'messages',
 			method:'get_active_users',
 			callback: function(r,rt) {
-				var $body = $(wn.pages.messages).find('.section-body');
+				var $body = $(wn.pages.messages.wrapper).find('.section-body');
 				for(var i in r.message) {
 					var p = r.message[i];
 					p.fullname = wn.user_info(p.name).fullname;

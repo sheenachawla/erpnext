@@ -540,7 +540,7 @@ this.prepare_opts();$.extend(this,this.opts);$(this.parent).html(repl('\
      </div>\
      <div style="display:inline-block; width: 24px; margin-left: 4px">\
       <img src="images/lib/ui/button-load.gif" \
-      class="img-load"/></div>\
+      class="img-load" style="display: none;"/></div>\
     </div><div style="clear:both"></div>\
     \
     <div class="no-result help hide">\
@@ -565,7 +565,9 @@ if(me.show_filters){this.add_button('Show Filters',function(){me.filter_list.sho
 if(me.no_toolbar||me.hide_toolbar){me.$w.find('.list-toolbar-wrapper').toggle(false);}},make_new_doc:function(new_doctype){new_doc(new_doctype);},make_filters:function(){this.filter_list=new wn.ui.FilterList({listobj:this,$parent:this.$w.find('.list-filters').toggle(true),doctype:this.doctype,filter_fields:this.filter_fields});},clear:function(){this.data=[];this.$w.find('.result-list').empty();this.$w.find('.result').toggle(true);this.$w.find('.no-result').toggle(false);this.start=0;},run:function(){var me=this;var a0=arguments[0];var a1=arguments[1];if(a0&&typeof a0=='function')
 this.onrun=a0;if(a0&&a0.callback)
 this.onrun=a0.callback;if(!a1&&!(a0&&a0.append))
-this.start=0;me.set_working(true);wn.call({method:this.opts.method||'webnotes.widgets.query_builder.runquery',args:this.get_call_args(a0),callback:function(r){me.set_working(false);me.render_results(r)},no_spinner:this.opts.no_loading});},set_working:function(flag){this.$w.find('.img-load').toggle(flag);},get_call_args:function(opts){if(!this.method){var query=this.get_query?this.get_query():this.query;query=this.add_limits(query);var args={query_max:this.query_max,as_dict:1}
+this.start=0;if(!this.opts.discreet)
+this.set_working(true);wn.call({method:this.opts.method||'webnotes.widgets.query_builder.runquery',args:this.get_call_args(a0),callback:function(r){if(!me.opts.discreet)
+me.set_working(false);me.render_results(r)},no_spinner:this.opts.discreet});},set_working:function(flag){this.$w.find('.img-load').toggle(flag);},get_call_args:function(opts){if(!this.method){var query=this.get_query?this.get_query():this.query;query=this.add_limits(query);var args={query_max:this.query_max,as_dict:1}
 args.simple_query=query;}else{var args={limit_start:this.start,limit_page_length:this.page_length}}
 if(this.args)
 $.extend(args,this.args)
