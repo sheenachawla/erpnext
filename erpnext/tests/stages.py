@@ -35,7 +35,9 @@ stages = {
 			"accounts.doctype.cost_center.test_cost_center",
 			"accounts.doctype.party.test_party",
 			"accounts.doctype.journal_voucher.test_journal_voucher",
-			"accounts.doctype.gl_entry.test_gl_entry"
+			"accounts.doctype.gl_entry.test_gl_entry",
+			"accounts.doctype.payment_entry.test_payment_entry"
+			
 		],
 	},
 	"Buying": {
