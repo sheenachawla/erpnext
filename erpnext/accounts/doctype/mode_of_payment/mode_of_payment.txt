@@ -3,21 +3,21 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-03-27 14:35:44',
-		'docstatus': 0,
-		'modified': '2012-03-27 14:35:44',
-		'modified_by': u'Administrator',
-		'owner': u'harshada@webnotestech.com'
+		u'creation': '2012-07-03 13:30:49',
+		u'docstatus': 0,
+		u'modified': '2012-08-24 14:38:20',
+		u'modified_by': u'Administrator',
+		u'owner': u'harshada@webnotestech.com'
 	},
 
 	# These values are common for all DocType
 	{
 		'autoname': u'field:mode_of_payment',
 		'colour': u'White:FFF',
-		'doctype': 'DocType',
-		'document_type': u'Master',
+		'doctype': u'DocType',
+		'document_type': u'Setup',
 		'module': u'Accounts',
-		'name': '__common__',
+		u'name': u'__common__',
 		'section_style': u'Simple',
 		'server_code_error': u' ',
 		'version': 3
@@ -29,7 +29,7 @@
 		'fieldname': u'mode_of_payment',
 		'fieldtype': u'Data',
 		'label': u'Mode of Payment',
-		'name': '__common__',
+		u'name': u'__common__',
 		'oldfieldname': u'mode_of_payment',
 		'oldfieldtype': u'Data',
 		'parent': u'Mode of Payment',
@@ -41,31 +41,34 @@
 
 	# These values are common for all DocPerm
 	{
+		'amend': 0,
+		'cancel': 1,
 		'create': 1,
 		'doctype': u'DocPerm',
-		'name': '__common__',
+		u'name': u'__common__',
 		'parent': u'Mode of Payment',
 		'parentfield': u'permissions',
 		'parenttype': u'DocType',
 		'permlevel': 0,
 		'read': 1,
 		'role': u'Accounts Manager',
+		'submit': 0,
 		'write': 1
 	},
 
 	# DocType, Mode of Payment
 	{
-		'doctype': 'DocType',
+		u'doctype': u'DocType',
 		'name': u'Mode of Payment'
-	},
-
-	# DocPerm
-	{
-		'doctype': u'DocPerm'
 	},
 
 	# DocField
 	{
-		'doctype': u'DocField'
+		u'doctype': u'DocField'
+	},
+
+	# DocPerm
+	{
+		u'doctype': u'DocPerm'
 	}
 ]

@@ -16,7 +16,7 @@ def get_open_support_tickets():
 	from webnotes.utils import cint
 	open_support_tickets = webnotes.conn.sql("""\
 		SELECT COUNT(*) FROM `tabSupport Ticket`
-		WHERE status = 'Open'""")
+		WHERE status = 'Open'""", as_list=1)
 	return open_support_tickets and cint(open_support_tickets[0][0]) or 0
 
 def get_open_tasks():
@@ -24,7 +24,7 @@ def get_open_tasks():
 	from webnotes.utils import cint
 	return webnotes.conn.sql("""\
 		SELECT COUNT(*) FROM `tabTask`
-		WHERE status = 'Open'""")[0][0]
+		WHERE status = 'Open'""", as_list=1)[0][0]
 
 def get_things_todo():
 	"""Returns a count of incomplete todos"""
@@ -32,7 +32,7 @@ def get_things_todo():
 	incomplete_todos = webnotes.conn.sql("""\
 		SELECT COUNT(*) FROM `tabToDo`
 		WHERE IFNULL(checked, 0) = 0
-		AND owner = %s""", webnotes.session.get('user'))
+		AND owner = %s""", webnotes.session.get('user'), as_list=1)
 	return incomplete_todos and cint(incomplete_todos[0][0]) or 0
 
 def get_todays_events():
@@ -43,13 +43,13 @@ def get_todays_events():
 		WHERE owner = %s
 		AND event_type != 'Cancel'
 		AND event_date = %s""", (
-		webnotes.session.get('user'), nowdate()))
+		webnotes.session.get('user'), nowdate()), as_list=1)
 	return todays_events and cint(todays_events[0][0]) or 0
 
 def get_unanswered_questions():
 	return len(filter(lambda d: d[0]==0,
 		webnotes.conn.sql("""select (select count(*) from tabAnswer 
-		where tabAnswer.question = tabQuestion.name) as answers from tabQuestion""")))
+		where tabAnswer.question = tabQuestion.name) as answers from tabQuestion""", as_list=1)))
 	
 @webnotes.whitelist()
 def get_global_status_messages(arg=None):

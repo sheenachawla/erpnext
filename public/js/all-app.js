@@ -169,7 +169,7 @@ v=sys_defaults[df.fieldname];return v;}});
 wn.model.Document=Class.extend({init:function(fields){if(typeof fields==='string'){fields={doctype:fields,__islocal:1,owner:user,name:wn.model.new_name(fields),docstatus:0}}
 this.fields=fields;},get:function(key,ifnull){return this.fields[key]||ifnull;},convert_type:function(key,val){if(val===null)return val;var df=wn.model.get('DocType',this.get('doctype')).get({fieldname:key,doctype:"DocField"});if(df.length){df=df[0]
 if(in_list(["Int","Check"],df.fieldtype)){val=cint(val);}else if(in_list(["Currency","Float"],df.fieldtype)){val=flt(val);}else if(df.fieldtype=='Select'){if(in_list(df.options.split('\n'),val)){throw val+" is not a correct option"}}}
-return val;},set:function(key,val){var new_val=this.convert_type(key,val);if(this.fields[key]!=new_val){this.fields[key]=new_val;if(this.doclist){this.doclist.trigger('change',key,this.fields[key]);if(this.get('parentfield')){this.doclist.trigger('change '+this.get('parentfield')+'.'+key,this.fields[key]);}else{this.doclist.trigger('change '+key,this.fields[key]);}}}},copy_from:function(doc){var meta=wn.model.get('DocType',this.get('doctype'));var me=this;$.each(doc.fields,function(key,val){var docfield=meta.get({doctype:"DocField",fieldname:key})[0]
+return val;},set:function(key,val){var new_val=this.convert_type(key,val);if(this.fields[key]!=new_val){this.fields[key]=new_val;if(this.doclist){this.doclist.trigger('change',key,this.fields[key],this);if(this.get('parentfield')){this.doclist.trigger('change '+this.get('parentfield')+'.'+key,key,this.fields[key],this);}else{this.doclist.trigger('change '+key,key,this.fields[key],this);}}}},copy_from:function(doc){var meta=wn.model.get('DocType',this.get('doctype'));var me=this;$.each(doc.fields,function(key,val){var docfield=meta.get({doctype:"DocField",fieldname:key})[0]
 if(docfield){if(!docfield.get('no_copy')){me.set(key,val);}}else if(in_list(['parentfield','parenttype','idx'],key)){me.set(key,val);}});},copy:function(){var new_doc=new wn.model.Document(this.get('doctype'));new_doc.copy_from(this);return new_doc;},extend:function(dict){$.extend(this.fields,dict);}});
 /*
  *	lib/js/wn/model/doclist.js
@@ -879,14 +879,13 @@ me.list.run();});this.dialog.show();},add_column:function(c){var w=$('<div style
 /*
  *	lib/js/wn/form/init.js
  */
-wn.ui.make_control=function(opts){control_map={'Check':wn.ui.CheckControl,'Data':wn.ui.Control,'Int':wn.ui.IntControl,'Float':wn.ui.FloatControl,'Currency':wn.ui.CurrencyControl,'Link':wn.ui.LinkControl,'Select':wn.ui.SelectControl,'Table':wn.ui.GridControl,'Text':wn.ui.TextControl,'Text Editor':wn.ui.RichTextControl,'Button':wn.ui.ButtonControl,'Date':wn.ui.DateControl}
+wn.ui.make_control=function(opts){control_map={'Check':wn.ui.CheckControl,'Data':wn.ui.Control,'Int':wn.ui.IntControl,'Float':wn.ui.FloatControl,'Currency':wn.ui.CurrencyControl,'Link':wn.ui.LinkControl,'Select':wn.ui.SelectControl,'Table':wn.ui.GridControl,'Text':wn.ui.TextControl,'Small Text':wn.ui.TextControl,'Text Editor':wn.ui.RichTextControl,'Button':wn.ui.ButtonControl,'Date':wn.ui.DateControl}
 if(control_map[opts.docfield.fieldtype]){return new control_map[opts.docfield.fieldtype](opts);}else{return null;}}
 wn.ui.Control=Class.extend({init:function(opts){$.extend(this,opts);this.setup_perm();this.make();this.set_events();this.apply_disabled();this.apply_hidden();this.apply_mandatory();this.set_init_value();this.set_change_event();},setup_perm:function(){this.perm=this.doclist?this.doclist.get_perm()[this.docfield.permlevel]:[1,1];if(!this.perm){this.perm=[0,0]}},make:function(){if(this.docfield.vertical){this.make_body_vertical();}else{this.make_body();}
 this.make_input();this.make_label();},make_label:function(){if(this.docfield.label)
 this.$w.find('label:first').text(this.docfield.label);if(this.no_label){this.hide_label();}else{if(this.docfield.description){this.help_block(this.docfield.description);}}},set_change_event:function(){var me=this;if(this.$input)
 this.$input.change(function(){var val=me.get();if(me.validate){var new_val=me.validate(val);if(new_val!=val){me.set_input(new_val);val=new_val;}}
-if(me.doc)
-me.doc.set(me.docfield.fieldname,val);});},set_events:function(){var me=this;this.$w.find('.control-static').click(function(){me.toggle_editable(true);});},toggle_editable:function(editable){if(this.docfield.reqd)
+if(me.doc){me.doc.set(me.docfield.fieldname,val);}});},set_events:function(){var me=this;this.$w.find('.control-static').click(function(){me.toggle_editable(true);});},toggle_editable:function(editable){if(this.docfield.reqd)
 editable=true;if(editable===undefined)
 editable=!this.editable
 this.toggle_input(editable);this.$w.find('.control-static').toggle(!editable);this.editable=editable;},toggle_input:function(show){this.$input&&this.$input.toggle(show);},set_init_value:function(){if(this.doc){this.set_input(this.doc.get(this.docfield.fieldname));}},hide_label:function(){this.$w.find('.control-label').toggle(false);},set_input:function(val){this.$input.val(val).change();this.set_static(val);},as_inline:function(){this.$w.css('display','inline');this.$w.find('div').css('display','inline');},set_static:function(val){this.$w.find('.control-static').html(val||'<i style="color: #888">Click to set</i>');},set:function(val){if(this.doc){this.doc.set(this.docfield.fieldname,val);}else{this.set_input(val);}},get:function(){return this.$input.val();},get_value:function(){return this.get();},make_input:function(){this.$input=$('<input type="text">').appendTo(this.$w.find('.controls'));},make_body:function(){this.$w=$('<div class="control-group">\
@@ -945,8 +944,8 @@ me.doc.set(me.docfield.fieldname,val);}}});},toggle_input:function(show){this.$i
 wn.ui.Form=Class.extend({init:function(opts){$.extend(this,opts);this.controls={};if(this.doc){this.meta=wn.model.get('DocType',this.doc.get('doctype'));this.fields=$.map(this.meta.get('DocField',{}),function(d){return d.fields;});if(this.doc.get('__islocal')&&this.meta.doc.get('autoname')=='Prompt'){this.doc.set('name','');this.fields=[{"fieldtype":"Data","fieldname":"name","label":"New "+this.doc.get('doctype')+" Name",reqd:1}].concat(this.fields);}}
 this.make_form();this.listen();},make_form:function(){var me=this;this.$form=$('<form class="form-horizontal" style="clear: both;">').appendTo(this.parent).submit(function(){return false;});if(this.fields[0].fieldtype!='Section Break'){me.make_fieldset('_first_section');}
 $.each(this.fields,function(i,df){if(df.fieldtype=='Section Break'){me.make_fieldset(df.fieldname,df.label);}else{me.controls[df.fieldname]=wn.ui.make_control({docfield:df,parent:me.last_fieldset,doc:me.doc,doclist:me.doclist});}});},make_fieldset:function(name,legend){var $fset=$('<fieldset data-name="'+name+'"></fieldset>').appendTo(this.$form);if(legend){$('<legend>').text(legend).appendTo($fset);}
-this.last_fieldset=$fset;},listen:function(){var me=this;if(this.doclist){this.doclist.on('change',function(key,val){if(me.controls[key]&&me.controls[key].get()!=val)
-me.controls[key].set_input(val);});}}});
+this.last_fieldset=$fset;},listen:function(){var me=this;if(this.doclist){this.doclist.on('change',function(key,val,doc){if(doc.get('parentfield')&&me.controls[doc.get('parentfield')]){me.controls[doc.get('parentfield')].set();}else{if(me.controls[key]&&me.controls[key].get()!=val)
+me.controls[key].set_input(val);}});}}});
 /*
  *	lib/js/wn/form/form_assign.js
  */
@@ -998,9 +997,10 @@ this.doclist.on('change',function(){me.save_btn.addClass('btn-warning').attr('ti
    <li><a href="#" class="action-email"><i class="icon icon-envelope"></i> Email...</a></li>\
    <li><a href="#" class="action-copy"><i class="icon icon-file"></i> Copy</a></li>\
    <li><a href="#" class="action-refresh"><i class="icon icon-refresh"></i> Refresh</a></li>\
+   <li><a href="#" class="action-delete"><i class="icon icon-remove"></i> Delete</a></li>\
   </ul>\
   </div>').appendTo(this.page.appframe.$w.find('.appframe-toolbar'));this.action_btn_group.find('.dropdown-toggle').dropdown();var me=this;this.action_btn_group.find('.action-new').click(function(){var new_doclist=wn.model.create(me.doctype);wn.set_route('Form',me.doctype,new_doclist.doc.get('name'));return false;});this.action_btn_group.find('.action-copy').click(function(){var new_doclist=me.doclist.copy();wn.set_route('Form',me.doctype,new_doclist.doc.get('name'));return false;});},make_help_buttons:function(){var meta=this.form.meta.doc;var me=this;if(meta.get('description')){this.page.appframe.add_help_button(meta.get('description'));}
-this.doctype_btn=this.page.appframe.add_button(meta.get('name'),function(){wn.set_route('List',meta.get('name'));}).addClass('btn-inverse');this.doctype_btn.parent().css('float','right');},apply_permissions:function(){}});
+this.doctype_btn=this.page.appframe.add_button(meta.get('name'),function(){wn.set_route('List',meta.get('name'));}).addClass('btn-inverse');this.doctype_btn.parent().css('float','right');}});
 /*
  *	lib/js/wn/form/form_tags.js
  */
@@ -1024,7 +1024,7 @@ args.colnames=colnames.join(',');args.report_name=report_name?report_name:'';ope
  */
 var pending_req=0;var fcount=0;var dialog_back;function set_loading(){pending_req++;$('#spinner').css('visibility','visible');$('body').css('cursor','progress');}
 function hide_loading(){pending_req--;if(!pending_req){$('body').css('cursor','default');$('#spinner').css('visibility','hidden');}}
-function freeze(){if(!dialog_back){dialog_back=$('<div class="dialog_back">').appendTo('#body-div').css('opacity',0.6);}
+function freeze(){if(!dialog_back){dialog_back=$('<div class="dialog_back">').appendTo('#body_div').css('opacity',0.6);}
 dialog_back.toggle(true);fcount++;}
 function unfreeze(){if(!fcount)return;fcount--;if(!fcount){dialog_back.toggle(false);}}
 /*
