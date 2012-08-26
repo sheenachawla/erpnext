@@ -117,8 +117,8 @@ filters=arguments[1];filters.doctype=arguments[0];}else{var filters=arguments[0]
 var ret=$.map(this.doclist,function(d){return me.match(filters,d)});ret.sort(function(a,b){return(a.fields.idx-b.fields.idx);});return ret;},get_value:function(key,def){return this.doc.get(key,def);},match:function(filters,doc){for(key in filters){var fval=filters[key];if(fval instanceof Array){if(!in_list(fval,doc.get(key)))return null;}else{if(doc.get(key)!=filters[key]){return null;}}}
 return doc;},save:function(callback,btn){var me=this;try{this.validate();}catch(e){console.log(e);callback({exc:e});return;}
 wn.call({method:'webnotes.model.client.save',args:{docs:this.get_docs()},callback:function(r){if(!r.exc){me.reset(r.docs);}
-callback(r);},btn:btn});},validate:function(){var reqd=[]
-$.each(this.doclist,function(i,d){$.each(wn.model.get('DocType',d.get('doctype')).get({doctype:'DocField',reqd:1}),function(i,df){if(d.get(df.get('fieldname'))===null||d.get(df.get('fieldname'))===undefined){reqd.push([df,d]);}});})
+callback&&callback(r);},btn:btn});},validate:function(){var reqd=[]
+$.each(this.doclist,function(i,d){var meta=wn.model.get('DocType',d.get('doctype'));if(meta){$.each(meta.get({doctype:'DocField',reqd:1}),function(i,df){if(d.get(df.get('fieldname'))===null||d.get(df.get('fieldname'))===undefined){reqd.push([df,d]);}});}})
 if(reqd.length){$.each(reqd,function(i,info){if(info[1].get('parent')){msgprint(repl("<b>%(label)s</b> in <b>%(parent)s</b> \
       table row %(idx)s is mandatory.",{label:info[0].get('label'),idx:info[1].get('idx'),parent:wn.model.get('DocType',info[1].get('parenttype')).get({fieldname:info[1].get('parentfield')})[0].get('label')}));}else{msgprint(repl("<b>%(label)s</b> in <b>%(parent)s</b> is mandatory.",info[0].fields));}});msgprint('<div class="alert alert-error">Please enter some values in the above fields.</div>');throw'mandatory error';}},reset:function(doclist){var oldname=this.doc.get('name');this.doclist.splice(0,this.doclist.length);for(i in doclist){this.add(doclist[i]);}
 if(oldname!=this.name){delete wn.doclists[this.doctype][oldname];}
@@ -198,7 +198,7 @@ wn.re_route={}
 wn.route=function(){if(wn.re_route[window.location.hash]){var re_route_val=wn.get_route_str(wn.re_route[window.location.hash]);var cur_route_val=wn.get_route_str(wn._cur_route);if(decodeURIComponent(re_route_val)===decodeURIComponent(cur_route_val)){window.history.back();return;}else{window.location.hash=wn.re_route[window.location.hash];}}
 wn._cur_route=window.location.hash;var page_name=wn.get_route_str();if(wn.contents[page_name]){wn.container.change_to(page_name);return;}
 var route=wn.get_route();switch(route[0]){case"List":wn.views.doclistview.show(route[1]);break;case"Form":if(route.length>3){route[2]=route.splice(2).join('/');}
-wn.views.formview.show(route[1],route[2]);break;case"Report":wn.views.reportview.show(route[1],route[2]);break;case"Report2":wn.views.reportview2.show();break;default:wn.views.pageview.show(route[0]);}}
+wn.views.formview.show(route[1],route[2]);break;case"Report":wn.views.reportview.show();break;default:wn.views.pageview.show(route[0]);}}
 wn.get_route=function(route){return $.map(wn.get_route_str(route).split('/'),function(r){return decodeURIComponent(r);});}
 wn.get_route_str=function(route){if(!route)
 route=window.location.hash;if(route.substr(0,1)=='#')route=route.substr(1);if(route.substr(0,1)=='!')route=route.substr(1);if(!route){route=wn.control_panel.home_page;}
@@ -480,7 +480,7 @@ wn.dom.css(me.btn,args.style);},set_working:function(){me.btn.disabled='disabled
  */
 wn.ui.Dialog=Class.extend({init:function(opts){$.extend(this,opts);this.display=false;if(!this.width)this.width=640;if(!$('#dialog-container').length){$('<div id="dialog-container">').appendTo('body');}
 this.wrapper=$('<div class="dialog_wrapper">').appendTo('#dialog-container').get(0);this.wrapper.style.width=this.width+'px';this.make_head();this.body=$('<div class="dialog_body">').appendTo(this.wrapper).get(0);},make_head:function(){var me=this;this.appframe=new wn.ui.AppFrame(this.wrapper);this.appframe.$titlebar.find('.close').unbind('click').click(function(){if(me.oncancel)me.oncancel();me.hide();});this.set_title(this.title);},set_title:function(t){this.appframe.$titlebar.find('.appframe-title').html(t||'');},set_postion:function(){this.wrapper.style.left=(($(window).width()-parseInt(this.wrapper.style.width))/2)+'px';this.wrapper.style.top=($(window).scrollTop()+60)+'px';top_index++;$(this.wrapper).css('z-index',top_index);},show:function(){if(this.display)return;this.set_postion()
-$(this.wrapper).toggle(true);freeze();this.display=true;wn.ui.cur_dialog=this;if(this.onshow)this.onshow();},hide:function(){if(this.onhide)this.onhide();unfreeze();$(this.wrapper).toggle(false);this.display=false;wn.ui.cur_dialog=null;},no_cancel:function(){this.appframe.$titlebar.find('.close').toggle(false);}});wn.ui.cur_dialog=null;$(document).bind('keydown',function(e){if(wn.ui.cur_dialog&&!wn.ui.cur_dialog.no_cancel_flag&&e.which==27){wn.ui.cur_dialog.hide();}});
+$(this.wrapper).toggle(true);freeze();this.display=true;wn.ui.cur_dialog=this;this.trigger('show');},hide:function(){this.trigger('hide');unfreeze();$(this.wrapper).toggle(false);this.display=false;wn.ui.cur_dialog=null;},no_cancel:function(){this.appframe.$titlebar.find('.close').toggle(false);}});wn.ui.cur_dialog=null;$(document).bind('keydown',function(e){if(wn.ui.cur_dialog&&!wn.ui.cur_dialog.no_cancel_flag&&e.which==27){wn.ui.cur_dialog.hide();}});
 /*
  *	lib/js/wn/ui/filters.js
  */
@@ -518,6 +518,10 @@ this.add_field_option(this.filter_fields[i])}else{this.build_options();}},build_
 if(this.with_blank){this.$select.append($('<option>',{value:''}).text(''));}
 $.each(std_filters.concat(wn.model.get('DocType',me.doctype).get({doctype:'DocField'})),function(i,df){me.add_field_option(df.fields||df);});$.each(me.table_fields,function(i,table_df){if(table_df.options){$.each(wn.model.get('DocType',table_df.options).get({doctype:'DocField'}),function(i,df){me.add_field_option(df.fields);});}});},add_field_option:function(df){var me=this;if(!df.label||!df.fieldname)return;if(me.doctype&&df.parent==me.doctype){var label=df.label;var table=me.doctype;if(df.fieldtype=='Table')me.table_fields.push(df);}else{var label=df.label+' ('+df.parent+')';var table=df.parent;}
 if(wn.model.no_value_type.indexOf(df.fieldtype)==-1&&!(me.fields_by_name[df.fieldname]&&me.fields_by_name[df.fieldname]['parent']==df.parent)){this.$select.append($('<option>',{value:df.fieldname,table:table}).text(label));me.fields_by_name[df.fieldname]=df;}}})
+/*
+ *	lib/js/wn/ui/grid_common.js
+ */
+wn.ui.grid_common={add_property_setter_on_resize:function(grid){grid.onColumnsResized.subscribe(function(e,args){$.each(grid.getColumns(),function(i,col){if(col.docfield&&col.previousWidth!=col.width){wn.model.insert({doctype:'Property Setter',doctype_or_field:'DocField',doc_type:col.docfield.get('parent'),field_name:col.docfield.get('fieldname'),property:'width',value:col.width});col.previousWidth=col.width;col.docfield.width=col.width;}});});}}
 /*
  *	lib/js/wn/ui/listing.js
  */
