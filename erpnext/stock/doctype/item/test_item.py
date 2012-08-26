@@ -44,43 +44,43 @@ class TestItem(TestBase):
 	def setUp(self):
 		super(TestItem, self).setUp()
 		make_item_groups()
-		
+	
 	def test_item_creation(self):
 		webnotes.model.insert_variants(base_item, [{
-			"name":"Home Desktop 100"
+			"name":"Home Desktop 1000"
 		}])
-		self.assertTrue(webnotes.conn.exists("Item", "Home Desktop 100"))
+		self.assertTrue(webnotes.conn.exists("Item", "Home Desktop 1000"))
 		
 		# test item creation with autoname
 		webnotes.model.insert_variants(base_item, [{
-			"item_code": "Home Desktop 200",
+			"item_code": "Home Desktop 2000",
 		}])
-		self.assertTrue(webnotes.conn.exists("Item", "Home Desktop 200"))
+		self.assertTrue(webnotes.conn.exists("Item", "Home Desktop 2000"))
 
 	def test_duplicate(self):
 		webnotes.model.insert([{"doctype": "Price List", "name": "Retail"}])
 		
 		item = base_item.copy()
-		item.update({"name":"Home Desktop 100"})
+		item.update({"name":"Home Desktop 1000"})
 		ref_rate_detail = {"doctype":"Item Price", "price_list_name":"Retail", 
 			"ref_currency":"INR", "parentfield":"ref_rate_details", "parenttype":"Item"}
 		self.assertRaises(webnotes.DuplicateEntryError, webnotes.model.insert, [item, 
 			ref_rate_detail, ref_rate_detail])
 		
 		item = item.copy()
-		item["name"] = "Home Desktop 200"
+		item["name"] = "Home Desktop 2000"
 		webnotes.model.insert([item, ref_rate_detail])
 		
 	def test_link_validation(self):
 		item = base_item.copy()
 		
 		# expenses is a group
-		item.update({"name":"Home Desktop 100", "purchase_account":"Expenses - EW"})
+		item.update({"name":"Home Desktop 1000", "purchase_account":"Expenses - EW"})
 		self.assertRaises(webnotes.LinkFilterError, webnotes.model.insert, [item])
 
 		# check if link filter error occurs for child item
 		item = base_item.copy()
-		item["name"] = "Home Desktop 200"
+		item["name"] = "Home Desktop 2000"
 		item_tax = {
 			"doctype": "Item Tax",
 			"parenttype": "Item",
@@ -91,11 +91,11 @@ class TestItem(TestBase):
 		self.assertRaises(webnotes.LinkFilterError, webnotes.model.insert, [item, item_tax])
 
 		# valid entry
-		item["name"] = "Home Desktop 300"
+		item["name"] = "Home Desktop 3000"
 		item["purchase_account"] = "Miscellaneous Expenses - EW"
 		item_tax["tax_type"] = "Sales Promotion Expenses - EW"
 		webnotes.model.insert([item, item_tax])
-		self.assertTrue(webnotes.conn.exists("Item", "Home Desktop 300"))
+		self.assertTrue(webnotes.conn.exists("Item", "Home Desktop 3000"))
 		
 	def test_conditional_validation(self):
 		item = base_item.copy()
@@ -103,7 +103,7 @@ class TestItem(TestBase):
 		# check for parent
 		# not a stock item but has a serial no
 		item.update({
-			"name": "Home Desktop 100",
+			"name": "Home Desktop 1000",
 			"has_serial_no": "Yes",
 			"is_stock_item": "No"
 		})
@@ -112,7 +112,7 @@ class TestItem(TestBase):
 		# check if error is raised if net weight is specified, but weight uom is not
 		item = base_item.copy()
 		item.update({
-			"name": "Home Desktop 200",
+			"name": "Home Desktop 2000",
 			"net_weight": 500
 		})
 		self.assertRaises(webnotes.ConditionalPropertyError, webnotes.model.insert, [item])
@@ -120,7 +120,7 @@ class TestItem(TestBase):
 		# valid entry
 		item = base_item.copy()
 		item.update({
-			"name": "Home Desktop 300",
+			"name": "Home Desktop 3000",
 			"has_serial_no": "Yes",
 			"is_stock_item": "Yes",
 			"has_batch_no": "Yes",
@@ -128,13 +128,13 @@ class TestItem(TestBase):
 			"weight_uom": "Kg"
 		})
 		webnotes.model.insert([item])
-		self.assertTrue(webnotes.conn.exists("Item", "Home Desktop 300"))
+		self.assertTrue(webnotes.conn.exists("Item", "Home Desktop 3000"))
 	
 	def test_if_sle_exists(self):
 		# insert item
 		item = base_item.copy()
 		item.update({
-			"name": "Home Desktop 100"
+			"name": "Home Desktop 1000"
 		})
 		webnotes.model.insert(item)
 		
@@ -168,7 +168,7 @@ class TestItem(TestBase):
 	def test_get_tax_rate(self):
 		# insert item
 		item = base_item.copy()
-		item.update({"name": "Home Desktop 100"})
+		item.update({"name": "Home Desktop 1000"})
 		webnotes.model.insert([item])
 		
 		# update account with tax rate
