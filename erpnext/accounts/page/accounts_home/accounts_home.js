@@ -14,19 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-pscript['onload_accounts-home'] = function(wrapper) {
-	erpnext.module_page.setup_page('Accounts', wrapper);
-	wrapper.appframe = new wn.ui.AppFrame($(wrapper).find('.appframe-area'), 'Accounts');
-	
-	if(wn.control_panel.country!='India') {
-		$('.india-specific').toggle(false);
-	}
-
-	if(wn.boot.profile.roles.indexOf('Accounts Manager')==-1 && wn.boot.profile.roles.indexOf('Accounts User')==-1) {
-		$('[href*="Accounts Browser"]').each(function() {
-			var txt = $(this).text();
-			$(this).parent().css('color', '#999').html(txt);
-		});
-	}
-
-}
+wn.pages['accounts-home'].on('load', function(wrapper) {
+	erpnext.module_page.make('Accounts', wrapper);
+});

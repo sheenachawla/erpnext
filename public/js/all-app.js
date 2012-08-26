@@ -543,7 +543,7 @@ wn.provide('wn.ui');wn.ui.Listing=Class.extend({init:function(opts){this.opts=op
 if(!this.opts.no_result_message){this.opts.no_result_message='Nothing to show'}},make:function(opts){if(opts){this.opts=opts;}
 this.prepare_opts();$.extend(this,this.opts);$(this.parent).html(repl('\
    <div class="wnlist">\
-    <h3 class="title hide">%(title)s</h3>\
+    <h4 class="title hide">%(title)s</h4>\
     \
     <div class="list-filters hide">\
      <div class="show_filters well">\
@@ -580,7 +580,7 @@ this.prepare_opts();$.extend(this,this.opts);$(this.parent).html(repl('\
   ',this.opts));this.$w=$(this.parent).find('.wnlist');this.set_events();if(this.appframe){this.$w.find('.list-toolbar-wrapper').toggle(false);}
 if(this.show_filters){this.make_filters();}},add_button:function(label,click,icon){if(this.appframe){return this.appframe.add_button(label,click,icon)}else{$button=$('<button class="btn btn-small"></button>').appendTo(this.$w.find('.list-toolbar'))
 if(icon){$('<i>').addClass(icon).appendTo($button);}
-$button.html(label).click(click);return $button}},show_view:function($btn,$div,$btn_unsel,$div_unsel){$btn_unsel.removeClass('btn-info');$btn_unsel.find('i').removeClass('icon-white');$div_unsel.toggle(false);$btn.addClass('btn-info');$btn.find('i').addClass('icon-white');$div.toggle(true);},set_events:function(){var me=this;this.$w.find('.btn-more').click(function(){me.run({append:true});});if(this.title){this.$w.find('h3').html(this.title).toggle(true);}
+$button.html(label).click(click);return $button}},show_view:function($btn,$div,$btn_unsel,$div_unsel){$btn_unsel.removeClass('btn-info');$btn_unsel.find('i').removeClass('icon-white');$div_unsel.toggle(false);$btn.addClass('btn-info');$btn.find('i').addClass('icon-white');$div.toggle(true);},set_events:function(){var me=this;this.$w.find('.btn-more').click(function(){me.run({append:true});});if(this.title){this.$w.find('.title').html(this.title).toggle(true);}
 if(!(this.hide_refresh||this.no_refresh)){this.add_button('Refresh',function(){me.run();},'icon-refresh');}
 if(this.new_doctype){this.add_button('New '+this.new_doctype,function(){me.make_new_doc(me.new_doctype);},'icon-plus');}
 if(me.show_filters){this.add_button('Show Filters',function(){me.filter_list.show_filters();},'icon-search').addClass('btn-filter');}
@@ -1137,15 +1137,8 @@ erpnext.hide_naming_series=function(){if(cur_frm.fields_dict.naming_series){hide
 /*
  *	erpnext/startup/js/modules.js
  */
-wn.provide('erpnext.module_page');erpnext.module_page.setup_page=function(module,wrapper){erpnext.module_page.hide_links(wrapper);erpnext.module_page.make_list(module,wrapper);$(wrapper).find("a[title]").tooltip({delay:{show:500,hide:100}});}
-erpnext.module_page.hide_links=function(wrapper){$(wrapper).find('[href*="List/"]').each(function(){var href=$(this).attr('href');var dt=href.split('/')[1];if(wn.boot.profile.all_read.indexOf(get_label_doctype(dt))==-1){var txt=$(this).text();$(this).parent().css('color','#999').html(txt);}});$(wrapper).find('[data-doctype]').each(function(){var dt=$(this).attr('data-doctype');if(wn.boot.profile.all_read.indexOf(dt)==-1){var txt=$(this).text();$(this).parent().css('color','#999').html(txt);}});$(wrapper).find('[href*="Form/"]').each(function(){var href=$(this).attr('href');var dt=href.split('/')[1];if(wn.boot.profile.all_read.indexOf(get_label_doctype(dt))==-1){var txt=$(this).text();$(this).parent().css('color','#999').html(txt);}});}
-erpnext.module_page.make_list=function(module,wrapper){var $w=$(wrapper).find('.reports-list');var $parent1=$('<div style="width: 45%; float: left; margin-right: 4.5%"></div>').appendTo($w);var $parent2=$('<div style="width: 45%; float: left;"></div>').appendTo($w);wrapper.list1=new wn.ui.Listing({parent:$parent1,method:'utilities.get_sc_list',render_row:function(row,data){if(!data.parent_doc_type)data.parent_doc_type=data.doc_type;$(row).html(repl('<a href="#!Report/%(doc_type)s/%(criteria_name)s" \
-    data-doctype="%(parent_doc_type)s">\
-    %(criteria_name)s</a>',data))},args:{module:module},no_refresh:true,callback:function(r){erpnext.module_page.hide_links($parent1)}});wrapper.list1.run();wrapper.list2=new wn.ui.Listing({parent:$parent2,method:'utilities.get_report_list',render_row:function(row,data){$(row).html(repl('<a href="#!Report2/%(ref_doctype)s/%(name)s" \
-    data-doctype="%(ref_doctype)s">\
-    %(name)s</a>',data))},args:{module:module},no_refresh:true,callback:function(r){erpnext.module_page.hide_links($parent2)}});wrapper.list2.run();$parent1.find('.list-toolbar-wrapper').prepend("<div class=\"show-all-reports\">\
-   <a href=\"#List/Search Criteria\"> [ List Of All Reports ]</a></div>");$parent2.find('.list-toolbar-wrapper').prepend("<div class=\"show-all-reports\">\
-   <a href=\"#List/Report\"> [ List Of All Reports (New) ]</a></div>");}
+wn.provide('erpnext.module_page');erpnext.module_page.make=function(module,wrapper){var items={};wn.ui.make_app_page({parent:wrapper,title:module,single_column:true});wn.call({method:'core.doctype.module_def.module_def.get_items',args:{module:module},callback:function(r){items=r.message;make_section('transaction');make_section('master');make_section('tool');make_section('setup');make_section('report');}})
+var make_section=function(name){if(!items[name].length)return;$(repl('<h4>%(title)s</h4><ul class="%(name)s"></ul><hr>',{title:toTitle(name),name:name})).appendTo($(wrapper).find('.layout-main'));$.each(items[name],function(i,v){if(v[0]=='DocType'){$(repl('<li><a href="#List/%(name)s">%(name)s</a></li>',{name:v[1]})).appendTo($(wrapper).find('.'+name));}else if(v[0]=='Report'){$(repl('<li><a href="#Report/%(doctype)s/%(name)s">%(name)s</a></li>',{name:v[1],doctype:v[2]})).appendTo($(wrapper).find('.'+name));}})}}
 /*
  *	erpnext/startup/js/toolbar.js
  */

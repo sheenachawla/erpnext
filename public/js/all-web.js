@@ -529,7 +529,7 @@ wn.provide('wn.ui');wn.ui.Listing=Class.extend({init:function(opts){this.opts=op
 if(!this.opts.no_result_message){this.opts.no_result_message='Nothing to show'}},make:function(opts){if(opts){this.opts=opts;}
 this.prepare_opts();$.extend(this,this.opts);$(this.parent).html(repl('\
    <div class="wnlist">\
-    <h3 class="title hide">%(title)s</h3>\
+    <h4 class="title hide">%(title)s</h4>\
     \
     <div class="list-filters hide">\
      <div class="show_filters well">\
@@ -566,7 +566,7 @@ this.prepare_opts();$.extend(this,this.opts);$(this.parent).html(repl('\
   ',this.opts));this.$w=$(this.parent).find('.wnlist');this.set_events();if(this.appframe){this.$w.find('.list-toolbar-wrapper').toggle(false);}
 if(this.show_filters){this.make_filters();}},add_button:function(label,click,icon){if(this.appframe){return this.appframe.add_button(label,click,icon)}else{$button=$('<button class="btn btn-small"></button>').appendTo(this.$w.find('.list-toolbar'))
 if(icon){$('<i>').addClass(icon).appendTo($button);}
-$button.html(label).click(click);return $button}},show_view:function($btn,$div,$btn_unsel,$div_unsel){$btn_unsel.removeClass('btn-info');$btn_unsel.find('i').removeClass('icon-white');$div_unsel.toggle(false);$btn.addClass('btn-info');$btn.find('i').addClass('icon-white');$div.toggle(true);},set_events:function(){var me=this;this.$w.find('.btn-more').click(function(){me.run({append:true});});if(this.title){this.$w.find('h3').html(this.title).toggle(true);}
+$button.html(label).click(click);return $button}},show_view:function($btn,$div,$btn_unsel,$div_unsel){$btn_unsel.removeClass('btn-info');$btn_unsel.find('i').removeClass('icon-white');$div_unsel.toggle(false);$btn.addClass('btn-info');$btn.find('i').addClass('icon-white');$div.toggle(true);},set_events:function(){var me=this;this.$w.find('.btn-more').click(function(){me.run({append:true});});if(this.title){this.$w.find('.title').html(this.title).toggle(true);}
 if(!(this.hide_refresh||this.no_refresh)){this.add_button('Refresh',function(){me.run();},'icon-refresh');}
 if(this.new_doctype){this.add_button('New '+this.new_doctype,function(){me.make_new_doc(me.new_doctype);},'icon-plus');}
 if(me.show_filters){this.add_button('Show Filters',function(){me.filter_list.show_filters();},'icon-search').addClass('btn-filter');}

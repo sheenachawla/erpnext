@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-pscript['onload_hr-home'] = function(wrapper) {
-	wrapper.appframe = new wn.ui.AppFrame($(wrapper).find('.appframe-area') ,'Human Resources');
-	erpnext.module_page.setup_page('HR', wrapper);
-}
+wn.pages['hr-home'].on('load', function(wrapper) {
+	erpnext.module_page.make('HR', wrapper);
+});
