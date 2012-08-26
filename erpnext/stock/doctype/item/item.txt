@@ -3,9 +3,9 @@
 
 	# These values are common in all dictionaries
 	{
-		u'creation': '2012-07-13 11:07:02',
+		u'creation': '2012-07-26 19:17:24',
 		u'docstatus': 0,
-		u'modified': '2012-07-26 17:33:52',
+		u'modified': '2012-08-26 10:56:34',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -19,7 +19,7 @@
 		'autoname': u'field:item_code',
 		'colour': u'White:FFF',
 		'default_print_format': u'Standard',
-		u'doctype': u'DocType',
+		'doctype': u'DocType',
 		'document_type': u'Master',
 		'max_attachments': 1,
 		'module': u'Stock',
@@ -35,7 +35,7 @@
 
 	# These values are common for all DocField
 	{
-		u'doctype': u'DocField',
+		'doctype': u'DocField',
 		u'name': u'__common__',
 		'parent': u'Item',
 		'parentfield': u'fields',
@@ -44,7 +44,7 @@
 
 	# These values are common for all DocPerm
 	{
-		u'doctype': u'DocPerm',
+		'doctype': u'DocPerm',
 		u'name': u'__common__',
 		'parent': u'Item',
 		'parentfield': u'permissions',
@@ -55,91 +55,7 @@
 	# DocType, Item
 	{
 		u'doctype': u'DocType',
-		u'name': u'Item'
-	},
-
-	# DocPerm
-	{
-		'amend': 0,
-		'cancel': 0,
-		'create': 0,
-		u'doctype': u'DocPerm',
-		'permlevel': 1,
-		'role': u'Material Manager',
-		'submit': 0,
-		'write': 0
-	},
-
-	# DocPerm
-	{
-		'amend': 0,
-		'cancel': 0,
-		'create': 0,
-		u'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'Material Manager',
-		'submit': 0,
-		'write': 0
-	},
-
-	# DocPerm
-	{
-		'amend': 0,
-		'cancel': 0,
-		'create': 0,
-		u'doctype': u'DocPerm',
-		'permlevel': 1,
-		'role': u'Material User',
-		'submit': 0,
-		'write': 0
-	},
-
-	# DocPerm
-	{
-		'amend': 0,
-		'cancel': 0,
-		'create': 0,
-		u'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'Material User',
-		'submit': 0,
-		'write': 0
-	},
-
-	# DocPerm
-	{
-		'cancel': 1,
-		'create': 1,
-		u'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'Material Master Manager',
-		'write': 1
-	},
-
-	# DocPerm
-	{
-		'create': 0,
-		u'doctype': u'DocPerm',
-		'permlevel': 1,
-		'role': u'Material Master Manager',
-		'write': 0
-	},
-
-	# DocPerm
-	{
-		'cancel': 1,
-		'create': 1,
-		u'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'System Manager',
-		'write': 1
-	},
-
-	# DocPerm
-	{
-		u'doctype': u'DocPerm',
-		'permlevel': 1,
-		'role': u'System Manager'
+		'name': u'Item'
 	},
 
 	# DocField
@@ -151,17 +67,6 @@
 		'no_copy': 0,
 		'oldfieldtype': u'Section Break',
 		'permlevel': 0
-	},
-
-	# DocField
-	{
-		u'doctype': u'DocField',
-		'fieldname': u'trash_reason',
-		'fieldtype': u'Small Text',
-		'label': u'Trash Reason',
-		'oldfieldname': u'trash_reason',
-		'oldfieldtype': u'Small Text',
-		'permlevel': 1
 	},
 
 	# DocField
@@ -213,38 +118,6 @@
 	# DocField
 	{
 		u'doctype': u'DocField',
-		'fieldname': u'brand',
-		'fieldtype': u'Link',
-		'hidden': 0,
-		'label': u'Brand',
-		'oldfieldname': u'brand',
-		'oldfieldtype': u'Link',
-		'options': u'Brand',
-		'permlevel': 0,
-		'print_hide': 1,
-		'reqd': 0
-	},
-
-	# DocField
-	{
-		u'doctype': u'DocField',
-		'fieldname': u'barcode',
-		'fieldtype': u'Data',
-		'label': u'Barcode',
-		'permlevel': 0
-	},
-
-	# DocField
-	{
-		u'doctype': u'DocField',
-		'fieldname': u'column_break0',
-		'fieldtype': u'Column Break',
-		'permlevel': 0
-	},
-
-	# DocField
-	{
-		u'doctype': u'DocField',
 		'fieldname': u'description',
 		'fieldtype': u'Text',
 		'in_filter': 0,
@@ -274,6 +147,30 @@
 		'fieldname': u'add_image',
 		'fieldtype': u'Button',
 		'label': u'Add Image',
+		'permlevel': 0
+	},
+
+	# DocField
+	{
+		u'doctype': u'DocField',
+		'fieldname': u'brand',
+		'fieldtype': u'Link',
+		'hidden': 0,
+		'label': u'Brand',
+		'oldfieldname': u'brand',
+		'oldfieldtype': u'Link',
+		'options': u'Brand',
+		'permlevel': 0,
+		'print_hide': 1,
+		'reqd': 0
+	},
+
+	# DocField
+	{
+		u'doctype': u'DocField',
+		'fieldname': u'barcode',
+		'fieldtype': u'Data',
+		'label': u'Barcode',
 		'permlevel': 0
 	},
 
@@ -401,16 +298,6 @@
 		'oldfieldname': u'min_order_qty',
 		'oldfieldtype': u'Currency',
 		'permlevel': 0
-	},
-
-	# DocField
-	{
-		u'doctype': u'DocField',
-		'fieldname': u'column_break1',
-		'fieldtype': u'Column Break',
-		'oldfieldtype': u'Column Break',
-		'permlevel': 0,
-		'width': u'50%'
 	},
 
 	# DocField
@@ -598,16 +485,6 @@
 	# DocField
 	{
 		u'doctype': u'DocField',
-		'fieldname': u'column_break2',
-		'fieldtype': u'Column Break',
-		'oldfieldtype': u'Column Break',
-		'permlevel': 0,
-		'width': u'50%'
-	},
-
-	# DocField
-	{
-		u'doctype': u'DocField',
 		'fieldname': u'uom_conversion_details',
 		'fieldtype': u'Table',
 		'label': u'UOM Conversion Details',
@@ -730,16 +607,6 @@
 		'oldfieldname': u'sales_rate',
 		'oldfieldtype': u'Currency',
 		'permlevel': 0
-	},
-
-	# DocField
-	{
-		u'doctype': u'DocField',
-		'fieldname': u'column_break3',
-		'fieldtype': u'Column Break',
-		'oldfieldtype': u'Column Break',
-		'permlevel': 0,
-		'width': u'50%'
 	},
 
 	# DocField
@@ -907,5 +774,89 @@
 		'label': u'Long Description',
 		'options': u'Markdown',
 		'permlevel': 0
+	},
+
+	# DocPerm
+	{
+		'cancel': 1,
+		'create': 1,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'System Manager',
+		'write': 1
+	},
+
+	# DocPerm
+	{
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'permlevel': 1,
+		'role': u'Material Master Manager',
+		'write': 0
+	},
+
+	# DocPerm
+	{
+		'cancel': 1,
+		'create': 1,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'Material Master Manager',
+		'write': 1
+	},
+
+	# DocPerm
+	{
+		u'doctype': u'DocPerm',
+		'permlevel': 1,
+		'role': u'System Manager'
+	},
+
+	# DocPerm
+	{
+		'amend': 0,
+		'cancel': 0,
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'permlevel': 1,
+		'role': u'Material Manager',
+		'submit': 0,
+		'write': 0
+	},
+
+	# DocPerm
+	{
+		'amend': 0,
+		'cancel': 0,
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'Material Manager',
+		'submit': 0,
+		'write': 0
+	},
+
+	# DocPerm
+	{
+		'amend': 0,
+		'cancel': 0,
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'permlevel': 1,
+		'role': u'Material User',
+		'submit': 0,
+		'write': 0
+	},
+
+	# DocPerm
+	{
+		'amend': 0,
+		'cancel': 0,
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'Material User',
+		'submit': 0,
+		'write': 0
 	}
 ]

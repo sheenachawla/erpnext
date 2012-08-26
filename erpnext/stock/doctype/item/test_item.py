@@ -32,13 +32,14 @@ base_item = {
 	'is_service_item': 'No'
 }
 
+def load_data():
+	make_item_groups()
+	webnotes.model.insert_test_data("Item")
+	
 def make_item_groups():
-	from webnotes.modules.export import get_test_doclist
-	item_groups = sorted(get_test_doclist('Item Group'),
-		key=lambda ig: (ig[0].get('parent_item_group'), ig[0].get('name')))
-	for doclist in item_groups:
-		webnotes.model.insert(doclist)
-		
+	webnotes.model.insert_test_data("Item Group",
+		sort_fn=lambda ig: (ig[0].get('parent_item_group'), ig[0].get('name')))
+
 class TestItem(TestBase):
 	def setUp(self):
 		super(TestItem, self).setUp()
