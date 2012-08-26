@@ -30,6 +30,12 @@ base_party_group = {
 	"doctype": "Party Group", "name": "Default Party Group"
 }
 
+def load_data():
+	# make_party_groups()
+	# make_territories()
+	# make_lead()
+	make_parties()
+
 def make_party_groups():
 	from webnotes.modules.export import get_test_doclist
 	party_groups = sorted(get_test_doclist('Party Group'))
@@ -49,6 +55,13 @@ def make_lead():
 		"status": "Open", "naming_series": "LEAD",
 		"address_line1": "F/102, 247 Park",
 		"mobile_no": "1234567890", "email_id": "email@domain.com"
+	})
+
+def make_parties():
+	# make customer and supplier
+	webnotes.model.insert({
+		"doctype": "Party", "name": "Robert Smith", 
+		"party_type": "Customer and Supplier",
 	})
 
 class TestParty(TestBase):
