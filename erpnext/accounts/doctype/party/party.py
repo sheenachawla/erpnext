@@ -62,7 +62,7 @@ class PartyController(DocListController):
 		credit_limit = self.doc.credit_limit or webnotes.conn.get_value('Company', company, 'credit_limit')
 		
 		prev_outstanding = webnotes.conn.sql("select sum(debit) - sum(credit) from `tabGL Entry` \
-			where party = %s and company = %s", (self.doc.name, company))[0][0]			
+			where party = %s and company = %s", (self.doc.name, company), as_dict=False)[0][0]			
 		total_outstanding = flt(prev_outstanding) + flt(current_amount)
 		
 		# If outstanding greater than credit limit and not authorized person raise exception

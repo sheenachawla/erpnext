@@ -42,7 +42,7 @@ class PageController(DocListController):
 		res = webnotes.conn.sql("""\
 			select count(*) from `tab%s`
 			where page_name=%s and name!=%s""" % (self.doc.doctype, '%s', '%s'),
-			(self.doc.page_name, self.doc.name))
+			(self.doc.page_name, self.doc.name), as_dict=False)
 		if res and res[0][0] > 0:
 			webnotes.msgprint("""A %s with the same title already exists.
 				Please change the title of %s and save again."""

@@ -26,7 +26,7 @@ class StockLedgerEntryController(DocListController):
 	#check for item quantity available in stock
 	def actual_amt_check(self):
 		if self.doc.batch_no:
-			batch_bal = flt(webnotes.conn.sql("select sum(actual_qty) from `tabStock Ledger Entry` where warehouse = '%s' and item_code = '%s' and batch_no = '%s'"%(self.doc.warehouse,self.doc.item_code,self.doc.batch_no))[0][0])
+			batch_bal = flt(webnotes.conn.sql("select sum(actual_qty) from `tabStock Ledger Entry` where warehouse = '%s' and item_code = '%s' and batch_no = '%s'"%(self.doc.warehouse,self.doc.item_code,self.doc.batch_no), as_dict=False)[0][0])
 			self.doc.update({'batch_bal': batch_bal})
 
 			if (batch_bal + self.doc.actual_qty) < 0:
@@ -53,7 +53,7 @@ class StockLedgerEntryController(DocListController):
 	# -----------------
 	
 	def validate_item(self):
-		item_det = webnotes.conn.sql("select name, has_batch_no, docstatus from tabItem where name = '%s'" % self.doc.item_code)
+		item_det = webnotes.conn.sql("select name, has_batch_no, docstatus from tabItem where name = '%s'" % self.doc.item_code, as_dict=False)
 
 		# check item exists
 		if item_det:

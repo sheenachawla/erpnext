@@ -49,7 +49,7 @@ def get_fiscal_year(date):
 		
 	res = webnotes.conn.sql("""select name from `tabFiscal Year`
 		where year_start_date <= %s and adddate(year_start_date, interval 1 year) >= %s""",
-		(date, date))
+		(date, date), as_dict=False)
 	if not res:
 		class FiscalYearNotFound(webnotes.ValidationError): pass
 		from webnotes.utils import formatdate
