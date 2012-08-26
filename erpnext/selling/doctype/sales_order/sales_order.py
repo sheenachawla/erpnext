@@ -14,8 +14,33 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+"""
+TODO:
+
+* get projected qty from warehouse on posting date
+* make maintenance schedule
+
+"""
+
+
 from __future__ import unicode_literals
 import webnotes
+import webnotes.model
+from webnotes.model import DocListController
+
+class SalesOrderController(DocListController):
+	def validate(self):
+		# TODO: 
+		pass
+		
+
+	def get_item_details(self, args=None):
+		"""used to fetch default values from item table"""
+		pass
+		
+	
+
+
 
 from webnotes.utils import cstr, date_diff, flt, getdate, now
 
@@ -30,115 +55,6 @@ from webnotes.model import get_controller
 from utilities.transaction_base import TransactionBase
 
 class DocType(TransactionBase):
-	def __init__(self, doc, doclist=None):
-		self.doc = doc
-		if not doclist: doclist = []
-		self.doclist = doclist
-		self.tname = 'Sales Order Item'
-		self.fname = 'sales_order_details'
-		self.person_tname = 'Target Detail'
-		self.partner_tname = 'Partner Target Detail'
-		self.territory_tname = 'Territory Target Detail'
-
-# Autoname
-# ===============
-	def autoname(self):
-		self.doc.name = make_autoname(self.doc.naming_series+'.#####')
-
-		
-# DOCTYPE TRIGGER FUNCTIONS
-# =============================
-	# Pull Quotation Items
-	# -----------------------
-	def pull_quotation_details(self):
-		self.doclist = self.doc.clear_table(self.doclist, 'other_charges')
-		self.doclist = self.doc.clear_table(self.doclist, 'sales_order_details')
-		self.doclist = self.doc.clear_table(self.doclist, 'sales_team')
-		self.doclist = self.doc.clear_table(self.doclist, 'tc_details')
-		if self.doc.quotation_no:				
-			get_obj('DocType Mapper', 'Quotation-Sales Order').dt_map('Quotation', 'Sales Order', self.doc.quotation_no, self.doc, self.doclist, "[['Quotation', 'Sales Order'],['Quotation Item', 'Sales Order Item'],['Sales Taxes and Charges','Sales Taxes and Charges'],['Sales Team','Sales Team'],['TC Detail','TC Detail']]")			
-		else:
-			msgprint("Please select Quotation whose details need to pull")		
-
-		return cstr(self.doc.quotation_no)
-	
-	#pull project customer
-	#-------------------------
-	def pull_project_customer(self):
-		res = webnotes.conn.sql("select customer from `tabProject` where name = '%s'"%self.doc.project_name)
-		if res:
-			get_obj('DocType Mapper', 'Project-Sales Order').dt_map('Project', 'Sales Order', self.doc.project_name, self.doc, self.doclist, "[['Project', 'Sales Order']]")
-			
-	
-	# Get contact person details based on customer selected
-	# ------------------------------------------------------
-	def get_contact_details(self):
-		get_obj('Sales Common').get_contact_details(self,0)
-
-	# Get Commission rate of Sales Partner
-	# -------------------------------------
-	def get_comm_rate(self, sales_partner):
-		return get_obj('Sales Common').get_comm_rate(sales_partner, self)
-
-
-# SALES ORDER DETAILS TRIGGER FUNCTIONS
-# ================================================================================
-	# Get Item Details
-	# ----------------
-	def get_item_details(self, args=None):
-		import json
-		args = args and json.loads(args) or {}
-		if args.get('item_code'):
-			return get_obj('Sales Common').get_item_details(args, self)
-		else:
-			obj = get_obj('Sales Common')
-			for doc in self.doclist:
-				if doc.get('item_code'):
-					arg = {'item_code':doc.get('item_code'), 'income_account':doc.get('income_account'), 
-						'cost_center': doc.get('cost_center'), 'warehouse': doc.get('warehouse')};
-					ret = obj.get_item_defaults(arg)
-					for r in ret:
-						if not doc.get(r):
-							doc[r] = ret[r]					
-
-
-	# Re-calculates Basic Rate & amount based on Price List Selected
-	# --------------------------------------------------------------
-	def get_adj_percent(self, arg=''):
-		get_obj('Sales Common').get_adj_percent(self)
-
-
-
-	# Get projected qty of item based on warehouse selected
-	# -----------------------------------------------------
-	def get_available_qty(self,args):
-		return get_obj('Sales Common').get_available_qty(eval(args))
-
-	
-# OTHER CHARGES TRIGGER FUNCTIONS
-# ====================================================================================
-	
-	# Get Tax rate if account type is TAX
-	# ------------------------------------
-	def get_rate(self,arg):
-		return get_obj('Sales Common').get_rate(arg)
-
-	# Load Default Charges
-	# ----------------------------------------------------------
-	def load_default_taxes(self):
-		self.doclist = get_obj('Sales Common').load_default_taxes(self)
-
-	# Pull details from other charges master (Get Sales Taxes and Charges Master)
-	# ----------------------------------------------------------
-	def get_other_charges(self):
-		self.doclist = get_obj('Sales Common').get_other_charges(self)
- 
- 
-# GET TERMS & CONDITIONS
-# =====================================================================================
-	def get_tc_details(self):
-		return get_obj('Sales Common').get_tc_details(self)
-
 #check if maintenance schedule already generated
 #============================================
 	def check_maintenance_schedule(self):
