@@ -897,7 +897,7 @@ wn.ui.make_control=function(opts){control_map={'Check':wn.ui.CheckControl,'Data'
 if(control_map[opts.docfield.fieldtype]){return new control_map[opts.docfield.fieldtype](opts);}else{return null;}}
 wn.ui.Control=Class.extend({init:function(opts){$.extend(this,opts);this.setup_perm();this.make();this.set_events();this.apply_disabled();this.apply_hidden();this.apply_mandatory();this.set_init_value();this.set_change_event();},setup_perm:function(){this.perm=this.doclist?this.doclist.get_perm()[this.docfield.permlevel]:[1,1];if(!this.perm){this.perm=[0,0]}},make:function(){if(this.docfield.vertical){this.make_body_vertical();}else{this.make_body();}
 this.make_input();this.make_label();},make_label:function(){if(this.docfield.label)
-this.$w.find('label:first').text(this.docfield.label);if(this.no_label){this.hide_label();}else{if(this.docfield.description){this.help_block(this.docfield.description);}}},set_change_event:function(){var me=this;if(this.$input)
+this.$w.find('label:first').text(this.docfield.label).attr("title",this.docfield.fieldname);if(this.no_label){this.hide_label();}else{if(this.docfield.description){this.help_block(this.docfield.description);}}},set_change_event:function(){var me=this;if(this.$input)
 this.$input.change(function(){var val=me.get();if(me.validate){var new_val=me.validate(val);if(new_val!=val){me.set_input(new_val);val=new_val;}}
 if(me.doc){me.doc.set(me.docfield.fieldname,val);}});},set_events:function(){var me=this;this.$w.find('.control-static').click(function(){me.toggle_editable(true);});},toggle_editable:function(editable){if(this.docfield.reqd)
 editable=true;if(editable===undefined)
