@@ -61,7 +61,7 @@ def upto(stage, with_tests=False):
 	if "stages" in stagedata:
 		for reqd_stage in stagedata["stages"]:
 			if not reqd_stage in committed:
-				upto(reqd_stage)
+				upto(reqd_stage, with_tests)
 	
 	# commit data or test files required for this stage
 	if "data" in stagedata:
@@ -73,7 +73,7 @@ def upto(stage, with_tests=False):
 				webnotes.conn.commit()
 	
 	if with_tests:
-		run_stage(stage)
+		test_stage(stage)
 	
 	# commit data in all test files
 	if "tests" in stagedata:
@@ -91,9 +91,9 @@ def test_stage(stage):
 	import unittest, conf, sys
 	webnotes.connect(conf.test_db_name)
 	
+	stagedata = stages[stage]
+	if not stagedata.get("tests"): return
 	def _load_test_suite():
-		stagedata = stages[stage]
-		
 		test_suite = unittest.TestSuite()
 		for module in map(lambda module_name: __import__(module_name,
 			fromlist = [module_name.split(".")[-1]]), stagedata["tests"]):
