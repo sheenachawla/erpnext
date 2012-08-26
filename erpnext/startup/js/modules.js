@@ -44,16 +44,24 @@ erpnext.module_page.make = function(module, wrapper) {
 		
 		$(repl('<h4>%(title)s</h4><ul class="%(name)s"></ul><hr>', {title: toTitle(name), name: name}))
 			.appendTo($(wrapper).find('.layout-main'));
-			
+		
+		var $ul = $(wrapper).find('.' + name);
+		
 		// items
 		$.each(items[name], function(i, v) {
+			
 			if(v[0]=='DocType') {
 				$(repl('<li><a href="#List/%(name)s">%(name)s</a></li>', {name: v[1]}))
-					.appendTo($(wrapper).find('.' + name));
+					.appendTo($ul);
 			} else if(v[0]=='Report') {
 				$(repl('<li><a href="#Report/%(doctype)s/%(name)s">%(name)s</a></li>', 
-					{name: v[1], doctype:v[2]}))
-					.appendTo($(wrapper).find('.' + name));				
+					{name: v[1], doctype:v[2]})).appendTo($ul);				
+			} else if(v[0]=='Page') {
+				$(repl('<li><a href="#%(name)s">%(name)s</a></li>', 
+					{name: v[1] })).appendTo($ul);					
+			} else if(v[0]=='Single') {
+				$(repl('<li><a href="#Form/%(name)s">%(name)s</a></li>', 
+					{name: v[1] })).appendTo($ul);	
 			}
 		})
 	}
