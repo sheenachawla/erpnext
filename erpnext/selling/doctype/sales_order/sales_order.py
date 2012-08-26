@@ -19,373 +19,106 @@ TODO:
 
 * get projected qty from warehouse on posting date
 * make maintenance schedule
+* get_item_details
+* DocTypeValidator: 
+**	If order_type is Sales, Expected Delivery Date is mandatory
+**	If amend_from, amendment_date is mandatory
+**	Expected Delivery Date cannot be before Posting Date
 
 """
 
-
 from __future__ import unicode_literals
 import webnotes
-import webnotes.model
-from webnotes.model import DocListController
-
-class SalesOrderController(DocListController):
-	def validate(self):
-		# TODO: 
-		pass
-		
-
-	def get_item_details(self, args=None):
-		"""used to fetch default values from item table"""
-		pass
-		
-	
-
-
-
-from webnotes.utils import cstr, date_diff, flt, getdate, now
-
-from webnotes.model.doc import make_autoname
-from webnotes.model.controller import getlist
-from webnotes.model.code import get_obj
 from webnotes import msgprint
 from webnotes.model import get_controller
+from selling.utils import SalesController
 
-	
-
-from utilities.transaction_base import TransactionBase
-
-class DocType(TransactionBase):
-#check if maintenance schedule already generated
-#============================================
-	def check_maintenance_schedule(self):
-		nm = webnotes.conn.sql("select t1.name from `tabMaintenance Schedule` t1, `tabMaintenance Schedule Item` t2 where t2.parent=t1.name and t2.prevdoc_docname=%s and t1.docstatus=1", self.doc.name)
-		nm = nm and nm[0][0] or ''
+class SalesOrderController(SalesController):
+	def setup(self):
+		self.item_table_filedname = 'sales_order_details'
 		
-		if not nm:
-			return 'No'
+	def validate(self):		
+		self.validate_items()
+		self.validate_po()
+		self.validate_project()
+		self.validate_conversion_rate()
+		self.validate_max_discount()
+		self.validate_sales_team_contribution()
 
-#check if maintenance visit already generated
-#============================================
-	def check_maintenance_visit(self):
-		nm = webnotes.conn.sql("select t1.name from `tabMaintenance Visit` t1, `tabMaintenance Visit Purpose` t2 where t2.parent=t1.name and t2.prevdoc_docname=%s and t1.docstatus=1 and t1.completion_status='Fully Completed'", self.doc.name)
-		nm = nm and nm[0][0] or ''
-		
-		if not nm:
-			return 'No'
-
-# VALIDATE
-# =====================================================================================
-	# Fiscal Year Validation
-	# ----------------------
-	def validate_fiscal_year(self):
-		get_obj('Sales Common').validate_fiscal_year(self.doc.fiscal_year,self.doc.transaction_date,'Sales Order Date')
-	
-	# Validate values with reference document
-	#----------------------------------------
-	def validate_reference_value(self):
-		get_obj('DocType Mapper', 'Quotation-Sales Order', with_children = 1).validate_reference_value(self, self.doc.name)
-
-	# Validate Mandatory
-	# -------------------
-	def validate_mandatory(self):
-		# validate transaction date v/s delivery date
-		if self.doc.delivery_date:
-			if getdate(self.doc.transaction_date) > getdate(self.doc.delivery_date):
-				msgprint("Expected Delivery Date cannot be before Sales Order Date")
-				raise Exception
-		# amendment date is necessary if document is amended
-		if self.doc.amended_from and not self.doc.amendment_date:
-			msgprint("Please Enter Amendment Date")
-			raise Exception
-	
-
-	# Validate P.O Date
-	# ------------------
 	def validate_po(self):
-		# validate p.o date v/s delivery date
-		if self.doc.po_date and self.doc.delivery_date and getdate(self.doc.po_date) > getdate(self.doc.delivery_date):
-			msgprint("Expected Delivery Date cannot be before Purchase Order Date")
-			raise Exception	
-		
+		if self.doc.po_date and self.doc.delivery_date 
+			and getdate(self.doc.po_date) > getdate(self.doc.delivery_date):
+			msgprint("Expected Delivery Date cannot be before Purchase Order Date"
+				, raise_exception=webnotes.MandatoryError)
+
 		if self.doc.po_no and self.doc.customer:
 			so = webnotes.conn.sql("select name from `tabSales Order` \
 				where ifnull(po_no, '') = %s and name != %s and docstatus < 2\
 				and customer = %s", (self.doc.po_no, self.doc.name, self.doc.customer))
-			if so and so[0][0]:
+			if so and so[0]['name']:
 				msgprint("""Another Sales Order (%s) exists against same PO No and Customer. 
-					Please be sure, you are not making duplicate entry.""" % so[0][0])
-	
-	# Validations of Details Table
-	# -----------------------------
-	def validate_for_items(self):
-		check_list,flag = [],0
-		chk_dupl_itm = []
-		print 'hehe'
-		# Sales Order Items Validations
+					Please be sure, you are not making duplicate entry.""" % so[0]['name'])
+
+	def validate_items(self):
+		quotations = []
 		for d in getlist(self.doclist, 'sales_order_details'):
-			print "here"
-			if cstr(self.doc.quotation_no) == cstr(d.prevdoc_docname):
-				flag = 1
-			if d.prevdoc_docname:
-				if self.doc.quotation_date and getdate(self.doc.quotation_date) > getdate(self.doc.transaction_date):
-					msgprint("Sales Order Date cannot be before Quotation Date")
-					raise Exception
-				# validates whether quotation no in doctype and in table is same
-				if not cstr(d.prevdoc_docname) == cstr(self.doc.quotation_no):
-					msgprint("Items in table does not belong to the Quotation No mentioned.")
-					raise Exception
-
-			# validates whether item is not entered twice
-			e = [d.item_code, d.description, d.reserved_warehouse, d.prevdoc_docname or '']
-			f = [d.item_code, d.description]
-
-			#check item is stock item
-			st_itm = webnotes.conn.sql("select is_stock_item from `tabItem` where name = '%s'"%d.item_code)
-
-			if st_itm and st_itm[0][0] == 'Yes':
-				if e in check_list:
-					msgprint("Item %s has been entered twice." % d.item_code)
-				else:
-					check_list.append(e)
-			elif st_itm and st_itm[0][0]== 'No':
-				if f in chk_dupl_itm:
-					msgprint("Item %s has been entered twice." % d.item_code)
-				else:
-					chk_dupl_itm.append(f)
-
-			# used for production plan
-			d.transaction_date = self.doc.transaction_date
-			d.delivery_date = self.doc.delivery_date
-
-			# gets total projected qty of item in warehouse selected (this case arises when warehouse is selected b4 item)
-			tot_avail_qty = webnotes.conn.sql("select projected_qty from `tabBin` where item_code = '%s' and warehouse = '%s'" % (d.item_code,d.reserved_warehouse))
-			d.projected_qty = tot_avail_qty and flt(tot_avail_qty[0][0]) or 0
-		
-		if flag == 0:
-			msgprint("There are no items of the quotation selected.")
-			raise Exception
-
-	# validate sales/ service item against order type
-	#----------------------------------------------------
-	def validate_sales_mntc_item(self):
-		if self.doc.order_type == 'Maintenance':
-			item_field = 'is_service_item'
-			order_type = 'Maintenance Order'
-			item_type = 'service item'
-		else :
-			item_field = 'is_sales_item'
-			order_type = 'Sales Order'
-			item_type = 'sales item'
-		
-		for d in getlist(self.doclist, 'sales_order_details'):
-			res = webnotes.conn.sql("select %s from `tabItem` where name='%s'"% (item_field,d.item_code))
-			res = res and res[0][0] or 'No'
-			
-			if res == 'No':
-				msgprint("You can not select non "+item_type+" "+d.item_code+" in "+order_type)
-				raise Exception
-	
-	# validate sales/ maintenance quotation against order type
-	#------------------------------------------------------------------
-	def validate_sales_mntc_quotation(self):
-		for d in getlist(self.doclist, 'sales_order_details'):
-			if d.prevdoc_docname:
-				res = webnotes.conn.sql("select order_type from `tabQuotation` where name=%s", (d.prevdoc_docname))
-				res = res and res[0][0] or ''
+			#TODO: get projected qty
+			self.validate_item_type()
+			if d.prevdoc_docname and d.prevdoc_docname not in quotations:
+				quotations.append(d.prevdoc_docname)				
+		self.validate_with_quotation(quotations)
 				
-				if self.doc.order_type== 'Maintenance' and res != 'Maintenance':
-					msgprint("You can not select non Maintenance Quotation against Maintenance Order")
-					raise Exception
-				elif self.doc.order_type != 'Maintenance' and res == 'Maintenance':
-					msgprint("You can not select non Sales Quotation against Sales Order")
-					raise Exception
-
-	#do not allow sales item/quotation in maintenance order and service item/quotation in sales order
-	#-----------------------------------------------------------------------------------------------
-	def validate_order_type(self):
-		#validate delivery date
-		if self.doc.order_type == 'Sales' and not self.doc.delivery_date:
-			msgprint("Please enter 'Expected Delivery Date'")
-			raise Exception
+	def validate_item_type(self, item_code):
+		item_type = webnotes.conn.get_value('Item', item_code, ['is_sales_item', 'is_service_item'], as_dict=1)
+		if order_type['is_sales_item'] == 'No' and item_type['is_service_item'] == 'No':
+			msgprint("Item: %s is neither Sales nor Service Item"
+				%item_code, raise_exception=webnotes.ValidationError)
+		elif self.doc.order_type == 'Sales' and item_type['is_service_item'] == 'Yes':
+			msgprint("Maintenance item can not be selected if order type is 'Sales'"
+				, raise_exception=webnotes.ValidationError)
+		elif self.doc.order_type == 'Maintenance' and order_type['is_sales_item'] == 'Yes':
+			msgprint("Sales item can not be selected if order type is 'Maintenance'"
+				, raise_exception=webnotes.ValidationError)
 		
-		self.validate_sales_mntc_quotation()
-		self.validate_sales_mntc_item()
-
-	#check for does customer belong to same project as entered..
-	#-------------------------------------------------------------------------------------------------
-	def validate_proj_cust(self):
-		if self.doc.project_name and self.doc.customer_name:
-			res = webnotes.conn.sql("select name from `tabProject` where name = '%s' and (customer = '%s' or ifnull(customer,'')='')"%(self.doc.project_name, self.doc.customer))
-			if not res:
-				msgprint("Customer - %s does not belong to project - %s. \n\nIf you want to use project for multiple customers then please make customer details blank in project - %s."%(self.doc.customer,self.doc.project_name,self.doc.project_name))
-				raise Exception
-			 
-
-	# Validate
-	# ---------
-	def validate(self):
-		self.validate_fiscal_year()
-		self.validate_order_type()
-		self.validate_mandatory()
-		self.validate_proj_cust()
-		self.validate_po()
-		#self.validate_reference_value()
-		self.validate_for_items()
-		sales_com_obj = get_obj(dt = 'Sales Common')
-		sales_com_obj.check_active_sales_items(self)
-		sales_com_obj.check_conversion_rate(self)
-
-				# verify whether rate is not greater than max_discount
-		sales_com_obj.validate_max_discount(self,'sales_order_details')
-				# this is to verify that the allocated % of sales persons is 100%
-		sales_com_obj.get_allocated_sum(self)
-		self.doclist = sales_com_obj.make_packing_list(self,'sales_order_details')
-
-				# get total in words
-		dcc = TransactionBase().get_company_currency(self.doc.company)		
-		self.doc.in_words = sales_com_obj.get_total_in_words(dcc, self.doc.rounded_total)
-		self.doc.in_words_export = sales_com_obj.get_total_in_words(self.doc.currency, self.doc.rounded_total_export)
+	def validate_with_quotation(self, quotations):
+		for quotation_no in quotations:
+			quote = webnotes.conn.get_value('Quotation', quotation_no, ['posting_date', 'order_type', 'docstatus'])
+			if quote['posting_date'] > getdate(self.doc.posting_date):
+				msgprint("Sales Order Posting Date cannot be before Quotation Posting Date"
+					, raise_exception=webnotes.ValidationError)
+			if quote['order_type'] != self.doc.order_type:
+				msgprint("Order type is not matching with quotation: %s"
+				 	% quotation_no, raise_exception=webnotes.ValidationError)
+			if quote['docstatus'] != 1:
+				msgprint("Quotation: %s is not submitted", raise_exception=webnotes.ValidationError)
 		
-		# set SO status
-		self.doc.status='Draft'
-		if not self.doc.billing_status: self.doc.billing_status = 'Not Billed'
-		if not self.doc.delivery_status: self.doc.delivery_status = 'Not Delivered'
-		
+	def validate_project(self):
+		if self.doc.project_name:
+			if webnotes.conn.get_value('Project', self.doc.project_name, 'customer') != self.doc.party:
+				msgprint("Project: %s does not associate with party: %s" 
+					% (self.doc.project_name, self.doc.party), raise_exception=webnotes.ValidationError)
 
-# ON SUBMIT
-# ===============================================================================================
-	# Checks Quotation Status
-	# ------------------------
-	def check_prev_docstatus(self):
-		for d in getlist(self.doclist, 'sales_order_details'):
-			cancel_quo = webnotes.conn.sql("select name from `tabQuotation` where docstatus = 2 and name = '%s'" % d.prevdoc_docname)
-			if cancel_quo:
-				msgprint("Quotation :" + cstr(cancel_quo[0][0]) + " is already cancelled !")
-				raise Exception , "Validation Error. "
-	
-	def update_enquiry_status(self, prevdoc, flag):
-		enq = webnotes.conn.sql("select t2.prevdoc_docname from `tabQuotation` t1, `tabQuotation Item` t2 where t2.parent = t1.name and t1.name=%s", prevdoc)
-		if enq:
-			webnotes.conn.sql("update `tabOpportunity` set status = %s where name=%s",(flag,enq[0][0]))
-
-	#update status of quotation, enquiry
-	#----------------------------------------
-	def update_prevdoc_status(self, flag):
-		for d in getlist(self.doclist, 'sales_order_details'):
-			if d.prevdoc_docname:
-				if flag=='submit':
-					webnotes.conn.sql("update `tabQuotation` set status = 'Order Confirmed' where name=%s",d.prevdoc_docname)
-					
-					#update enquiry
-					self.update_enquiry_status(d.prevdoc_docname, 'Order Confirmed')
-				elif flag == 'cancel':
-					chk = webnotes.conn.sql("select t1.name from `tabSales Order` t1, `tabSales Order Item` t2 where t2.parent = t1.name and t2.prevdoc_docname=%s and t1.name!=%s and t1.docstatus=1", (d.prevdoc_docname,self.doc.name))
-					if not chk:
-						webnotes.conn.sql("update `tabQuotation` set status = 'Submitted' where name=%s",d.prevdoc_docname)
-						
-						#update enquiry
-						self.update_enquiry_status(d.prevdoc_docname, 'Quotation Sent')
-	
-	# Submit
-	# -------
 	def on_submit(self):
-		self.check_prev_docstatus()		
-		self.update_stock_ledger(update_stock = 1)
 		get_controller('Party',self.doc.party).check_credit_limit(self.doc.company, self.doc.grand_total)
-		# Check for Approving Authority
-		get_obj('Authorization Control').validate_approving_authority(self.doc.doctype, self.doc.grand_total, self)
-		
-		#update prevdoc status
-		self.update_prevdoc_status('submit')
-		# set SO status
-		webnotes.conn.set(self.doc, 'status', 'Submitted')
-	
- 
-# ON CANCEL
-# ===============================================================================================
+		get_controller('Authorization Control').validate_approving_authority(self.doc.doctype, self.doc.grand_total, self)
+
 	def on_cancel(self):
-		# Cannot cancel stopped SO
-		if self.doc.status == 'Stopped':
-			msgprint("Sales Order : '%s' cannot be cancelled as it is Stopped. Unstop it for any further transactions" %(self.doc.name))
-			raise Exception
-		self.check_nextdoc_docstatus()
-		self.update_stock_ledger(update_stock = -1)
-		
-		#update prevdoc status
-		self.update_prevdoc_status('cancel')
-		
-		# ::::::::: SET SO STATUS ::::::::::
-		webnotes.conn.set(self.doc, 'status', 'Cancelled')
-		
-	# CHECK NEXT DOCSTATUS
-	# does not allow to cancel document if DN or RV made against it is SUBMITTED 
-	# ----------------------------------------------------------------------------
-	def check_nextdoc_docstatus(self):
-		# Checks Delivery Note
-		submit_dn = webnotes.conn.sql("select t1.name from `tabDelivery Note` t1,`tabDelivery Note Item` t2 where t1.name = t2.parent and t2.prevdoc_docname = '%s' and t1.docstatus = 1" % (self.doc.name))
-		if submit_dn:
-			msgprint("Delivery Note : " + cstr(submit_dn[0][0]) + " has been submitted against " + cstr(self.doc.doctype) + ". Please cancel Delivery Note : " + cstr(submit_dn[0][0]) + " first and then cancel "+ cstr(self.doc.doctype), raise_exception = 1)
-		# Checks Sales Invoice
-		submit_rv = webnotes.conn.sql("select t1.name from `tabSales Invoice` t1,`tabSales Invoice Item` t2 where t1.name = t2.parent and t2.sales_order = '%s' and t1.docstatus = 1" % (self.doc.name))
-		if submit_rv:
-			msgprint("Sales Invoice : " + cstr(submit_rv[0][0]) + " has already been submitted against " +cstr(self.doc.doctype)+ ". Please cancel Sales Invoice : "+ cstr(submit_rv[0][0]) + " first and then cancel "+ cstr(self.doc.doctype), raise_exception = 1)
-		#check maintenance schedule
-		submit_ms = webnotes.conn.sql("select t1.name from `tabMaintenance Schedule` t1, `tabMaintenance Schedule Item` t2 where t2.parent=t1.name and t2.prevdoc_docname = %s and t1.docstatus = 1",self.doc.name)
-		if submit_ms:
-			msgprint("Maintenance Schedule : " + cstr(submit_ms[0][0]) + " has already been submitted against " +cstr(self.doc.doctype)+ ". Please cancel Maintenance Schedule : "+ cstr(submit_ms[0][0]) + " first and then cancel "+ cstr(self.doc.doctype), raise_exception = 1)
-		submit_mv = webnotes.conn.sql("select t1.name from `tabMaintenance Visit` t1, `tabMaintenance Visit Purpose` t2 where t2.parent=t1.name and t2.prevdoc_docname = %s and t1.docstatus = 1",self.doc.name)
-		if submit_mv:
-			msgprint("Maintenance Visit : " + cstr(submit_mv[0][0]) + " has already been submitted against " +cstr(self.doc.doctype)+ ". Please cancel Maintenance Visit : " + cstr(submit_mv[0][0]) + " first and then cancel "+ cstr(self.doc.doctype), raise_exception = 1)
-
-
-	def check_modified_date(self):
-		mod_db = webnotes.conn.sql("select modified from `tabSales Order` where name = '%s'" % self.doc.name)
-		date_diff = webnotes.conn.sql("select TIMEDIFF('%s', '%s')" % ( mod_db[0][0],cstr(self.doc.modified)))
-		
-		if date_diff and date_diff[0][0]:
-			msgprint(cstr(self.doc.doctype) +" => "+ cstr(self.doc.name) +" has been modified. Please Refresh. ")
-			raise Exception
-
-	# STOP SALES ORDER
-	# ==============================================================================================			
-	# Stops Sales Order & no more transactions will be created against this Sales Order
+		self.check_if_nextdoc_exists(['Delivery Note Item', 'Sales Invoice Item', \
+			'Maintenance Schedule Item', 'Maintenance Visit Purpose'])
+			
 	def stop_sales_order(self):
 		self.check_modified_date()
-		self.update_stock_ledger(update_stock = -1,clear = 1)
-		# ::::::::: SET SO STATUS ::::::::::
-		webnotes.conn.set(self.doc, 'status', 'Stopped')
-		msgprint(self.doc.doctype + ": " + self.doc.name + " has been Stopped. To make transactions against this Sales Order you need to Unstop it.")
+		self.doc.stopped = 1
+		self.save()
+		msgprint("Stopped! To make transactions against this you need to Unstop it.")
 
-	# UNSTOP SALES ORDER
-	# ==============================================================================================			
-	# Unstops Sales Order & now transactions can be continued against this Sales Order
 	def unstop_sales_order(self):
 		self.check_modified_date()
-		self.update_stock_ledger(update_stock = 1,clear = 1)
-		# ::::::::: SET SO STATUS ::::::::::
-		webnotes.conn.set(self.doc, 'status', 'Submitted')
-		msgprint(self.doc.doctype + ": " + self.doc.name + " has been Unstopped.")
+		self.doc.stopped = 0
+		self.save()
+		msgprint("Unstopped!")
 
-	# UPDATE STOCK LEDGER
-	# ===============================================================================================
-	def update_stock_ledger(self, update_stock, clear = 0):
-		for d in self.get_item_list(clear):
-			stock_item = webnotes.conn.sql("SELECT is_stock_item FROM tabItem where name = '%s'"%(d['item_code']),as_dict = 1)
-			# stock ledger will be updated only if it is a stock item
-			if stock_item and stock_item[0]['is_stock_item'] == "Yes":
-				if not d['reserved_warehouse']:
-					msgprint("Message: Please enter Reserved Warehouse for item %s as it is stock item."% d['item_code'])
-					raise Exception
-				bin = get_obj('Warehouse', d['reserved_warehouse']).update_bin( 0, flt(update_stock) * flt(d['qty']), \
-					0, 0, 0, d['item_code'], self.doc.transaction_date,doc_type=self.doc.doctype,\
-					doc_name=self.doc.name, is_amended = (self.doc.amended_from and 'Yes' or 'No'))
-	
-	# Gets Items from packing list
-	#=================================
-	def get_item_list(self, clear):
-		return get_obj('Sales Common').get_item_list( self, clear)
-		
-	# on update
-	def on_update(self):
-		pass
-
+	def check_modified_date(self):
+		if webnotes.conn.get_value('Sales Order', self.doc.name, 'modified') != self.doc.modified:
+			msgprint("Sales Order has been modified after you have opened it. Please Refresh to Stop/Unstop."
+			, raise_exception=webnotes.ValidationError)
