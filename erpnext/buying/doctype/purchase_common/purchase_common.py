@@ -331,35 +331,35 @@ class DocType(TransactionBase):
 		check_list, chk_dupl_itm=[],[]
 		for d in getlist( obj.doclist, obj.fname):
 			# validation for valid qty	
-			if flt(d.qty) < 0 or (d.parenttype != 'Purchase Receipt' and not flt(d.qty)):
-				msgprint("Please enter valid qty for item %s" % cstr(d.item_code))
-				raise Exception
+			# if flt(d.qty) < 0 or (d.parenttype != 'Purchase Receipt' and not flt(d.qty)):
+			# 	msgprint("Please enter valid qty for item %s" % cstr(d.item_code))
+			# 	raise Exception
 			
 			# udpate with latest quantities
-			bin = sql("select projected_qty from `tabBin` where item_code = %s and warehouse = %s", (d.item_code, d.warehouse), as_dict = 1)
+			# bin = sql("select projected_qty from `tabBin` where item_code = %s and warehouse = %s", (d.item_code, d.warehouse), as_dict = 1)
 			
-			f_lst ={'projected_qty': bin and flt(bin[0]['projected_qty']) or 0, 'ordered_qty': 0, 'received_qty' : 0, 'billed_qty': 0}
-			if d.doctype == 'Purchase Receipt Item':
-				f_lst.pop('received_qty')
-			for x in f_lst :
-				if d.has_key(x):
-					d[x] = f_lst[x]
+			# f_lst ={'projected_qty': bin and flt(bin[0]['projected_qty']) or 0, 'ordered_qty': 0, 'received_qty' : 0, 'billed_qty': 0}
+			# if d.doctype == 'Purchase Receipt Item':
+			# 	f_lst.pop('received_qty')
+			# for x in f_lst :
+			# 	if d.has_key(x):
+			# 		d[x] = f_lst[x]
 			
-			item = sql("select is_stock_item, is_purchase_item, is_sub_contracted_item from tabItem where name=%s and (ifnull(end_of_life,'')='' or end_of_life = '0000-00-00' or end_of_life >	now())", d.item_code)
-			if not item:
-				msgprint("Item %s does not exist in Item Master." % cstr(d.item_code))
-				raise Exception
-			
-			# validate stock item
-			if item[0][0]=='Yes':
-				if not d.warehouse:
-					msgprint("Warehouse is mandatory for %s, since it is a stock item" % d.item_code)
-					raise Exception
-			
-			# validate purchase item
-			if item[0][1] != 'Yes' and item[0][2] != 'Yes':
-				msgprint("Item %s is not a purchase item or sub-contracted item. Please check" % (d.item_code))
-				raise Exception
+			# item = sql("select is_stock_item, is_purchase_item, is_sub_contracted_item from tabItem where name=%s and (ifnull(end_of_life,'')='' or end_of_life = '0000-00-00' or end_of_life >	now())", d.item_code)
+			# if not item:
+			# 	msgprint("Item %s does not exist in Item Master." % cstr(d.item_code))
+			# 	raise Exception
+			# 
+			# # validate stock item
+			# if item[0][0]=='Yes':
+			# 	if not d.warehouse:
+			# 		msgprint("Warehouse is mandatory for %s, since it is a stock item" % d.item_code)
+			# 		raise Exception
+			# 
+			# # validate purchase item
+			# if item[0][1] != 'Yes' and item[0][2] != 'Yes':
+			# 	msgprint("Item %s is not a purchase item or sub-contracted item. Please check" % (d.item_code))
+			# 	raise Exception
 
 			
 			if d.has_key('prevdoc_docname') and d.prevdoc_docname:
@@ -385,28 +385,28 @@ class DocType(TransactionBase):
 					raise Exception
 			
 			# list criteria that should not repeat if item is stock item
-			e = [d.schedule_date, d.item_code, d.description, d.warehouse, d.uom, d.has_key('prevdoc_docname') and d.prevdoc_docname or '', d.has_key('prevdoc_detail_docname') and d.prevdoc_detail_docname or '', d.has_key('batch_no') and d.batch_no or '']
-			
-			# if is not stock item
-			f = [d.schedule_date, d.item_code, d.description]
-			
-			ch = sql("select is_stock_item from `tabItem` where name = '%s'"%d.item_code)
-			
-			if ch and ch[0][0] == 'Yes':			
-				# check for same items
-				if e in check_list:
-					msgprint("""Item %s has been entered more than once with same description, schedule date, warehouse and uom.\n 
-						Please change any of the field value to enter the item twice""" % d.item_code, raise_exception = 1)
-				else:
-					check_list.append(e)
-					
-			elif ch and ch[0][0] == 'No':
-				# check for same items
-				if f in chk_dupl_itm:
-					msgprint("""Item %s has been entered more than once with same description, schedule date.\n 
-						Please change any of the field value to enter the item twice.""" % d.item_code, raise_exception = 1)
-				else:
-					chk_dupl_itm.append(f)
+			# e = [d.schedule_date, d.item_code, d.description, d.warehouse, d.uom, d.has_key('prevdoc_docname') and d.prevdoc_docname or '', d.has_key('prevdoc_detail_docname') and d.prevdoc_detail_docname or '', d.has_key('batch_no') and d.batch_no or '']
+			# 
+			# # if is not stock item
+			# f = [d.schedule_date, d.item_code, d.description]
+			# 
+			# ch = sql("select is_stock_item from `tabItem` where name = '%s'"%d.item_code)
+			# 
+			# if ch and ch[0][0] == 'Yes':			
+			# 	# check for same items
+			# 	if e in check_list:
+			# 		msgprint("""Item %s has been entered more than once with same description, schedule date, warehouse and uom.\n 
+			# 			Please change any of the field value to enter the item twice""" % d.item_code, raise_exception = 1)
+			# 	else:
+			# 		check_list.append(e)
+			# 		
+			# elif ch and ch[0][0] == 'No':
+			# 	# check for same items
+			# 	if f in chk_dupl_itm:
+			# 		msgprint("""Item %s has been entered more than once with same description, schedule date.\n 
+			# 			Please change any of the field value to enter the item twice.""" % d.item_code, raise_exception = 1)
+			# 	else:
+			# 		chk_dupl_itm.append(f)
 
 	# validate conversion rate
 	def validate_conversion_rate(self, obj):
