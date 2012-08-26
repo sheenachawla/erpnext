@@ -43,7 +43,7 @@ stages = {
 	"Buying": {
 		"stages": ["Master"],
 		"tests": [
-			"buying.doctype.purchase_request.purchase_request",
+			"buying.doctype.purchase_request.test_purchase_request",
 		],
 	},
 }

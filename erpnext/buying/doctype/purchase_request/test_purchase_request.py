@@ -18,10 +18,50 @@ from __future__ import unicode_literals
 import webnotes
 import webnotes.model
 from webnotes.tests.test_base import TestBase
+from webnotes.utils import now_datetime, add_days
 
-# base_purchase_request = 
+base_purchase_request = {
+	"doctype": "Purchase Request",
+	"naming_series": "PREQ-",
+	"company": "East Wind Corporation",
+	"posting_date": now_datetime().date(),
+	"__islocal": 1
+}
 
+base_purchase_request_item = {
+	"doctype": "Purchase Request Item",
+	"parentfield": "purchase_request_items",
+	"item_code": "Home Desktop 100",
+	"qty": 1,
+	"uom": "Nos",
+	"schedule_date": add_days(now_datetime().date(), 1),
+	"item_name": "Home Desktop 100",
+	"description": "Home Desktop 100",
+	"__islocal": 1
+}
+
+
+"""
+TODO:
+# test qty based on previous sales order
+# test cancellation if purchase order / supplier quotation already submitted
+"""
 class TestPurchaseRequest(TestBase):
-	def test_purchase_request_creation(self):
-		# webnotes.model.insert([])
-		pass
+	def test_create_purchase_request(self):
+		prcon = webnotes.model.insert([base_purchase_request,
+			base_purchase_request_item])
+		
+		# check if doclist length is 2
+		self.assertEqual(len(webnotes.model.get("Purchase Request", prcon.doc.name)), 2)
+	
+	def test_submit_purchase_request(self):
+		prcon = webnotes.model.get_controller([base_purchase_request,
+			base_purchase_request_item])
+		prcon.submit()
+		
+		db_copy = webnotes.model.get("Purchase Request", prcon.doc.name)
+		# check if doclist length is 2
+		self.assertEqual(len(db_copy), 2)
+		# check if docstatus = 1
+		self.assertEqual(db_copy[0].docstatus, 1)
+		

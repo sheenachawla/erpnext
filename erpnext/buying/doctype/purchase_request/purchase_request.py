@@ -16,7 +16,7 @@
 
 
 # Notes
-# For stop / unstop, set status = "Stop"/"Unstop" and save the form
+# For stop / unstop, set stopped = 1 / 0 respectively
 
 from __future__ import unicode_literals
 import webnotes
@@ -39,17 +39,9 @@ class PurchaseRequestController(DocListController):
 			
 			# Check if Supplier Quotation has been submitted against current Purchase Request?
 			is_next_submitted("Supplier Quotation Item", "prevdoc_docname")
-		
-		# set status field
-		if self.doc.docstatus == 0 and not self.doc.status:
-			self.doc.status = "Draft"
-		elif self.doc.docstatus == 1 and (not self.doc.status or self.doc.status == "Draft"):
-			self.doc.status = "Submitted"
-		elif self.doc.docstatus == 2:
-			self.doc.status = "Cancelled"
-		
+	
 	def validate_items(self):
-		for child in self.doclist.get({"parentfield": "indent_details"}):
+		for child in self.doclist.get({"parentfield": "purchase_request_items"}):
 			# get item controller. Also raises error if item not found
 			itemcon = webnotes.model.get_controller("Item", child.item_code)
 
@@ -72,7 +64,7 @@ class PurchaseRequestController(DocListController):
 		"""Do not request for more quantity than that in Sales Order"""
 		# collate item quantity against sales order
 		item_qty_per_so = {}
-		for child in self.doclist.get({"parentfield": "indent_details"}):
+		for child in self.doclist.get({"parentfield": "purchase_request_items"}):
 			if child.sales_order_no:
 				so = item_qty_per_so.setdefault(child.sales_order_no, {})
 				so[child.item_code] = so.setdefault(child.item_code, 0) + flt(child.qty)
