@@ -22,43 +22,25 @@ from __future__ import unicode_literals
 import webnotes
 import webnotes.model
 from webnotes.utils import getdate, now_datetime, comma_and, flt
-from webnotes.model.controller import DocListController
 
-class PurchaseRequestController(DocListController):
+from controllers.buying import BuyingController
+class PurchaseRequestController(BuyingController):
 	def validate(self):
 		# TODO: DocType Validator: d.schedule_date < self.doc.transaction_date
 		# TODO: DocType Validator: if amended_from, amendment_date is mandatory
 		# TODO: DocType Validator: d.qty > 0
 		
-		if self.doc.docstatus != 2: # validation for draft, submit
-			self.validate_items()
+		if self.doc.docstatus != 2:
+			# validate for draft, submit
+			super(PurchaseRequestController, self).validate_items("purchase_request_items")
 			self.validate_qty()
-		elif self.doc.docstatus == 2: # validation for cancel
+		else:
+			# validate for cancel
 			# Check if Purchase Order has been submitted against current Purchase Request
 			is_next_submitted("Purchase Order Item", "prevdoc_docname")
 			
 			# Check if Supplier Quotation has been submitted against current Purchase Request?
 			is_next_submitted("Supplier Quotation Item", "prevdoc_docname")
-	
-	def validate_items(self):
-		for child in self.doclist.get({"parentfield": "purchase_request_items"}):
-			# get item controller. Also raises error if item not found
-			itemcon = webnotes.model.get_controller("Item", child.item_code)
-
-			# check if purchase item
-			if itemcon.doc.is_purchase_item != "Yes":
-				webnotes.msgprint("""Item "%s" is not a Purchase Item""", raise_exception=1)
-
-			# check if end of life has reached
-			if itemcon.doc.end_of_life and getdate(itemcon.doc.end_of_life) <= now_datetime().date():
-				import stock
-				webnotes.msgprint("""Item "%s" has reached its end of life""",
-					raise_exception=stock.ItemEndOfLifeError)
-
-			# check if warehouse is required
-			if itemcon.doc.is_stock_item == "Yes" and not child.warehouse:
-				webnotes.msgprint("""Warehouse is Mandatory for Item "%s", as it is a Stock Item""" % \
-					child.item_code, raise_exception=webnotes.MandatoryError)
 	
 	def validate_qty(self):
 		"""Do not request for more quantity than that in Sales Order"""

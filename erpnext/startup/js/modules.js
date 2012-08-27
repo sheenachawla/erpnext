@@ -16,93 +16,53 @@
 
 wn.provide('erpnext.module_page');
 
-erpnext.module_page.setup_page = function(module, wrapper) {
-	erpnext.module_page.hide_links(wrapper);
-	erpnext.module_page.make_list(module, wrapper);
-	$(wrapper).find("a[title]").tooltip({
-		delay: { show: 500, hide: 100 }
-	});	
-}
-
-// hide list links where the user does
-// not have read permissions
-
-erpnext.module_page.hide_links = function(wrapper) {
-	// lists
-	$(wrapper).find('[href*="List/"]').each(function() {
-		var href = $(this).attr('href');
-		var dt = href.split('/')[1];
-		if(wn.boot.profile.all_read.indexOf(get_label_doctype(dt))==-1) {
-			var txt = $(this).text();
-			$(this).parent().css('color', '#999').html(txt);
-		}
+erpnext.module_page.make = function(module, wrapper) {
+	var items = {};
+	wn.ui.make_app_page({
+		parent: wrapper,
+		title: module,
+		single_column: true
 	});
-	
-	// reports
-	$(wrapper).find('[data-doctype]').each(function() {
-		var dt = $(this).attr('data-doctype');
-		if(wn.boot.profile.all_read.indexOf(dt)==-1) {
-			var txt = $(this).text();
-			$(this).parent().css('color', '#999').html(txt);
-		}
-	});
-	
-	// single (forms)
-	$(wrapper).find('[href*="Form/"]').each(function() {
-		var href = $(this).attr('href');
-		var dt = href.split('/')[1];
-		if(wn.boot.profile.all_read.indexOf(get_label_doctype(dt))==-1) {
-			var txt = $(this).text();
-			$(this).parent().css('color', '#999').html(txt);
-		}
-	});}
 
-// make list of reports
-
-erpnext.module_page.make_list = function(module, wrapper) {
-	// make project listing
-	var $w = $(wrapper).find('.reports-list');
-	var $parent1 = $('<div style="width: 45%; float: left; margin-right: 4.5%"></div>').appendTo($w);
-	var $parent2 = $('<div style="width: 45%; float: left;"></div>').appendTo($w);
-
-	wrapper.list1 = new wn.ui.Listing({
-		parent: $parent1,
-		method: 'utilities.get_sc_list',
-		render_row: function(row, data) {
-			if(!data.parent_doc_type) data.parent_doc_type = data.doc_type;
-			$(row).html(repl('<a href="#!Report/%(doc_type)s/%(criteria_name)s" \
-				data-doctype="%(parent_doc_type)s">\
-				%(criteria_name)s</a>', data))
+	wn.call({
+		method: 'core.doctype.module_def.module_def.get_items',
+		args: {
+			module: module
 		},
-		args: { module: module },
-		no_refresh: true,
 		callback: function(r) {
-			erpnext.module_page.hide_links($parent1)
+			items = r.message;
+			make_section('transaction');
+			make_section('master');
+			make_section('tool');
+			make_section('setup');
+			make_section('report');
 		}
-	});
-	wrapper.list1.run();
-
-	wrapper.list2 = new wn.ui.Listing({
-		parent: $parent2,
-		method: 'utilities.get_report_list',
-		render_row: function(row, data) {
-			$(row).html(repl('<a href="#!Report2/%(ref_doctype)s/%(name)s" \
-				data-doctype="%(ref_doctype)s">\
-				%(name)s</a>', data))
-		},
-		args: { module: module },
-		no_refresh: true,
-		callback: function(r) {
-			erpnext.module_page.hide_links($parent2)
-		}
-	});
-	wrapper.list2.run();
+	})
 	
-	// show link to all reports
-	$parent1.find('.list-toolbar-wrapper')
-		.prepend("<div class=\"show-all-reports\">\
-			<a href=\"#List/Search Criteria\"> [ List Of All Reports ]</a></div>");
-	$parent2.find('.list-toolbar-wrapper')
-		.prepend("<div class=\"show-all-reports\">\
-			<a href=\"#List/Report\"> [ List Of All Reports (New) ]</a></div>");
+	var make_section = function(name) {
+		if(!items[name].length) return;
+		
+		$(repl('<h4>%(title)s</h4><ul class="%(name)s"></ul><hr>', {title: toTitle(name), name: name}))
+			.appendTo($(wrapper).find('.layout-main'));
+		
+		var $ul = $(wrapper).find('.' + name);
+		
+		// items
+		$.each(items[name], function(i, v) {
+			
+			if(v[0]=='DocType') {
+				$(repl('<li><a href="#List/%(name)s">%(name)s</a></li>', {name: v[1]}))
+					.appendTo($ul);
+			} else if(v[0]=='Report') {
+				$(repl('<li><a href="#Report/%(doctype)s/%(name)s">%(name)s</a></li>', 
+					{name: v[1], doctype:v[2]})).appendTo($ul);				
+			} else if(v[0]=='Page') {
+				$(repl('<li><a href="#%(name)s">%(name)s</a></li>', 
+					{name: v[1] })).appendTo($ul);					
+			} else if(v[0]=='Single') {
+				$(repl('<li><a href="#Form/%(name)s">%(name)s</a></li>', 
+					{name: v[1] })).appendTo($ul);	
+			}
+		})
+	}
 }

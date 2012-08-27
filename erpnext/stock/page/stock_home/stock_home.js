@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-pscript['onload_stock-home'] = function(wrapper) {
-	wrapper.appframe = new wn.ui.AppFrame($(wrapper).find('.appframe-area'), 'Stock');
-	erpnext.module_page.setup_page('Stock', wrapper);
-}
+wn.pages['stock-home'].on('load', function(wrapper) {
+	erpnext.module_page.make('Stock', wrapper);
+})
