@@ -69,7 +69,8 @@ class SalesOrderController(SalesController):
 		self.validate_with_quotation(quotations)
 				
 	def validate_item_type(self, item_code):
-		item_type = webnotes.conn.get_value('Item', item_code, ['is_sales_item', 'is_service_item'], as_dict=1)
+		item_type = webnotes.conn.get_value('Item', item_code, \
+			['is_sales_item', 'is_service_item'], as_dict=1)
 		if order_type['is_sales_item'] == 'No' and item_type['is_service_item'] == 'No':
 			msgprint("Item: %s is neither Sales nor Service Item"
 				%item_code, raise_exception=webnotes.ValidationError)
@@ -82,7 +83,8 @@ class SalesOrderController(SalesController):
 		
 	def validate_with_quotation(self, quotations):
 		for quotation_no in quotations:
-			quote = webnotes.conn.get_value('Quotation', quotation_no, ['posting_date', 'order_type', 'docstatus'])
+			quote = webnotes.conn.get_value('Quotation', quotation_no, \
+				['posting_date', 'order_type', 'docstatus'])
 			if quote['posting_date'] > getdate(self.doc.posting_date):
 				msgprint("Sales Order Posting Date cannot be before Quotation Posting Date"
 					, raise_exception=webnotes.ValidationError)
@@ -90,20 +92,22 @@ class SalesOrderController(SalesController):
 				msgprint("Order type is not matching with quotation: %s"
 				 	% quotation_no, raise_exception=webnotes.ValidationError)
 			if quote['docstatus'] != 1:
-				msgprint("Quotation: %s is not submitted", raise_exception=webnotes.ValidationError)
+				msgprint("Quotation: %s is not submitted"
+					, raise_exception=webnotes.ValidationError)
 		
 	def validate_project(self):
 		if self.doc.project_name:
-			if webnotes.conn.get_value('Project', self.doc.project_name, 'customer') != self.doc.party:
+			if webnotes.conn.get_value('Project', self.doc.project_name, \
+					'customer') !=  self.doc.party:
 				msgprint("Project: %s does not associate with party: %s" 
 					% (self.doc.project_name, self.doc.party), 
 					raise_exception=webnotes.ValidationError)
 
 	def on_submit(self):
-		get_controller('Party',self.doc.party).check_credit_limit(self.doc.company, 
-			self.doc.grand_total)
-		get_controller('Authorization Control').validate_approving_authority(self.doc.doctype, 
-			self.doc.grand_total, self)
+		get_controller('Party',self.doc.party).check_credit_limit\
+			(self.doc.company, self.doc.grand_total)
+		get_controller('Authorization Control').validate_approving_authority\
+			(self.doc.doctype, self.doc.grand_total, self)
 
 	def on_cancel(self):
 		self.check_if_nextdoc_exists(['Delivery Note Item', 'Sales Invoice Item', \
