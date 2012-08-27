@@ -15,16 +15,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import unicode_literals
-class DocType:
-	def __init__(self, d, dl):
-		self.doc, self.doclist = d, dl
+import webnotes.model
+from webnotes.model.controller import DocListController
 
+class FeaturesSetupController(DocListController):
 	def validate(self):
-		"""
-			update settings in defaults
-		"""
-		from webnotes.model import default_fields 
-		from webnotes.utils import set_default
 		for key in self.doc:
-			if key not in default_fields:
-				set_default(key, self.doc[key])
+			if key not in webnotes.model.default_fields:
+				webnotes.conn.set_default(key, self.doc[key])
