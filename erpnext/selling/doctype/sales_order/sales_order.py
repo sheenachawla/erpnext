@@ -96,29 +96,25 @@ class SalesOrderController(SalesController):
 		if self.doc.project_name:
 			if webnotes.conn.get_value('Project', self.doc.project_name, 'customer') != self.doc.party:
 				msgprint("Project: %s does not associate with party: %s" 
-					% (self.doc.project_name, self.doc.party), raise_exception=webnotes.ValidationError)
+					% (self.doc.project_name, self.doc.party), 
+					raise_exception=webnotes.ValidationError)
 
 	def on_submit(self):
-		get_controller('Party',self.doc.party).check_credit_limit(self.doc.company, self.doc.grand_total)
-		get_controller('Authorization Control').validate_approving_authority(self.doc.doctype, self.doc.grand_total, self)
+		get_controller('Party',self.doc.party).check_credit_limit(self.doc.company, 
+			self.doc.grand_total)
+		get_controller('Authorization Control').validate_approving_authority(self.doc.doctype, 
+			self.doc.grand_total, self)
 
 	def on_cancel(self):
 		self.check_if_nextdoc_exists(['Delivery Note Item', 'Sales Invoice Item', \
 			'Maintenance Schedule Item', 'Maintenance Visit Purpose'])
 			
 	def stop_sales_order(self):
-		self.check_modified_date()
 		self.doc.stopped = 1
 		self.save()
 		msgprint("Stopped! To make transactions against this you need to Unstop it.")
 
 	def unstop_sales_order(self):
-		self.check_modified_date()
 		self.doc.stopped = 0
 		self.save()
 		msgprint("Unstopped!")
-
-	def check_modified_date(self):
-		if webnotes.conn.get_value('Sales Order', self.doc.name, 'modified') != self.doc.modified:
-			msgprint("Sales Order has been modified after you have opened it. Please Refresh to Stop/Unstop."
-			, raise_exception=webnotes.ValidationError)
