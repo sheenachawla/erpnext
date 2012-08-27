@@ -5,7 +5,7 @@
 	{
 		u'creation': '2012-05-10 13:55:37',
 		u'docstatus': 0,
-		u'modified': '2012-08-26 22:41:24',
+		u'modified': '2012-08-27 14:23:33',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -18,11 +18,14 @@
 		'autoname': u'naming_series',
 		'colour': u'White:FFF',
 		'default_print_format': u'Standard',
+		'description': u'',
 		'doctype': u'DocType',
 		'document_type': u'Transaction',
 		'is_submittable': 1,
+		'max_attachments': 0,
 		'module': u'Buying',
 		u'name': u'__common__',
+		'name_case': u'',
 		'read_only_onload': 1,
 		'search_fields': u'status,transaction_date,sales_order_no',
 		'section_style': u'Tabbed',
