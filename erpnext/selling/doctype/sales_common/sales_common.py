@@ -326,42 +326,6 @@ class DocType(TransactionBase):
 			msgprint("Business Associate : %s does not exist in the system." % (sales_partner))
 			raise Exception
 
-	
-	# To verify whether rate entered in details table does not exceed max discount %
-	# =======================================================================================
-	def validate_max_discount(self,obj, detail_table):
-		for d in getlist(obj.doclist, detail_table):
-			discount = webnotes.conn.sql("select max_discount from tabItem where name = '%s'" %(d.item_code),as_dict = 1)
-			if discount and discount[0]['max_discount'] and (flt(d.adj_rate)>flt(discount[0]['max_discount'])):
-				msgprint("You cannot give more than " + cstr(discount[0]['max_discount']) + " % discount on Item Code : "+cstr(d.item_code))
-				raise Exception
-
-
-	# Get sum of allocated % of sales person (it should be 100%)
-	# ========================================================================
-	# it indicates % contribution of sales person in sales
-	def get_allocated_sum(self,obj):
-		sum = 0
-		for d in getlist(obj.doclist,'sales_team'):
-			sum += flt(d.allocated_percentage)
-		if (flt(sum) != 100) and getlist(obj.doclist,'sales_team'):
-			msgprint("Total Allocated % of Sales Persons should be 100%")
-			raise Exception
-			
-	# Check Conversion Rate (i.e. it will not allow conversion rate to be 1 for Currency other than default currency set in Global Defaults)
-	# ===========================================================================
-	def check_conversion_rate(self, obj):
-		default_currency = TransactionBase().get_company_currency(obj.doc.company)
-		if not default_currency:
-			msgprint('Message: Please enter default currency in Company Master')
-			raise Exception		
-		if (obj.doc.currency == default_currency and flt(obj.doc.conversion_rate) != 1.00) or not obj.doc.conversion_rate or (obj.doc.currency != default_currency and flt(obj.doc.conversion_rate) == 1.00):
-			msgprint("Please Enter Appropriate Conversion Rate for Customer's Currency to Base Currency (%s --> %s)" % (obj.doc.currency, default_currency), raise_exception = 1)
-	
-		if (obj.doc.price_list_currency == default_currency and flt(obj.doc.plc_conversion_rate) != 1.00) or not obj.doc.plc_conversion_rate or (obj.doc.price_list_currency != default_currency and flt(obj.doc.plc_conversion_rate) == 1.00):
-			msgprint("Please Enter Appropriate Conversion Rate for Price List Currency to Base Currency ( (%s --> %s)" % (obj.doc.price_list_currency, default_currency), raise_exception = 1)
-	
-
 
 	# Get Tax rate if account type is TAX
 	# =========================================================================
