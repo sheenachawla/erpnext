@@ -27,7 +27,7 @@ class SalesController(DocListController):
 			max_discount = webnotes.conn.get_value('Item', d.item_code, 'max_discount')
 			if max_discount and flt(d.discount) > flt(max_discount):
 				msgprint("""Discount on row no: %s is greater than max dicount 
-					(%s%) allowed to item: %s""" % (d.idx, max_discount, d.item_code), 
+					(%s) allowed to item: %s""" % (d.idx, max_discount, d.item_code), 
 					raise_exception=webnotes.ValidationError)
 
 	def validate_conversion_rate(self):

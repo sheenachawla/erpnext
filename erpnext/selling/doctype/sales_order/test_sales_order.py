@@ -78,10 +78,6 @@ class TestSalesOrder(TestBase):
 		self.assertRaises(webnotes.ValidationError, \
 			webnotes.model.insert, [so, base_so_item])
 		
-	def test_validate_with_quote(self):
-		# to be done after quotation cleanup
-		pass
-		
 	def test_project(self):
 		project = {
 			'doctype': 'Project', 'name': 'PROJ001', 'status': 'Open',
@@ -93,4 +89,45 @@ class TestSalesOrder(TestBase):
 		self.assertRaises(webnotes.ValidationError, webnotes.model.insert, \
 			[so, base_so_item])
 			
-	
+	def test_max_discount(self):
+		webnotes.conn.set_value('Item', 'Home Desktop 100', 'max_discount', 50)
+		so_item = base_so_item.copy()
+		so_item.update({"discount": 60})
+		self.assertRaises(webnotes.ValidationError, webnotes.model.insert, 
+			[base_so, so_item])
+			
+	def test_conversion_rate(self):
+		# conversion rate not specified
+		so = base_so.copy()
+		so.update({"conversion_rate": ""})
+		self.assertRaises(webnotes.ValidationError, webnotes.model.insert, [so, base_so_item])
+		
+		# conversion rate != 1
+		so = base_so.copy()
+		so.update({"conversion_rate": 50})
+		self.assertRaises(webnotes.ValidationError, webnotes.model.insert, [so, base_so_item])
+		
+		# price list conversion rate != 1
+		so = base_so.copy()
+		so.update({"plc_conversion_rate": 50})
+		self.assertRaises(webnotes.ValidationError, webnotes.model.insert, [so, base_so_item])
+		
+		# if diff currency, conversion_rate !=(0, 1)
+		webnotes.conn.set_value('Company', base_so['company'], 'default_currency', 'USD')
+		self.assertRaises(webnotes.ValidationError, \
+			webnotes.model.insert, [base_so, base_so_item])
+			
+	def test_credit_limit(self):
+		webnotes.conn.set_value("Party", "Robert Smith", "credit_limit", 100000)
+		so = base_so.copy()
+		so.update({"grand_total": 200000})
+		so_ctlr = get_controller([so, base_so_item])
+		self.assertRaises(webnotes.ValidationError, so_ctlr.submit)
+		
+	# def test_validate_with_quote(self):
+	# 	# to be done after quotation cleanup
+	# 	pass
+	# 	
+	# def test_so_cancel_if_nextdoc(self):
+	# 	# to be done after DN, SI cleanup
+	# 	pass
