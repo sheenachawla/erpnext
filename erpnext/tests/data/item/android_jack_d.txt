@@ -25,7 +25,8 @@
 		'item_group': u'Android',
 		'item_name': u'Android Jack D',
 		u'name': u'__common__',
-		'stock_uom': u'Nos'
+		'stock_uom': u'Nos',
+		'default_warehouse': u'Default Warehouse'
 	},
 
 	# Item, Android Jack D

@@ -17,45 +17,46 @@
 from __future__ import unicode_literals
 import webnotes
 from webnotes.utils import get_defaults, getdate, add_days, get_first_day
-from tests.test_base import TestBase
+from webnotes.tests.test_base import TestBase
 
 class TestAccountSetup(TestBase):
 	def test_default_records(self):
-		currency = webnotes.conn.sql("select name from `tabCurrency` where name = 'INR'")[0][0]
+		currency = webnotes.conn.sql("select name from `tabCurrency` where name = 'INR'",
+			as_dict=False)[0][0]
 		self.assertTrue('INR', currency)
 		
 	def test_company_record(self):
-		comp, abbr = webnotes.conn.sql("select name, abbr from `tabCompany` where docstatus != 2")[0]
+		comp, abbr = webnotes.conn.sql("""select name, abbr from `tabCompany`
+			where docstatus != 2""", as_dict=False)[0]
 		self.assertTrue(comp, 'East Wind Corporation')
 		self.assertTrue(abbr, 'EW')
 		
 	def test_fiscal_year(self):
-		fy = webnotes.conn.sql("select name, year_start_date from \
-			`tabFiscal Year` where docstatus != 2")[0]
+		fy = webnotes.conn.sql("""select name, year_start_date from
+			`tabFiscal Year` where docstatus != 2""", as_dict=False)[0]
 		self.assertTrue(fy[0])
-		
-		period_count = webnotes.conn.sql("select count(name) from `tabPeriod` \
-			where fiscal_year = %s and docstatus != 2", fy[0])[0][0]
-		self.assertTrue(period_count, 13)
 		
 		#global def
 		self.assertEqual(fy[0], get_defaults('fiscal_year'))
-		self.assertEqual(getdate(fy[1]).strftime('%Y-%m-%d'), get_defaults('year_start_date'))
+		self.assertEqual(getdate(fy[1]).strftime('%Y-%m-%d'),
+			get_defaults('year_start_date'))
 		
 		yed = add_days(get_first_day(getdate(fy[1]),0,12), -1)
-		self.assertEqual(yed, get_defaults('year_end_date'))
+		self.assertEqual(yed, getdate(get_defaults('year_end_date')))
 		
 	def test_chart_of_account(self):
 		#check root accounts
-		root_acc = [d[0] for d in webnotes.conn.sql("select account_name from `tabAccount` \
-			where ifnull(parent_account, '') = '' and docstatus < 2")]
+		root_acc = [d[0] for d in webnotes.conn.sql("""select account_name 
+			from `tabAccount` where ifnull(parent_account, '') = '' and
+			docstatus < 2""", as_dict=False)]
 		root_orig = ['Application of Funds (Assets)', 'Expenses', 'Income', 'Source of Funds (Liabilities)']
 		self.assertEqual(root_acc, root_orig)
 		self.assertNsm('Account', 'parent_account', 'group_or_ledger')
 				
 	def test_cost_center(self):
-		root_cc = webnotes.conn.sql("select cost_center_name from `tabCost Center` \
-			where ifnull(parent_cost_center, '') = '' and docstatus < 2")[0][0]
+		root_cc = webnotes.conn.sql("""select cost_center_name from 
+			`tabCost Center` where ifnull(parent_cost_center, '') = '' and
+			docstatus < 2""", as_dict=False)[0][0]
 		self.assertEqual(root_cc, 'Root')
 		
 		self.assertNsm('Cost Center', 'parent_cost_center', 'group_or_ledger')
@@ -109,19 +110,22 @@ class TestAccountSetup(TestBase):
 			self.assertEqual(sys_defs.get(d), preset_global_defaults[d])
 			
 		#home page
-		hp = webnotes.conn.get_value('Control Panel', None, 'home_page')
+		hp = webnotes.conn.get_value('Control Panel', 'Control Panel', 'home_page')
 		self.assertEqual(hp, 'desktop')
 					
 	def test_patches(self):
 		pv = webnotes.conn.get_default('patch_version')
 		from patches.patch_list import patch_dict
 		patches_in_latest_version = len(patch_dict[max(patch_dict.keys())])
-		patches_executed_from_latest_version = webnotes.conn.sql("select count(*) from `__PatchLog`\
-			where patch like '%%%s%%'" % max(patch_dict.keys()))[0][0]
+		patches_executed_from_latest_version = webnotes.conn.sql(
+			"""select count(*) from `__PatchLog`
+			where patch like '%%%s%%'""" % max(patch_dict.keys()),
+			as_dict=False)[0][0]
 		
 		self.assertEqual(patches_in_latest_version, patches_executed_from_latest_version)
 		
 	def test_user(self):
-		users = [d[0] for d in webnotes.conn.sql("select name from `tabProfile` order by name")]
+		users = [d[0] for d in webnotes.conn.sql("""select name from `tabProfile` 
+			order by name""", as_dict=False)]
 		self.assertEqual(users, ['Administrator', 'Guest'])
 

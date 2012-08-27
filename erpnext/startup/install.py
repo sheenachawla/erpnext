@@ -19,13 +19,21 @@ from __future__ import unicode_literals
 import webnotes
 
 def execute():
+	print
 	print "installing default records"
+	print "set home page"
 	set_home_page()
+	print "create default roles"
 	create_default_roles()
+	print "set all roles to admin"
 	set_all_roles_to_admin()
+	print "default master records"
 	create_default_master_records()
+	print "save features setup"
 	save_features_setup()
+	print "patch log"
 	update_patch_log()
+	print
 	
 
 def set_home_page():
@@ -33,14 +41,16 @@ def set_home_page():
 	webnotes.conn.set_value('Control Panel', 'Control Panel', 'home_page', 'desktop')
 	
 def save_features_setup():
-	""" save global defaults and features setup"""
+	"""save global defaults and features setup"""
 	doc = {"doctype": "Features Setup", "name": "Features Setup"}
 
 	# store value as 1 for all these fields
-	flds = ['fs_item_serial_nos', 'fs_item_batch_nos', 'fs_brands', 'fs_item_barcode', 'fs_item_advanced',
-		'fs_packing_details', 'fs_item_group_in_details', 'fs_exports', 'fs_imports', 'fs_discounts',
-		'fs_purchase_discounts', 'fs_after_sales_installations', 'fs_projects', 'fs_sales_extras',
-		'fs_recurring_invoice', 'fs_pos', 'fs_manufacturing', 'fs_quality', 'fs_page_break', 'fs_more_info'
+	flds = ['fs_item_serial_nos', 'fs_item_batch_nos', 'fs_brands', 'fs_item_barcode',
+		'fs_item_advanced', 'fs_packing_details', 'fs_item_group_in_details',
+		'fs_exports', 'fs_imports', 'fs_discounts', 'fs_purchase_discounts',
+		'fs_after_sales_installations', 'fs_projects', 'fs_sales_extras',
+		'fs_recurring_invoice', 'fs_pos', 'fs_manufacturing', 'fs_quality',
+		'fs_page_break', 'fs_more_info'
 	]
 	doc.update(dict(zip(flds, [1]*len(flds))))
 	
@@ -59,7 +69,6 @@ def update_patch_log():
 	version = max(patch_list.patch_dict.keys())
 	set_default('patch_version', version)
 	
-	patch_handler.setup()
 	for d in patch_list.patch_dict.get(version):
 		pm = 'patches.' + version + '.' + d
 		patch_handler.update_patch_log(pm)
@@ -110,9 +119,7 @@ def create_default_roles():
 		{"doctype":"Role", "role_name":"Blogger", "name":"Blogger"},
 		{"doctype":"Role", "role_name":"Website Manager", "name":"Website Manager"}
 	]
-	webnotes.conn.begin()
 	create_doc(roles, validate=1, on_update=1)
-	webnotes.conn.commit()
 	
 
 def create_default_master_records():
@@ -713,6 +720,4 @@ def create_default_master_records():
 		{'voucher_type': 'doctype', 'doctype': 'GL Mapper Detail', 'voucher_no': 'name', 'against_voucher': 'name', 'transaction_date': 'voucher_date', 'debit': 'grand_total', 'parent': 'Sales Invoice', 'company': 'company', 'aging_date': 'aging_date', 'fiscal_year': 'fiscal_year', 'remarks': 'remarks', 'account': 'debit_to', 'idx': '3', 'against_voucher_type': "value:'Sales Invoice'", 'against': 'against_income_account', 'credit': 'value:0', 'parenttype': 'GL Mapper', 'is_opening': 'is_opening', 'posting_date': 'posting_date', 'parentfield': 'fields'},
 
 	]
-	webnotes.conn.begin()
 	create_doc(records, validate=1, on_update=1)
-	webnotes.conn.commit()

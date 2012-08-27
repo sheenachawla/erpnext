@@ -37,7 +37,8 @@ base_purchase_request_item = {
 	"schedule_date": add_days(now_datetime().date(), 1),
 	"item_name": "Home Desktop 100",
 	"description": "Home Desktop 100",
-	"__islocal": 1
+	"__islocal": 1,
+	"warehouse": "Default Warehouse"
 }
 
 

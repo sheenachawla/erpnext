@@ -25,7 +25,8 @@
 		'item_group': u'Home Series',
 		'item_name': u'Home Desktop 200',
 		u'name': u'__common__',
-		'stock_uom': u'Nos'
+		'stock_uom': u'Nos',
+		'default_warehouse': u'Default Warehouse'
 	},
 
 	# Item, Home Desktop 200

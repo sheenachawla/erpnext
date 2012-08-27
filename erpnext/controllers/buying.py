@@ -23,21 +23,21 @@ class BuyingController(DocListController):
 	def validate_items(self, parentfield):
 		for child in self.doclist.get({"parentfield": parentfield}):
 			# get item controller. Also raises error if item not found
-			itemcon = webnotes.model.get_controller("Item", child.item_code)
-
+			itemdoc = webnotes.model.get("Item", child.item_code)[0]
+			
 			# check if purchase item
-			if itemcon.doc.is_purchase_item != "Yes":
+			if itemdoc.is_purchase_item != "Yes":
 				webnotes.msgprint("""Item "%s" is not a Purchase Item""", raise_exception=True)
 
 			# check if end of life has reached
-			if itemcon.doc.end_of_life and getdate(itemcon.doc.end_of_life) <= \
+			if itemdoc.end_of_life and getdate(itemdoc.end_of_life) <= \
 					now_datetime().date():
 				import stock
 				webnotes.msgprint("""Item "%s" has reached its end of life""",
 					raise_exception=stock.ItemEndOfLifeError)
 
 			# check if warehouse is required
-			if itemcon.doc.is_stock_item == "Yes" and not child.warehouse:
+			if itemdoc.is_stock_item == "Yes" and not child.warehouse:
 				webnotes.msgprint("""Warehouse is Mandatory for Item "%s", 
 					as it is a Stock Item""" % \
 					child.item_code, raise_exception=webnotes.MandatoryError)

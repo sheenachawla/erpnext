@@ -179,7 +179,7 @@ def search_cache(page_name):
 	return webnotes.conn.sql("""\
 		select html, doc_type, doc_name
 		from `tabWeb Cache`
-		where name = %s""", page_name)
+		where name = %s""", page_name, as_dict=False)
 
 def create_cache(page_name, doc_type=None, doc_name=None):
 	# check if a record already exists

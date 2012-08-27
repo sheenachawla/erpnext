@@ -25,7 +25,8 @@
 		'item_group': u'Small Tablets',
 		'item_name': u'Nebula 7',
 		u'name': u'__common__',
-		'stock_uom': u'Nos'
+		'stock_uom': u'Nos',
+		'default_warehouse': u'Default Warehouse'
 	},
 
 	# Item, Nebula 7
