@@ -3,113 +3,70 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-08-02 18:36:26',
-		'docstatus': 0,
-		'modified': '2012-08-03 12:34:09',
-		'modified_by': u'Administrator',
-		'owner': u'Administrator'
+		u'creation': u'2012-08-07 15:42:45',
+		u'docstatus': 0,
+		u'modified': u'2012-08-28 13:26:31',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
+	},
+
+	# These values are common for all Field Mapper Detail
+	{
+		u'checking_operator': u'=',
+		'doctype': u'Field Mapper Detail',
+		u'from_field': u'company',
+		u'map': u'Yes',
+		u'match_id': u'0',
+		u'modifed': '2012-08-28 13:27:59',
+		u'name': u'__common__',
+		u'parent': u'Purchase Request-Supplier Quotation',
+		u'parentfield': u'field_mapper_details',
+		u'parenttype': u'DocType Mapper',
+		u'to_field': u'company'
 	},
 
 	# These values are common for all Table Mapper Detail
 	{
 		'doctype': u'Table Mapper Detail',
-		'name': '__common__',
-		'parent': u'Purchase Request-Supplier Quotation',
-		'parentfield': u'table_mapper_details',
-		'parenttype': u'DocType Mapper'
-	},
-
-	# These values are common for all Field Mapper Detail
-	{
-		'doctype': u'Field Mapper Detail',
-		'name': '__common__',
-		'parent': u'Purchase Request-Supplier Quotation',
-		'parentfield': u'field_mapper_details',
-		'parenttype': u'DocType Mapper'
+		u'from_field': u'purchase_request_items',
+		u'from_table': u'Purchase Request Item',
+		u'match_id': 1,
+		u'modifed': '2012-08-28 13:27:59',
+		u'name': u'__common__',
+		u'parent': u'Purchase Request-Supplier Quotation',
+		u'parentfield': u'table_mapper_details',
+		u'parenttype': u'DocType Mapper',
+		u'reference_doctype_key': u'prevdoc_doctype',
+		u'to_field': u'supplier_quotation_items',
+		u'to_table': u'Supplier Quotation Item',
+		u'validation_logic': u'docstatus =1'
 	},
 
 	# These values are common for all DocType Mapper
 	{
 		'doctype': u'DocType Mapper',
-		'from_doctype': u'Purchase Request',
-		'module': u'Buying',
-		'name': '__common__',
-		'ref_doc_submitted': 1,
-		'to_doctype': u'Supplier Quotation'
+		u'from_doctype': u'Purchase Request',
+		'localname': u'Purchase Request-Supplier Quotation',
+		u'modifed': '2012-08-28 13:27:59',
+		u'module': u'Buying',
+		u'name': u'__common__',
+		u'ref_doc_submitted': 1,
+		u'to_doctype': u'Supplier Quotation'
 	},
 
 	# DocType Mapper, Purchase Request-Supplier Quotation
 	{
-		'doctype': u'DocType Mapper',
+		u'doctype': u'DocType Mapper',
 		'name': u'Purchase Request-Supplier Quotation'
 	},
 
-	# Field Mapper Detail
-	{
-		'checking_operator': u'=',
-		'doctype': u'Field Mapper Detail',
-		'from_field': u'company',
-		'map': u'Yes',
-		'match_id': 0,
-		'to_field': u'company'
-	},
-
-	# Field Mapper Detail
-	{
-		'doctype': u'Field Mapper Detail',
-		'from_field': u'parenttype',
-		'map': u'Yes',
-		'match_id': 1,
-		'to_field': u'prevdoc_doctype'
-	},
-
-	# Field Mapper Detail
-	{
-		'doctype': u'Field Mapper Detail',
-		'from_field': u'parent',
-		'map': u'Yes',
-		'match_id': 1,
-		'to_field': u'prevdoc_docname'
-	},
-
-	# Field Mapper Detail
-	{
-		'doctype': u'Field Mapper Detail',
-		'from_field': u'name',
-		'map': u'Yes',
-		'match_id': 1,
-		'to_field': u'prevdoc_detail_docname'
-	},
-
-	# Field Mapper Detail
-	{
-		'checking_operator': u'>=',
-		'doctype': u'Field Mapper Detail',
-		'from_field': u'transaction_date',
-		'map': u'No',
-		'match_id': 0,
-		'to_field': u'transaction_date'
-	},
-
 	# Table Mapper Detail
 	{
-		'doctype': u'Table Mapper Detail',
-		'from_table': u'Purchase Request',
-		'match_id': 0,
-		'reference_key': u'prevdoc_docname',
-		'to_table': u'Supplier Quotation',
-		'validation_logic': u'docstatus = 1'
+		u'doctype': u'Table Mapper Detail'
 	},
 
-	# Table Mapper Detail
+	# Field Mapper Detail
 	{
-		'doctype': u'Table Mapper Detail',
-		'from_field': u'indent_details',
-		'from_table': u'Purchase Request Item',
-		'match_id': 1,
-		'reference_doctype_key': u'prevdoc_doctype',
-		'to_field': u'quotation_items',
-		'to_table': u'Supplier Quotation Item',
-		'validation_logic': u'docstatus =1'
+		u'doctype': u'Field Mapper Detail'
 	}
 ]

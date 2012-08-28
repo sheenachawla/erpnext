@@ -5,7 +5,7 @@
 	{
 		u'creation': '2012-08-07 15:42:44',
 		u'docstatus': 0,
-		u'modified': '2012-08-26 17:43:34',
+		u'modified': '2012-08-28 11:26:45',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -131,7 +131,7 @@
 	{
 		'allow_on_submit': 1,
 		u'doctype': u'DocField',
-		'fieldname': u'quotation_items',
+		'fieldname': u'supplier_quotation_items',
 		'fieldtype': u'Table',
 		'label': u'Quotation Items',
 		'no_copy': 0,

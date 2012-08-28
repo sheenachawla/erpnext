@@ -19,22 +19,13 @@ from __future__ import unicode_literals
 import webnotes
 
 def execute():
-	print
 	print "installing default records"
-	print "set home page"
 	set_home_page()
-	print "create default roles"
 	create_default_roles()
-	print "set all roles to admin"
 	set_all_roles_to_admin()
-	print "default master records"
 	create_default_master_records()
-	print "save features setup"
 	save_features_setup()
-	print "patch log"
 	update_patch_log()
-	print
-	
 
 def set_home_page():
 	"""Set default home page"""

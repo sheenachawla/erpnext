@@ -24,9 +24,10 @@ class SupplierQuotationController(BuyingController):
 		# TODO: DocType Validator: d.qty > 0
 		if self.doc.docstatus != 2:
 			# validate for draft, submit
-			super(SupplierQuotationController, self).validate_items("quotation_items")
+			super(SupplierQuotationController, self).validate_items(
+				"supplier_quotation_items")
 			super(SupplierQuotationController, self).validate_previous_doclist(
-				"quotation_items", "purchase_request", "purchase_request_item")
+				"supplier_quotation_items", "purchase_request", "purchase_request_item")
 			# TODO: validate reference values
 		else:
 			# validate for cancel
