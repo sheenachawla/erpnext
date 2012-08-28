@@ -26,28 +26,14 @@ base_party = {
 	"territory": "Default", "party_group": "Default Party Group"
 }
 
-base_party_group = {
-	"doctype": "Party Group", "name": "Default Party Group"
-}
-
 def load_data():
-	# make_party_groups()
-	# make_territories()
-	# make_lead()
+	make_party_groups()
 	make_parties()
 
 def make_party_groups():
-	from webnotes.modules.export import get_test_doclist
-	party_groups = sorted(get_test_doclist('Party Group'))
-	for doclist in party_groups:
-		webnotes.model.insert(doclist)
-		
-def make_territories():
-	from webnotes.modules.export import get_test_doclist
-	territories = sorted(get_test_doclist('Territory'),
-		key=lambda t: (t[0].get('parent_territory'), t[0].get('name')))
-	for doclist in territories:
-		webnotes.model.insert(doclist)
+	webnotes.model.insert({
+		"doctype": "Party Group", "name": "Default Party Group"
+	})
 
 def make_lead():
 	webnotes.model.insert({
@@ -59,17 +45,19 @@ def make_lead():
 
 def make_parties():
 	# make customer and supplier
-	webnotes.model.insert({
-		"doctype": "Party", "name": "Robert Smith", 
-		"party_type": "Customer and Supplier",
-	})
-
+	parties = [
+		{"doctype": "Party", "name": "Robert Smith", "party_type": "Customer and Supplier"}, 
+		{"doctype": "Party", "name": "Alpha Corporation", "party_type": "Customer"},
+		{"doctype": "Party", "name": "Medern Associates", "party_type": "Supplier"}
+	]
+	for p in parties:
+		webnotes.model.insert(p)
+	
+	
 class TestParty(TestBase):
 	def setUp(self):
 		super(TestParty, self).setUp()
-		webnotes.model.insert(base_party_group)
-		# make_party_groups()
-		# make_territories()
+		make_party_groups()
 		make_lead()
 		
 	def test_party_creation(self):

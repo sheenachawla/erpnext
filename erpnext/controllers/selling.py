@@ -27,7 +27,7 @@ class SalesController(DocListController):
 			max_discount = webnotes.conn.get_value('Item', d.item_code, 'max_discount')
 			if max_discount and flt(d.discount) > flt(max_discount):
 				msgprint("""Discount on row no: %s is greater than max dicount 
-					(%s%) allowed to item: %s""" % (d.idx, max_discount, d.item_code), 
+					(%s) allowed to item: %s""" % (d.idx, max_discount, d.item_code), 
 					raise_exception=webnotes.ValidationError)
 
 	def validate_conversion_rate(self):
@@ -40,21 +40,20 @@ class SalesController(DocListController):
 			if not conv_rate or (currency == def_currency and flt(conv_rate) != 1.00) or \
 					(currency != def_currency and flt(conv_rate) == 1.00):
 				msgprint("""Please Enter Appropriate Conversion Rate for %s 
-					currency (%s) to base currency (%s)"""
-					% (currency_type, self.doc.currency, def_currency), 
+					currency (%s) to base currency (%s)""" % 
+					(currency_type, self.doc.currency, def_currency), 
 					raise_exception = webnotes.ValidationError)
 					
 		_check_conversion_rate(self.doc.currency, self.doc.conversion_rate, 'customer')
 		_check_conversion_rate(self.doc.price_list_currency, self.doc.plc_conversion_rate, \
 		'price list')
 		
-	def validate_sales_team_contribution(self):
-		total_contribution = sum[d.allocated_percentage for d in \
-			self.doclist.get({'parentfield': 'sales_team'})]
-		if total_contribution != 100:
-				msgprint("Total allocated contribution of sales team should be 100%"
-					, raise_exception=webnotes.ValidationError)
-
+	def get_sales_team_contribution(self):
+		total_contribution = sum([d.allocated_percentage for d in \
+			self.doclist.get({'parentfield': 'sales_team'})])
+		for d in self.doclist.get({"parentfield": 'sales_team'}):
+			d.allocated_percentage = d.allocated_percentage*100/total_contribution
+		
 	def check_if_nextdoc_exists(self, nextdoc_types):
 		for d in nextdoc_types:
 			nextdoc = webnotes.conn.get_value(d, \
@@ -62,6 +61,6 @@ class SalesController(DocListController):
 				['parent', 'parenttype'], as_dict=1)
 			if nextdoc:
 				msgprint("""Submitted %s: %s exists against this %s. 
-				To cancel this document first cancel %s"""
-				% (nextdoc['parenttype'], nextdoc['parent'], self.doc.doctype, \
+				To cancel this document first cancel %s""" % 
+				(nextdoc['parenttype'], nextdoc['parent'], self.doc.doctype, \
 				nextdoc['parenttype']), raise_exception=webnotes.ValidationError)

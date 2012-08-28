@@ -24,21 +24,21 @@ feed_dict = {
 
 	# Sales
 	'Lead':			 ['%(lead_name)s', '#000080'],
-	'Quotation':	    ['[%(status)s] To %(customer_name)s worth %(currency)s %(grand_total_export)s', '#4169E1'],
-	'Sales Order':	  ['[%(status)s] To %(customer_name)s worth %(currency)s %(grand_total_export)s', '#4169E1'],
+	'Quotation':	    ['To %(party)s worth %(currency)s %(grand_total_export)s', '#4169E1'],
+	'Sales Order':	  ['To %(party)s worth %(currency)s %(grand_total_export)s', '#4169E1'],
 
 	# Purchase
-	'Supplier':		     ['%(supplier_name)s, %(supplier_type)s', '#6495ED'],
-	'Purchase Order':       ['[%(status)s] %(name)s To %(supplier_name)s for %(currency)s  %(grand_total_import)s', '#4169E1'],
+	'Supplier':		     ['%(party)s, %(supplier_type)s', '#6495ED'],
+	'Purchase Order':       ['%(name)s To %(party)s for %(currency)s  %(grand_total_import)s', '#4169E1'],
 
 	# Stock
-	'Delivery Note':	['[%(status)s] To %(customer_name)s', '#4169E1'],
-	'Purchase Receipt': ['[%(status)s] From %(supplier)s', '#4169E1'],
+	'Delivery Note':	['To %(party)s', '#4169E1'],
+	'Purchase Receipt': ['From %(party)s', '#4169E1'],
 
 	# Accounts
 	'Journal Voucher':      ['[%(voucher_type)s] %(name)s', '#4169E1'],
-	'Purchase Invoice':      ['To %(supplier_name)s for %(currency)s %(grand_total_import)s', '#4169E1'],
-	'Sales Invoice':['To %(customer_name)s for %(currency)s %(grand_total_export)s', '#4169E1'],
+	'Purchase Invoice':      ['To %(party)s for %(currency)s %(grand_total_import)s', '#4169E1'],
+	'Sales Invoice':['To %(party)s for %(currency)s %(grand_total_export)s', '#4169E1'],
 
 	# HR
 	'Expense Claim':      ['[%(approval_status)s] %(name)s by %(employee_name)s', '#4169E1'],
@@ -46,8 +46,8 @@ feed_dict = {
 	'Leave Transaction':['%(leave_type)s for %(employee)s', '#4169E1'],
 
 	# Support
-	'Customer Issue':       ['[%(status)s] %(description)s by %(customer_name)s', '#000080'],
-	'Maintenance Visit':['To %(customer_name)s', '#4169E1'],
+	'Customer Issue':       ['[%(status)s] %(description)s by %(party)s', '#000080'],
+	'Maintenance Visit':['To %(party)s', '#4169E1'],
 	'Support Ticket':       ["[%(status)s] %(subject)s", '#000080'],
 	
 	# Website
@@ -57,7 +57,6 @@ feed_dict = {
 
 def make_feed(feedtype, doctype, name, owner, subject, color):
 	"makes a new Feed record"
-	#msgprint(subject)
 	from webnotes.model.doc import Document
 	from webnotes.utils import get_fullname
 

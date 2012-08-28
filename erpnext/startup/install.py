@@ -38,7 +38,7 @@ def execute():
 
 def set_home_page():
 	"""Set default home page"""
-	webnotes.conn.set_value('Control Panel', 'Control Panel', 'home_page', 'desktop')
+	webnotes.conn.set_value('Control Panel', None, 'home_page', 'desktop')
 	
 def save_features_setup():
 	"""save global defaults and features setup"""

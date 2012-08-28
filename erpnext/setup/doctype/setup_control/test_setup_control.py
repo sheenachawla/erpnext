@@ -110,7 +110,7 @@ class TestAccountSetup(TestBase):
 			self.assertEqual(sys_defs.get(d), preset_global_defaults[d])
 			
 		#home page
-		hp = webnotes.conn.get_value('Control Panel', 'Control Panel', 'home_page')
+		hp = webnotes.conn.get_value('Control Panel', None, 'home_page')
 		self.assertEqual(hp, 'desktop')
 					
 	def test_patches(self):
