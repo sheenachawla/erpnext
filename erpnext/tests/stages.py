@@ -34,16 +34,26 @@ stages = {
 			"accounts.doctype.account.test_account",
 			"accounts.doctype.cost_center.test_cost_center",
 			"accounts.doctype.party.test_party",
+		],
+	},	
+	"Accounts": {
+		"stages": ["Master"],
+		"tests": [
 			"accounts.doctype.journal_voucher.test_journal_voucher",
 			"accounts.doctype.gl_entry.test_gl_entry",
-			"accounts.doctype.payment_entry.test_payment_entry"
-			
+			"accounts.doctype.payment_entry.test_payment_entry",
 		],
 	},
 	"Buying": {
 		"stages": ["Master"],
 		"tests": [
 			"buying.doctype.purchase_request.test_purchase_request",
+		],
+	},
+	"Selling": {
+		"stages": ["Master"],
+		"tests": [
+			"selling.doctype.sales_order.test_sales_order",
 		],
 	},
 }

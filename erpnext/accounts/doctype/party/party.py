@@ -59,12 +59,14 @@ class PartyController(DocListController):
 			webnotes.model.insert_variants(values, [{'doctype': dt}])
 			
 	def check_credit_limit(self, company, current_amount=0):
-		credit_limit = self.doc.credit_limit or webnotes.conn.get_value('Company', company, 'credit_limit')
+		credit_limit = self.doc.credit_limit or \
+			webnotes.conn.get_value('Company', company, 'credit_limit')
 		
-		prev_outstanding = webnotes.conn.sql("select sum(debit) - sum(credit) from `tabGL Entry` \
-			where party = %s and company = %s", (self.doc.name, company), as_dict=False)[0][0]			
+		prev_outstanding = webnotes.conn.sql("""select sum(debit) - sum(credit) \
+			from `tabGL Entry` where party = %s and company = %s""", 
+			(self.doc.name, company), as_dict=False)[0][0]
 		total_outstanding = flt(prev_outstanding) + flt(current_amount)
-		
+		print credit_limit, total_outstanding, self.get_authorized_user()
 		# If outstanding greater than credit limit and not authorized person raise exception
 		if credit_limit > 0 and flt(total_outstanding) > credit_limit and not self.get_authorized_user():
 			msgprint("Total Outstanding amount (%s) for <b>%s</b> can not be greater than \

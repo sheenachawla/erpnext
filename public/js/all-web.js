@@ -106,7 +106,7 @@ return def_width||140}});
 wn.model.Document=Class.extend({init:function(fields){if(typeof fields==='string'){fields={doctype:fields,__islocal:1,owner:user,name:wn.model.new_name(fields),docstatus:0}}
 this.fields=fields;},get:function(key,ifnull){return this.fields[key]||ifnull;},convert_type:function(key,val){if(val===null)return val;var df=wn.model.get('DocType',this.get('doctype')).get({fieldname:key,doctype:"DocField"});if(df.length){df=df[0]
 if(in_list(["Int","Check"],df.fieldtype)){val=cint(val);}else if(in_list(["Currency","Float"],df.fieldtype)){val=flt(val);}else if(df.fieldtype=='Select'){if(in_list(df.options.split('\n'),val)){throw val+" is not a correct option"}}}
-return val;},set:function(key,val){var new_val=this.convert_type(key,val);if(this.fields[key]!=new_val){this.fields[key]=new_val;if(this.doclist){this.doclist.trigger('change',key,this.fields[key],this);if(this.get('parentfield')){this.doclist.trigger('change '+this.get('parentfield')+'.'+key,key,this.fields[key],this);}else{this.doclist.trigger('change '+key,key,this.fields[key],this);}}}},copy_from:function(doc){var meta=wn.model.get('DocType',this.get('doctype'));var me=this;$.each(doc.fields,function(key,val){var docfield=meta.get({doctype:"DocField",fieldname:key})[0]
+return val;},set:function(key,val){var new_val=this.convert_type(key,val);if(this.fields[key]!=new_val){this.fields[key]=new_val;this.trigger_change_event(key)}},trigger_change_event:function(key){if(this.doclist){var val=this.fields[key];this.doclist.trigger('change',key,val,this);if(this.get('parentfield')){this.doclist.trigger('change '+this.get('parentfield')+' '+key,key,val,this);}else{this.doclist.trigger('change '+key,key,val,this);}}},copy_from:function(doc){var meta=wn.model.get('DocType',this.get('doctype'));var me=this;$.each(doc.fields,function(key,val){var docfield=meta.get({doctype:"DocField",fieldname:key})[0]
 if(docfield){if(!docfield.get('no_copy')){me.set(key,val);}}else if(in_list(['parentfield','parenttype','idx'],key)){me.set(key,val);}});},copy:function(){var new_doc=new wn.model.Document(this.get('doctype'));new_doc.copy_from(this);return new_doc;},extend:function(dict){$.extend(this.fields,dict);}});
 /*
  *	lib/js/wn/model/doclist.js
@@ -447,7 +447,7 @@ var msg_dialog;function msgprint(msg,title){if(!msg)return;if(msg instanceof Arr
 return;}
 if(typeof(msg)!='string')
 msg=JSON.stringify(msg);if(msg.substr(0,8)=='__small:'){show_alert(msg.substr(8));return;}
-if(!msg_dialog){msg_dialog=new wn.ui.Dialog({title:"Message",onhide:function(){msg_dialog.msg_area.empty();}});msg_dialog.msg_area=$('<div class="msgprint">').appendTo(msg_dialog.body);}
+if(!msg_dialog){msg_dialog=new wn.ui.Dialog({title:"Message",});msg_dialog.msg_area=$('<div class="msgprint">').appendTo(msg_dialog.body);msg_dialog.on('hide',function(){msg_dialog.msg_area.empty();})}
 if(msg.search(/<br>|<p>|<li>/)==-1)
 msg=replace_newlines(msg);msg_dialog.set_title(title||'Message')
 msg_dialog.msg_area.append('<p>'+msg+'</p>');msg_dialog.show();}
