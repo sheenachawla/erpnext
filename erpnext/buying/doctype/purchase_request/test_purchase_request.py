@@ -66,3 +66,25 @@ class TestPurchaseRequest(TestBase):
 		# check if docstatus = 1
 		self.assertEqual(db_copy[0].docstatus, 1)
 		
+	def test_create_supplier_quotation(self):
+		prcon = webnotes.model.insert([base_purchase_request,
+			base_purchase_request_item])
+		prcon.submit()
+		sqdoclist = webnotes.model.dt_map("Purchase Request-Supplier Quotation",
+			prcon.doc.name)
+
+		# check if parent and item are both mapped
+		self.assertEqual(len(sqdoclist), 2)
+		
+		# in child, check if purchase_request and purchase_request_item field
+		# are mapped correctly
+		for d in sqdoclist.get({"parentfield": "supplier_quotation_items"}):
+			self.assertEqual(d.purchase_request, prcon.doc.name)
+			self.assertEqual(len(prcon.doclist.get({"name": d.purchase_request_item})), 1)
+		
+		# check if insert possible
+		# output
+		import pprint
+		pprint.pprint(sqdoclist)
+
+		
