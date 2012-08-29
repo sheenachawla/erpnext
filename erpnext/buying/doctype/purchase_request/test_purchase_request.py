@@ -25,7 +25,7 @@ base_purchase_request = {
 	"naming_series": "PREQ-",
 	"company": "East Wind Corporation",
 	"posting_date": now_datetime().date(),
-	"__islocal": 1
+	"__islocal": 1,
 }
 
 base_purchase_request_item = {
@@ -54,7 +54,7 @@ class TestPurchaseRequest(TestBase):
 		
 		# check if doclist length is 2
 		self.assertEqual(len(webnotes.model.get("Purchase Request", prcon.doc.name)), 2)
-	
+		
 	def test_submit_purchase_request(self):
 		prcon = webnotes.model.get_controller([base_purchase_request,
 			base_purchase_request_item])
@@ -70,7 +70,7 @@ class TestPurchaseRequest(TestBase):
 		prcon = webnotes.model.insert([base_purchase_request,
 			base_purchase_request_item])
 		prcon.submit()
-		sqdoclist = webnotes.model.dt_map("Purchase Request-Supplier Quotation",
+		sqdoclist = webnotes.model.map_doc("Purchase Request", "Supplier Quotation",
 			prcon.doc.name)
 
 		# check if parent and item are both mapped
@@ -82,9 +82,18 @@ class TestPurchaseRequest(TestBase):
 			self.assertEqual(d.purchase_request, prcon.doc.name)
 			self.assertEqual(len(prcon.doclist.get({"name": d.purchase_request_item})), 1)
 		
+		sqcon = webnotes.model.get_controller(sqdoclist)
+		sqcon.set_default_values()
+		sqcon.doc.party = "Robert Smith"
+		sqcon.doc.currency = "USD"
+		sqcon.save()
+		
+		# check if parent and child both get saved
+		self.assertEqual(len(webnotes.model.get("Supplier Quotation", sqcon.doc.name)), 2)
+		
 		# check if insert possible
 		# output
-		import pprint
-		pprint.pprint(sqdoclist)
+		# import pprint
+		# pprint.pprint(sqcon.doclist)
 
 		
