@@ -20,7 +20,7 @@
 		'idx': None,
 		'modified': '2010-06-01 15:19:41',
 		'modified_by': 'Administrator',
-		'module': 'CRM',
+		'module': 'Selling',
 		'name': 'draft_sales_orders',
 		'owner': 'Administrator',
 		'page_len': 50,
