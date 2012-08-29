@@ -24,6 +24,7 @@ TODO:
 **	If order_type is Sales, Expected Delivery Date is mandatory
 **	If amend_from, amendment_date is mandatory
 **	Expected Delivery Date cannot be before Posting Date
+* validate_approving_authority
 
 """
 
@@ -54,21 +55,11 @@ class SalesOrderController(SalesController):
 			if d.quotation and d.quotation not in quotations:
 				quotations.append(d.quotation)				
 		self.validate_with_quotation(quotations)
-				
-	def validate_item_type(self, item_code):
-		item_type = webnotes.conn.get_value('Item', item_code, \
-			['is_sales_item', 'is_service_item'], as_dict=1)
-		if self.doc.order_type == 'Sales' and item_type['is_sales_item'] == 'No':
-			msgprint("Item: %s is not a sales item" % 
-			item_code, raise_exception=webnotes.ValidationError)
-		elif self.doc.order_type == 'Maintenance' and item_type['is_service_item'] == 'No':
-			msgprint("Item %s is not a maintenance item" %
-				item_code, raise_exception=webnotes.ValidationError)
 		
 	def validate_with_quotation(self, quotations):
 		for quotation_no in quotations:
 			quote = webnotes.conn.get_value('Quotation', quotation_no, \
-				['posting_date', 'order_type', 'docstatus'])
+				['posting_date', 'order_type', 'docstatus'], as_dict=True)
 			if quote['posting_date'] > getdate(self.doc.posting_date):
 				msgprint("Sales Order Posting Date cannot be before Quotation Posting Date", 
 					raise_exception=webnotes.ValidationError)
@@ -102,11 +93,9 @@ class SalesOrderController(SalesController):
 					(self.doc.project_name, self.doc.party), 
 					raise_exception=webnotes.ValidationError)
 
-	def on_submit(self):
+	def on_submit(self):		
 		get_controller('Party',self.doc.party).check_credit_limit\
 			(self.doc.company, self.doc.grand_total)
-		#get_controller('Authorization Control').validate_approving_authority\
-		#	(self.doc.doctype, self.doc.grand_total, self)
 
 	def on_cancel(self):
 		self.check_if_nextdoc_exists(['Delivery Note Item', 'Sales Invoice Item', \

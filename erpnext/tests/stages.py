@@ -54,6 +54,8 @@ stages = {
 		"stages": ["Master"],
 		"tests": [
 			"selling.doctype.sales_order.test_sales_order",
+			"selling.doctype.quotation.test_quotation",
+			
 		],
 	},
 }

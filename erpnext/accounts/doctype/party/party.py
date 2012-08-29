@@ -37,9 +37,8 @@ class PartyController(DocListController):
 		if self.doc.lead_id:
 			lead_details = webnotes.conn.sql("""
 				select lead_name, address_line1, address_line2, city, 
-					country, state, pincode, phone, mobile_no, fax, email_id 
-				from `tabLead` where name = %s
-			""", self.doc.lead_id, as_dict = 1)[0]
+				country, state, pincode, phone, mobile_no, fax, email_id 
+				from `tabLead` where name = %s""", self.doc.lead_id)[0]
 
 			lead_details.update({
 				'party': self.doc.name,
@@ -66,16 +65,19 @@ class PartyController(DocListController):
 			from `tabGL Entry` where party = %s and company = %s""", 
 			(self.doc.name, company), as_dict=False)[0][0]
 		total_outstanding = flt(prev_outstanding) + flt(current_amount)
-		print credit_limit, total_outstanding, self.get_authorized_user()
-		# If outstanding greater than credit limit and not authorized person raise exception
+		
+		# if outstanding greater than credit limit and not authorized person
 		if credit_limit > 0 and flt(total_outstanding) > credit_limit and not self.get_authorized_user():
-			msgprint("Total Outstanding amount (%s) for <b>%s</b> can not be greater than \
-				credit limit (%s). To change your credit limit settings, please update the <b>%s</b>" \
-				% (fmt_money(total_outstanding), self.doc.name, fmt_money(credit_limit), 
-				self.doc.credit_limit and 'Customer' or 'Company'), raise_exception=webnotes.ValidationError)
+			msgprint("Total Outstanding amount (%s) for <b>%s</b> can not be \
+				greater than credit limit (%s). To change your credit limit settings, \
+				please update the <b>%s</b>" % \
+				(fmt_money(total_outstanding), self.doc.name, fmt_money(credit_limit), 
+				self.doc.credit_limit and 'Customer' or 'Company'),
+				raise_exception=webnotes.ValidationError)
 
 	def get_authorized_user(self):
-		if webnotes.conn.get_value('Global Defaults', None, 'credit_controller') in webnotes.user.get_roles():
+		if webnotes.conn.get_value('Global Defaults', None, 'credit_controller') \
+				in webnotes.user.get_roles():
 			return 1
 
 	def on_trash(self):
@@ -93,7 +95,8 @@ class PartyController(DocListController):
 			webnotes.model.delete_doc(dt, webnotes.conn.get_value(dt, {'party': self.doc.name}))
 
 	def delete_party_communication(self):
-		webnotes.conn.sql("""delete from `tabCommunication` where party = %s""", self.doc.name)
+		webnotes.conn.sql("""delete from `tabCommunication` \
+			where party = %s""", self.doc.name)
 						
 @webnotes.whitelist()
 def get_contacts():
@@ -103,13 +106,20 @@ def get_contacts():
 		where party=%s and docstatus != 2
 		order by is_primary_contact desc limit %s, %s""" % 
 		('%s', webnotes.form.get("limit_start"), 
-		webnotes.form.get("limit_page_length")), webnotes.form.get('name'), as_dict=1)
+		webnotes.form.get("limit_page_length")), webnotes.form.get('name'))
 
 @webnotes.whitelist()
 def get_addresses():		
-	return webnotes.conn.sql("""select name, address_type, address_line1, address_line2, city, 
-		state, country, pincode, fax, email_id, phone, is_primary_address, is_shipping_address 
-		from tabAddress 
-		where party = %s and docstatus != 2 order by is_primary_address desc limit %s, %s""" %
+	return webnotes.conn.sql("""
+		select 
+			name, address_type, address_line1, 
+			address_line2, city, state, country, pincode, fax, email_id, phone,
+			is_primary_address, is_shipping_address 
+		from 
+			tabAddress 
+		where 
+			party = %s and docstatus != 2 
+		order by is_primary_address desc 
+		limit %s, %s""" %
 		('%s', webnotes.form.get("limit_start"), 
-		webnotes.form.get("limit_page_length")), webnotes.form.get('name'), as_dict=1)
+		webnotes.form.get("limit_page_length")), webnotes.form.get('name'))
