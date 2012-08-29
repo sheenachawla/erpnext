@@ -920,6 +920,13 @@ this.doc_initialized=true;}},hide_label:function(){this.$w.find('.control-label'
    </div>').appendTo(this.parent);if(!this.docfield.label){this.$w.find('.vertical-label').toggle(false);}},help_block:function(text){if(!text)return;if(!this.$w.find('.help-block').length){this.$w.find('.controls').append('<div class="help-block">');}
 this.$w.find('.help-block').html(text);},apply_hidden:function(){this.$w.toggle(!this.get_hidden());},get_hidden:function(){return this.docfield.hidden||!this.perm[READ]},apply_disabled:function(){this.set_disabled(this.get_disabled());},get_disabled:function(){return this.docfield.disabled||(!this.perm[WRITE]);},set_disabled:function(disabled){this.$input.attr('disabled',disabled?'disabled':null);},apply_mandatory:function(){var me=this;if(this.docfield.reqd){this.$input.change(function(){$(me.$w).toggleClass('error',!me.get());});}},});
 /*
+ *	lib/js/wn/form/control_code.js
+ */
+wn.ui.CodeControl=wn.ui.Control.extend({init:function(opts){opts.docfield.vertical=true;this._super(opts);},make_input:function(){var me=this;this.$input_wrap=$('<div style="border: 1px solid #aaa">').appendTo(this.$w.find('.controls'));this.$pre=$('<pre style="position: relative; height: 400px;\
+   padding: 0px; margin: 0px; background-color: #fff; border: 0px;">').appendTo(this.$input_wrap);this.myid=wn.dom.set_unique_id(this.$pre.get(0));wn.require('js/lib/ace/ace.js');this.editor=ace.edit(this.myid);this.set_ace_mode();},set_ace_mode:function(){if(this.docfield.options=='Markdown'||this.docfield.options=='HTML'){wn.require('js/lib/ace/mode-html.js');var HTMLMode=require("ace/mode/html").Mode;this.editor.getSession().setMode(new HTMLMode());}
+else if(this.docfield.options=='Javascript'){wn.require('js/lib/ace/mode-javascript.js');var JavascriptMode=require("ace/mode/javascript").Mode;this.editor.getSession().setMode(new JavascriptMode());}
+else if(this.docfield.options=='Python'){wn.require('js/lib/ace/mode-python.js');var PythonMode=require("ace/mode/python").Mode;this.editor.getSession().setMode(new PythonMode());}},set_input:function(val){this.setting_value=true;this.editor.getSession().setValue(val);this.set_static(val);this.setting_value=false;},get:function(){return me.editor.getSession().getValue();},set_change_event:function(){var me=this;this.editor.resize();this.editor.getSession().on('change',function(){if(me.setting_value)return;me.set(me.get());})},toggle_input:function(show){this.$input_wrap.toggle(show);}});
+/*
  *	lib/js/wn/form/control_date.js
  */
 wn.ui.DateControl=wn.ui.Control.extend({make_input:function(){this.$input=$('<input type="text">').appendTo(this.$w.find('.controls'));var user_fmt=sys_defaults.date_format||'yy-mm-dd';this.$input.datepicker({dateFormat:user_fmt.replace('yyyy','yy'),altFormat:'yy-mm-dd',changeYear:true})},set_input:function(val){if(!val)val='';else val=dateutil.str_to_user(val);this._super(val);},get:function(){var val=$(this.$input).val()
@@ -967,7 +974,7 @@ wn.form_classes={};wn.ui.Form=Class.extend({init:function(opts){$.extend(this,op
 this.doc.form=this;}
 this.setup&&this.setup();this.make_form();this.listen();},make_form:function(){var me=this;this.$form=$('<form class="form-horizontal" style="clear: both;">').appendTo(this.parent).submit(function(){return false;});if(this.fields[0].fieldtype!='Section Break'){me.make_fieldset('_first_section');}
 $.each(this.fields,function(i,df){if(df.fieldtype=='Section Break'){me.make_fieldset(df.fieldname,df.label);}else{me.controls[df.fieldname]=wn.ui.make_control({docfield:df,parent:me.last_fieldset,doc:me.doc,doclist:me.doclist,form:me});if(me.controls[df.fieldname])
-me.controls[df.fieldname].trigger_make_event();}});$.each(me.controls,function(i,control){control.set_init_value&&control.set_init_value();})
+me.controls[df.fieldname].trigger_make_event();}});$.each(me.controls,function(i,control){control&&control.set_init_value&&control.set_init_value();})
 this.$form.find(':input:first').focus();},make_fieldset:function(name,legend){var $fset=$('<fieldset data-name="'+name+'"></fieldset>').appendTo(this.$form);if(legend){$('<legend>').text(legend).appendTo($fset);}
 this.last_fieldset=$fset;},listen:function(){var me=this;if(this.doclist){this.doclist.on('change',function(key,val,doc){me.reset_value(key,val,doc);});}},reset_value:function(key,val,doc){if(doc.get('parentfield')){if(this.controls[doc.get('parentfield')]){this.controls[doc.get('parentfield')].set();}}else{if(this.controls[key]&&this.controls[key].get()!==val)
 this.controls[key].set_input(val);}}});
