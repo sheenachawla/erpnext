@@ -22,6 +22,13 @@ from webnotes import msgprint
 from webnotes.model.controller import DocListController
 
 class SalesController(DocListController):
+	def validate(self):
+		self.validate_items()
+		self.validate_max_discount()
+		self.validate_conversion_rate()	
+		self.validate_project()
+		self.get_sales_team_contribution()
+	
 	def validate_max_discount(self):
 		for d in self.doclist.get({'parentfield': self.item_table_fieldname}):
 			max_discount = webnotes.conn.get_value('Item', d.item_code, 'max_discount')
@@ -36,7 +43,7 @@ class SalesController(DocListController):
 			msgprint("Default currency not mentioned in Company Master"
 				, raise_exception=webnotes.ValidationError)
 
-		def _check_conversion_rate(currency, conv_rate, currency_type):
+		def _check(currency, conv_rate, currency_type):
 			if not conv_rate or (currency == def_currency and flt(conv_rate) != 1.00) or \
 					(currency != def_currency and flt(conv_rate) == 1.00):
 				msgprint("""Please Enter Appropriate Conversion Rate for %s 
@@ -44,9 +51,8 @@ class SalesController(DocListController):
 					(currency_type, self.doc.currency, def_currency), 
 					raise_exception = webnotes.ValidationError)
 					
-		_check_conversion_rate(self.doc.currency, self.doc.conversion_rate, 'customer')
-		_check_conversion_rate(self.doc.price_list_currency, self.doc.plc_conversion_rate, \
-		'price list')
+		_check(self.doc.currency, self.doc.conversion_rate, 'customer')
+		_check(self.doc.price_list_currency, self.doc.plc_conversion_rate, 'price list')
 		
 	def get_sales_team_contribution(self):
 		total_contribution = sum([d.allocated_percentage for d in \
@@ -69,6 +75,13 @@ class SalesController(DocListController):
 				(nextdoc['parenttype'], nextdoc['parent'], self.doc.doctype, event, \
 				nextdoc['parenttype']), raise_exception=webnotes.ValidationError)
 				
+
+	def validate_items(self):
+		if self.doc.fields.get('order_type'):
+			for d in self.doclist.get({'parentfield': self.item_table_fieldname}):
+				self.validate_item_type(d.item_code)
+
+				
 	def validate_item_type(self, item_code):
 		item_type = webnotes.conn.get_value('Item', item_code, \
 			['is_sales_item', 'is_service_item'], as_dict=1)
@@ -78,3 +91,12 @@ class SalesController(DocListController):
 		elif self.doc.order_type == 'Maintenance' and item_type['is_service_item'] == 'No':
 			msgprint("Item %s is not a maintenance item" %
 				item_code, raise_exception=webnotes.ValidationError)
+				
+
+	def validate_project(self):
+		if self.doc.project_name:
+			if webnotes.conn.get_value('Project', self.doc.project_name, \
+					'party') !=  self.doc.party:
+				msgprint("Project: %s does not associate with party: %s" % 
+					(self.doc.project_name, self.doc.party), 
+					raise_exception=webnotes.ValidationError)

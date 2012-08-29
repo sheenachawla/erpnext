@@ -230,67 +230,7 @@ class DocType(TransactionBase):
 			d.amount = flt(d.qty)*flt(base_ref_rate)
 			d.export_amount = flt(d.qty)*flt(base_ref_rate)/flt(obj.doc.conversion_rate)
 
-
-	# Load Default Taxes
-	# ====================
-	def load_default_taxes(self, obj):
-		if cstr(obj.doc.charge):
-			return self.get_other_charges(obj)
-		else:
-			return self.get_other_charges(obj, 1)
-
-		
-	# Get other charges from Master
-	# =================================================================================
-	def get_other_charges(self,obj, default=0):
-		obj.doclist = obj.doc.clear_table(obj.doclist, 'other_charges')
-		if not getlist(obj.doclist, 'other_charges'):
-			if default: add_cond = 'ifnull(t2.is_default,0) = 1'
-			else: add_cond = 't1.parent = "'+cstr(obj.doc.charge)+'"'
-			idx = 0
-			other_charge = webnotes.conn.sql("""\
-				select t1.*
-				from
-					`tabSales Taxes and Charges` t1,
-					`tabSales Taxes and Charges Master` t2
-				where
-					t1.parent = t2.name and
-					t2.company = '%s' and
-					%s
-				order by t1.idx""" % (obj.doc.company, add_cond), as_dict=1)
-			from webnotes.model import default_fields
-			for other in other_charge:
-				# remove default fields like parent, parenttype etc.
-				# from query results
-				for field in default_fields:
-					if field in other: del other[field]
-
-				d = addchild(obj.doc, 'other_charges', 'Sales Taxes and Charges', 1,
-						obj.doclist)
-				d.update(other)
-				d.rate = flt(d.rate)
-				d.tax_amount = flt(d.tax_rate)
-				d.included_in_print_rate = cint(d.included_in_print_rate)
-				d.idx = idx
-				idx += 1
-		return obj.doclist
 			
-	# Get TERMS AND CONDITIONS
-	# =======================================================================================
-	def get_tc_details(self,obj):
-		r = webnotes.conn.sql("select terms from `tabTerms and Conditions` where name = %s", obj.doc.tc_name)
-		if r: obj.doc.terms = r[0][0]
-
-#---------------------------------------- Get Tax Details -------------------------------#
-	def get_tax_details(self, item_code, obj):
-		import json
-		tax = webnotes.conn.sql("select tax_type, tax_rate from `tabItem Tax` where parent = %s" , item_code)
-		t = {}
-		for x in tax: t[x[0]] = flt(x[1])
-		ret = {
-			'item_tax_rate'		:	tax and json.dumps(t) or ''
-		}
-		return ret
 
 	# Get Serial No Details
 	# ==========================================================================
@@ -415,105 +355,7 @@ class DocType(TransactionBase):
 		return qty, max_qty, amt, max_amt, res_wh
 
 
-	# Make Packing List from Sales BOM
-	# =======================================================================
-	def has_sales_bom(self, item_code):
-		return webnotes.conn.sql("select name from `tabSales BOM` where new_item_code=%s and docstatus != 2", item_code)
-	
-	def get_sales_bom_items(self, item_code):
-		return webnotes.conn.sql("""select t1.item_code, t1.qty, t1.uom 
-			from `tabSales BOM Item` t1, `tabSales BOM` t2 
-			where t2.new_item_code=%s and t1.parent = t2.name""", item_code, as_dict=1)
 
-	def get_packing_item_details(self, item):
-		return webnotes.conn.sql("select item_name, description, stock_uom from `tabItem` where name = %s", item, as_dict = 1)[0]
-
-	def get_bin_qty(self, item, warehouse):
-		det = webnotes.conn.sql("select actual_qty, projected_qty from `tabBin` where item_code = '%s' and warehouse = '%s'" % (item, warehouse), as_dict = 1)
-		return det and det[0] or ''
-
-	def update_packing_list_item(self,obj, packing_item_code, qty, warehouse, line):
-		bin = self.get_bin_qty(packing_item_code, warehouse)
-		item = self.get_packing_item_details(packing_item_code)
-
-		# check if exists
-		exists = 0
-		for d in getlist(obj.doclist, 'packing_details'):
-			if d.parent_item == line.item_code and d.item_code == packing_item_code and d.parent_detail_docname == line.name:
-				pi, exists = d, 1
-				break
-
-		if not exists:
-			pi = addchild(obj.doc, 'packing_details', 'Delivery Note Packing Item', 1, obj.doclist)
-
-		pi.parent_item = line.item_code
-		pi.item_code = packing_item_code
-		pi.item_name = item['item_name']
-		pi.parent_detail_docname = line.name
-		pi.description = item['description']
-		pi.uom = item['stock_uom']
-		pi.qty = flt(qty)
-		pi.actual_qty = bin and flt(bin['actual_qty']) or 0
-		pi.projected_qty = bin and flt(bin['projected_qty']) or 0
-		pi.prevdoc_doctype = line.prevdoc_doctype
-		if not pi.warehouse:
-			pi.warehouse = warehouse
-		if not pi.batch_no:
-			pi.batch_no = cstr(line.batch_no)
-		pi.idx = self.packing_list_idx
-		
-		# saved, since this function is called on_update of delivery note
-		pi.save()
-		
-		self.packing_list_idx += 1
-
-
-	def make_packing_list(self, obj, fname):
-		"""make packing list for sales bom item"""
-		self.packing_list_idx = 0
-		parent_items = []
-		for d in getlist(obj.doclist, fname):
-			warehouse = fname == "sales_order_details" and d.reserved_warehouse or d.warehouse
-			if self.has_sales_bom(d.item_code):
-				for i in self.get_sales_bom_items(d.item_code):
-					self.update_packing_list_item(obj, i['item_code'], flt(i['qty'])*flt(d.qty), warehouse, d)
-
-				if [d.item_code, d.name] not in parent_items:
-					parent_items.append([d.item_code, d.name])
-				
-		obj.doclist = self.cleanup_packing_list(obj, parent_items)
-		
-		return obj.doclist
-		
-	def cleanup_packing_list(self, obj, parent_items):
-		"""Remove all those child items which are no longer present in main item table"""
-		delete_list = []
-		for d in getlist(obj.doclist, 'packing_details'):
-			if [d.parent_item, d.parent_detail_docname] not in parent_items:
-				# mark for deletion from doclist
-				delete_list.append(d.name)
-
-		if not delete_list:
-			return obj.doclist
-		
-		# delete from doclist
-		obj.doclist = filter(lambda d: d.name not in delete_list, obj.doclist)
-		
-		# delete from db
-		webnotes.conn.sql("""\
-			delete from `tabDelivery Note Packing Item`
-			where name in (%s)"""
-			% (", ".join(["%s"] * len(delete_list))),
-			tuple(delete_list))
-			
-		return obj.doclist
-
-	# Get total in words
-	# ==================================================================	
-	def get_total_in_words(self, currency, amount):
-		from webnotes.utils import money_in_words
-		return money_in_words(amount, currency)
-		
 
 	# Get month based on date (required in sales person and sales partner)
 	# ========================================================================
@@ -521,57 +363,7 @@ class DocType(TransactionBase):
 		month_list = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 		month_idx = cint(cstr(date).split('-')[1])-1
 		return month_list[month_idx]
-		
-		
-	# **** Check for Stop SO as no transactions can be made against Stopped SO. Need to unstop it. ***
-	def check_stop_sales_order(self,obj):
-		for d in getlist(obj.doclist,obj.fname):
-			ref_doc_name = ''
-			if d.has_key('prevdoc_docname') and d.prevdoc_docname and d.prevdoc_doctype == 'Sales Order':
-				ref_doc_name = d.prevdoc_docname
-			elif d.has_key('sales_order') and d.sales_order and not d.delivery_note:
-				ref_doc_name = d.sales_order
-			if ref_doc_name:
-				so_status = webnotes.conn.sql("select status from `tabSales Order` where name = %s",ref_doc_name)
-				so_status = so_status and so_status[0][0] or ''
-				if so_status == 'Stopped':
-					msgprint("You cannot do any transaction against Sales Order : '%s' as it is Stopped." %(ref_doc_name))
-					raise Exception
-					
-					
-	# ****** Check for Item.is_sales_item = 'Yes' and Item.docstatus != 2 *******
-	def check_active_sales_items(self,obj):
-		for d in getlist(obj.doclist, obj.fname):
-			if d.item_code:		# extra condn coz item_code is not mandatory in RV
-				valid_item = webnotes.conn.sql("select docstatus,is_sales_item, is_service_item from tabItem where name = %s",d.item_code)
-				if valid_item and valid_item[0][0] == 2:
-					msgprint("Item : '%s' does not exist in system." %(d.item_code))
-					raise Exception
-				sales_item = valid_item and valid_item[0][1] or 'No'
-				service_item = valid_item and valid_item[0][2] or 'No'
-				if sales_item == 'No' and service_item == 'No':
-					msgprint("Item : '%s' is neither Sales nor Service Item"%(d.item_code))
-					raise Exception
 
-
-	def validate_fiscal_year(self,fiscal_year,transaction_date,field_label):
-		fy=webnotes.conn.sql("select year_start_date from `tabFiscal Year` where name='%s'"%fiscal_year)
-		ysd=fy and fy[0][0] or ""
-		yed=add_days(str(ysd),365)
-		if str(transaction_date) < str(ysd) or str(transaction_date) > str(yed):
-			msgprint("%s not within the fiscal year"%(field_label), raise_exception=webnotes.ValidationError)
-
-	# get against document date	self.prevdoc_date_field
-	#-----------------------------
-	def get_prevdoc_date(self, obj):
-		import datetime
-		for d in getlist(obj.doclist, obj.fname):
-			if d.prevdoc_doctype and d.prevdoc_docname:
-				if d.prevdoc_doctype == 'Sales Invoice':
-					dt = webnotes.conn.sql("select posting_date from `tab%s` where name = '%s'" % (d.prevdoc_doctype, d.prevdoc_docname))
-				else:
-					dt = webnotes.conn.sql("select transaction_date from `tab%s` where name = '%s'" % (d.prevdoc_doctype, d.prevdoc_docname))
-				d.prevdoc_date = (dt and dt[0][0]) and dt[0][0].strftime('%Y-%m-%d') or ''
 
 	def update_prevdoc_detail(self, is_submit, obj):
 		StatusUpdater(obj, is_submit).update()

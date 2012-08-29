@@ -34,15 +34,6 @@ class QuotationController(SalesController):
 	def setup(self):
 		self.item_table_fieldname = 'quotation_items'
 	
-	def validate(self):
-		self.validate_items()
-		self.validate_max_discount()
-		self.validate_conversion_rate()
-		
-	def validate_items(self):
-		for d in self.doclist.get({'parentfield': 'quotation_items'}):
-			self.validate_item_type(d.item_code)
-	
 	def update_after_submit(self):
 		if self.doc.status == 'Order Lost':
 			self.check_if_nextdoc_exists(['Sales Order Item'], event = 'set order as lost')	

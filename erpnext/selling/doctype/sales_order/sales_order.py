@@ -20,11 +20,14 @@ TODO:
 * get projected qty from warehouse on posting date
 * make maintenance schedule
 * get_item_details
+* validate_approving_authority
+
 * DocTypeValidator: 
 **	If order_type is Sales, Expected Delivery Date is mandatory
 **	If amend_from, amendment_date is mandatory
 **	Expected Delivery Date cannot be before Posting Date
-* validate_approving_authority
+** validate with quotation thr: posting_date, order_type, submitted
+
 
 """
 
@@ -40,36 +43,17 @@ class SalesOrderController(SalesController):
 		self.item_table_fieldname = 'sales_order_items'
 		
 	def validate(self):		
-		self.validate_items()
+		super(SalesOrderController, self).validate()
 		self.validate_po()
-		self.validate_project()
-		self.validate_conversion_rate()
-		self.validate_max_discount()
-		self.get_sales_team_contribution()
-
-	def validate_items(self):
-		quotations = []
-		for d in self.doclist.get({'parentfield': 'sales_order_items'}):
-			#TODO: get projected qty
-			self.validate_item_type(d.item_code)
-			if d.quotation and d.quotation not in quotations:
-				quotations.append(d.quotation)				
-		self.validate_with_quotation(quotations)
 		
-	def validate_with_quotation(self, quotations):
-		for quotation_no in quotations:
-			quote = webnotes.conn.get_value('Quotation', quotation_no, \
-				['posting_date', 'order_type', 'docstatus'], as_dict=True)
-			if quote['posting_date'] > getdate(self.doc.posting_date):
-				msgprint("Sales Order Posting Date cannot be before Quotation Posting Date", 
-					raise_exception=webnotes.ValidationError)
-			if quote['order_type'] != self.doc.order_type:
-				msgprint("Order type is not matching with quotation: %s" % 
-				 	quotation_no, raise_exception=webnotes.ValidationError)
-			if quote['docstatus'] != 1:
-				msgprint("Quotation: %s is not submitted", 
-					raise_exception=webnotes.ValidationError)
-					
+		if self.doc.docstatus == 1:
+			get_controller('Party',self.doc.party).check_credit_limit\
+				(self.doc.company, self.doc.grand_total)
+				
+		elif self.doc.docstatus == 2:
+			self.check_if_nextdoc_exists(['Delivery Note Item', 'Sales Invoice Item', \
+				'Maintenance Schedule Item', 'Maintenance Visit Purpose'])
+			
 	def validate_po(self):
 		if self.doc.po_date and self.doc.delivery_date \
 			and getdate(self.doc.po_date) > getdate(self.doc.delivery_date):
@@ -84,29 +68,3 @@ class SalesOrderController(SalesController):
 				msgprint("""Another Sales Order (%s) exists against same PO No and Party. 
 					Please be sure, you are not making duplicate entry.""" % 
 					so[0]['name'], raise_exception=webnotes.ValidationError)
-					
-	def validate_project(self):
-		if self.doc.project_name:
-			if webnotes.conn.get_value('Project', self.doc.project_name, \
-					'party') !=  self.doc.party:
-				msgprint("Project: %s does not associate with party: %s" % 
-					(self.doc.project_name, self.doc.party), 
-					raise_exception=webnotes.ValidationError)
-
-	def on_submit(self):		
-		get_controller('Party',self.doc.party).check_credit_limit\
-			(self.doc.company, self.doc.grand_total)
-
-	def on_cancel(self):
-		self.check_if_nextdoc_exists(['Delivery Note Item', 'Sales Invoice Item', \
-			'Maintenance Schedule Item', 'Maintenance Visit Purpose'])
-			
-	def stop_sales_order(self):
-		self.doc.stopped = 1
-		self.save()
-		msgprint("Stopped! To make transactions against this you need to Unstop it.")
-
-	def unstop_sales_order(self):
-		self.doc.stopped = 0
-		self.save()
-		msgprint("Unstopped!")
