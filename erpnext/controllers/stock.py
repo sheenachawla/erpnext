@@ -14,26 +14,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
-"""
-TODO:
-
-* get_item_details
-* DocTypeValidator: 
-**	If amend_from, amendment_date is mandatory
-* validate_approving_authority
-
-"""
-
 from __future__ import unicode_literals
 import webnotes
+import webnotes.model
+from webnotes.utils import flt
 from webnotes import msgprint
-from controllers.selling import SalesController
+from webnotes.model.controller.selling import SalesController
 
-class QuotationController(SalesController):
-	def setup(self):
-		self.item_table_fieldname = 'quotation_items'
-	
-	def update_after_submit(self):
-		if self.doc.status == 'Order Lost':
-			self.check_if_nextdoc_exists(['Sales Order Item'], event = 'set order as lost')	
+class StockController(SalesController):
+	pass

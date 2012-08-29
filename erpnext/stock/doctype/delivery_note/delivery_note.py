@@ -14,300 +14,69 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+"""
+TO_DO:
+
+* get actual qty on posting date for referrence
+* amendment date if amended from
+* get_item_details
+* validate_approving_authority
+* validate with predoc_details that item not changed after fetching
+* check prevdoc is submitted and not stopped
+
+"""
+
 from __future__ import unicode_literals
 import webnotes
+import webnotes.model
 from webnotes.utils import cstr, flt, getdate
-from webnotes.model.doc import make_autoname
-from webnotes.model.controller import getlist
-from webnotes.model.code import get_obj
 from webnotes import msgprint
 from webnotes.model import get_controller
+from controllers.stock import StockController
 
-import webnotes.model
-from utilities.transaction_base import TransactionBase
-
-class DeliveryNoteController(TransactionBase):
+class DeliveryNoteController(StockController):
 	def setup(self):
-		self.tname = 'Delivery Note Item'
-		self.fname = 'delivery_note_details'
-
-	def autoname(self):
-		self.doc.name = make_autoname(self.doc.naming_series+'.#####')
-
-	def validate_fiscal_year(self):
-		get_obj('Sales Common').validate_fiscal_year(self.doc.fiscal_year,self.doc.posting_date,'Posting Date')
-
-
-	def get_contact_details(self):
-		return get_obj('Sales Common').get_contact_details(self,0)
-
-
-	def get_comm_rate(self, sales_partner):
-		"""Get Commission rate of Sales Partner"""
-		return get_obj('Sales Common').get_comm_rate(sales_partner, self)
-
-
-	def pull_sales_order_details(self):
-		self.validate_prev_docname()
-		self.doclist = self.doc.clear_table(self.doclist,'other_charges')
-
-		if self.doc.sales_order_no:
-			get_obj('DocType Mapper', 'Sales Order-Delivery Note').dt_map('Sales Order', 'Delivery Note', self.doc.sales_order_no, self.doc, self.doclist, "[['Sales Order', 'Delivery Note'],['Sales Order Item', 'Delivery Note Item'],['Sales Taxes and Charges','Sales Taxes and Charges'],['Sales Team','Sales Team']]")
-		else:
-			msgprint("Please select Sales Order No. whose details need to be pulled")
-
-		return cstr(self.doc.sales_order_no)
-
-
-	def validate_prev_docname(self):
-		"""Validates that Sales Order is not pulled twice"""
-		for d in getlist(self.doclist, 'delivery_note_details'):
-			if self.doc.sales_order_no == d.prevdoc_docname:
-				msgprint(cstr(self.doc.sales_order_no) + " sales order details have already been pulled. ")
-				raise Exception, "Validation Error. "
-
-
-	def set_actual_qty(self):
-		for d in getlist(self.doclist, 'delivery_note_details'):
-			if d.item_code and d.warehouse:
-				actual_qty = webnotes.conn.sql("select actual_qty from `tabBin` where item_code = '%s' and warehouse = '%s'" % (d.item_code, d.warehouse))
-				d.actual_qty = actual_qty and flt(actual_qty[0][0]) or 0
-
-
-	def get_tc_details(self):
-		return get_obj('Sales Common').get_tc_details(self)
-
-
-	def pull_project_customer(self):
-		res = webnotes.conn.sql("select customer from `tabProject` where name = '%s'"%self.doc.project_name)
-		if res:
-			get_obj('DocType Mapper', 'Project-Delivery Note').dt_map('Project', 'Delivery Note', self.doc.project_name, self.doc, self.doclist, "[['Project', 'Delivery Note']]")
-
-
-	def get_item_details(self, args=None):
-		import json
-		args = args and json.loads(args) or {}
-		if args.get('item_code'):
-			return get_obj('Sales Common').get_item_details(args, self)
-		else:
-			obj = get_obj('Sales Common')
-			for doc in self.doclist:
-				if doc.get('item_code'):
-					arg = {'item_code':doc.get('item_code'), 'income_account':doc.get('income_account'), 
-						'cost_center': doc.get('cost_center'), 'warehouse': doc.get('warehouse')};
-					ret = obj.get_item_defaults(arg)
-					for r in ret:
-						if not doc.get(r):
-							doc[r] = ret[r]					
-
-	def get_barcode_details(self, barcode):
-		return get_obj('Sales Common').get_barcode_details(barcode)
-
-
-	def get_adj_percent(self, arg=''):
-		"""Re-calculates Basic Rate & amount based on Price List Selected"""
-		get_obj('Sales Common').get_adj_percent(self)
-
-
-	def get_actual_qty(self,args):
-		"""Get Actual Qty of item in warehouse selected"""
-		return get_obj('Sales Common').get_available_qty(eval(args))
-
-
-	def get_rate(self,arg):
-		return get_obj('Sales Common').get_rate(arg)
-
-
-	def load_default_taxes(self):
-		self.doclist = get_obj('Sales Common').load_default_taxes(self)
-
-
-	def get_other_charges(self):
-		"""Pull details from Sales Taxes and Charges Master"""
-		self.doclist = get_obj('Sales Common').get_other_charges(self)
-
-
-	def so_required(self):
-		"""check in manage account if sales order required or not"""
-		if webnotes.conn.get_value('Global Defaults', 'Global Defaults', 'so_required') == 'Yes':
-			 for d in getlist(self.doclist,'delivery_note_details'):
-				 if not d.prevdoc_docname:
-					 msgprint("Sales Order No. required against item %s"%d.item_code)
-					 raise Exception
-
+		self.item_table_fieldname = 'delivery_note_items'
 
 	def validate(self):
+		super(SalesOrderController, self).validate()
 		self.so_required()
-		self.validate_fiscal_year()
-		self.validate_proj_cust()
-		sales_com_obj = get_obj(dt = 'Sales Common')
-		sales_com_obj.check_stop_sales_order(self)
-		sales_com_obj.check_active_sales_items(self)
-		sales_com_obj.get_prevdoc_date(self)
-		self.validate_mandatory()
-		self.validate_reference_value()
-		self.validate_for_items()
-		sales_com_obj.validate_max_discount(self, 'delivery_note_details')						 #verify whether rate is not greater than max discount
-		sales_com_obj.get_allocated_sum(self)	# this is to verify that the allocated % of sales persons is 100%
-		sales_com_obj.check_conversion_rate(self)
-		
-		# Get total in Words
-		dcc = TransactionBase().get_company_currency(self.doc.company)
-		self.doc.in_words = sales_com_obj.get_total_in_words(dcc, self.doc.rounded_total)
-		self.doc.in_words_export = sales_com_obj.get_total_in_words(self.doc.currency, self.doc.rounded_total_export)
-
-		# Set actual qty for each item in selected warehouse
-		self.update_current_stock()
-
-		self.doc.status = 'Draft'
-		if not self.doc.billing_status: self.doc.billing_status = 'Not Billed'
-		if not self.doc.installation_status: self.doc.installation_status = 'Not Installed'
-
-
-	def validate_mandatory(self):
-		if self.doc.amended_from and not self.doc.amendment_date:
-			msgprint("Please Enter Amendment Date")
-			raise Exception, "Validation Error. "
-
-
-	def validate_proj_cust(self):
-		"""check for does customer belong to same project as entered.."""
-		if self.doc.project_name and self.doc.customer:
-			res = webnotes.conn.sql("select name from `tabProject` where name = '%s' and (customer = '%s' or ifnull(customer,'')='')"%(self.doc.project_name, self.doc.customer))
-			if not res:
-				msgprint("Customer - %s does not belong to project - %s. \n\nIf you want to use project for multiple customers then please make customer details blank in project - %s."%(self.doc.customer,self.doc.project_name,self.doc.project_name))
-				raise Exception
-
-
-	def validate_reference_value(self):
-		"""Validate values with reference document with previous document"""
-		get_obj('DocType Mapper', 'Sales Order-Delivery Note', with_children = 1).validate_reference_value(self, self.doc.name)
-
-
-	def validate_for_items(self):
-		check_list, chk_dupl_itm = [], []
-		for d in getlist(self.doclist,'delivery_note_details'):
-			ch = webnotes.conn.sql("select is_stock_item from `tabItem` where name = '%s'"%d.item_code)
-			if d.prevdoc_doctype and d.prevdoc_detail_docname and ch and ch[0][0]=='Yes':
-				self.validate_items_with_prevdoc(d)
-
-			# validates whether item is not entered twice
-			e = [d.item_code, d.description, d.warehouse, d.prevdoc_docname or '', d.batch_no or '']
-			f = [d.item_code, d.description, d.prevdoc_docname or '']
-
-			if ch and ch[0][0] == 'Yes':
-				if e in check_list:
-					msgprint("Please check whether item %s has been entered twice wrongly." % d.item_code)
-				else:
-					check_list.append(e)
-			elif ch and ch[0][0] == 'No':
-				if f in chk_dupl_itm:
-					msgprint("Please check whether item %s has been entered twice wrongly." % d.item_code)
-				else:
-					chk_dupl_itm.append(f)
-
-
-	def validate_items_with_prevdoc(self, d):
-		"""check if same item, warehouse present in prevdoc"""
-		prev_item_dt = (d.prevdoc_doctype == 'Sales Order') and 'Sales Order Item' or 'Purchase Receipt Item'
-		data = webnotes.conn.sql("select item_code from `tab%s` where parent = '%s' and name = '%s'"\
-		 	% (prev_item_dt, d.prevdoc_docname, d.prevdoc_detail_docname))
-		if not data or data[0][0] != d.item_code:
-			msgprint("Item: %s is not matching with Sales Order: %s. Sales Order might be modified after \
-				fetching data from it. Please delete items and fetch again." \
-				% (d.item_code, d.prevdoc_docname), raise_exception=1)
-
-
-	def update_current_stock(self):
-		for d in getlist(self.doclist, 'delivery_note_details'):
-			bin = webnotes.conn.sql("select actual_qty from `tabBin` where item_code = %s and warehouse = %s", (d.item_code, d.warehouse), as_dict = 1)
-			d.actual_qty = bin and flt(bin[0]['actual_qty']) or 0
-
-		for d in getlist(self.doclist, 'packing_details'):
-			bin = webnotes.conn.sql("select actual_qty, projected_qty from `tabBin` where item_code =	%s and warehouse = %s", (d.item_code, d.warehouse), as_dict = 1)
-			d.actual_qty = bin and flt(bin[0]['actual_qty']) or 0
-			d.projected_qty = bin and flt(bin[0]['projected_qty']) or 0
-
-
+		if self.doc.docstatus == 1:
+			self.check_credit_limit()
+			
+	def so_required(self):
+		"""check in manage account if sales order required or not"""
+		if webnotes.conn.get_value('Global Defaults', None, 'so_required') == 'Yes':
+			 for d in getlist(self.doclist,'delivery_note_details'):
+				 if not d.prevdoc_docname:
+					 msgprint("Sales Order required against item %s" % 
+						d.item_code, raise_exception=webnotes.ValidationError)
+						
+	def check_credit_limit(self):
+		"""check credit limit for items which are not fetched from sales order"""
+		amount = sum([d.amount for d in self.doclist.get({\
+			'parentfield': 'delivery_note_items'}) if not d.sales_order])
+		if amount > 0:
+			total = (amount/self.doc.net_total)*self.doc.grand_total
+			get_controller('Party',self.doc.party).check_credit_limit(self.doc.company, total)
+			
 	def on_submit(self):
-		self.validate_packed_qty()
-		# Check for Approving Authority
-		get_obj('Authorization Control').validate_approving_authority(self.doc.doctype, self.doc.company, self.doc.grand_total, self)
-		
-		# validate serial no for item table (non-sales-bom item) and packing list (sales-bom item)
-		sl_obj = get_obj("Stock Ledger")
+		sl_obj = get_controller("Stock Ledger", None)
 		sl_obj.validate_serial_no(self, 'delivery_note_details')
 		sl_obj.validate_serial_no_warehouse(self, 'delivery_note_details')
-		sl_obj.validate_serial_no(self, 'packing_details')
-		sl_obj.validate_serial_no_warehouse(self, 'packing_details')
-		
-		# update delivery details in serial no
-		sl_obj.update_serial_record(self, 'delivery_note_details', is_submit = 1, is_incoming = 0)
-		sl_obj.update_serial_record(self, 'packing_details', is_submit = 1, is_incoming = 0)
-		
-		# update delivered qty in sales order
-		get_obj("Sales Common").update_prevdoc_detail(1,self)
-		
-		# create stock ledger entry
+		sl_obj.update_serial_record(self, 'delivery_note_details', is_submit = 1, is_incoming = 0)		
 		self.update_stock_ledger(update_stock = 1)
 
-		self.check_credit_limit()
-
-		# set DN status
-		webnotes.conn.set(self.doc, 'status', 'Submitted')
-
-
-	def validate_packed_qty(self):
-		"""
-			Validate that if packed qty exists, it should be equal to qty
-		"""
-		if not any([flt(d.get('packed_qty')) for d in self.doclist if
-				d.doctype=='Delivery Note Item']):
-			return
-		packing_error_list = []
-		for d in self.doclist:
-			if d.doctype != 'Delivery Note Item': continue
-			if flt(d.get('qty')) != flt(d.get('packed_qty')):
-				packing_error_list.append([
-					d.get('item_code', ''),
-					d.get('qty', 0),
-					d.get('packed_qty', 0)
-				])
-		if packing_error_list:
-			from webnotes.utils import cstr
-			err_msg = "\n".join([("Item: " + d[0] + ", Qty: " + cstr(d[1]) \
-				+ ", Packed: " + cstr(d[2])) for d in packing_error_list])
-			webnotes.msgprint("Packing Error:\n" + err_msg, raise_exception=1)
-
-
 	def on_cancel(self):
-		sales_com_obj = get_obj(dt = 'Sales Common')
+		sales_com_obj = get_controller(dt = 'Sales Common')
 		sales_com_obj.check_stop_sales_order(self)
-		self.check_next_docstatus()
 		
-		# remove delivery details from serial no
-		sl = get_obj('Stock Ledger')		
+		sl = get_controller('Stock Ledger', None)		
 		sl.update_serial_record(self, 'delivery_note_details', is_submit = 0, is_incoming = 0)
 		sl.update_serial_record(self, 'packing_details', is_submit = 0, is_incoming = 0)
-		
-		sales_com_obj.update_prevdoc_detail(0,self)
+
 		self.update_stock_ledger(update_stock = -1)
-		# :::::: set DN status :::::::
-		webnotes.conn.set(self.doc, 'status', 'Cancelled')
 		self.cancel_packing_slips()
-
-
-	def check_next_docstatus(self):
-		submit_rv = webnotes.conn.sql("select t1.name from `tabSales Invoice` t1,`tabSales Invoice Item` t2 where t1.name = t2.parent and t2.delivery_note = '%s' and t1.docstatus = 1" % (self.doc.name))
-		if submit_rv:
-			msgprint("Sales Invoice : " + cstr(submit_rv[0][0]) + " has already been submitted !")
-			raise Exception , "Validation Error."
-
-		submit_in = webnotes.conn.sql("select t1.name from `tabInstallation Note` t1, `tabInstallation Note Item` t2 where t1.name = t2.parent and t2.prevdoc_docname = '%s' and t1.docstatus = 1" % (self.doc.name))
-		if submit_in:
-			msgprint("Installation Note : "+cstr(submit_in[0][0]) +" has already been submitted !")
-			raise Exception , "Validation Error."
-
 
 	def cancel_packing_slips(self):
 		"""
@@ -334,17 +103,17 @@ class DeliveryNoteController(TransactionBase):
 					raise Exception
 				if d['reserved_qty'] < 0 :
 					# Reduce reserved qty from reserved warehouse mentioned in so
-					bin = get_obj('Warehouse', d['reserved_warehouse']).update_bin(0, flt(update_stock) * flt(d['reserved_qty']), \
+					bin = get_controller('Warehouse', d['reserved_warehouse']).update_bin(0, flt(update_stock) * flt(d['reserved_qty']), \
 						0, 0, 0, d['item_code'], self.doc.transaction_date,doc_type=self.doc.doctype, \
 						doc_name=self.doc.name, is_amended = (self.doc.amended_from and 'Yes' or 'No'))
 						
 				# Reduce actual qty from warehouse
 				self.make_sl_entry(d, d['warehouse'], - flt(d['qty']) , 0, update_stock)
-		get_obj('Stock Ledger', 'Stock Ledger').update_stock(self.values)
+		get_controller('Stock Ledger', 'Stock Ledger').update_stock(self.values)
 
 
 	def get_item_list(self, is_stopped):
-	 return get_obj('Sales Common').get_item_list(self, is_stopped)
+	 return get_controller('Sales Common').get_item_list(self, is_stopped)
 
 
 	def make_sl_entry(self, d, wh, qty, in_value, update_stock):
@@ -368,21 +137,8 @@ class DeliveryNoteController(TransactionBase):
 		})
 
 
-	def check_credit_limit(self):
-		"""check credit limit of items in DN Detail which are not fetched from sales order"""
-		amount = 0
-		for d in self.doclist.get({'parentfield': 'delivery_note_details'}):
-			if not d.prevdoc_docname:
-				amount += d.amount
-		if amount > 0:
-			total = (amount/self.doc.net_total)*self.doc.grand_total
-			get_controller('Party',self.doc.party).check_credit_limit(self.doc.company, total)
-			
 
 
 	def on_update(self):
-		self.doclist = get_obj('Sales Common').make_packing_list(self,'delivery_note_details')
-		sl = get_obj('Stock Ledger')
+		sl = get_controller('Stock Ledger')
 		sl.scrub_serial_nos(self)
-		sl.scrub_serial_nos(self, 'packing_details')
-

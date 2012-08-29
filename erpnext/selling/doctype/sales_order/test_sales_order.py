@@ -124,29 +124,29 @@ class TestSalesOrder(TestBase):
 		so_ctlr = get_controller([so, base_so_item])
 		self.assertRaises(webnotes.ValidationError, so_ctlr.submit)
 		
-	def test_validate_with_quote(self):
-		# save quotation
-		from selling.doctype.quotation.test_quotation import \
-			base_quote, base_quote_item
-		quote_ctlr = webnotes.model.insert([base_quote, base_quote_item])
-		so_item = base_so_item.copy()
-		so_item.update({"quotation": quote_ctlr.doc.name})
-		
-		# quotation not submitted		
-		self.assertRaises(webnotes.ValidationError, webnotes.model.insert, 
-			[base_so, so_item])
-
-		# so posting date before quote posting date
-		quote_ctlr.submit()
-		so = base_so.copy()
-		so.update({'posting_date': add_days(nowdate(), -2)})
-		self.assertRaises(webnotes.ValidationError, webnotes.model.insert, [so, so_item])
-	
-		# order type not matched
-		webnotes.conn.set_value('Item', 'Home Desktop 100', 'is_service_item', 'Yes')
-		so = base_so.copy()
-		so.update({'order_type': 'Maintenance'})
-		self.assertRaises(webnotes.ValidationError, webnotes.model.insert, [so, so_item])
+	# def test_validate_with_quote(self):
+	# 	# save quotation
+	# 	from selling.doctype.quotation.test_quotation import \
+	# 		base_quote, base_quote_item
+	# 	quote_ctlr = webnotes.model.insert([base_quote, base_quote_item])
+	# 	so_item = base_so_item.copy()
+	# 	so_item.update({"quotation": quote_ctlr.doc.name})
+	# 	
+	# 	# quotation not submitted		
+	# 	self.assertRaises(webnotes.ValidationError, webnotes.model.insert, 
+	# 		[base_so, so_item])
+	# 
+	# 	# so posting date before quote posting date
+	# 	quote_ctlr.submit()
+	# 	so = base_so.copy()
+	# 	so.update({'posting_date': add_days(nowdate(), -2)})
+	# 	self.assertRaises(webnotes.ValidationError, webnotes.model.insert, [so, so_item])
+	# 
+	# 	# order type not matched
+	# 	webnotes.conn.set_value('Item', 'Home Desktop 100', 'is_service_item', 'Yes')
+	# 	so = base_so.copy()
+	# 	so.update({'order_type': 'Maintenance'})
+	# 	self.assertRaises(webnotes.ValidationError, webnotes.model.insert, [so, so_item])
 	
 	# def test_so_cancel_if_nextdoc(self):
 	# 	# to be done after DN, SI cleanup
