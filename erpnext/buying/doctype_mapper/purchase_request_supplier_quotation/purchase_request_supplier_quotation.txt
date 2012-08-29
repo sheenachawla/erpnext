@@ -3,9 +3,9 @@
 
 	# These values are common in all dictionaries
 	{
-		u'creation': u'2012-08-07 15:42:45',
+		u'creation': u'2012-08-28 14:45:51',
 		u'docstatus': 0,
-		u'modified': u'2012-08-28 13:26:31',
+		u'modified': '2012-08-29 12:14:11',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -16,8 +16,8 @@
 		'doctype': u'Field Mapper Detail',
 		u'from_field': u'company',
 		u'map': u'Yes',
-		u'match_id': u'0',
-		u'modifed': '2012-08-28 13:27:59',
+		u'match_id': 0,
+		'modifed': '2012-08-29 12:14:11',
 		u'name': u'__common__',
 		u'parent': u'Purchase Request-Supplier Quotation',
 		u'parentfield': u'field_mapper_details',
@@ -31,7 +31,7 @@
 		u'from_field': u'purchase_request_items',
 		u'from_table': u'Purchase Request Item',
 		u'match_id': 1,
-		u'modifed': '2012-08-28 13:27:59',
+		'modifed': '2012-08-29 12:14:11',
 		u'name': u'__common__',
 		u'parent': u'Purchase Request-Supplier Quotation',
 		u'parentfield': u'table_mapper_details',
@@ -46,8 +46,7 @@
 	{
 		'doctype': u'DocType Mapper',
 		u'from_doctype': u'Purchase Request',
-		'localname': u'Purchase Request-Supplier Quotation',
-		u'modifed': '2012-08-28 13:27:59',
+		'modifed': '2012-08-29 12:14:11',
 		u'module': u'Buying',
 		u'name': u'__common__',
 		u'ref_doc_submitted': 1,
