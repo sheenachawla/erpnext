@@ -28,7 +28,7 @@ wn.pages.calendar.on('load', function(wrapper) {
 	});
 	
 	wn.require('js/lib/fullcalendar/fullcalendar.css');
-	wn.require('js/lib/jquery/jquery.ui.sortable.js');
+	wn.require('js/lib/jquery/jquery.ui.interactions.min.js');
 	wn.require('js/lib/fullcalendar/fullcalendar.js');
 	
 	$('<div id="fullcalendar">').appendTo($(wrapper).find('.layout-main')).fullCalendar({
@@ -52,6 +52,24 @@ wn.pages.calendar.on('load', function(wrapper) {
 		},
 		dayClick: function(date, allDay, jsEvent, view) {
 			// if current date, show popup to create a new event
+			var ev = wn.model.create('Event')
+			ev.doc.set('start', date);
+			ev.doc.set('end', new Date(date));
+			ev.doc.set('all_day', 1);
+			
+			if(!(date.getHours()==0 && date.getMinutes()==0)) {
+				// default event one hour
+				ev.doc.get('end').setHours(date.getHours() + 1);
+				ev.doc.set('all_day', 0);
+			}
+			console.log(ev.doc.get('end'))
+			
+			$('#fullcalendar').fullCalendar('renderEvent', {
+				start: ev.doc.get('start'),
+				end: ev.doc.get('end'),
+				title: ev.doc.get('name'),
+				allDay: ev.doc.get('all_day') ? true : false
+			})
 		},
 		eventClick: function(calEvent, jsEvent, view) {
 			// edit event description or delete
