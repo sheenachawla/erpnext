@@ -62,7 +62,7 @@ stages = {
 
 import webnotes
 committed = []
-webnotes.test_mode = 1
+webnotes.testing = 1
 
 def upto(stage, with_tests=False):
 	"""commit data upto a stage"""
