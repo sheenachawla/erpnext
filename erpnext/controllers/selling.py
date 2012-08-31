@@ -97,3 +97,18 @@ class SalesController(DocListController):
 				msgprint("Project: %s does not associate with party: %s" % 
 					(self.doc.project_name, self.doc.party), 
 					raise_exception=webnotes.ValidationError)
+					
+	def calculate_tax_on_item(self):
+		tax_masters = []
+		for d in self.doclist.get({'parentfield': self.item_table_fieldname}):
+			if d.export_amount and d.taxes_and_charges:
+				if d.taxes_and_charges not in tax_masters:
+					tc_acc_doclist = webnotes.model.get('Taxes and Charges', \
+						d.taxes_and_charges).get({'parentfield': 'taxes_and_charges_accounts'})
+					tax_masters[d.taxes_and_charges] = {
+						'total_rate' : sum([d.rate for d in tc_acc_doclist]),
+						'total_amount': sum([d.amount for d in tc_acc_doclist])
+					}
+				d.tax_amount = flt(d.export_amount)*tax_masters[d.taxes_and_charges]\
+					['total_rate']/100 + tax_masters[d.taxes_and_charges]['total_amount']
+				

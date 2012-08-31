@@ -5,7 +5,7 @@
 	{
 		u'creation': u'2012-05-15 12:14:28',
 		u'docstatus': 0,
-		u'modified': '2012-08-29 18:06:21',
+		u'modified': '2012-08-31 14:21:42',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -32,8 +32,8 @@
 		u'is_submittable': 1,
 		u'issingle': 0,
 		u'istable': 0,
-		u'max_attachments': u'',
-		'modifed': '2012-08-29 18:06:21',
+		u'max_attachments': 0,
+		'modifed': '2012-08-31 14:21:42',
 		u'module': u'Accounts',
 		u'name': u'__common__',
 		u'name_case': u'',
@@ -51,7 +51,7 @@
 	# These values are common for all DocField
 	{
 		'doctype': u'DocField',
-		'modifed': '2012-08-29 18:06:21',
+		'modifed': '2012-08-31 14:21:42',
 		u'name': u'__common__',
 		u'parent': u'Journal Voucher',
 		u'parentfield': u'fields',
@@ -61,7 +61,7 @@
 	# These values are common for all DocPerm
 	{
 		'doctype': u'DocPerm',
-		'modifed': '2012-08-29 18:06:21',
+		'modifed': '2012-08-31 14:21:42',
 		u'name': u'__common__',
 		u'parent': u'Journal Voucher',
 		u'parentfield': u'permissions',
@@ -94,17 +94,27 @@
 
 	# DocField
 	{
+		u'allow_on_submit': 0,
+		u'default': u'',
+		u'depends_on': u'',
+		u'description': u'',
 		u'doctype': u'DocField',
 		u'fieldname': u'voucher_type',
 		u'fieldtype': u'Select',
+		u'hidden': 0,
 		u'in_filter': 1,
 		u'label': u'Voucher Type',
+		u'no_copy': 0,
 		u'oldfieldname': u'voucher_type',
 		u'oldfieldtype': u'Select',
-		u'options': u'\nJournal Entry\nBank Voucher\nCash Voucher\nCredit Card Voucher\nDebit Note\nCredit Note\nContra Voucher\nExcise Voucher\nWrite Off Voucher',
+		u'options': u'\nJournal Entry\nPayment Entry\nDebit Note\nCredit Note\nContra Voucher\nExcise Voucher\nWrite Off Voucher',
 		u'permlevel': 0,
 		u'print_hide': 0,
-		u'search_index': 1
+		u'report_hide': 0,
+		u'reqd': 0,
+		u'search_index': 1,
+		u'unique': 0,
+		u'width': u''
 	},
 
 	# DocField
@@ -145,8 +155,7 @@
 		u'oldfieldtype': u'Table',
 		u'options': u'Journal Voucher Detail',
 		u'permlevel': 0,
-		u'print_hide': 0,
-		u'vertical': True
+		u'print_hide': 0
 	},
 
 	# DocField
@@ -253,91 +262,77 @@
 		u'trigger': u'Client'
 	},
 
+	# DocPerm
+	{
+		u'amend': 1,
+		u'cancel': 1,
+		u'create': 1,
+		u'doctype': u'DocPerm',
+		u'permlevel': 0,
+		u'role': u'Accounts Manager',
+		u'submit': 1,
+		u'write': 1
+	},
+
+	# DocPerm
+	{
+		u'amend': 1,
+		u'cancel': 1,
+		u'create': 1,
+		u'doctype': u'DocPerm',
+		u'permlevel': 0,
+		u'role': u'Accounts User',
+		u'submit': 1,
+		u'write': 1
+	},
+
+	# DocPerm
+	{
+		u'amend': 0,
+		u'cancel': 0,
+		u'create': 0,
+		u'doctype': u'DocPerm',
+		u'permlevel': 1,
+		u'role': u'Accounts Manager',
+		u'submit': 0,
+		u'write': 0
+	},
+
+	# DocPerm
+	{
+		u'amend': 0,
+		u'cancel': 0,
+		u'create': 0,
+		u'doctype': u'DocPerm',
+		u'permlevel': 1,
+		u'role': u'Accounts User',
+		u'submit': 0,
+		u'write': 0
+	},
+
 	# DocField
 	{
-		u'description': u'User Remark will be added to Auto Remark',
+		u'allow_on_submit': 0,
+		u'default': u'',
+		u'depends_on': u'',
+		u'description': u'',
 		u'doctype': u'DocField',
-		u'fieldname': u'remark',
+		u'fieldname': u'remarks',
 		u'fieldtype': u'Small Text',
-		u'label': u'Remark',
-		u'no_copy': 1,
-		u'oldfieldname': u'remark',
-		u'oldfieldtype': u'Small Text',
-		u'permlevel': 1,
-		u'reqd': 0
-	},
-
-	# DocPerm
-	{
-		u'amend': 1,
-		u'cancel': 1,
-		u'create': 1,
-		u'doctype': u'DocPerm',
+		u'hidden': 0,
+		u'in_filter': 0,
+		u'label': u'Remarks',
+		'localname': u'New DocField 1',
+		u'no_copy': 0,
+		u'oldfieldname': u'',
+		u'oldfieldtype': u'',
+		u'options': u'',
 		u'permlevel': 0,
-		u'role': u'Accounts Manager',
-		u'submit': 1,
-		u'write': 1
-	},
-
-	# DocPerm
-	{
-		u'amend': 1,
-		u'cancel': 1,
-		u'create': 1,
-		u'doctype': u'DocPerm',
-		u'permlevel': 0,
-		u'role': u'Accounts User',
-		u'submit': 1,
-		u'write': 1
-	},
-
-	# DocPerm
-	{
-		u'amend': 0,
-		u'cancel': 0,
-		u'create': 0,
-		u'doctype': u'DocPerm',
-		u'permlevel': 1,
-		u'role': u'Accounts Manager',
-		u'submit': 0,
-		u'write': 0
-	},
-
-	# DocPerm
-	{
-		u'amend': 0,
-		u'cancel': 0,
-		u'create': 0,
-		u'doctype': u'DocPerm',
-		u'permlevel': 1,
-		u'role': u'Accounts User',
-		u'submit': 0,
-		u'write': 0
-	},
-
-	# DocField
-	{
-		'_DocListController__islocal': 1,
-		u'doctype': u'DocField',
-		u'fieldname': u'amended_from',
-		u'fieldtype': u'Link',
-		u'label': u'Amended From',
-		u'no_copy': 1,
-		u'options': u'Journal Voucher',
-		u'permlevel': 1,
-		u'print_hide': 1
-	},
-
-	# DocField
-	{
-		'_DocListController__islocal': 1,
-		u'depends_on': u'eval:doc.amended_from',
-		u'doctype': u'DocField',
-		u'fieldname': u'amendment_date',
-		u'fieldtype': u'Date',
-		u'label': u'Amendment Date',
-		u'no_copy': 1,
-		u'permlevel': 0,
-		u'print_hide': 1
+		u'print_hide': 0,
+		u'report_hide': 0,
+		u'reqd': 0,
+		u'search_index': 0,
+		u'unique': 0,
+		u'width': u''
 	}
 ]
