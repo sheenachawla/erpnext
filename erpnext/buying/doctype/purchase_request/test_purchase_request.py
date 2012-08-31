@@ -58,7 +58,8 @@ class TestPurchaseRequest(TestBase):
 	def test_submit_purchase_request(self):
 		prcon = webnotes.model.get_controller([base_purchase_request,
 			base_purchase_request_item])
-		prcon.submit()
+		prcon.doc.docstatus = 1
+		prcon.save()
 		
 		db_copy = webnotes.model.get("Purchase Request", prcon.doc.name)
 		# check if doclist length is 2
@@ -69,7 +70,8 @@ class TestPurchaseRequest(TestBase):
 	def test_create_supplier_quotation(self):
 		prcon = webnotes.model.insert([base_purchase_request,
 			base_purchase_request_item])
-		prcon.submit()
+		prcon.doc.docstatus = 1
+		prcon.save()
 		sqdoclist = webnotes.model.map_doc("Purchase Request", "Supplier Quotation",
 			prcon.doc.name)
 

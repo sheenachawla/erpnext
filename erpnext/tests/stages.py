@@ -112,5 +112,5 @@ def test_stage(stage):
 			test_suite.addTest(unittest.TestLoader().loadTestsFromModule(module))
 		return test_suite
 	
-	verbosity = 1
-	unittest.TextTestRunner(verbosity=verbosity).run(_load_test_suite())
+	unittest.TextTestRunner(verbosity=getattr(conf, "test_verbosity",
+		1)).run(_load_test_suite())
