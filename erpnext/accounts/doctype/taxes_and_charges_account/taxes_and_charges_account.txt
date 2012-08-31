@@ -1,0 +1,143 @@
+# DocType, Taxes and Charges Account
+[
+
+	# These values are common in all dictionaries
+	{
+		u'creation': u'2012-08-31 16:59:55',
+		u'docstatus': 0,
+		u'modified': '2012-08-31 18:44:43',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
+	},
+
+	# These values are common for all DocType
+	{
+		u'allow_attach': 0,
+		u'allow_copy': 0,
+		u'allow_email': 0,
+		u'allow_print': 0,
+		u'allow_rename': 0,
+		u'autoname': u'',
+		u'default_print_format': u'Standard',
+		u'description': u'',
+		u'docstatus_labels': u'',
+		'doctype': u'DocType',
+		u'document_type': u'',
+		u'hide_heading': 1,
+		u'hide_toolbar': 0,
+		u'in_create': 0,
+		u'in_dialog': 0,
+		u'is_submittable': 0,
+		u'issingle': 0,
+		u'istable': 1,
+		u'max_attachments': 0,
+		'modifed': '2012-08-31 18:44:43',
+		u'module': u'Accounts',
+		u'name': u'__common__',
+		u'name_case': u'',
+		u'read_only': 0,
+		u'read_only_onload': 0,
+		u'search_fields': u''
+	},
+
+	# These values are common for all DocField
+	{
+		'doctype': u'DocField',
+		'modifed': '2012-08-31 18:44:43',
+		u'name': u'__common__',
+		u'parent': u'Taxes and Charges Account',
+		u'parentfield': u'fields',
+		u'parenttype': u'DocType',
+		u'permlevel': 0
+	},
+
+	# DocType, Taxes and Charges Account
+	{
+		u'doctype': u'DocType',
+		'name': u'Taxes and Charges Account'
+	},
+
+	# DocField
+	{
+		u'doctype': u'DocField',
+		u'fieldname': u'account_head',
+		u'fieldtype': u'Link',
+		u'label': u'Account Head',
+		u'oldfieldname': u'account_head',
+		u'oldfieldtype': u'Link',
+		u'options': u'Account',
+		u'reqd': 1,
+		u'search_index': 1
+	},
+
+	# DocField
+	{
+		u'doctype': u'DocField',
+		u'fieldname': u'description',
+		u'fieldtype': u'Small Text',
+		u'label': u'Description',
+		u'oldfieldname': u'description',
+		u'oldfieldtype': u'Small Text',
+		u'reqd': 1,
+		u'width': u'300px'
+	},
+
+	# DocField
+	{
+		u'doctype': u'DocField',
+		u'fieldname': u'rate',
+		u'fieldtype': u'Currency',
+		u'label': u'Rate',
+		u'oldfieldname': u'rate',
+		u'oldfieldtype': u'Currency',
+		u'reqd': 0
+	},
+
+	# DocField
+	{
+		u'allow_on_submit': 0,
+		u'default': u'',
+		u'depends_on': u'',
+		u'description': u'',
+		u'doctype': u'DocField',
+		u'fieldname': u'amount',
+		u'fieldtype': u'Currency',
+		u'hidden': 0,
+		u'in_filter': 0,
+		u'label': u'Amount',
+		u'no_copy': 0,
+		u'oldfieldname': u'tax_amount',
+		u'oldfieldtype': u'Currency',
+		u'options': u'',
+		u'print_hide': 0,
+		u'report_hide': 0,
+		u'reqd': 0,
+		u'search_index': 0,
+		u'unique': 0,
+		u'width': u''
+	},
+
+	# DocField
+	{
+		u'allow_on_submit': 0,
+		u'default': u'',
+		u'depends_on': u'',
+		u'description': u'',
+		u'doctype': u'DocField',
+		u'fieldname': u'cost_center',
+		u'fieldtype': u'Link',
+		u'hidden': 0,
+		u'in_filter': 0,
+		u'label': u'Cost Center',
+		u'no_copy': 0,
+		u'oldfieldname': u'cost_center_other_charges',
+		u'oldfieldtype': u'Link',
+		u'options': u'Cost Center',
+		u'print_hide': 0,
+		u'report_hide': 0,
+		u'reqd': 0,
+		u'search_index': 0,
+		u'unique': 0,
+		u'width': u''
+	}
+]

@@ -5,7 +5,7 @@
 	{
 		u'creation': u'2012-08-22 15:42:41',
 		u'docstatus': 0,
-		u'modified': '2012-08-29 18:09:56',
+		u'modified': '2012-08-31 14:23:19',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -30,8 +30,8 @@
 		u'is_submittable': 0,
 		u'issingle': 0,
 		u'istable': 0,
-		u'max_attachments': u'',
-		'modifed': '2012-08-29 18:09:56',
+		u'max_attachments': 0,
+		'modifed': '2012-08-31 14:23:19',
 		u'module': u'Accounts',
 		u'name': u'__common__',
 		u'name_case': u'',
@@ -43,7 +43,7 @@
 	# These values are common for all DocField
 	{
 		'doctype': u'DocField',
-		'modifed': '2012-08-29 18:09:56',
+		'modifed': '2012-08-31 14:23:19',
 		u'name': u'__common__',
 		u'parent': u'Payment Entry',
 		u'parentfield': u'fields',
@@ -54,7 +54,7 @@
 	# These values are common for all DocPerm
 	{
 		'doctype': u'DocPerm',
-		'modifed': '2012-08-29 18:09:56',
+		'modifed': '2012-08-31 14:23:19',
 		u'name': u'__common__',
 		u'parent': u'Payment Entry',
 		u'parentfield': u'permissions',
