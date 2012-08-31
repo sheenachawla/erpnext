@@ -26,10 +26,12 @@ class AccountsController(DocListController):
 		self.total_debit, self.total_credit = 0, 0
 		
 	def validate(self):
+		if self.doc.docstatus != 1:
+			self.delete_gl_entries()
+			
+	def on_update(self):
 		if self.doc.docstatus == 1:
 			self.make_gl_entries()
-		else:
-			self.delete_gl_entries()
 		
 	def make_gl_entries(self, mappers=[]):
 		if not mappers:

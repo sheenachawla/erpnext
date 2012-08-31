@@ -49,8 +49,9 @@ class SalesOrderController(SalesController):
 		if self.doc.docstatus == 1:
 			get_controller('Party',self.doc.party).check_credit_limit\
 				(self.doc.company, self.doc.grand_total)
-				
-		elif self.doc.docstatus == 2:
+		
+	def on_update(self):
+		if self.doc.docstatus == 2:
 			self.check_if_nextdoc_exists(['Delivery Note Item', 'Sales Invoice Item', \
 				'Maintenance Schedule Item', 'Maintenance Visit Purpose'])
 			

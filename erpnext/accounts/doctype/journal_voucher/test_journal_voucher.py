@@ -69,8 +69,9 @@ class TestJournalVoucher(TestBase):
 		self.assertTrue(webnotes.conn.exists('Journal Voucher', 'JV00001'))
 		
 	def test_jv_submission(self):
-		jv_ctlr = get_controller(self.get_base_jv())
-		jv_ctlr.submit()
+		jv = self.get_base_jv()
+		jv[0]['docstatus'] = 1
+		webnotes.model.insert(jv)
 		
 		#check gl entry record
 		self.assertTrue(webnotes.conn.exists('GL Entry', {
