@@ -42,27 +42,70 @@ erpnext.module_page.make = function(module, wrapper) {
 	var make_section = function(name) {
 		if(!items[name].length) return;
 		
-		$(repl('<h4>%(title)s</h4><ul class="%(name)s"></ul><hr>', {title: toTitle(name), name: name}))
+		$(repl('<h4>%(title)s</h4><br><div class="%(name)s"></div><hr>', {title: toTitle(name), name: name}))
 			.appendTo($(wrapper).find('.layout-main'));
 		
-		var $ul = $(wrapper).find('.' + name);
+		var $body = $(wrapper).find('.' + name);
 		
+		// get maxx
+		var maxx = Math.max.apply(this, $.map(items[name], function(v) {
+			if(v[0]=='DocType') {
+				var m = 0;
+				$.each(v[2], function(i,count) { m=m+count });
+				return m;
+			};
+		}));
+				
 		// items
 		$.each(items[name], function(i, v) {
-			
-			if(v[0]=='DocType') {
-				$(repl('<li><a href="#List/%(name)s">%(name)s</a></li>', {name: v[1]}))
-					.appendTo($ul);
-			} else if(v[0]=='Report') {
-				$(repl('<li><a href="#Report/%(doctype)s/%(name)s">%(name)s</a></li>', 
-					{name: v[1], doctype:v[2]})).appendTo($ul);				
-			} else if(v[0]=='Page') {
-				$(repl('<li><a href="#%(name)s">%(name)s</a></li>', 
-					{name: v[1] })).appendTo($ul);					
-			} else if(v[0]=='Single') {
-				$(repl('<li><a href="#Form/%(name)s">%(name)s</a></li>', 
-					{name: v[1] })).appendTo($ul);	
-			}
-		})
+			make_item($body, v, name, parseInt(maxx));
+		});
+	}
+	
+	var make_item = function(parent, v, section_name, maxx) {
+		var icons = {
+			"DocType": "icon-pencil",
+			"Single": "icon-cog",
+			"Page": "icon-cog",
+			"Report": "icon-th"
+		};
+		if(section_name=='master') {
+			icons.DocType = "icon-flag";
+		}
+				
+		var routes = {
+			"DocType": "#List/%(name)s",
+			"Single": "#Form/%(name)s",
+			"Page": "#%(name)s",
+			"Report": "#Reports/%(doctype)s/%(name)s"
+		}
+				
+		var progress = '';
+		if(v[0]=='DocType' && maxx!=NaN) {
+			var progress = repl('<div style="width: 60%; float: left;">\
+				<div class="progress" style="width: 80%; float: left;">\
+					<div class="bar bar-info" style="width: %(ds_0)s%"></div>\
+					<div class="bar bar-success" style="width: %(ds_1)s%"></div>\
+					<div class="bar bar-danger" style="width: %(ds_2)s%"></div>\
+				</div> <div style="float: left; margin-left: 7px;">(%(maxx)s)</div>\
+			</div>', {
+				ds_0: v[2][0] / maxx * 100,
+				ds_1: v[2][1] / maxx * 100,
+				ds_2: v[2][2] / maxx * 100,
+				maxx: v[2][0] + v[2][1] + v[2][2]
+			});
+		} 
+		
+		$(repl('<div style="margin: 6px 0px; min-height: 40px;"> <div style="width: 30%; float: left;">\
+			<i class="icon %(icon)s"></i>\
+			<b><a href="%(route)s">%(title)s</a></b></div>\
+			%(progress)s\
+			<div style="clear: both;"></div>\
+			</div>', {
+				icon: icons[v[0]],
+				title: v[1],
+				progress: progress,
+				route: repl(routes[v[0]], {name: v[1], doctype: v[2]})
+			})).appendTo(parent);
 	}
 }

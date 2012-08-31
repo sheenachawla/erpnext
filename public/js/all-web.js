@@ -46,7 +46,7 @@ var type=wn.assets.extn(src);if(wn.assets.handler[type]){wn.assets.handler[type]
  */
 wn.require=function(items){if(typeof items==="string"){items=[items];}
 var l=items.length;for(var i=0;i<l;i++){var src=items[i];wn.assets.execute(src);}}
-wn.provide('wn.lib');wn.lib.import_slickgrid=function(){wn.require('js/lib/slickgrid/slick.grid.css');wn.require('js/lib/slickgrid/slick-default-theme.css');wn.require('js/slickgrid.bundle.js');wn.dom.set_style('.slick-cell { font-size: 12px; }');}
+wn.provide('wn.lib');wn.lib.import_slickgrid=function(){wn.require('js/lib/slickgrid/slick.grid.css');wn.require('js/lib/slickgrid/slick-default-theme.css');wn.require('js/lib/jquery/jquery.ui.interactions.min.js');wn.require('js/slickgrid.bundle.js');wn.dom.set_style('.slick-cell { font-size: 12px; }');}
 wn.lib.import_wysihtml5=function(){wn.require('js/lib/bootstrap-wysihtml5/bootstrap-wysihtml5.css');wn.require('js/lib/wysihtml5/wysihtml5.min.js');wn.require('js/lib/bootstrap-wysihtml5/bootstrap-wysihtml5.min.js');}
 /*
  *	lib/js/wn/dom.js
@@ -627,7 +627,7 @@ wn.ui.toolbar.Search=wn.ui.toolbar.SelectorDialog.extend({init:function(){this._
 /*
  *	lib/js/wn/ui/toolbar/report.js
  */
-wn.ui.toolbar.Report=wn.ui.toolbar.SelectorDialog.extend({init:function(){this._super({title:"Start Report For",execute:function(val){wn.set_route('Report2',val);},});this.set_values(profile.can_get_report.join(',').split(','));}});
+wn.ui.toolbar.Report=wn.ui.toolbar.SelectorDialog.extend({init:function(){this._super({title:"Start Report For",execute:function(val){wn.set_route('Report',val);},});this.set_values(profile.can_get_report.join(',').split(','));}});
 /*
  *	lib/js/wn/ui/toolbar/recent.js
  */

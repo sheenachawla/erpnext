@@ -21,11 +21,13 @@ import webnotes
 def execute():
 	print "installing default records"
 	set_home_page()
-	create_default_roles()
 	set_all_roles_to_admin()
 	create_default_master_records()
 	save_features_setup()
 	update_patch_log()
+	
+def execute_core():
+	create_default_roles()
 
 def set_home_page():
 	"""Set default home page"""
@@ -65,18 +67,13 @@ def update_patch_log():
 		patch_handler.update_patch_log(pm)
 
 
-def create_doc(records, validate=0, on_update=0):
+def create_doc(records):
 	for data in records:
 		if data.get('name'):
 			if not webnotes.conn.exists(data['doctype'], data.get('name')):
-				create_single_doc(data, validate, on_update)
+				webnotes.model.insert(data)
 		elif not webnotes.conn.exists(data):
-			create_single_doc(data, validate, on_update)
-
-			
-def create_single_doc(data, validate=0, on_update=0):
-	webnotes.model.insert(data)
-	#print 'Created %(doctype)s %(name)s' % data
+			webnotes.model.insert(data)
 
 	
 def create_default_roles():
@@ -108,10 +105,10 @@ def create_default_roles():
 		{"doctype":"Role", "role_name":"Material User", "name":"Material User"},
 		{"doctype":"Role", "role_name":"Quality Manager", "name":"Quality Manager"},
 		{"doctype":"Role", "role_name":"Blogger", "name":"Blogger"},
-		{"doctype":"Role", "role_name":"Website Manager", "name":"Website Manager"}
+		{"doctype":"Role", "role_name":"Website Manager", "name":"Website Manager"},
 	]
-	create_doc(roles, validate=1, on_update=1)
-	
+	create_doc(roles)
+
 
 def create_default_master_records():
 	records = [
@@ -170,10 +167,10 @@ def create_default_master_records():
 		{'doctype': 'Warehouse', 'warehouse_name': 'Default Warehouse', 'name': 'Default Warehouse', 'warehouse_type': 'Default Warehouse Type'},
 			
 		# Workstation
-		{'doctype': 'Workstation', 'name': 'Default Workstation', 'workstation_name': 'Default Workstation'},
+		{'doctype': 'Workstation', 'name': 'Default Workstation', 'workstation_name': 'Default Workstation', 'warehouse': 'Default Warehouse'},
 		
 		# Sales Person
-		{'doctype': 'Sales Person', 'name': 'All Sales Persons', 'sales_person_name': 'All Sales Persons'},
+		{'doctype': 'Sales Person', 'name': 'All Sales Persons', 'sales_person_name': 'All Sales Persons', 'is_group': "Yes", "parent_sales_person": ""},
 		
 		# UOM
 		{'uom_name': 'Box', 'doctype': 'UOM', 'name': 'Box'}, 
@@ -711,4 +708,4 @@ def create_default_master_records():
 		{'voucher_type': 'doctype', 'doctype': 'GL Mapper Detail', 'voucher_no': 'name', 'against_voucher': 'name', 'transaction_date': 'voucher_date', 'debit': 'grand_total', 'parent': 'Sales Invoice', 'company': 'company', 'aging_date': 'aging_date', 'fiscal_year': 'fiscal_year', 'remarks': 'remarks', 'account': 'debit_to', 'idx': '3', 'against_voucher_type': "value:'Sales Invoice'", 'against': 'against_income_account', 'credit': 'value:0', 'parenttype': 'GL Mapper', 'is_opening': 'is_opening', 'posting_date': 'posting_date', 'parentfield': 'fields'},
 
 	]
-	create_doc(records, validate=1, on_update=1)
+	create_doc(records)

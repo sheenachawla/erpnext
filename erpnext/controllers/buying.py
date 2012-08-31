@@ -45,7 +45,7 @@ class BuyingController(DocListController):
 	def validate_previous_doclist(self, parentfield, fieldname, item_fieldname):
 		"""Validates current item row against previous item row"""
 		doctypelist = webnotes.model.get_doctype(self.doc.doctype)
-		prev_doctype = doctypelist.get_options(fieldname, parentfield)
+		prev_doctype = doctypelist.get_field(fieldname, parentfield=parentfield).options
 		
 		prev_doclist_cache = {}
 		def get_prev_doclist(name):
@@ -63,7 +63,7 @@ class BuyingController(DocListController):
 		
 		for item in self.doclist.get({"parentfield": parentfield}):
 			if item.get(fieldname):
-				prev_item = get_prev_doclist(item.get(fieldname)).get({
+				prev_item = get_prev_doclist(item.get(fieldname)).getone({
 					"name": item.get(item_fieldname)})
 				
 				if item.item_code != prev_item.item_code:
