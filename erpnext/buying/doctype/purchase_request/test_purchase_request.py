@@ -97,5 +97,13 @@ class TestPurchaseRequest(TestBase):
 		# output
 		# import pprint
 		# pprint.pprint(sqcon.doclist)
-
 		
+	def test_version(self):
+		from datetime import timedelta
+		prcon = webnotes.model.insert([base_purchase_request,
+			base_purchase_request_item])
+		
+		prcon.doc.posting_date = add_days(now_datetime().date(), 1)
+		prcon.doclist[1].update({"qty": 5})
+		prcon.add_child(base_purchase_request_item)
+		prcon.save()
