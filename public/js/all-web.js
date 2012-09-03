@@ -28,7 +28,7 @@ Class.extend=arguments.callee;return Class;};})();
 if(!window.wn)wn={}
 wn.provide=function(namespace){var nsl=namespace.split('.');var l=nsl.length;var parent=window;for(var i=0;i<l;i++){var n=nsl[i];if(!parent[n]){parent[n]={}}
 parent=parent[n];}}
-wn.provide('wn.settings');wn.provide('wn.ui');
+wn.provide('wn.settings');wn.provide('wn.ui');wn.provide('wn._messages');wn._=function(txt){return wn._messages[txt]||txt;}
 /*
  *	lib/js/wn/versions.js
  */
@@ -424,23 +424,6 @@ return d;},get_base_url:function(){var url=window.location.href.split('#')[0].sp
 return url},get_file_url:function(file_id){return repl('files/%(fn)s',{fn:file_id})}}
 get_url_arg=wn.urllib.get_arg;get_url_dict=wn.urllib.get_dict;
 /*
- *	lib/js/legacy/utils/handler.js
- */
-function $c(command,args,callback,error,no_spinner,freeze_msg,btn){wn.request.call({args:$.extend(args,{cmd:command}),success:callback,error:error,btn:btn,freeze:freeze_msg,show_spinner:!no_spinner})}
-function $c_obj(doclist,method,arg,callback,no_spinner,freeze_msg,btn){if(arg&&typeof arg!='string')arg=JSON.stringify(arg);args={cmd:'runserverobj',arg:arg,method:method};if(typeof doclist=='string')
-args.doctype=doclist;else
-args.docs=compress_doclist(doclist)
-wn.request.call({args:args,success:callback,btn:btn,freeze:freeze_msg,show_spinner:!no_spinner});}
-function $c_page(module,page,method,arg,callback,no_spinner,freeze_msg,btn){if(arg&&typeof arg!='string')arg=JSON.stringify(arg);wn.request.call({args:{cmd:module+'.page.'+page+'.'+page+'.'+method,arg:arg,method:method},success:callback,btn:btn,freeze:freeze_msg,show_spinner:!no_spinner});}
-function $c_obj_csv(doclist,method,arg){var args={}
-args.cmd='runserverobj';args.as_csv=1;args.method=method;args.arg=arg;if(doclist.substr)
-args.doctype=doclist;else
-args.docs=compress_doclist(doclist);open_url_post(wn.request.url,args);}
-function open_url_post(URL,PARAMS,new_window){var temp=document.createElement("form");temp.action=URL;temp.method="POST";temp.style.display="none";if(new_window){temp.target='_blank';}
-for(var x in PARAMS){var opt=document.createElement("textarea");opt.name=x;var val=PARAMS[x];if(typeof val!='string')
-val=JSON.stringify(val);opt.value=val;temp.appendChild(opt);}
-document.body.appendChild(temp);temp.submit();return temp;}
-/*
  *	lib/js/legacy/utils/msgprint.js
  */
 var msg_dialog;function msgprint(msg,title){if(!msg)return;if(msg instanceof Array){$.each(msg,function(i,v){if(v)msgprint(v);})
@@ -660,27 +643,28 @@ wn.ui.toolbar.Toolbar=Class.extend({init:function(){this.make();this.make_home()
     </ul>\
    </div>\
    </div>\
-   </div>');},make_home:function(){$('.navbar .brand').attr('href',"#");},make_document:function(){wn.ui.toolbar.new_dialog=new wn.ui.toolbar.NewDialog();wn.ui.toolbar.search=new wn.ui.toolbar.Search();wn.ui.toolbar.report=new wn.ui.toolbar.Report();$('.navbar .nav:first').append('<li class="dropdown">\
+   </div>');},make_home:function(){$('.navbar .brand').attr('href',"#");},make_document:function(){wn.ui.toolbar.new_dialog=new wn.ui.toolbar.NewDialog();wn.ui.toolbar.search=new wn.ui.toolbar.Search();wn.ui.toolbar.report=new wn.ui.toolbar.Report();$('.navbar .nav:first').append(repl('<li class="dropdown">\
    <a class="dropdown-toggle" href="#"  data-toggle="dropdown"\
-    onclick="return false;">Document<b class="caret"></b></a>\
+    onclick="return false;">%(document)s<b class="caret"></b></a>\
    <ul class="dropdown-menu" id="toolbar-document">\
     <li><a href="#" onclick="return wn.ui.toolbar.new_dialog.show();">\
-     <i class="icon-plus"></i> New</a></li>\
+     <i class="icon-plus"></i>%(new)s</a></li>\
     <li><a href="#" onclick="return wn.ui.toolbar.search.show();">\
-     <i class="icon-search"></i> Search</a></li>\
+     <i class="icon-search"></i>%(search)s</a></li>\
     <li><a href="#" onclick="return wn.ui.toolbar.report.show();">\
-     <i class="icon-list"></i> Report</a></li>\
+     <i class="icon-list"></i>%(report)s</a></li>\
    </ul>\
-  </li>');},make_tools:function(){$('.navbar .nav:first').append('<li class="dropdown">\
+  </li>',{"document":wn._("Document"),"new":wn._("New"),"search":wn._("Search"),"report":wn._("Report")}));},make_tools:function(){$('.navbar .nav:first').append(repl('<li class="dropdown">\
    <a class="dropdown-toggle" data-toggle="dropdown" href="#" \
     onclick="return false;">Tools<b class="caret"></b></a>\
    <ul class="dropdown-menu" id="toolbar-tools">\
-    <li><a href="#" onclick="return wn.ui.toolbar.clear_cache();">Clear Cache & Refresh</a></li>\
-    <li><a href="#" onclick="return wn.ui.toolbar.show_about();">About</a></li>\
+    <li><a href="#" onclick="return wn.ui.toolbar.clear_cache();">%(clear_cache)s</a></li>\
+    <li><a href="#" onclick="return wn.ui.toolbar.show_about();">%(about)s</a></li>\
    </ul>\
-  </li>');if(has_common(user_roles,['Administrator','System Manager'])){$('#toolbar-tools').append('<li><a href="#" \
+  </li>'),{"clear_cache":wn._("Clear Cache & Refresh"),"about":wn._("About")});if(has_common(user_roles,['Administrator','System Manager'])){$('#toolbar-tools').append(repl('<li><a href="#" \
     onclick="return wn.ui.toolbar.download_backup();">\
-    Download Backup</a></li>');}},set_user_name:function(){var fn=user_fullname;if(fn.length>15)fn=fn.substr(0,12)+'...';$('#toolbar-user-link').html(fn+'<b class="caret"></b>');},make_logout:function(){$('#toolbar-user').append('<li><a href="#" onclick="return wn.app.logout();">Logout</a></li>');}});wn.ui.toolbar.clear_cache=function(){localStorage&&localStorage.clear();$c('webnotes.session_cache.clear',{},function(r,rt){if(!r.exc){show_alert(r.message);location.reload();}});return false;}
+    %(download)s</a></li>',{"download":wn._("Download Backup")}));}},set_user_name:function(){var fn=user_fullname;if(fn.length>15)fn=fn.substr(0,12)+'...';$('#toolbar-user-link').html(fn+'<b class="caret"></b>');},make_logout:function(){$('#toolbar-user').append(repl('<li><a href="#" onclick="return wn.app.logout();">\
+   %(logout)s</a></li>',{"logout":wn._("Logout")}));}});wn.ui.toolbar.clear_cache=function(){localStorage&&localStorage.clear();$c('webnotes.session_cache.clear',{},function(r,rt){if(!r.exc){show_alert(r.message);location.reload();}});return false;}
 wn.ui.toolbar.download_backup=function(){$c('webnotes.utils.backups.get_backup',{},function(r,rt){});return false;}
 wn.ui.toolbar.show_about=function(){try{wn.ui.misc.about();}catch(e){console.log(e);}
 return false;}
