@@ -424,23 +424,6 @@ return d;},get_base_url:function(){var url=window.location.href.split('#')[0].sp
 return url},get_file_url:function(file_id){return repl('files/%(fn)s',{fn:file_id})}}
 get_url_arg=wn.urllib.get_arg;get_url_dict=wn.urllib.get_dict;
 /*
- *	lib/js/legacy/utils/handler.js
- */
-function $c(command,args,callback,error,no_spinner,freeze_msg,btn){wn.request.call({args:$.extend(args,{cmd:command}),success:callback,error:error,btn:btn,freeze:freeze_msg,show_spinner:!no_spinner})}
-function $c_obj(doclist,method,arg,callback,no_spinner,freeze_msg,btn){if(arg&&typeof arg!='string')arg=JSON.stringify(arg);args={cmd:'runserverobj',arg:arg,method:method};if(typeof doclist=='string')
-args.doctype=doclist;else
-args.docs=compress_doclist(doclist)
-wn.request.call({args:args,success:callback,btn:btn,freeze:freeze_msg,show_spinner:!no_spinner});}
-function $c_page(module,page,method,arg,callback,no_spinner,freeze_msg,btn){if(arg&&typeof arg!='string')arg=JSON.stringify(arg);wn.request.call({args:{cmd:module+'.page.'+page+'.'+page+'.'+method,arg:arg,method:method},success:callback,btn:btn,freeze:freeze_msg,show_spinner:!no_spinner});}
-function $c_obj_csv(doclist,method,arg){var args={}
-args.cmd='runserverobj';args.as_csv=1;args.method=method;args.arg=arg;if(doclist.substr)
-args.doctype=doclist;else
-args.docs=compress_doclist(doclist);open_url_post(wn.request.url,args);}
-function open_url_post(URL,PARAMS,new_window){var temp=document.createElement("form");temp.action=URL;temp.method="POST";temp.style.display="none";if(new_window){temp.target='_blank';}
-for(var x in PARAMS){var opt=document.createElement("textarea");opt.name=x;var val=PARAMS[x];if(typeof val!='string')
-val=JSON.stringify(val);opt.value=val;temp.appendChild(opt);}
-document.body.appendChild(temp);temp.submit();return temp;}
-/*
  *	lib/js/legacy/utils/msgprint.js
  */
 var msg_dialog;function msgprint(msg,title){if(!msg)return;if(msg instanceof Array){$.each(msg,function(i,v){if(v)msgprint(v);})

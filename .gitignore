@@ -1,6 +1,7 @@
 *.pyc
 *.comp.js
 .DS_Store
+temp
 patch.log
 lib
 logs
