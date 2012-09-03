@@ -1,0 +1,19 @@
+[
+ "Sales and Purchase Return Tool", 
+ "Return Date", 
+ "Return Type", 
+ "Sales Return", 
+ "Purchase Return", 
+ "Delivery Note No", 
+ "Sales Invoice No", 
+ "Purchase Receipt No", 
+ "Customer/Supplier", 
+ "Cust/Supp Name", 
+ "Cust/Supp Address", 
+ "Get Items", 
+ "Sales and Purchase Return Items", 
+ "Make Stock Entry", 
+ "Make Excise Invoice", 
+ "Make Credit Note", 
+ "Make Debit Note"
+]

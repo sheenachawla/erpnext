@@ -1,0 +1,10 @@
+[
+ "Rename Tool", 
+ "Rename Tool helps you rename multiple items in one go.", 
+ "Type of Record to be Renamed", 
+ "Select the type of record you want to rename, e.g. Item", 
+ "Rename", 
+ "File List", 
+ "Upload", 
+ "Upload file in CSV format with two columns old name and new name."
+]

@@ -1,0 +1,21 @@
+[
+ "Warehouse", 
+ "A logical Warehouse against which stock entries are made.\n\nThere are two main Warehouse Types that are significant in ERPNext.\n\n1. **Stores:** These are where your incoming **Items** are kept before they are consumed or sold. You can have as many \u201cStores\u201d type **Warehouses** as you wish. Stores type warehouses are significant because if you set an Item for automatic re-order, ERPNext will check its quantities in all \u201cStores\u201d type **Warehouses** when deciding whether to re-order or not.\n\n2. **Asset**: **Items** marked as type \u201cFixed Asset\u201d are maintained in Asset Type **Warehouses**. This helps you separate them for the **Items** that are consumed as a part of your regular operations or \u201cCost of Goods Sold\u201d.\n", 
+ "Warehouse Detail", 
+ "Warehouse Name", 
+ "Warehouse Type", 
+ "Company", 
+ "Warehouse Contact Info", 
+ "For Reference Only.", 
+ "Email Id", 
+ "Phone No", 
+ "Mobile No", 
+ "Address Line 1", 
+ "Address Line 2", 
+ "City", 
+ "State", 
+ "PIN", 
+ "Repost Stock", 
+ "For Admin use only. Please report errors to support@erpnext.com", 
+ "Repost Stock Ledger"
+]

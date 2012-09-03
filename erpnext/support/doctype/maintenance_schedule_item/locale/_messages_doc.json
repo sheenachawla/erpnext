@@ -1,0 +1,19 @@
+[
+ "Maintenance Schedule Item", 
+ "Item Code", 
+ "Item Name", 
+ "Description", 
+ "Start Date", 
+ "End Date", 
+ "Periodicity", 
+ "Weekly", 
+ "Monthly", 
+ "Quarterly", 
+ "Half Yearly", 
+ "Yearly", 
+ "Random", 
+ "No of Visits", 
+ "Incharge Name", 
+ "Serial No", 
+ "Against Docname"
+]

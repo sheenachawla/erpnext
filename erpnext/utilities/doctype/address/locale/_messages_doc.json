@@ -1,0 +1,20 @@
+[
+ "Address", 
+ "Address Details", 
+ "Address Type", 
+ "<em>e.g. Office, Billing, Shipping</em>", 
+ "Address Line1", 
+ "Address Line2", 
+ "City/Town", 
+ "Pincode", 
+ "Country", 
+ "State", 
+ "Phone", 
+ "Email Id", 
+ "Fax", 
+ "Party", 
+ "Is Primary Address", 
+ "Check to make primary address", 
+ "Is Shipping Address", 
+ "Check to make Shipping Address"
+]

@@ -1,0 +1,12 @@
+[
+ "Production Plan Item", 
+ "Sales Order", 
+ "Item Code", 
+ "BOM No", 
+ "SO Pending Qty", 
+ "Planned Qty", 
+ "UOM", 
+ "Description", 
+ "Parent Packing Item", 
+ "Is PRO Created"
+]

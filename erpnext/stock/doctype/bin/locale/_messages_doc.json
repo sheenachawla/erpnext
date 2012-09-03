@@ -1,0 +1,17 @@
+[
+ "Bin", 
+ "Warehouse", 
+ "Warehouse Type", 
+ "Item Code", 
+ "Reserved Quantity", 
+ "Actual Quantity", 
+ "Ordered Quantity", 
+ "Quantity Requested for Purchase", 
+ "Planned Qty", 
+ "Projected Qty", 
+ "Moving Average Rate", 
+ "UOM", 
+ "FCFS Rate", 
+ "Valuation Rate", 
+ "Stock Value"
+]

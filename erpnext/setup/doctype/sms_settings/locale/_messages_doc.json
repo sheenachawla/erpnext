@@ -1,0 +1,12 @@
+[
+ "SMS Settings", 
+ "SMS Gateway URL", 
+ "Eg. smsgateway.com/api/send_sms.cgi", 
+ "Message Parameter", 
+ "Enter url parameter for message", 
+ "Receiver Parameter", 
+ "Enter url parameter for receiver nos", 
+ "Static Parameters", 
+ "SMS Parameters", 
+ "Enter static url parameters here (Eg. sender=ERPNext, username=ERPNext, password=1234 etc.)"
+]

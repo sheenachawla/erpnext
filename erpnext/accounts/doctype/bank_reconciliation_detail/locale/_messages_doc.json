@@ -1,0 +1,12 @@
+[
+ "Bank Reconciliation Detail", 
+ "Voucher ID", 
+ "Against Account", 
+ "Posting Date", 
+ "The date at which current entry will get or has actually executed.", 
+ "Cheque Number", 
+ "Cheque Date", 
+ "Debit", 
+ "Credit", 
+ "Clearance Date"
+]

@@ -1,0 +1,21 @@
+[
+ "Sales Order Item", 
+ "Item Code", 
+ "Customer's Item Code", 
+ "Quantity", 
+ "Price List Rate", 
+ "Discount(%)", 
+ "Rate", 
+ "Amount", 
+ "Price List Rate*", 
+ "Basic Rate*", 
+ "Amount*", 
+ "Reserved Warehouse", 
+ "Projected Qty", 
+ "Quotation", 
+ "Item Name", 
+ "Description", 
+ "UOM", 
+ "Page Break", 
+ "Item Tax Rate"
+]

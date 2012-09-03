@@ -1,0 +1,15 @@
+[
+ "Purchase Receipt Item Supplied", 
+ "Reference Name", 
+ "BOM Detail No", 
+ "Item Code", 
+ "Raw Material Item Code", 
+ "Description", 
+ "Required Qty", 
+ "Consumed Qty", 
+ "Rate", 
+ "Conversion Factor", 
+ "Amount", 
+ "Stock Uom", 
+ "Current Stock"
+]

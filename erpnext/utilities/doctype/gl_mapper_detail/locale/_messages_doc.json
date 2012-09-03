@@ -1,0 +1,23 @@
+[
+ "GL Mapper Detail", 
+ "Table Field", 
+ "Account", 
+ "Debit", 
+ "Credit", 
+ "Cost Center", 
+ "Against", 
+ "Remarks", 
+ "Voucher Type", 
+ "Voucher No", 
+ "Posting Date", 
+ "The date at which current entry will get or has actually executed.", 
+ "Transaction Date", 
+ "The date at which current entry is made in system.", 
+ "Aging Date", 
+ "Fiscal Year", 
+ "Against Voucher", 
+ "Against Voucher Type", 
+ "Company", 
+ "Is Opening", 
+ "Is Advance"
+]

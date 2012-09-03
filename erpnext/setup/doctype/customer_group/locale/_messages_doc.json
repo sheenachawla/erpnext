@@ -1,0 +1,15 @@
+[
+ "Customer Group", 
+ "Trash Reason", 
+ "Customer Group Name", 
+ "Parent Customer Group", 
+ "Has Child Node", 
+ "Only leaf nodes are allowed in transaction", 
+ "Yes", 
+ "No", 
+ "Default Price List", 
+ "This Price List will be selected as default for all Customers under this Group.", 
+ "lft", 
+ "rgt", 
+ "old_parent"
+]

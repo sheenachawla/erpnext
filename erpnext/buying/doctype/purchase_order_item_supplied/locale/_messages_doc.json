@@ -1,0 +1,12 @@
+[
+ "Purchase Order Item Supplied", 
+ "Reference Name", 
+ "BOM Detail No", 
+ "Item Code", 
+ "Raw Material Item Code", 
+ "Required Qty", 
+ "Rate", 
+ "Amount", 
+ "Conversion Factor", 
+ "Stock Uom"
+]

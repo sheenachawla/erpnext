@@ -1,0 +1,16 @@
+[
+ "Item Group", 
+ "Item Classification", 
+ "Item Group Name", 
+ "Show in Website", 
+ "Check this if you want to show in website", 
+ "Parent Item Group", 
+ "Has Child Node", 
+ "Only leaf nodes are allowed in transaction", 
+ "Yes", 
+ "No", 
+ "Trash Reason", 
+ "lft", 
+ "rgt", 
+ "old_parent"
+]

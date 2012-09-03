@@ -1,0 +1,12 @@
+[
+ "Sales and Purchase Return Item", 
+ "Item Code", 
+ "Description", 
+ "UOM", 
+ "Rate", 
+ "Qty", 
+ "Returned Qty", 
+ "Serial No", 
+ "Batch No", 
+ "Detail Name"
+]

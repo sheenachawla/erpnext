@@ -1,0 +1,20 @@
+[
+ "Sales Person", 
+ "All Sales Transactions can be tagged against multiple **Sales Persons** so that you can set and monitor targets.", 
+ "Trash Reason", 
+ "Sales Person Name", 
+ "Parent Sales Person", 
+ "Select company name first.", 
+ "Has Child Node", 
+ "Yes", 
+ "No", 
+ "Employee", 
+ "lft", 
+ "rgt", 
+ "old_parent", 
+ "Target Distribution", 
+ "Select Budget Distribution to unevenly distribute targets across months.", 
+ "Sales Person Targets", 
+ "Set targets Item Group-wise for this Sales Person.", 
+ "Target Details1"
+]

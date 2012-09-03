@@ -1,0 +1,18 @@
+[
+ "Workflow Rule Detail", 
+ "Field", 
+ "[]", 
+ "Operator", 
+ "equal", 
+ "not equal", 
+ "greater than", 
+ "greater than equal", 
+ "less than", 
+ "less than equal", 
+ "Value", 
+ "Field from other forms", 
+ "Message when Cond. False", 
+ "Raise Exception", 
+ "Yes", 
+ "No"
+]

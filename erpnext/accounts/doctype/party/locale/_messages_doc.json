@@ -1,0 +1,23 @@
+[
+ "Party", 
+ "Party Type", 
+ "Customer", 
+ "Supplier", 
+ "Customer and Supplier", 
+ "Employee", 
+ "Party Group", 
+ "Territory", 
+ "Default Price List", 
+ "This price list will get fetched in Sales/Purchase transactions of this party", 
+ "Default Currency", 
+ "This currency will get fetched in Sales/Purchase transactions of this party", 
+ "Default Terms and Conditions", 
+ "This Terms and Conditions will get fetched in Sales/Purchase transactions of this party", 
+ "Credit Limit", 
+ "The limit of credit given to customer", 
+ "Credit Days", 
+ "Credit applicable for this period", 
+ "Lead Id", 
+ "Party Details", 
+ "Party's TAX registration numbers (if applicable) or any general information"
+]

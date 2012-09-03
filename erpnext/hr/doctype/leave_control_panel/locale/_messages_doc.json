@@ -1,0 +1,19 @@
+[
+ "Leave Control Panel", 
+ "Employee Type", 
+ "Leave blank if considered for all employee types", 
+ "Branch", 
+ "Leave blank if considered for all branches", 
+ "Department", 
+ "Leave blank if considered for all departments", 
+ "Designation", 
+ "Leave blank if considered for all designations", 
+ "Grade", 
+ "Leave blank if considered for all grades", 
+ "Fiscal Year", 
+ "Leave Type", 
+ "Carry Forward", 
+ "Please select Carry Forward if you also want to include previous fiscal year's balance leaves to this fiscal year", 
+ "New Leaves Allocated (In Days)", 
+ "Allocate"
+]

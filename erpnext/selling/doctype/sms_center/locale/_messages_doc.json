@@ -1,0 +1,20 @@
+[
+ "SMS Center", 
+ "Send To", 
+ "All Contact", 
+ "All Customer Contact", 
+ "All Supplier Contact", 
+ "All Sales Partner Contact", 
+ "All Lead (Open)", 
+ "All Employee (Active)", 
+ "All Sales Person", 
+ "Customer", 
+ "Supplier", 
+ "Department", 
+ "Branch", 
+ "Create Receiver List", 
+ "Receiver List", 
+ "Message", 
+ "Message greater than 160 character will be splitted into multiple mesage", 
+ "Send SMS"
+]
