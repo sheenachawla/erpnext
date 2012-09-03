@@ -16,18 +16,11 @@
 
 from __future__ import unicode_literals
 import webnotes
-from accounts.utils import GLController
+from controllers.accounts import AccountsController
 
-
-class PaymentEntryController(GLController):
+class PaymentEntryController(AccountsController):
 	def validate(self):
 		if self.doc.sales_invoice and self.doc.purchase_invoice:
 			webnotes.msgprint("You can enter either Sales Invoice or Purchase Invoice"
 				, raise_exception=webnotes.ValidationError)
-		
-	def on_submit(self):
-		from accounts.doctype.payment_entry.gl_mapper import gl_mapper
-		self.make_gl_entries(gl_mapper)
-	
-	def on_cancel(self):
-		self.delete_gl_entries()
+		super(PaymentEntryController, self).validate()

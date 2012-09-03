@@ -30,6 +30,7 @@ base_so = {
 	"order_type": "Sales",
 	"currency": "INR",
 	"conversion_rate": 1,
+	"price_list_name": "Standard",
 	"price_list_currency": "INR",
 	"plc_conversion_rate": 1,
 	"__islocal": 1
@@ -57,9 +58,8 @@ class TestSalesOrder(TestBase):
 	
 	def test_duplicate_sales_order_against_po(self):
 		so = base_so.copy()
-		so.update({'po_no': 'PO000001'})
-		so_ctlr = get_controller([so, base_so_item])
-		so_ctlr.submit()
+		so.update({'po_no': 'PO000001', 'docstatus': 1})
+		webnotes.model.insert([so, base_so_item])
 		
 		so_duplicate = base_so.copy()
 		so_duplicate.update({'po_no': 'PO000001'})
@@ -120,9 +120,9 @@ class TestSalesOrder(TestBase):
 	def test_credit_limit(self):
 		webnotes.conn.set_value("Party", "Robert Smith", "credit_limit", 100000)
 		so = base_so.copy()
-		so.update({"grand_total": 200000})
-		so_ctlr = get_controller([so, base_so_item])
-		self.assertRaises(webnotes.ValidationError, so_ctlr.submit)
+		so.update({"grand_total": 200000, 'docstatus': 1})
+		self.assertRaises(webnotes.ValidationError, \
+			webnotes.model.insert, [so, base_so_item])
 		
 	# def test_validate_with_quote(self):
 	# 	# save quotation

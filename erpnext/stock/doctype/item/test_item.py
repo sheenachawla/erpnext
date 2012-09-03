@@ -26,10 +26,11 @@ base_item_group = {
 }
 
 base_item = {
-	'doctype': 'Item', 'item_name': 'test_item', 
+	'doctype': 'Item', 'item_name': 'test_item', 'description': 'Test Item',
 	'item_code': 'test_item', 'item_group': 'Home Series', 'is_stock_item': 'Yes', 
-	'has_serial_no': 'No', 'stock_uom': 'Nos', 'is_sales_item': 'Yes', 'is_purchase_item': 'Yes', 
-	'is_service_item': 'No'
+	'has_serial_no': 'No', 'stock_uom': 'Nos', 'is_sales_item': 'Yes', 
+	'is_purchase_item': 'Yes', 'is_service_item': 'No', 'has_batch_no': 'No',
+	'inspection_required': 'No',
 }
 
 def load_data():
@@ -58,7 +59,8 @@ class TestItem(TestBase):
 		self.assertTrue(webnotes.conn.exists("Item", "Home Desktop 2000"))
 
 	def test_duplicate(self):
-		webnotes.model.insert([{"doctype": "Price List", "name": "Retail"}])
+		webnotes.model.insert([{"doctype": "Price List", "name": "Retail",
+			"price_list_name": "Retail"}])
 		
 		item = base_item.copy()
 		item.update({"name":"Home Desktop 1000"})

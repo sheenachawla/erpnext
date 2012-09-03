@@ -60,7 +60,8 @@ class AccountController(DocListController):
 	def validate_duplicate_account(self):
 		"""Account name must be unique"""
 		if (self.doc.__islocal or not self.doc.name) \
-			and webnotes.conn.exists("Account", {"account_name": self.doc.account_name, "company": self.doc.company}):
+				and webnotes.conn.exists("Account", {"account_name": self.doc.account_name, \
+				"company": self.doc.company}):
 			msgprint("Account Name already exists, please rename", raise_exception=webnotes.NameError)
 				
 	def validate_root_details(self):
@@ -101,9 +102,9 @@ class AccountController(DocListController):
 		if self.check_gle_exists():
 			msgprint("Account with existing transaction can not be converted to group.", 
 				raise_exception=webnotes.ValidationError)
-		elif self.doc.customer or self.doc.supplier or self.doc.account_type:
-			msgprint("Cannot covert to Group because Customer/Supplier/Account Type is selected."
-				, raise_exception=webnotes.ValidationError)
+		elif self.doc.account_type:
+			msgprint("Cannot convert to Group because Account Type is selected.", 
+				raise_exception=webnotes.ValidationError)
 		else:
 			webnotes.conn.set(self.doc, 'group_or_ledger', 'Group')
 			return 1
@@ -112,14 +113,14 @@ class AccountController(DocListController):
 		return webnotes.conn.exists("GL Entry", {"account": self.doc.name})
 
 	def on_update(self):
-		self.update_nsm_model()		
+		self.update_nsm_model()
 
 	def update_nsm_model(self):
 		import webnotes
 		import webnotes.utils.nestedset
-		webnotes.utils.nestedset.update_nsm(self)		
+		webnotes.utils.nestedset.update_nsm(self)
 					
-	def on_trash(self): 
+	def on_trash(self):
 		self.validate_before_trash()
 		# rebuild tree
 		from webnotes.utils.nestedset import update_remove_node

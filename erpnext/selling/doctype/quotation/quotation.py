@@ -34,6 +34,6 @@ class QuotationController(SalesController):
 	def setup(self):
 		self.item_table_fieldname = 'quotation_items'
 	
-	def update_after_submit(self):
-		if self.doc.status == 'Order Lost':
-			self.check_if_nextdoc_exists(['Sales Order Item'], event = 'set order as lost')	
+	def on_update(self):
+		if self.doc.docstatus == 2:
+			self.check_if_nextdoc_exists(['Sales Order Item'])

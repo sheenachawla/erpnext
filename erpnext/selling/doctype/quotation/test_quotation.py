@@ -31,6 +31,7 @@ base_quote = {
 	"order_type": "Sales",
 	"currency": "INR",
 	"conversion_rate": 1,
+	"price_list_name": "Standard",
 	"price_list_currency": "INR",
 	"plc_conversion_rate": 1,
 	"__islocal": 1
@@ -91,19 +92,20 @@ class TestQuotation(TestBase):
 			webnotes.model.insert, [base_quote, base_quote_item])
 
 	def test_order_lost_if_so_exists(self):
-		quote_ctlr = get_controller([base_quote, base_quote_item])
-		quote_ctlr.submit()
+		quote = base_quote.copy()
+		quote.update({"docstatus": 1})
 		
 		# success
-		quote_ctlr.doc.status = 'Order Lost'
-		quote_ctlr.update_after_submit()
+		quote_ctlr = webnotes.model.insert([quote, base_quote_item])
 		
 		# exception as submitted so exists
 		from selling.doctype.sales_order.test_sales_order import \
 			base_so, base_so_item
+		so = base_so.copy()
+		so.update({"docstatus": 1})
 		so_item = base_so_item.copy()
 		so_item.update({"quotation": quote_ctlr.doc.name})
-		get_controller([base_so, so_item]).submit()
+		webnotes.model.insert([so, so_item])
 		
-		quote_ctlr.doc.status = 'Order Lost'
-		self.assertRaises(webnotes.ValidationError, quote_ctlr.update_after_submit)
+		quote_ctlr.doc.docstatus = 2
+		self.assertRaises(webnotes.ValidationError, quote_ctlr.save)

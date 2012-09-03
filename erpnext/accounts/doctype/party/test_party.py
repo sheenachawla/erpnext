@@ -40,7 +40,9 @@ def make_lead():
 		"doctype": "Lead", "name": "LEAD001", "lead_name": "Robert Smith",
 		"status": "Open", "naming_series": "LEAD",
 		"address_line1": "F/102, 247 Park",
-		"mobile_no": "1234567890", "email_id": "email@domain.com"
+		"mobile_no": "1234567890", "email_id": "email@domain.com",
+		"source": "Website", "city": "Test City", "country": "India",
+		"phone": "9090909090"
 	})
 
 def make_parties():
@@ -77,7 +79,10 @@ class TestParty(TestBase):
 				"address_type": "Office",
 				"email_id": "email@domain.com",
 				"is_primary_address": 1,
-				"name": "test_party-Office"
+				"name": "test_party-Office",
+				"city": "Test City",
+				"country": "India",
+				"phone": "9090909090"
 			})
 		)
 		self.assertTrue(

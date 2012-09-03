@@ -67,20 +67,18 @@ class SalesController(DocListController):
 		"""
 		for d in nextdoc_types:
 			nextdoc = webnotes.conn.get_value(d, \
-				{self.doc.doctype.lower(): self.doc.name, 'docstatus': 1}, \
-				['parent', 'parenttype'], as_dict=1)
+				{self.doc.doctype.lower().replace(' ', '_'): self.doc.name, \
+				'docstatus': 1}, ['parent', 'parenttype'], as_dict=1)
 			if nextdoc:
 				msgprint("""Submitted %s: %s exists against this %s. 
 				To %s this document first cancel %s""" % 
 				(nextdoc['parenttype'], nextdoc['parent'], self.doc.doctype, event, \
 				nextdoc['parenttype']), raise_exception=webnotes.ValidationError)
 				
-
 	def validate_items(self):
-		if self.doc.fields.get('order_type'):
+		if self.doc.get('order_type'):
 			for d in self.doclist.get({'parentfield': self.item_table_fieldname}):
 				self.validate_item_type(d.item_code)
-
 				
 	def validate_item_type(self, item_code):
 		item_type = webnotes.conn.get_value('Item', item_code, \
@@ -92,11 +90,25 @@ class SalesController(DocListController):
 			msgprint("Item %s is not a maintenance item" %
 				item_code, raise_exception=webnotes.ValidationError)
 				
-
 	def validate_project(self):
-		if self.doc.project_name:
+		if self.doc.get('project_name'):
 			if webnotes.conn.get_value('Project', self.doc.project_name, \
 					'party') !=  self.doc.party:
 				msgprint("Project: %s does not associate with party: %s" % 
 					(self.doc.project_name, self.doc.party), 
 					raise_exception=webnotes.ValidationError)
+					
+	def calculate_tax_on_item(self):
+		tax_masters = []
+		for d in self.doclist.get({'parentfield': self.item_table_fieldname}):
+			if d.export_amount and d.taxes_and_charges:
+				if d.taxes_and_charges not in tax_masters:
+					tc_acc_doclist = webnotes.model.get('Taxes and Charges', \
+						d.taxes_and_charges).get({'parentfield': 'taxes_and_charges_accounts'})
+					tax_masters[d.taxes_and_charges] = {
+						'total_rate' : sum([d.rate for d in tc_acc_doclist]),
+						'total_amount': sum([d.amount for d in tc_acc_doclist])
+					}
+				d.tax_amount = flt(d.export_amount)*tax_masters[d.taxes_and_charges]\
+					['total_rate']/100 + tax_masters[d.taxes_and_charges]['total_amount']
+				
