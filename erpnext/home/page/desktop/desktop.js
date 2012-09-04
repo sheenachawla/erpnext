@@ -44,22 +44,22 @@ erpnext.desktop.add_classes = function() {
 
 erpnext.desktop.render = function() {
 	var icons = {
-		'Accounts': { gradient: 'blue', sprite: 'account', label: 'Accounts'},
-		'Selling': { gradient: 'green', sprite: 'selling', label: 'Selling'},
-		'Stock': { gradient: 'yellow', sprite: 'stock', label: 'Stock'},
-		'Buying': { gradient: 'red', sprite: 'buying', label: 'Buying'},
-		'Support': { gradient: 'purple', sprite: 'support', label: 'Support'},
-		'HR': { gradient: 'ocean', sprite: 'hr', label: 'Human<br />Resources'},
-		'Projects':	{ gradient: 'violet', sprite: 'project', label: 'Projects'},
-		'Production': { gradient: 'dark-red', sprite: 'production', label: 'Production'},
-		'Website': { gradient: 'leaf-green', sprite: 'website', label: 'Website'},
-		'Activity': { gradient: 'brown', sprite: 'feed', label: 'Activity'},
-		'Setup': { gradient: 'grey', sprite: 'setting', label: 'Setup'},
-		'Dashboard': { gradient: 'bright-green', sprite: 'dashboard', label: 'Dashboard'},
-		'To Do': { gradient: 'bright-yellow', sprite: 'todo', label: 'To Do'},
-		'Messages': { gradient: 'pink', sprite: 'messages', label: 'Messages'},
-		'Calendar': { gradient: 'peacock', sprite: 'calendar', label: 'Calendar'},
-		'Knowledge Base': { gradient: 'ultra-dark-green', sprite: 'kb', label: 'Knowledge<br />Base'}
+		'Accounts': { gradient: 'blue', sprite: 'account', label: wn._("Accounts")},
+		'Selling': { gradient: 'green', sprite: 'selling', label: wn._("Selling")},
+		'Stock': { gradient: 'yellow', sprite: 'stock', label: wn._("Stock")},
+		'Buying': { gradient: 'red', sprite: 'buying', label: wn._("Buying")},
+		'Support': { gradient: 'purple', sprite: 'support', label: wn._("Support")},
+		'HR': { gradient: 'ocean', sprite: 'hr', label: wn._("Human Resources")},
+		'Projects':	{ gradient: 'violet', sprite: 'project', label: wn._("Projects")},
+		'Production': { gradient: 'dark-red', sprite: 'production', label: wn._("Production")},
+		'Website': { gradient: 'leaf-green', sprite: 'website', label: wn._("Website")},
+		'Activity': { gradient: 'brown', sprite: 'feed', label: wn._("Activity")},
+		'Setup': { gradient: 'grey', sprite: 'setting', label: wn._("Setup")},
+		'Dashboard': { gradient: 'bright-green', sprite: 'dashboard', label: wn._("Dashboard")},
+		'To Do': { gradient: 'bright-yellow', sprite: 'todo', label: wn._("To Do")},
+		'Messages': { gradient: 'pink', sprite: 'messages', label: wn._("Messages")},
+		'Calendar': { gradient: 'peacock', sprite: 'calendar', label: wn._("Calendar")},
+		'Knowledge Base': { gradient: 'ultra-dark-green', sprite: 'kb', label: wn._("Knowledge Base")}
 	}
 	
 

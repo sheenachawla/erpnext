@@ -22,37 +22,41 @@ erpnext.toolbar.setup = function() {
 	erpnext.toolbar.add_modules();
 	
 	// profile
-	$('#toolbar-user').append('<li><a href="#!profile-settings">Profile Settings</a></li>');
+	$('#toolbar-user').append(repl('<li><a href="#!profile-settings">%(p)s</a></li>', {
+		p: wn._("Profile Settings")
+	}));
 
-	$('.navbar .pull-right').append('\
-		<li><a href="#!messages" title="Unread Messages"><span class="navbar-new-comments"></span></a></li>');
+	$('.navbar .pull-right').append(repl('<li><a href="#!messages" title="%(unread)s">\
+		<span class="navbar-new-comments"></span></a></li>', {unread: wn._("Unread Messages") }));
 
 	// help
-	$('.navbar .pull-right').prepend('<li class="dropdown">\
+	$('.navbar .pull-right').prepend(repl('<li class="dropdown">\
 		<a class="dropdown-toggle" data-toggle="dropdown" href="#" \
-			onclick="return false;">Help<b class="caret"></b></a>\
+			onclick="return false;">%(help)s<b class="caret"></b></a>\
 		<ul class="dropdown-menu" id="toolbar-help">\
-		</ul></li>')
+		</ul></li>', {help: wn._("Help")}))
 
-	$('#toolbar-help').append('<li><a href="https://erpnext.com/manual" target="_blank">\
-		Documentation</a></li>')
+	$('#toolbar-help').append(repl('<li><a href="https://erpnext.com/manual" target="_blank">\
+		%(doc)s</a></li>', {doc: wn._("Documentation")}))
 
-	$('#toolbar-help').append('<li><a href="http://groups.google.com/group/erpnext-user-forum" target="_blank">\
-		Forum</a></li>')
+	$('#toolbar-help').append(repl('<li><a href="http://groups.google.com/group/erpnext-user-forum" \
+		target="_blank">%(forum)s</a></li>', {forum: wn._("Forum")}))
 
-	$('#toolbar-help').append('<li><a href="http://www.providesupport.com?messenger=iwebnotes" target="_blank">\
-		Live Chat (Office Hours)</a></li>')
+	$('#toolbar-help').append(repl('<li><a href="http://www.providesupport.com?messenger=iwebnotes" \
+		target="_blank">%(chat)s</a></li>',{chat: wn._("Live Chat (Office Hours)")}));
 
 	erpnext.toolbar.set_new_comments();
 }
 
 erpnext.toolbar.add_modules = function() {
-	$('<li class="dropdown">\
+	$(repl('<li class="dropdown">\
 		<a class="dropdown-toggle" data-toggle="dropdown" href="#"\
-			onclick="return false;">Modules<b class="caret"></b></a>\
+			onclick="return false;">%(modules)s<b class="caret"></b></a>\
 		<ul class="dropdown-menu modules">\
 		</ul>\
-		</li>').prependTo('.navbar .nav:first');
+		</li>', {
+			modules: wn._("Modules")
+		})).prependTo('.navbar .nav:first');
 	
 	// if no modules list then show all
 	if(wn.boot.modules_list && typeof(wn.boot.modules_list) == 'string') {
@@ -69,7 +73,7 @@ erpnext.toolbar.add_modules = function() {
 			args = {
 				module: m,
 				module_page: erpnext.modules[m],
-				module_label: m=='HR' ? 'Human Resources' : m
+				module_label: m=='HR' ? wn._("Human Resources") : wn._(m)
 			}
 
 			$('.navbar .modules').append(repl('<li><a href="#!%(module_page)s" \
@@ -79,16 +83,15 @@ erpnext.toolbar.add_modules = function() {
 
 	// dasboard for accounts system manager
 	if(user_roles.indexOf("Accounts Manager")!=-1) {
-		$('.navbar .modules').append('<li><a href="#!dashboard" \
-			data-module="Dashboard">Dashboard</a></li>');
+		$('.navbar .modules').append(repl('<li><a href="#!dashboard" \
+			data-module="Dashboard">%(dashboard)s</a></li>', { dashboard: wn._("Dashboard") }));
 	}
 	
 	// setup for system manager
 	if(user_roles.indexOf("System Manager")!=-1) {
-		$('.navbar .modules').append('<li class="divider"></li>\
-		<li><a href="#!Setup" data-module="Setup">Setup</a></li>');
+		$('.navbar .modules').append(repl('<li class="divider"></li>\
+		<li><a href="#!Setup" data-module="Setup">%(setup)s</a></li>', {setup: wn._("Setup")}));
 	}
-	
 }
 
 erpnext.toolbar.set_new_comments = function(new_comments) {
@@ -97,7 +100,7 @@ erpnext.toolbar.set_new_comments = function(new_comments) {
 		navbar_nc.text(new_comments.length);
 		navbar_nc.addClass('navbar-new-comments-true')
 		$.each(new_comments, function(i, v) {
-			var msg = 'New Message: ' + (v[1].length<=100 ? v[1] : (v[1].substr(0, 100) + "..."));
+			var msg = wn._("New Message") + ": " + (v[1].length<=100 ? v[1] : (v[1].substr(0, 100) + "..."));
 			var id = v[0].replace('/', '-');
 			if(!$('#' + id)[0]) { 
 				var alert_msg = show_alert(msg);

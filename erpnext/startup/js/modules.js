@@ -20,7 +20,7 @@ erpnext.module_page.make = function(module, wrapper) {
 	var items = {};
 	wn.ui.make_app_page({
 		parent: wrapper,
-		title: module,
+		title: wn._(module),
 		single_column: true
 	});
 
@@ -42,7 +42,7 @@ erpnext.module_page.make = function(module, wrapper) {
 	var make_section = function(name) {
 		if(!items[name].length) return;
 		
-		$(repl('<h4>%(title)s</h4><br><div class="%(name)s"></div><hr>', {title: toTitle(name), name: name}))
+		$(repl('<h4>%(title)s</h4><br><div class="%(name)s"></div><hr>', {title: wn._(toTitle(name)), name: name}))
 			.appendTo($(wrapper).find('.layout-main'));
 		
 		var $body = $(wrapper).find('.' + name);
@@ -103,7 +103,7 @@ erpnext.module_page.make = function(module, wrapper) {
 			<div style="clear: both;"></div>\
 			</div>', {
 				icon: icons[v[0]],
-				title: v[1],
+				title: wn._(v[1]),
 				progress: progress,
 				route: repl(routes[v[0]], {name: v[1], doctype: v[2]})
 			})).appendTo(parent);

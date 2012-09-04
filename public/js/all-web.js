@@ -243,7 +243,8 @@ wn.request.call({args:args,success:opts.callback,error:opts.error,btn:opts.btn,f
 wn.provide('wn.views');wn.provide('wn.contents');if(!console){var console={log:function(txt){}}}
 $(document).ready(function(){wn.versions.check();wn.provide('wn.app');$.extend(wn.app,new wn.Application());});wn.Application=Class.extend({init:function(){var me=this;if(window.app){wn.call({method:'startup',callback:function(r,rt){wn.provide('wn.boot');wn.boot=r;if(wn.boot.profile.name=='Guest'){window.location='index.html';return;}
 me.startup();}})}else{this.startup();}},startup:function(){this.load_bootinfo();this.make_page_container();this.make_nav_bar();this.set_favicon();$(document).trigger('startup');if(wn.boot){wn.route();}
-$(document).trigger('app_ready');},load_bootinfo:function(){if(wn.boot){wn.model.sync(wn.boot.docs);wn.control_panel=wn.boot.control_panel;this.set_globals();}else{this.set_as_guest();}},set_globals:function(){profile=wn.boot.profile;user=wn.boot.profile.name;user_fullname=wn.user_info(user).fullname;user_defaults=profile.defaults;user_roles=profile.roles;user_email=profile.email;sys_defaults=wn.boot.sysdefaults;},set_as_guest:function(){profile={name:'Guest'};user='Guest';user_fullname='Guest';user_defaults={};user_roles=['Guest'];user_email='';sys_defaults={};},make_page_container:function(){wn.container=new wn.views.Container();wn.views.make_403();wn.views.make_404();},make_nav_bar:function(){if(wn.boot){wn.container.wntoolbar=new wn.ui.toolbar.Toolbar();}},logout:function(){var me=this;me.logged_out=true;wn.call({method:'logout',callback:function(r){if(r.exc){console.log(r.exc);}
+$(document).trigger('app_ready');},load_bootinfo:function(){if(wn.boot){wn.model.sync(wn.boot.docs);wn.control_panel=wn.boot.control_panel;if(wn.boot.__messages){$.extend(wn._messages,wn.boot.__messages);}
+this.set_globals();}else{this.set_as_guest();}},set_globals:function(){profile=wn.boot.profile;user=wn.boot.profile.name;user_fullname=wn.user_info(user).fullname;user_defaults=profile.defaults;user_roles=profile.roles;user_email=profile.email;sys_defaults=wn.boot.sysdefaults;},set_as_guest:function(){profile={name:'Guest'};user='Guest';user_fullname='Guest';user_defaults={};user_roles=['Guest'];user_email='';sys_defaults={};},make_page_container:function(){wn.container=new wn.views.Container();wn.views.make_403();wn.views.make_404();},make_nav_bar:function(){if(wn.boot){wn.container.wntoolbar=new wn.ui.toolbar.Toolbar();}},logout:function(){var me=this;me.logged_out=true;wn.call({method:'logout',callback:function(r){if(r.exc){console.log(r.exc);}
 me.redirect_to_login();}})},redirect_to_login:function(){window.location.href='index.html';},set_favicon:function(){var link=$('link[type="image/x-icon"]').remove().attr("href");var favicon='\
    <link rel="shortcut icon" href="'+link+'" type="image/x-icon"> \
    <link rel="icon" href="'+link+'" type="image/x-icon">'
@@ -648,11 +649,11 @@ wn.ui.toolbar.Toolbar=Class.extend({init:function(){this.make();this.make_home()
     onclick="return false;">%(document)s<b class="caret"></b></a>\
    <ul class="dropdown-menu" id="toolbar-document">\
     <li><a href="#" onclick="return wn.ui.toolbar.new_dialog.show();">\
-     <i class="icon-plus"></i>%(new)s</a></li>\
+     <i class="icon-plus"></i> %(new)s</a></li>\
     <li><a href="#" onclick="return wn.ui.toolbar.search.show();">\
-     <i class="icon-search"></i>%(search)s</a></li>\
+     <i class="icon-search"></i> %(search)s</a></li>\
     <li><a href="#" onclick="return wn.ui.toolbar.report.show();">\
-     <i class="icon-list"></i>%(report)s</a></li>\
+     <i class="icon-list"></i> %(report)s</a></li>\
    </ul>\
   </li>',{"document":wn._("Document"),"new":wn._("New"),"search":wn._("Search"),"report":wn._("Report")}));},make_tools:function(){$('.navbar .nav:first').append(repl('<li class="dropdown">\
    <a class="dropdown-toggle" data-toggle="dropdown" href="#" \
@@ -661,7 +662,7 @@ wn.ui.toolbar.Toolbar=Class.extend({init:function(){this.make();this.make_home()
     <li><a href="#" onclick="return wn.ui.toolbar.clear_cache();">%(clear_cache)s</a></li>\
     <li><a href="#" onclick="return wn.ui.toolbar.show_about();">%(about)s</a></li>\
    </ul>\
-  </li>'),{"clear_cache":wn._("Clear Cache & Refresh"),"about":wn._("About")});if(has_common(user_roles,['Administrator','System Manager'])){$('#toolbar-tools').append(repl('<li><a href="#" \
+  </li>',{"clear_cache":wn._("Clear Cache & Refresh"),"about":wn._("About")}));if(has_common(user_roles,['Administrator','System Manager'])){$('#toolbar-tools').append(repl('<li><a href="#" \
     onclick="return wn.ui.toolbar.download_backup();">\
     %(download)s</a></li>',{"download":wn._("Download Backup")}));}},set_user_name:function(){var fn=user_fullname;if(fn.length>15)fn=fn.substr(0,12)+'...';$('#toolbar-user-link').html(fn+'<b class="caret"></b>');},make_logout:function(){$('#toolbar-user').append(repl('<li><a href="#" onclick="return wn.app.logout();">\
    %(logout)s</a></li>',{"logout":wn._("Logout")}));}});wn.ui.toolbar.clear_cache=function(){localStorage&&localStorage.clear();$c('webnotes.session_cache.clear',{},function(r,rt){if(!r.exc){show_alert(r.message);location.reload();}});return false;}
@@ -826,6 +827,7 @@ if(errfld.length)msgprint('<b>Mandatory fields required in '+
  *	erpnext/startup/startup.js
  */
 var current_module;var is_system_manager=0;wn.provide('erpnext.startup');erpnext.modules={'Selling':'selling-home','Accounts':'accounts-home','Stock':'stock-home','Buying':'buying-home','Support':'support-home','Projects':'projects-home','Production':'production-home','Website':'website-home','HR':'hr-home','Setup':'Setup','Activity':'activity','To Do':'todo','Calendar':'calendar','Messages':'messages','Knowledge Base':'questions','Dashboard':'dashboard'}
+erpnext.module_names=[wn._("Accounts"),wn._("Setup"),wn._("Stock"),wn._("Selling"),wn._("Buying"),wn._("Production"),wn._("Projects"),wn._("Support"),wn._("Human Resources"),wn._("Knowledge Base"),wn._("Calendar"),wn._("To Do"),wn._("Activity"),wn._("Messages"),wn._("Dashboard"),wn._("Website")]
 wn.provide('wn.modules');$.extend(wn.modules,erpnext.modules);wn.modules['Core']='Setup';erpnext.startup.set_globals=function(){if(inList(user_roles,'System Manager'))is_system_manager=1;}
 erpnext.startup.start=function(){console.log('Starting up...');$('#startup_div').html('Starting up...').toggle(true);erpnext.startup.set_globals();if(user!='Guest'){if(wn.boot.user_background){erpnext.set_user_background(wn.boot.user_background);}
 wn.boot.profile.allow_modules=wn.boot.profile.allow_modules.concat(['To Do','Knowledge Base','Calendar','Activity','Messages'])

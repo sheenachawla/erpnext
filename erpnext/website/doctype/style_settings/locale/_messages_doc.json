@@ -3,7 +3,6 @@
  "Set your background color, font and image (tiled)", 
  "Background Image", 
  "If image is selected, color will be ignored (attach first)", 
- "attach_files:", 
  "Background Color", 
  "Solid background color (default light gray)", 
  "Font", 

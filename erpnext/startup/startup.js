@@ -38,6 +38,27 @@ erpnext.modules = {
 	'Dashboard': 'dashboard'
 }
 
+// for tranlsation
+erpnext.module_names = [
+	wn._("Accounts"),
+	wn._("Setup"),
+	wn._("Stock"),
+	wn._("Selling"),
+	wn._("Buying"),
+	wn._("Production"),
+	wn._("Projects"),
+	wn._("Support"),
+	wn._("Human Resources"),
+	wn._("Knowledge Base"),
+	wn._("Calendar"),
+	wn._("To Do"),
+	wn._("Activity"),
+	wn._("Messages"),
+	wn._("Dashboard"),
+	wn._("Website")
+]
+
+
 // wn.modules is used in breadcrumbs for getting module home page
 wn.provide('wn.modules');
 $.extend(wn.modules, erpnext.modules);

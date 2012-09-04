@@ -317,7 +317,8 @@ wn.request.call({args:args,success:opts.callback,error:opts.error,btn:opts.btn,f
 wn.provide('wn.views');wn.provide('wn.contents');if(!console){var console={log:function(txt){}}}
 $(document).ready(function(){wn.versions.check();wn.provide('wn.app');$.extend(wn.app,new wn.Application());});wn.Application=Class.extend({init:function(){var me=this;if(window.app){wn.call({method:'startup',callback:function(r,rt){wn.provide('wn.boot');wn.boot=r;if(wn.boot.profile.name=='Guest'){window.location='index.html';return;}
 me.startup();}})}else{this.startup();}},startup:function(){this.load_bootinfo();this.make_page_container();this.make_nav_bar();this.set_favicon();$(document).trigger('startup');if(wn.boot){wn.route();}
-$(document).trigger('app_ready');},load_bootinfo:function(){if(wn.boot){wn.model.sync(wn.boot.docs);wn.control_panel=wn.boot.control_panel;this.set_globals();}else{this.set_as_guest();}},set_globals:function(){profile=wn.boot.profile;user=wn.boot.profile.name;user_fullname=wn.user_info(user).fullname;user_defaults=profile.defaults;user_roles=profile.roles;user_email=profile.email;sys_defaults=wn.boot.sysdefaults;},set_as_guest:function(){profile={name:'Guest'};user='Guest';user_fullname='Guest';user_defaults={};user_roles=['Guest'];user_email='';sys_defaults={};},make_page_container:function(){wn.container=new wn.views.Container();wn.views.make_403();wn.views.make_404();},make_nav_bar:function(){if(wn.boot){wn.container.wntoolbar=new wn.ui.toolbar.Toolbar();}},logout:function(){var me=this;me.logged_out=true;wn.call({method:'logout',callback:function(r){if(r.exc){console.log(r.exc);}
+$(document).trigger('app_ready');},load_bootinfo:function(){if(wn.boot){wn.model.sync(wn.boot.docs);wn.control_panel=wn.boot.control_panel;if(wn.boot.__messages){$.extend(wn._messages,wn.boot.__messages);}
+this.set_globals();}else{this.set_as_guest();}},set_globals:function(){profile=wn.boot.profile;user=wn.boot.profile.name;user_fullname=wn.user_info(user).fullname;user_defaults=profile.defaults;user_roles=profile.roles;user_email=profile.email;sys_defaults=wn.boot.sysdefaults;},set_as_guest:function(){profile={name:'Guest'};user='Guest';user_fullname='Guest';user_defaults={};user_roles=['Guest'];user_email='';sys_defaults={};},make_page_container:function(){wn.container=new wn.views.Container();wn.views.make_403();wn.views.make_404();},make_nav_bar:function(){if(wn.boot){wn.container.wntoolbar=new wn.ui.toolbar.Toolbar();}},logout:function(){var me=this;me.logged_out=true;wn.call({method:'logout',callback:function(r){if(r.exc){console.log(r.exc);}
 me.redirect_to_login();}})},redirect_to_login:function(){window.location.href='index.html';},set_favicon:function(){var link=$('link[type="image/x-icon"]').remove().attr("href");var favicon='\
    <link rel="shortcut icon" href="'+link+'" type="image/x-icon"> \
    <link rel="icon" href="'+link+'" type="image/x-icon">'
@@ -668,11 +669,11 @@ wn.ui.toolbar.Toolbar=Class.extend({init:function(){this.make();this.make_home()
     onclick="return false;">%(document)s<b class="caret"></b></a>\
    <ul class="dropdown-menu" id="toolbar-document">\
     <li><a href="#" onclick="return wn.ui.toolbar.new_dialog.show();">\
-     <i class="icon-plus"></i>%(new)s</a></li>\
+     <i class="icon-plus"></i> %(new)s</a></li>\
     <li><a href="#" onclick="return wn.ui.toolbar.search.show();">\
-     <i class="icon-search"></i>%(search)s</a></li>\
+     <i class="icon-search"></i> %(search)s</a></li>\
     <li><a href="#" onclick="return wn.ui.toolbar.report.show();">\
-     <i class="icon-list"></i>%(report)s</a></li>\
+     <i class="icon-list"></i> %(report)s</a></li>\
    </ul>\
   </li>',{"document":wn._("Document"),"new":wn._("New"),"search":wn._("Search"),"report":wn._("Report")}));},make_tools:function(){$('.navbar .nav:first').append(repl('<li class="dropdown">\
    <a class="dropdown-toggle" data-toggle="dropdown" href="#" \
@@ -681,7 +682,7 @@ wn.ui.toolbar.Toolbar=Class.extend({init:function(){this.make();this.make_home()
     <li><a href="#" onclick="return wn.ui.toolbar.clear_cache();">%(clear_cache)s</a></li>\
     <li><a href="#" onclick="return wn.ui.toolbar.show_about();">%(about)s</a></li>\
    </ul>\
-  </li>'),{"clear_cache":wn._("Clear Cache & Refresh"),"about":wn._("About")});if(has_common(user_roles,['Administrator','System Manager'])){$('#toolbar-tools').append(repl('<li><a href="#" \
+  </li>',{"clear_cache":wn._("Clear Cache & Refresh"),"about":wn._("About")}));if(has_common(user_roles,['Administrator','System Manager'])){$('#toolbar-tools').append(repl('<li><a href="#" \
     onclick="return wn.ui.toolbar.download_backup();">\
     %(download)s</a></li>',{"download":wn._("Download Backup")}));}},set_user_name:function(){var fn=user_fullname;if(fn.length>15)fn=fn.substr(0,12)+'...';$('#toolbar-user-link').html(fn+'<b class="caret"></b>');},make_logout:function(){$('#toolbar-user').append(repl('<li><a href="#" onclick="return wn.app.logout();">\
    %(logout)s</a></li>',{"logout":wn._("Logout")}));}});wn.ui.toolbar.clear_cache=function(){localStorage&&localStorage.clear();$c('webnotes.session_cache.clear',{},function(r,rt){if(!r.exc){show_alert(r.message);location.reload();}});return false;}
@@ -1107,6 +1108,7 @@ var getchildren=LocalDB.getchildren;var createLocal=LocalDB.create;
  *	erpnext/startup/startup.js
  */
 var current_module;var is_system_manager=0;wn.provide('erpnext.startup');erpnext.modules={'Selling':'selling-home','Accounts':'accounts-home','Stock':'stock-home','Buying':'buying-home','Support':'support-home','Projects':'projects-home','Production':'production-home','Website':'website-home','HR':'hr-home','Setup':'Setup','Activity':'activity','To Do':'todo','Calendar':'calendar','Messages':'messages','Knowledge Base':'questions','Dashboard':'dashboard'}
+erpnext.module_names=[wn._("Accounts"),wn._("Setup"),wn._("Stock"),wn._("Selling"),wn._("Buying"),wn._("Production"),wn._("Projects"),wn._("Support"),wn._("Human Resources"),wn._("Knowledge Base"),wn._("Calendar"),wn._("To Do"),wn._("Activity"),wn._("Messages"),wn._("Dashboard"),wn._("Website")]
 wn.provide('wn.modules');$.extend(wn.modules,erpnext.modules);wn.modules['Core']='Setup';erpnext.startup.set_globals=function(){if(inList(user_roles,'System Manager'))is_system_manager=1;}
 erpnext.startup.start=function(){console.log('Starting up...');$('#startup_div').html('Starting up...').toggle(true);erpnext.startup.set_globals();if(user!='Guest'){if(wn.boot.user_background){erpnext.set_user_background(wn.boot.user_background);}
 wn.boot.profile.allow_modules=wn.boot.profile.allow_modules.concat(['To Do','Knowledge Base','Calendar','Activity','Messages'])
@@ -1135,8 +1137,8 @@ erpnext.hide_naming_series=function(){if(cur_frm.fields_dict.naming_series){hide
 /*
  *	erpnext/startup/js/modules.js
  */
-wn.provide('erpnext.module_page');erpnext.module_page.make=function(module,wrapper){var items={};wn.ui.make_app_page({parent:wrapper,title:module,single_column:true});wn.call({method:'core.doctype.module_def.module_def.get_items',args:{module:module},callback:function(r){items=r.message;make_section('transaction');make_section('master');make_section('tool');make_section('setup');make_section('report');}})
-var make_section=function(name){if(!items[name].length)return;$(repl('<h4>%(title)s</h4><br><div class="%(name)s"></div><hr>',{title:toTitle(name),name:name})).appendTo($(wrapper).find('.layout-main'));var $body=$(wrapper).find('.'+name);var maxx=Math.max.apply(this,$.map(items[name],function(v){if(v[0]=='DocType'){var m=0;$.each(v[2],function(i,count){m=m+count});return m;};}));$.each(items[name],function(i,v){make_item($body,v,name,parseInt(maxx));});}
+wn.provide('erpnext.module_page');erpnext.module_page.make=function(module,wrapper){var items={};wn.ui.make_app_page({parent:wrapper,title:wn._(module),single_column:true});wn.call({method:'core.doctype.module_def.module_def.get_items',args:{module:module},callback:function(r){items=r.message;make_section('transaction');make_section('master');make_section('tool');make_section('setup');make_section('report');}})
+var make_section=function(name){if(!items[name].length)return;$(repl('<h4>%(title)s</h4><br><div class="%(name)s"></div><hr>',{title:wn._(toTitle(name)),name:name})).appendTo($(wrapper).find('.layout-main'));var $body=$(wrapper).find('.'+name);var maxx=Math.max.apply(this,$.map(items[name],function(v){if(v[0]=='DocType'){var m=0;$.each(v[2],function(i,count){m=m+count});return m;};}));$.each(items[name],function(i,v){make_item($body,v,name,parseInt(maxx));});}
 var make_item=function(parent,v,section_name,maxx){var icons={"DocType":"icon-pencil","Single":"icon-cog","Page":"icon-cog","Report":"icon-th"};if(section_name=='master'){icons.DocType="icon-flag";}
 var routes={"DocType":"#List/%(name)s","Single":"#Form/%(name)s","Page":"#%(name)s","Report":"#Reports/%(doctype)s/%(name)s"}
 var progress='';if(v[0]=='DocType'&&maxx!=NaN){var progress=repl('<div style="width: 60%; float: left;">\
@@ -1151,40 +1153,39 @@ $(repl('<div style="margin: 6px 0px; min-height: 40px;"> <div style="width: 30%;
    <b><a href="%(route)s">%(title)s</a></b></div>\
    %(progress)s\
    <div style="clear: both;"></div>\
-   </div>',{icon:icons[v[0]],title:v[1],progress:progress,route:repl(routes[v[0]],{name:v[1],doctype:v[2]})})).appendTo(parent);}}
+   </div>',{icon:icons[v[0]],title:wn._(v[1]),progress:progress,route:repl(routes[v[0]],{name:v[1],doctype:v[2]})})).appendTo(parent);}}
 /*
  *	erpnext/startup/js/toolbar.js
  */
-wn.provide('erpnext.toolbar');erpnext.toolbar.setup=function(){erpnext.toolbar.add_modules();$('#toolbar-user').append('<li><a href="#!profile-settings">Profile Settings</a></li>');$('.navbar .pull-right').append('\
-  <li><a href="#!messages" title="Unread Messages"><span class="navbar-new-comments"></span></a></li>');$('.navbar .pull-right').prepend('<li class="dropdown">\
+wn.provide('erpnext.toolbar');erpnext.toolbar.setup=function(){erpnext.toolbar.add_modules();$('#toolbar-user').append(repl('<li><a href="#!profile-settings">%(p)s</a></li>',{p:wn._("Profile Settings")}));$('.navbar .pull-right').append(repl('<li><a href="#!messages" title="%(unread)s">\
+  <span class="navbar-new-comments"></span></a></li>',{unread:wn._("Unread Messages")}));$('.navbar .pull-right').prepend(repl('<li class="dropdown">\
   <a class="dropdown-toggle" data-toggle="dropdown" href="#" \
-   onclick="return false;">Help<b class="caret"></b></a>\
+   onclick="return false;">%(help)s<b class="caret"></b></a>\
   <ul class="dropdown-menu" id="toolbar-help">\
-  </ul></li>')
-$('#toolbar-help').append('<li><a href="https://erpnext.com/manual" target="_blank">\
-  Documentation</a></li>')
-$('#toolbar-help').append('<li><a href="http://groups.google.com/group/erpnext-user-forum" target="_blank">\
-  Forum</a></li>')
-$('#toolbar-help').append('<li><a href="http://www.providesupport.com?messenger=iwebnotes" target="_blank">\
-  Live Chat (Office Hours)</a></li>')
-erpnext.toolbar.set_new_comments();}
-erpnext.toolbar.add_modules=function(){$('<li class="dropdown">\
+  </ul></li>',{help:wn._("Help")}))
+$('#toolbar-help').append(repl('<li><a href="https://erpnext.com/manual" target="_blank">\
+  %(doc)s</a></li>',{doc:wn._("Documentation")}))
+$('#toolbar-help').append(repl('<li><a href="http://groups.google.com/group/erpnext-user-forum" \
+  target="_blank">%(forum)s</a></li>',{forum:wn._("Forum")}))
+$('#toolbar-help').append(repl('<li><a href="http://www.providesupport.com?messenger=iwebnotes" \
+  target="_blank">%(chat)s</a></li>',{chat:wn._("Live Chat (Office Hours)")}));erpnext.toolbar.set_new_comments();}
+erpnext.toolbar.add_modules=function(){$(repl('<li class="dropdown">\
   <a class="dropdown-toggle" data-toggle="dropdown" href="#"\
-   onclick="return false;">Modules<b class="caret"></b></a>\
+   onclick="return false;">%(modules)s<b class="caret"></b></a>\
   <ul class="dropdown-menu modules">\
   </ul>\
-  </li>').prependTo('.navbar .nav:first');if(wn.boot.modules_list&&typeof(wn.boot.modules_list)=='string'){wn.boot.modules_list=JSON.parse(wn.boot.modules_list);}
+  </li>',{modules:wn._("Modules")})).prependTo('.navbar .nav:first');if(wn.boot.modules_list&&typeof(wn.boot.modules_list)=='string'){wn.boot.modules_list=JSON.parse(wn.boot.modules_list);}
 else
 wn.boot.modules_list=keys(erpnext.modules).sort();for(var i in wn.boot.modules_list){var m=wn.boot.modules_list[i]
-if(m!='Setup'&&wn.boot.profile.allow_modules.indexOf(m)!=-1){args={module:m,module_page:erpnext.modules[m],module_label:m=='HR'?'Human Resources':m}
+if(m!='Setup'&&wn.boot.profile.allow_modules.indexOf(m)!=-1){args={module:m,module_page:erpnext.modules[m],module_label:m=='HR'?wn._("Human Resources"):wn._(m)}
 $('.navbar .modules').append(repl('<li><a href="#!%(module_page)s" \
     data-module="%(module)s">%(module_label)s</a></li>',args));}}
-if(user_roles.indexOf("Accounts Manager")!=-1){$('.navbar .modules').append('<li><a href="#!dashboard" \
-   data-module="Dashboard">Dashboard</a></li>');}
-if(user_roles.indexOf("System Manager")!=-1){$('.navbar .modules').append('<li class="divider"></li>\
-  <li><a href="#!Setup" data-module="Setup">Setup</a></li>');}}
+if(user_roles.indexOf("Accounts Manager")!=-1){$('.navbar .modules').append(repl('<li><a href="#!dashboard" \
+   data-module="Dashboard">%(dashboard)s</a></li>',{dashboard:wn._("Dashboard")}));}
+if(user_roles.indexOf("System Manager")!=-1){$('.navbar .modules').append(repl('<li class="divider"></li>\
+  <li><a href="#!Setup" data-module="Setup">%(setup)s</a></li>',{setup:wn._("Setup")}));}}
 erpnext.toolbar.set_new_comments=function(new_comments){var navbar_nc=$('.navbar-new-comments');if(new_comments&&new_comments.length>0){navbar_nc.text(new_comments.length);navbar_nc.addClass('navbar-new-comments-true')
-$.each(new_comments,function(i,v){var msg='New Message: '+(v[1].length<=100?v[1]:(v[1].substr(0,100)+"..."));var id=v[0].replace('/','-');if(!$('#'+id)[0]){var alert_msg=show_alert(msg);alert_msg.attr('id',id);}})}else{navbar_nc.removeClass('navbar-new-comments-true');navbar_nc.text(0);}}
+$.each(new_comments,function(i,v){var msg=wn._("New Message")+": "+(v[1].length<=100?v[1]:(v[1].substr(0,100)+"..."));var id=v[0].replace('/','-');if(!$('#'+id)[0]){var alert_msg=show_alert(msg);alert_msg.attr('id',id);}})}else{navbar_nc.removeClass('navbar-new-comments-true');navbar_nc.text(0);}}
 /*
  *	erpnext/startup/js/feature_setup.js
  */
