@@ -99,11 +99,44 @@ class TestPurchaseRequest(TestBase):
 		# pprint.pprint(sqcon.doclist)
 		
 	def test_version(self):
+		# note: time.sleep is used because mysql does not allow saving time in
+		# milliseconds. so, to differentiate between different versions,
+		# store it after each second
+		import time
+		
 		from datetime import timedelta
+		from webnotes.model.versions import get_version, serialize, deserialize, diff
 		prcon = webnotes.model.insert([base_purchase_request,
 			base_purchase_request_item])
 		
-		prcon.doc.posting_date = add_days(now_datetime().date(), 1)
-		prcon.doclist[1].update({"qty": 5})
-		prcon.add_child(base_purchase_request_item)
+		versions = []
+		
+		# create arbitrary number of records
+		for i in xrange(3):
+			versions.append([prcon.doc.modified, prcon.doclist.copy()])
+			
+			time.sleep(1)
+			
+			prcon.doc.posting_date = add_days(prcon.doc.posting_date, 1)
+			prcon.doclist[1].update({"qty": i+5})
+			prcon.add_child(base_purchase_request_item)
+			prcon.save()
+		
+		# test if versions are merged properly
+		for v in versions:
+			# check if version exists
+			self.assertTrue(webnotes.conn.exists("Version",
+				{"doc_type": prcon.doc.doctype, "doc_name": prcon.doc.name,
+				"doc_modified": v[0]}))
+			
+			# check if the recreated doclist is same as that one in the versions list
+			self.assertEqualDoclist(get_version(prcon.doc.doctype, prcon.doc.name, v[0]),
+				v[1], ignore=["modified"])
+			
+		# check if just saving without change should not create a version
+		time.sleep(1)
+		modified = prcon.doc.modified
 		prcon.save()
+		self.assertFalse(webnotes.conn.exists("Version",
+			{"doc_type": prcon.doc.doctype, "doc_name": prcon.doc.name,
+			"doc_modified": modified}))
