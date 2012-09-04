@@ -26,10 +26,6 @@
  "If the account is frozen, entries are allowed for the \"Account Manager\" only.", 
  "No", 
  "Yes", 
- "Credit Days", 
- "Credit Limit", 
- "Customer", 
- "Supplier", 
  "Old Parent", 
  "Lft", 
  "Rgt"
