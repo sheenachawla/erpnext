@@ -1,5 +1,8 @@
 [
  "Blog", 
+ "Draft", 
+ "Published", 
+ "Not Published", 
  "Title", 
  "Published", 
  "Content", 
