@@ -122,12 +122,6 @@ class CompanyController(DocListController):
 							['SHE Cess on TDS','Duties and Taxes','Ledger','No','Tax','Credit',self.doc.name,'1.00'],
 							['Professional Tax','Duties and Taxes','Ledger','No','Chargeable','Credit',self.doc.name,''],
 							['VAT','Duties and Taxes','Ledger','No','Chargeable','Credit',self.doc.name,''],
-							['TDS (Advertisement)','Duties and Taxes','Ledger','No','Chargeable','Credit',self.doc.name,''],
-							['TDS (Commission)','Duties and Taxes','Ledger','No','Chargeable','Credit',self.doc.name,''],
-							['TDS (Contractor)','Duties and Taxes','Ledger','No','Chargeable','Credit',self.doc.name,''],
-							['TDS (Interest)','Duties and Taxes','Ledger','No','Chargeable','Credit',self.doc.name,''],
-							['TDS (Rent)','Duties and Taxes','Ledger','No','Chargeable','Credit',self.doc.name,''],
-							['TDS (Salary)','Duties and Taxes','Ledger','No','Chargeable','Credit',self.doc.name,'']
 						 ]
 		# load common account heads
 		for d in acc_list_common:

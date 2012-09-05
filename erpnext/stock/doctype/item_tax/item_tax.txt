@@ -3,62 +3,86 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-03-27 14:36:33',
-		'docstatus': 0,
-		'modified': '2012-03-27 14:36:33',
-		'modified_by': u'Administrator',
-		'owner': u'Administrator'
+		u'creation': u'2012-05-15 12:15:08',
+		u'docstatus': 0,
+		u'modified': '2012-09-03 13:16:04',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
 	},
 
 	# These values are common for all DocType
 	{
-		'colour': u'White:FFF',
-		'doctype': 'DocType',
-		'istable': 1,
-		'module': u'Stock',
-		'name': '__common__',
-		'section_style': u'Tray',
-		'server_code_error': u' ',
-		'show_in_menu': 0
+		u'allow_attach': 0,
+		u'allow_copy': 0,
+		u'allow_email': 0,
+		u'allow_print': 0,
+		u'allow_rename': 0,
+		u'autoname': u'',
+		u'colour': u'White:FFF',
+		u'default_print_format': u'',
+		u'description': u'',
+		u'docstatus_labels': u'',
+		'doctype': u'DocType',
+		u'document_type': u'',
+		u'hide_heading': 0,
+		u'hide_toolbar': 0,
+		u'in_create': 0,
+		u'in_dialog': 0,
+		u'is_submittable': 0,
+		u'issingle': 0,
+		u'istable': 1,
+		u'max_attachments': u'',
+		'modifed': '2012-09-03 13:16:04',
+		u'module': u'Stock',
+		u'name': u'__common__',
+		u'name_case': u'',
+		u'read_only': 0,
+		u'read_only_onload': 0,
+		u'search_fields': u'',
+		u'section_style': u'Tray',
+		u'server_code_error': u' ',
+		u'show_in_menu': 0
 	},
 
 	# These values are common for all DocField
 	{
+		u'allow_on_submit': 0,
+		u'default': u'',
+		u'depends_on': u'',
+		u'description': u'',
 		'doctype': u'DocField',
-		'name': '__common__',
-		'parent': u'Item Tax',
-		'parentfield': u'fields',
-		'parenttype': u'DocType',
-		'permlevel': 0
+		u'fieldname': u'tax_and_charges',
+		u'fieldtype': u'Link',
+		u'hidden': 0,
+		u'in_filter': 0,
+		u'label': u'Tax and Charges',
+		'modifed': '2012-09-03 13:16:04',
+		u'name': u'__common__',
+		u'no_copy': 0,
+		u'oldfieldname': u'tax_type',
+		u'oldfieldtype': u'Link',
+		u'options': u'Taxes and Charges',
+		u'parent': u'Item Tax',
+		u'parentfield': u'fields',
+		u'parenttype': u'DocType',
+		u'permlevel': 0,
+		u'print_hide': 0,
+		u'report_hide': 0,
+		u'reqd': 1,
+		u'search_index': 0,
+		u'trigger': u'Client',
+		u'unique': 0,
+		u'width': u''
 	},
 
 	# DocType, Item Tax
 	{
-		'doctype': 'DocType',
+		u'doctype': u'DocType',
 		'name': u'Item Tax'
 	},
 
 	# DocField
 	{
-		'doctype': u'DocField',
-		'fieldname': u'tax_type',
-		'fieldtype': u'Link',
-		'label': u'Tax',
-		'oldfieldname': u'tax_type',
-		'oldfieldtype': u'Link',
-		'options': u'Account',
-		'reqd': 1,
-		'trigger': u'Client'
-	},
-
-	# DocField
-	{
-		'doctype': u'DocField',
-		'fieldname': u'tax_rate',
-		'fieldtype': u'Currency',
-		'label': u'Tax Rate',
-		'oldfieldname': u'tax_rate',
-		'oldfieldtype': u'Currency',
-		'reqd': 0
+		u'doctype': u'DocField'
 	}
 ]

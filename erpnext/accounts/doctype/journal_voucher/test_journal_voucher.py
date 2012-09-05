@@ -37,8 +37,22 @@ base_acc = [
 		"parent_account": "Bank Accounts - EW",
 		"group_or_ledger": "Ledger", "debit_or_credit": "Debit",
 		"is_pl_account": "No", "company": "East Wind Corporation"
-	}
+	},
+	{
+		"doctype": "Account", "account_name": "Service Tax",
+		"parent_account": "Duties and Taxes - EW",
+		"group_or_ledger": "Ledger", "debit_or_credit": "Credit",
+		"is_pl_account": "No", "company": "East Wind Corporation"
+	},
+	{
+		"doctype": "Account", "account_name": "Shipping Charges",
+		"parent_account": "Direct Expenses - EW",
+		"group_or_ledger": "Ledger", "debit_or_credit": "Debit",
+		"is_pl_account": "Yes", "company": "East Wind Corporation"
+	}	
 ]
+
+
 
 class TestJournalVoucher(TestBase):
 	def setUp(self):

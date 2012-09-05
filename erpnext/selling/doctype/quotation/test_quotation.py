@@ -47,8 +47,35 @@ base_quote_item = {
 	"uom": "Nos",
 	"item_name": "Home Desktop 100",
 	"description": "Home Desktop 100",
+	"item_or_tax": "Item",
 	"__islocal": 1
 }
+
+base_taxes_master = [
+	{
+		'doctype': 'Taxes and Charges', 'name': 'default_taxes_and_charges', 
+		'company': 'East Wind Corporation', 'is_default': 1, "__islocal": 1
+	},
+	{
+		'doctype': 'Taxes and Charges Account', 'parentfield': 'taxes_and_charges_accounts',
+		'account': 'Service Tax - EW', 'rate': 10, 
+		'description': 'service tax', "__islocal": 1
+	},
+	{
+		'doctype': 'Taxes and Charges Account', 'parentfield': 'taxes_and_charges_accounts',
+		'account': 'Miscellaneous Expenses - EW', 'rate': 1,
+		'description': 'Miscellaneous Expenses', "__islocal": 1
+	}
+]
+
+def load_data():
+	webnotes.model.insert([{
+		"doctype": "Account", "account_name": "Service Tax",
+		"parent_account": "Duties and Taxes - EW",
+		"group_or_ledger": "Ledger", "debit_or_credit": "Credit",
+		"is_pl_account": "No", "company": "East Wind Corporation"
+	}])
+	return webnotes.model.insert(base_taxes_master)
 
 class TestQuotation(TestBase):
 	def test_item_type(self):
@@ -109,3 +136,19 @@ class TestQuotation(TestBase):
 		
 		quote_ctlr.doc.docstatus = 2
 		self.assertRaises(webnotes.ValidationError, quote_ctlr.save)
+		
+	def test_taxes_and_totals(self):
+		taxes_ctlr = load_data()
+		quote_item = base_quote_item.copy()
+		quote_item.update({'taxes_and_charges': taxes_ctlr.doc.name})
+		
+		quote = base_quote.copy()
+		quote.update({"docstatus": 1})
+		
+		quote_ctlr = webnotes.model.insert([quote, base_quote_item, quote_item])
+		self.assertEqual(webnotes.conn.get_value('Quotation', quote_ctlr.doc.name, \
+			'taxes_and_charges_total'), 55)
+		self.assertEqual(webnotes.conn.get_value('Quotation', quote_ctlr.doc.name, \
+			'net_total'), 1000)
+		self.assertEqual(webnotes.conn.get_value('Quotation', quote_ctlr.doc.name, \
+			'grand_total'), 1055)
