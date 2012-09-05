@@ -88,13 +88,16 @@ def boot_session(bootinfo):
 		import conf
 		for key in ['max_users', 'expires_on', 'max_space', 'status']:
 			if hasattr(conf, key): bootinfo[key] = getattr(conf, key)
-
+			
 		company = webnotes.conn.sql("select name, default_currency from `tabCompany`", as_dict=1)
 		company_dict = {}
 		for c in company:
 			company_dict.setdefault(c['name'], {}).update(c)
 
 		bootinfo['company'] = company_dict
+		
+		# developer mode
+		bootinfo["developer_mode"] = getattr(conf, "developer_mode", 0)
 
 def get_letter_heads():
 	"""load letter heads with startup"""

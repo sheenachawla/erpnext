@@ -14,10 +14,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
-# Notes
-# For stop / unstop, set stopped = 1 / 0 respectively
-
 from __future__ import unicode_literals
 import webnotes
 import webnotes.model
@@ -26,9 +22,7 @@ from webnotes.utils import getdate, now_datetime, comma_and, flt
 from controllers.buying import BuyingController
 class PurchaseRequestController(BuyingController):
 	def validate(self):
-		# TODO: DocType Validator: d.schedule_date < self.doc.transaction_date
-		# TODO: DocType Validator: if amended_from, amendment_date is mandatory
-		# TODO: DocType Validator: d.qty > 0
+		# TODO: DocType Validator: d.schedule_date >= self.doc.transaction_date
 		
 		if self.doc.docstatus != 2:
 			# validate for draft, submit

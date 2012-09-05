@@ -98,6 +98,13 @@ class TestPurchaseRequest(TestBase):
 		# import pprint
 		# pprint.pprint(sqcon.doclist)
 		
+	def test_schedule_date_validation(self):
+		purchase_request_item = base_purchase_request_item.copy()
+		purchase_request_item.update({"schedule_date": add_days(now_datetime().date(), -5),})
+		self.assertRaises(webnotes.ConditionalPropertyError, 
+			webnotes.model.insert, [base_purchase_request,
+			base_purchase_request_item, purchase_request_item])
+		
 	def test_version(self):
 		from datetime import timedelta
 		from webnotes.model.versions import get_version, serialize, deserialize, diff
@@ -112,7 +119,7 @@ class TestPurchaseRequest(TestBase):
 			ver += 1
 			versions.append([ver, prcon.doclist.copy()])
 			
-			prcon.doc.posting_date = add_days(prcon.doc.posting_date, 1)
+			prcon.doc.posting_date = add_days(prcon.doc.posting_date, -1)
 			prcon.doclist[1].update({"qty": i+5})
 			prcon.add_child(base_purchase_request_item)
 			prcon.save()

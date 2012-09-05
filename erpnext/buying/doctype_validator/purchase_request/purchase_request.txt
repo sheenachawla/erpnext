@@ -1,0 +1,47 @@
+# DocType Validator, Purchase Request
+[
+
+	# These values are common in all dictionaries
+	{
+		u'creation': '2012-08-21 10:21:18',
+		u'docstatus': 0,
+		u'modified': '2012-09-05 12:23:59',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
+	},
+
+	# These values are common for all DocType Validator
+	{
+		'doctype': u'DocType Validator',
+		'for_doctype': u'Purchase Request',
+		u'name': u'__common__'
+	},
+
+	# These values are common for all DocType Conditional Property
+	{
+		'doctype': u'DocType Conditional Property',
+		'if_condition': u'Filled',
+		'if_field': u'schedule_date',
+		'if_table_field': u'purchase_request_items',
+		'if_value': u'',
+		u'name': u'__common__',
+		'parent': u'Purchase Request',
+		'parentfield': u'conditional_properties',
+		'parenttype': u'DocType Validator',
+		'then_condition': u'<=',
+		'then_field': u'posting_date',
+		'then_table_field': u'',
+		'then_value': u'field:if.schedule_date'
+	},
+
+	# DocType Validator, Purchase Request
+	{
+		u'doctype': u'DocType Validator',
+		'name': u'Purchase Request'
+	},
+
+	# DocType Conditional Property
+	{
+		u'doctype': u'DocType Conditional Property'
+	}
+]
