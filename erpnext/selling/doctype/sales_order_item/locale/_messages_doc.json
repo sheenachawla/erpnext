@@ -10,6 +10,7 @@
  "Price List Rate*", 
  "Basic Rate*", 
  "Amount*", 
+ "Taxes and Charges", 
  "Reserved Warehouse", 
  "Projected Qty", 
  "Quotation", 
@@ -17,5 +18,6 @@
  "Description", 
  "UOM", 
  "Page Break", 
- "Item Tax Rate"
+ "Tax Amount", 
+ "Tax Breakup"
 ]

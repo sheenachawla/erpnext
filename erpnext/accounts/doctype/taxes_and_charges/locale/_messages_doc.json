@@ -1,0 +1,8 @@
+[
+ "Taxes and Charges", 
+ "Standard tax template that can be applied on any item in Sales and Purchase transactions. This template can contain list of tax heads and also other expense / income heads like \"Insurance\", \"Handling\" etc.#### Description of Columns- Account Head: The Account ledger under which this tax will be booked- Description: Description of the tax (that will be printed in invoices / quotes).- Cost Center: If the tax / charge is an income (like shipping) or expense it needs to be booked against a Cost Center.- Rate: Tax rate.- Amount: Tax amount.- Is this Tax included in Basic Rate?: If you check this, it means that this tax will not be shown below the item table, but will be included in the Basic Rate in your main item table. This is useful where you want give a flat price (inclusive of all taxes) price to customers.", 
+ "Default", 
+ "Company", 
+ "Taxes and Charges Accounts", 
+ "* Will be calculated in the transaction."
+]

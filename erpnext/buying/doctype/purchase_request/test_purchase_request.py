@@ -98,12 +98,47 @@ class TestPurchaseRequest(TestBase):
 		# import pprint
 		# pprint.pprint(sqcon.doclist)
 		
+	def test_schedule_date_validation(self):
+		purchase_request_item = base_purchase_request_item.copy()
+		purchase_request_item.update({"schedule_date": add_days(now_datetime().date(), -5),})
+		self.assertRaises(webnotes.ConditionalPropertyError, 
+			webnotes.model.insert, [base_purchase_request,
+			base_purchase_request_item, purchase_request_item])
+		
 	def test_version(self):
 		from datetime import timedelta
+		from webnotes.model.versions import get_version, serialize, deserialize, diff
 		prcon = webnotes.model.insert([base_purchase_request,
 			base_purchase_request_item])
 		
-		prcon.doc.posting_date = add_days(now_datetime().date(), 1)
-		prcon.doclist[1].update({"qty": 5})
-		prcon.add_child(base_purchase_request_item)
+		versions = []
+		
+		# create arbitrary number of records
+		ver = 0
+		for i in xrange(3):
+			ver += 1
+			versions.append([ver, prcon.doclist.copy()])
+			
+			prcon.doc.posting_date = add_days(prcon.doc.posting_date, -1)
+			prcon.doclist[1].update({"qty": i+5})
+			prcon.add_child(base_purchase_request_item)
+			prcon.save()
+		
+		# test if versions are merged properly
+		for v in versions:
+			# check if version exists
+			self.assertTrue(webnotes.conn.exists("Version",
+				{"doc_type": prcon.doc.doctype, "doc_name": prcon.doc.name,
+				"version": v[0]}))
+			
+			# check if the recreated doclist is same as that one in the versions list
+			self.assertEqualDoclist(get_version(prcon.doc.doctype, prcon.doc.name, v[0]),
+				v[1], ignore=["modified"])
+			
+		# check if just saving without change should not create a version
+		ver += 1
+		modified = prcon.doc.modified
 		prcon.save()
+		self.assertFalse(webnotes.conn.exists("Version",
+			{"doc_type": prcon.doc.doctype, "doc_name": prcon.doc.name,
+			"version": ver}))

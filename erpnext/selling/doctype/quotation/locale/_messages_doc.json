@@ -53,14 +53,8 @@
  "Customer Address", 
  "Company", 
  "Select the relevant company name if you have multiple companies.", 
- "Status", 
- "Order Confirmed", 
- "Order Lost", 
  "Quotation Lost Reason", 
  "Letter Head", 
  "Select Print Heading", 
- "Amended From", 
- "Amendment Date", 
- "The date at which current entry is corrected in the system.", 
  "File List"
 ]
