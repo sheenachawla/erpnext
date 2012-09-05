@@ -28,6 +28,7 @@ class SalesController(DocListController):
 		self.validate_conversion_rate()	
 		self.validate_project()
 		self.get_sales_team_contribution()
+		self.calculate_totals()
 	
 	def validate_max_discount(self):
 		for d in self.doclist.get({'parentfield': self.item_table_fieldname}):
@@ -97,18 +98,29 @@ class SalesController(DocListController):
 				msgprint("Project: %s does not associate with party: %s" % 
 					(self.doc.project_name, self.doc.party), 
 					raise_exception=webnotes.ValidationError)
-					
-	def calculate_tax_on_item(self):
-		tax_masters = []
-		for d in self.doclist.get({'parentfield': self.item_table_fieldname}):
-			if d.export_amount and d.taxes_and_charges:
-				if d.taxes_and_charges not in tax_masters:
-					tc_acc_doclist = webnotes.model.get('Taxes and Charges', \
-						d.taxes_and_charges).get({'parentfield': 'taxes_and_charges_accounts'})
-					tax_masters[d.taxes_and_charges] = {
-						'total_rate' : sum([d.rate for d in tc_acc_doclist]),
-						'total_amount': sum([d.amount for d in tc_acc_doclist])
-					}
-				d.tax_amount = flt(d.export_amount)*tax_masters[d.taxes_and_charges]\
-					['total_rate']/100 + tax_masters[d.taxes_and_charges]['total_amount']
+						
+	def calculate_totals(self):
+		# get tax 
+		tax_masters = {}	
+		def _get_tax_rate(self, row):
+			if d.amount and d.taxes_and_charges:
+				tc_acc_doclist = webnotes.model.get('Taxes and Charges', \
+					row.taxes_and_charges).get({'parentfield': 'taxes_and_charges_accounts'})
+				tax_masters[row.taxes_and_charges] = sum([d.rate for d in tc_acc_doclist])
 				
+		def _get_tax_amount(self, row):
+			if row.is_taxes_included:
+				row.tax_amount = flt(row.amount) - \
+					100*flt(row.amount)/(100+tax_masters[row.taxes_and_charges])
+				self.doc.net_total += flt(row.amount) - flt(row.tax_amount)
+			else:
+				row.tax_amount = flt(row.amount)*tax_masters[row.taxes_and_charges]/100
+				self.doc.net_total += flt(row.amount)
+		
+		for d in self.doclist.get({'parentfield': self.item_table_fieldname}):
+			if d.item_or_tax== 'Item':
+				self.get_tax_rate(d)
+				self.get_tax_amount(d)
+			self.doc.taxes_and_charges_total += self.doc.tax_amount
+			
+		self.doc.grand_total = self.doc.net_total + self.doc.tax_amount
