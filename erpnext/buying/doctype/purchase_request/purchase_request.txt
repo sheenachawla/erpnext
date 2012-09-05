@@ -5,7 +5,7 @@
 	{
 		u'creation': u'2012-05-10 13:55:37',
 		u'docstatus': 0,
-		u'modified': '2012-09-04 14:13:16',
+		u'modified': '2012-09-05 14:27:06',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -177,15 +177,26 @@
 
 	# DocField
 	{
+		u'allow_on_submit': 0,
 		u'colour': u'White:FFF',
-		u'description': u'Name of the entity who has requested for the Purchase Requisition',
+		u'default': u'',
+		u'depends_on': u'',
+		u'description': u'Name of the entity who has requested for the Purchase Request',
 		u'doctype': u'DocField',
 		u'fieldname': u'requested_by',
 		u'fieldtype': u'Data',
+		u'hidden': 0,
+		u'in_filter': 0,
 		u'label': u'Requested By',
 		u'no_copy': 1,
 		u'oldfieldname': u'requested_by',
 		u'oldfieldtype': u'Data',
+		u'options': u'',
+		u'print_hide': 0,
+		u'report_hide': 0,
+		u'reqd': 0,
+		u'search_index': 0,
+		u'unique': 0,
 		u'width': u'100px'
 	},
 

@@ -5,21 +5,21 @@
 	{
 		u'creation': '2012-07-31 12:53:38',
 		u'docstatus': 0,
-		u'modified': '2012-08-01 14:45:16',
+		u'modified': '2012-09-05 17:35:13',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
 
 	# These values are common for all DocType Validator
 	{
-		u'doctype': u'DocType Validator',
+		'doctype': u'DocType Validator',
 		'for_doctype': u'Item',
 		u'name': u'__common__'
 	},
 
 	# These values are common for all DocType Link Filter
 	{
-		u'doctype': u'DocType Link Filter',
+		'doctype': u'DocType Link Filter',
 		u'name': u'__common__',
 		'parent': u'Item',
 		'parentfield': u'link_filters',
@@ -28,7 +28,7 @@
 
 	# These values are common for all DocType Conditional Property
 	{
-		u'doctype': u'DocType Conditional Property',
+		'doctype': u'DocType Conditional Property',
 		u'name': u'__common__',
 		'parent': u'Item',
 		'parentfield': u'conditional_properties',
@@ -37,7 +37,7 @@
 
 	# These values are common for all DocType Unique Row
 	{
-		u'doctype': u'DocType Unique Row',
+		'doctype': u'DocType Unique Row',
 		u'name': u'__common__',
 		'parent': u'Item',
 		'parentfield': u'unique_rows',
@@ -47,7 +47,7 @@
 	# DocType Validator, Item
 	{
 		u'doctype': u'DocType Validator',
-		u'name': u'Item'
+		'name': u'Item'
 	},
 
 	# DocType Link Filter
@@ -158,10 +158,15 @@
 	# DocType Conditional Property
 	{
 		u'doctype': u'DocType Conditional Property',
-		'if_condition': u'Filled',
+		'if_condition': u'>',
 		'if_field': u'net_weight',
+		'if_table_field': u'',
+		'if_value': u'0',
 		'then_condition': u'Filled',
-		'then_field': u'weight_uom'
+		'then_field': u'weight_uom',
+		'then_reference_field': u'',
+		'then_table_field': u'',
+		'then_value': u''
 	},
 
 	# DocType Unique Row

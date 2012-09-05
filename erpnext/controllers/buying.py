@@ -37,10 +37,10 @@ class BuyingController(DocListController):
 					raise_exception=stock.ItemEndOfLifeError)
 
 			# check if warehouse is required
-			if itemdoc.is_stock_item == "Yes" and not child.warehouse:
-				webnotes.msgprint("""Warehouse is Mandatory for Item "%s", 
-					as it is a Stock Item""" % \
-					child.item_code, raise_exception=webnotes.MandatoryError)
+			# if itemdoc.is_stock_item == "Yes" and not child.warehouse:
+			# 	webnotes.msgprint("""Warehouse is Mandatory for Item "%s", 
+			# 		as it is a Stock Item""" % \
+			# 		child.item_code, raise_exception=webnotes.MandatoryError)
 			
 	def validate_previous_doclist(self, parentfield, fieldname, item_fieldname):
 		"""Validates current item row against previous item row"""

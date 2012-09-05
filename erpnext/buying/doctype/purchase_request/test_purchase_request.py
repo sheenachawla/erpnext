@@ -104,6 +104,13 @@ class TestPurchaseRequest(TestBase):
 		self.assertRaises(webnotes.ConditionalPropertyError, 
 			webnotes.model.insert, [base_purchase_request,
 			base_purchase_request_item, purchase_request_item])
+			
+	def test_warehouse_validation(self):
+		purchase_request_item = base_purchase_request_item.copy()
+		del purchase_request_item["warehouse"]
+		self.assertRaises(webnotes.ConditionalPropertyError, 
+			webnotes.model.insert, [base_purchase_request,
+			base_purchase_request_item, purchase_request_item])
 		
 	def test_version(self):
 		from datetime import timedelta

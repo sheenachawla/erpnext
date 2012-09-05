@@ -20,8 +20,6 @@ import webnotes
 from controllers.buying import BuyingController
 class SupplierQuotationController(BuyingController):
 	def validate(self):
-		# TODO: DocType Validator: if amended_from, amendment_date is mandatory
-		# TODO: DocType Validator: d.qty > 0
 		if self.doc.docstatus != 2:
 			# validate for draft, submit
 			super(SupplierQuotationController, self).validate_items(

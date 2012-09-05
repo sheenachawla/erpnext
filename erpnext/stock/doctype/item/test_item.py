@@ -115,7 +115,7 @@ class TestItem(TestBase):
 		item = base_item.copy()
 		item.update({
 			"name": "Home Desktop 2000",
-			"net_weight": 500
+			"net_weight": 500,
 		})
 		self.assertRaises(webnotes.ConditionalPropertyError, webnotes.model.insert, [item])
 		

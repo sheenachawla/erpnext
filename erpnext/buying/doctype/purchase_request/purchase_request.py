@@ -22,8 +22,6 @@ from webnotes.utils import getdate, now_datetime, comma_and, flt
 from controllers.buying import BuyingController
 class PurchaseRequestController(BuyingController):
 	def validate(self):
-		# TODO: DocType Validator: d.schedule_date >= self.doc.transaction_date
-		
 		if self.doc.docstatus != 2:
 			# validate for draft, submit
 			super(PurchaseRequestController, self).validate_items("purchase_request_items")
