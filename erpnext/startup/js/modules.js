@@ -31,18 +31,18 @@ erpnext.module_page.make = function(module, wrapper) {
 		},
 		callback: function(r) {
 			items = r.message;
-			make_section('transaction');
-			make_section('master');
-			make_section('tool');
-			make_section('setup');
-			make_section('report');
+			make_section('transaction', wn._("Transactions"));
+			make_section('master', wn._("Masters"));
+			make_section('tool', wn._("Tools"));
+			make_section('setup', wn._("Setup"));
+			make_section('report', wn._("Report"));
 		}
 	})
 	
-	var make_section = function(name) {
+	var make_section = function(name, title) {
 		if(!items[name].length) return;
 		
-		$(repl('<h4>%(title)s</h4><br><div class="%(name)s"></div><hr>', {title: wn._(toTitle(name)), name: name}))
+		$(repl('<h4>%(title)s</h4><br><div class="%(name)s"></div><hr>', {title: title, name: name}))
 			.appendTo($(wrapper).find('.layout-main'));
 		
 		var $body = $(wrapper).find('.' + name);

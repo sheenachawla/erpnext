@@ -1,5 +1,8 @@
 [
  "Purchase Request", 
+ "Draft", 
+ "Approved", 
+ "Not Approved", 
  "Basic Info", 
  "Enter items and their details for which you want your purchase department to raise a purchase order.", 
  "Series", 
