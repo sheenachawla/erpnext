@@ -5,7 +5,7 @@
 	{
 		u'creation': u'2012-07-26 13:40:14',
 		u'docstatus': 0,
-		u'modified': '2012-08-31 14:23:00',
+		u'modified': '2012-09-05 16:12:07',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -35,7 +35,6 @@
 		u'issingle': 0,
 		u'istable': 0,
 		u'max_attachments': 1,
-		'modifed': '2012-08-31 14:23:00',
 		u'module': u'Selling',
 		u'name': u'__common__',
 		u'name_case': u'',
@@ -53,7 +52,6 @@
 	# These values are common for all DocField
 	{
 		'doctype': u'DocField',
-		'modifed': '2012-08-31 14:23:00',
 		u'name': u'__common__',
 		u'parent': u'Quotation',
 		u'parentfield': u'fields',
@@ -63,7 +61,6 @@
 	# These values are common for all DocPerm
 	{
 		'doctype': u'DocPerm',
-		'modifed': '2012-08-31 14:23:00',
 		u'name': u'__common__',
 		u'parent': u'Quotation',
 		u'parentfield': u'permissions',
@@ -331,96 +328,76 @@
 
 	# DocField
 	{
+		u'allow_on_submit': 0,
+		u'default': u'',
+		u'depends_on': u'',
+		u'description': u'',
 		u'doctype': u'DocField',
 		u'fieldname': u'net_total',
 		u'fieldtype': u'Currency',
-		u'label': u'Net Total*',
+		u'hidden': 0,
+		u'in_filter': 0,
+		u'label': u'Net Total',
 		u'no_copy': 0,
 		u'oldfieldname': u'net_total',
 		u'oldfieldtype': u'Currency',
+		u'options': u'',
 		u'permlevel': 1,
 		u'print_hide': 0,
+		u'report_hide': 0,
 		u'reqd': 0,
+		u'search_index': 0,
+		u'unique': 0,
 		u'width': u'100px'
 	},
 
 	# DocField
 	{
+		u'allow_on_submit': 0,
+		u'default': u'',
+		u'depends_on': u'',
+		u'description': u'',
 		u'doctype': u'DocField',
-		u'fieldname': u'other_charges_total',
+		u'fieldname': u'taxes_and_charges_total',
 		u'fieldtype': u'Currency',
-		u'label': u'Taxes and Charges Total*',
+		u'hidden': 0,
+		u'in_filter': 0,
+		u'label': u'Taxes and Charges Total',
+		u'no_copy': 0,
 		u'oldfieldname': u'other_charges_total',
 		u'oldfieldtype': u'Currency',
+		u'options': u'',
 		u'permlevel': 1,
-		u'print_hide': 1
+		u'print_hide': 1,
+		u'report_hide': 0,
+		u'reqd': 0,
+		u'search_index': 0,
+		u'unique': 0,
+		u'width': u''
 	},
 
 	# DocField
 	{
+		u'allow_on_submit': 0,
+		u'default': u'',
+		u'depends_on': u'',
+		u'description': u'',
 		u'doctype': u'DocField',
 		u'fieldname': u'grand_total',
 		u'fieldtype': u'Currency',
-		u'label': u'Grand Total*',
+		u'hidden': 0,
+		u'in_filter': 0,
+		u'label': u'Grand Total',
 		u'no_copy': 0,
 		u'oldfieldname': u'grand_total',
 		u'oldfieldtype': u'Currency',
-		u'permlevel': 1,
-		u'print_hide': 1,
-		u'reqd': 0,
-		u'width': u'200px'
-	},
-
-	# DocField
-	{
-		u'doctype': u'DocField',
-		u'fieldname': u'rounded_total',
-		u'fieldtype': u'Currency',
-		u'label': u'Rounded Total',
-		u'no_copy': 0,
-		u'oldfieldname': u'rounded_total',
-		u'oldfieldtype': u'Currency',
-		u'permlevel': 1,
-		u'print_hide': 1,
-		u'trigger': u'Client',
-		u'width': u'200px'
-	},
-
-	# DocField
-	{
-		u'default': u'',
-		u'depends_on': u'',
-		u'description': u'',
-		u'doctype': u'DocField',
-		u'fieldname': u'grand_total_export',
-		u'fieldtype': u'Currency',
-		u'label': u'Grand Total (Export)',
-		u'no_copy': 0,
-		u'oldfieldname': u'grand_total_export',
-		u'oldfieldtype': u'Currency',
 		u'options': u'',
 		u'permlevel': 1,
-		u'print_hide': 0,
+		u'print_hide': 1,
+		u'report_hide': 0,
 		u'reqd': 0,
-		u'width': u'200px'
-	},
-
-	# DocField
-	{
-		u'default': u'',
-		u'depends_on': u'',
-		u'description': u'',
-		u'doctype': u'DocField',
-		u'fieldname': u'rounded_total_export',
-		u'fieldtype': u'Currency',
-		u'label': u'Rounded Total (Export)',
-		u'no_copy': 0,
-		u'oldfieldname': u'rounded_total_export',
-		u'oldfieldtype': u'Currency',
-		u'options': u'',
-		u'permlevel': 1,
-		u'print_hide': 0,
-		u'reqd': 0,
+		u'search_index': 0,
+		u'unique': 0,
 		u'width': u'200px'
 	},
 

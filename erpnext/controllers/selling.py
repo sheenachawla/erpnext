@@ -102,25 +102,31 @@ class SalesController(DocListController):
 	def calculate_totals(self):
 		# get tax 
 		tax_masters = {}	
-		def _get_tax_rate(self, row):
-			if d.amount and d.taxes_and_charges:
+		def _get_tax_rate(row):
+			if row.amount and row.taxes_and_charges:
 				tc_acc_doclist = webnotes.model.get('Taxes and Charges', \
 					row.taxes_and_charges).get({'parentfield': 'taxes_and_charges_accounts'})
+				
 				tax_masters[row.taxes_and_charges] = sum([d.rate for d in tc_acc_doclist])
 				
-		def _get_tax_amount(self, row):
+		def _get_tax_amount(row):
 			if row.is_taxes_included:
 				row.tax_amount = flt(row.amount) - \
-					100*flt(row.amount)/(100+tax_masters[row.taxes_and_charges])
-				self.doc.net_total += flt(row.amount) - flt(row.tax_amount)
+					100*flt(row.amount)/(100+tax_masters.get(row.taxes_and_charges, 0))
+				self.doc.net_total = flt(self.doc.net_total) + \
+					flt(row.amount) - flt(row.tax_amount)
 			else:
-				row.tax_amount = flt(row.amount)*tax_masters[row.taxes_and_charges]/100
-				self.doc.net_total += flt(row.amount)
+				row.tax_amount = flt(row.amount)*tax_masters.get(row.taxes_and_charges, 0)/100
+				self.doc.net_total = flt(self.doc.net_total) + flt(row.amount)
 		
 		for d in self.doclist.get({'parentfield': self.item_table_fieldname}):
+			d.amount = flt(d.qty)* flt(d.rate)
 			if d.item_or_tax== 'Item':
-				self.get_tax_rate(d)
-				self.get_tax_amount(d)
-			self.doc.taxes_and_charges_total += self.doc.tax_amount
+				_get_tax_rate(d)
+				_get_tax_amount(d)
+			else:
+				self.doc.tax_amount = self.doc.amount
+			self.doc.taxes_and_charges_total = flt(self.doc.taxes_and_charges_total) + \
+			 	flt(d.tax_amount)
 			
-		self.doc.grand_total = self.doc.net_total + self.doc.tax_amount
+		self.doc.grand_total = flt(self.doc.net_total) + flt(self.doc.taxes_and_charges_total)

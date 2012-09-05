@@ -46,6 +46,7 @@ base_so_item = {
 	"uom": "Nos",
 	"item_name": "Home Desktop 100",
 	"description": "Home Desktop 100",
+	"item_or_tax": "Item",
 	"__islocal": 1
 }
 
@@ -120,9 +121,11 @@ class TestSalesOrder(TestBase):
 	def test_credit_limit(self):
 		webnotes.conn.set_value("Party", "Robert Smith", "credit_limit", 100000)
 		so = base_so.copy()
-		so.update({"grand_total": 200000, 'docstatus': 1})
+		so.update({'docstatus': 1})
+		so_item = base_so_item.copy()
+		so_item.update({'rate': 50000})
 		self.assertRaises(webnotes.ValidationError, \
-			webnotes.model.insert, [so, base_so_item])
+			webnotes.model.insert, [so, so_item])
 		
 	# def test_validate_with_quote(self):
 	# 	# save quotation
@@ -151,3 +154,21 @@ class TestSalesOrder(TestBase):
 	# def test_so_cancel_if_nextdoc(self):
 	# 	# to be done after DN, SI cleanup
 	# 	pass
+	
+	def test_taxes_and_totals(self):
+		from selling.doctype.quotation.test_quotation import load_data
+		taxes_ctlr = load_data()
+		
+		so_item = base_so_item.copy()
+		so_item.update({'taxes_and_charges': taxes_ctlr.doc.name})
+		
+		so = base_so.copy()
+		so.update({"docstatus": 1})
+		
+		so_ctlr = webnotes.model.insert([so, base_so_item, so_item])
+		self.assertEqual(webnotes.conn.get_value('Sales Order', so_ctlr.doc.name, \
+			'taxes_and_charges_total'), 55)
+		self.assertEqual(webnotes.conn.get_value('Sales Order', so_ctlr.doc.name, \
+			'net_total'), 1000)
+		self.assertEqual(webnotes.conn.get_value('Sales Order', so_ctlr.doc.name, \
+			'grand_total'), 1055)
