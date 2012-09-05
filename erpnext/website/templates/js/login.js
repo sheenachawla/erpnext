@@ -62,7 +62,12 @@ erpnext.login.doLogin = function(){
 	$('#login_btn').set_working();
 	$('#login_message').empty();
 	
-    $c("login", args, erpnext.login.onLoginReply);
+	wn.call({
+		"method": "login",
+		"args": args,
+		"callback": erpnext.login.onLoginReply
+	});
+    // $c("login", args, erpnext.login.onLoginReply);
 
 	return false;
 }
