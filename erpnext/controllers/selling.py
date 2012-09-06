@@ -25,7 +25,7 @@ class SalesController(DocListController):
 	def validate(self):
 		self.validate_items()
 		self.validate_max_discount()
-		self.validate_conversion_rate()	
+		self.validate_exchange_rate()
 		self.validate_project()
 		self.get_sales_team_contribution()
 		self.calculate_totals()
@@ -38,7 +38,7 @@ class SalesController(DocListController):
 					(%s) allowed to item: %s""" % (d.idx, max_discount, d.item_code), 
 					raise_exception=webnotes.ValidationError)
 
-	def validate_conversion_rate(self):
+	def validate_exchange_rate(self):
 		def_currency = webnotes.conn.get_value('Company', self.doc.company, 'default_currency')
 		if not def_currency:
 			msgprint("Default currency not mentioned in Company Master"
@@ -47,13 +47,13 @@ class SalesController(DocListController):
 		def _check(currency, conv_rate, currency_type):
 			if not conv_rate or (currency == def_currency and flt(conv_rate) != 1.00) or \
 					(currency != def_currency and flt(conv_rate) == 1.00):
-				msgprint("""Please Enter Appropriate Conversion Rate for %s 
+				msgprint("""Please Enter Appropriate Exchange Rate for %s 
 					currency (%s) to base currency (%s)""" % 
 					(currency_type, self.doc.currency, def_currency), 
 					raise_exception = webnotes.ValidationError)
 					
-		_check(self.doc.currency, self.doc.conversion_rate, 'customer')
-		_check(self.doc.price_list_currency, self.doc.plc_conversion_rate, 'price list')
+		_check(self.doc.currency, self.doc.exchange_rate, 'customer')
+		_check(self.doc.price_list_currency, self.doc.plc_exchange_rate, 'price list')
 		
 	def get_sales_team_contribution(self):
 		total_contribution = sum([d.allocated_percentage for d in \

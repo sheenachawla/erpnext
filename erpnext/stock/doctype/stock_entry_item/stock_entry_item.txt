@@ -1,11 +1,11 @@
-# DocType, Sales Order Item
+# DocType, Stock Entry Item
 [
 
 	# These values are common in all dictionaries
 	{
-		u'creation': u'2012-06-08 16:07:58',
+		u'creation': u'2012-09-06 11:26:41',
 		u'docstatus': 0,
-		u'modified': '2012-09-06 14:16:56',
+		u'modified': '2012-09-06 15:05:15',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -17,9 +17,8 @@
 		u'allow_email': 0,
 		u'allow_print': 0,
 		u'allow_rename': 0,
-		u'autoname': u'SOD/.#####',
-		u'colour': u'White:FFF',
-		u'default_print_format': u'',
+		u'autoname': u'SEI.######',
+		u'default_print_format': u'Standard',
 		u'description': u'',
 		u'docstatus_labels': u'',
 		'doctype': u'DocType',
@@ -32,31 +31,77 @@
 		u'issingle': 0,
 		u'istable': 1,
 		u'max_attachments': 0,
-		u'module': u'Selling',
+		u'module': u'Stock',
 		u'name': u'__common__',
 		u'name_case': u'',
 		u'read_only': 0,
 		u'read_only_onload': 0,
-		u'search_fields': u'',
-		u'section_style': u'Tray',
-		u'server_code_error': u' ',
-		u'show_in_menu': 0,
-		u'version': 1
+		u'search_fields': u''
 	},
 
 	# These values are common for all DocField
 	{
 		'doctype': u'DocField',
 		u'name': u'__common__',
-		u'parent': u'Sales Order Item',
+		u'parent': u'Stock Entry Item',
 		u'parentfield': u'fields',
 		u'parenttype': u'DocType'
 	},
 
-	# DocType, Sales Order Item
+	# DocType, Stock Entry Item
 	{
 		u'doctype': u'DocType',
-		'name': u'Sales Order Item'
+		'name': u'Stock Entry Item'
+	},
+
+	# DocField
+	{
+		u'allow_on_submit': 0,
+		u'default': u'',
+		u'depends_on': u'',
+		u'description': u'',
+		u'doctype': u'DocField',
+		u'fieldname': u'source_warehouse',
+		u'fieldtype': u'Link',
+		u'hidden': 0,
+		u'in_filter': 1,
+		u'label': u'Source Warehouse',
+		u'no_copy': 0,
+		u'oldfieldname': u's_warehouse',
+		u'oldfieldtype': u'Link',
+		u'options': u'Warehouse',
+		u'permlevel': 0,
+		u'print_hide': 0,
+		u'report_hide': 0,
+		u'reqd': 0,
+		u'search_index': 0,
+		u'unique': 0,
+		u'width': u''
+	},
+
+	# DocField
+	{
+		u'allow_on_submit': 0,
+		u'default': u'',
+		u'depends_on': u'',
+		u'description': u'',
+		u'doctype': u'DocField',
+		u'fieldname': u'target_warehouse',
+		u'fieldtype': u'Link',
+		u'hidden': 0,
+		u'in_filter': 1,
+		u'label': u'Target Warehouse',
+		u'no_copy': 0,
+		u'oldfieldname': u't_warehouse',
+		u'oldfieldtype': u'Link',
+		u'options': u'Warehouse',
+		u'permlevel': 0,
+		u'print_hide': 0,
+		u'report_hide': 0,
+		u'reqd': 0,
+		u'search_index': 0,
+		u'unique': 0,
+		u'width': u''
 	},
 
 	# DocField
@@ -71,15 +116,13 @@
 		u'options': u'Item',
 		u'permlevel': 0,
 		u'reqd': 1,
-		u'search_index': 1,
-		u'trigger': u'Client',
-		u'width': u'150px'
+		u'search_index': 1
 	},
 
 	# DocField
 	{
 		u'allow_on_submit': 0,
-		u'default': u'0.00',
+		u'default': u'',
 		u'depends_on': u'',
 		u'description': u'',
 		u'doctype': u'DocField',
@@ -87,19 +130,18 @@
 		u'fieldtype': u'Float',
 		u'hidden': 0,
 		u'in_filter': 0,
-		u'label': u'Quantity',
+		u'label': u'Qty',
 		u'no_copy': 0,
 		u'oldfieldname': u'qty',
 		u'oldfieldtype': u'Currency',
 		u'options': u'',
 		u'permlevel': 0,
-		u'print_hide': 1,
+		u'print_hide': 0,
 		u'report_hide': 0,
 		u'reqd': 1,
 		u'search_index': 0,
-		u'trigger': u'Client',
 		u'unique': 0,
-		u'width': u'100px'
+		u'width': u''
 	},
 
 	# DocField
@@ -115,48 +157,47 @@
 		u'in_filter': 0,
 		u'label': u'Price List Rate',
 		u'no_copy': 0,
-		u'oldfieldname': u'base_ref_rate',
-		u'oldfieldtype': u'Currency',
+		u'oldfieldname': u'',
+		u'oldfieldtype': u'',
 		u'options': u'',
-		u'permlevel': 1,
-		u'print_hide': 1,
+		u'permlevel': 0,
+		u'print_hide': 0,
 		u'report_hide': 0,
 		u'reqd': 0,
 		u'search_index': 0,
 		u'unique': 0,
-		u'width': u'100px'
+		u'width': u''
 	},
 
 	# DocField
 	{
 		u'allow_on_submit': 0,
-		u'default': u'0.00',
+		u'default': u'',
 		u'depends_on': u'',
 		u'description': u'',
 		u'doctype': u'DocField',
 		u'fieldname': u'discount',
-		u'fieldtype': u'Float',
+		u'fieldtype': u'Currency',
 		u'hidden': 0,
 		u'in_filter': 0,
-		u'label': u'Discount(%)',
+		u'label': u'Discount (%)',
 		u'no_copy': 0,
-		u'oldfieldname': u'adj_rate',
-		u'oldfieldtype': u'Float',
+		u'oldfieldname': u'',
+		u'oldfieldtype': u'',
 		u'options': u'',
 		u'permlevel': 0,
-		u'print_hide': 1,
+		u'print_hide': 0,
 		u'report_hide': 0,
 		u'reqd': 0,
 		u'search_index': 0,
-		u'trigger': u'Client',
 		u'unique': 0,
-		u'width': u'70px'
+		u'width': u''
 	},
 
 	# DocField
 	{
 		u'allow_on_submit': 0,
-		u'default': u'0.00',
+		u'default': u'',
 		u'depends_on': u'',
 		u'description': u'',
 		u'doctype': u'DocField',
@@ -166,23 +207,22 @@
 		u'in_filter': 0,
 		u'label': u'Rate',
 		u'no_copy': 0,
-		u'oldfieldname': u'basic_rate',
+		u'oldfieldname': u'incoming_rate',
 		u'oldfieldtype': u'Currency',
 		u'options': u'',
 		u'permlevel': 0,
-		u'print_hide': 1,
+		u'print_hide': 0,
 		u'report_hide': 0,
 		u'reqd': 0,
 		u'search_index': 0,
-		u'trigger': u'Client',
 		u'unique': 0,
-		u'width': u'100px'
+		u'width': u''
 	},
 
 	# DocField
 	{
 		u'allow_on_submit': 0,
-		u'default': u'0.00',
+		u'default': u'',
 		u'depends_on': u'',
 		u'description': u'',
 		u'doctype': u'DocField',
@@ -196,12 +236,12 @@
 		u'oldfieldtype': u'Currency',
 		u'options': u'',
 		u'permlevel': 1,
-		u'print_hide': 1,
+		u'print_hide': 0,
 		u'report_hide': 0,
 		u'reqd': 0,
 		u'search_index': 0,
 		u'unique': 0,
-		u'width': u'100px'
+		u'width': u''
 	},
 
 	# DocField
@@ -219,14 +259,14 @@
 		u'no_copy': 0,
 		u'oldfieldname': u'',
 		u'oldfieldtype': u'',
-		u'options': u'Taxes and Charges',
+		u'options': u'',
 		u'permlevel': 0,
 		u'print_hide': 0,
 		u'report_hide': 0,
 		u'reqd': 0,
 		u'search_index': 0,
 		u'unique': 0,
-		u'width': u'150px'
+		u'width': u''
 	},
 
 	# DocField
@@ -245,7 +285,7 @@
 		u'oldfieldname': u'',
 		u'oldfieldtype': u'',
 		u'options': u'',
-		u'permlevel': 1,
+		u'permlevel': 0,
 		u'print_hide': 0,
 		u'report_hide': 0,
 		u'reqd': 0,
@@ -282,7 +322,7 @@
 	# DocField
 	{
 		u'allow_on_submit': 0,
-		u'default': u'Item',
+		u'default': u'',
 		u'depends_on': u'',
 		u'description': u'',
 		u'doctype': u'DocField',
@@ -298,7 +338,32 @@
 		u'permlevel': 0,
 		u'print_hide': 0,
 		u'report_hide': 0,
-		u'reqd': 1,
+		u'reqd': 0,
+		u'search_index': 0,
+		u'unique': 0,
+		u'width': u''
+	},
+
+	# DocField
+	{
+		u'allow_on_submit': 0,
+		u'default': u'',
+		u'depends_on': u'',
+		u'description': u'',
+		u'doctype': u'DocField',
+		u'fieldname': u'serial_no',
+		u'fieldtype': u'Link',
+		u'hidden': 0,
+		u'in_filter': 0,
+		u'label': u'Serial No',
+		u'no_copy': 1,
+		u'oldfieldname': u'serial_no',
+		u'oldfieldtype': u'Text',
+		u'options': u'Serial No',
+		u'permlevel': 0,
+		u'print_hide': 0,
+		u'report_hide': 0,
+		u'reqd': 0,
 		u'search_index': 0,
 		u'unique': 0,
 		u'width': u''
@@ -307,69 +372,39 @@
 	# DocField
 	{
 		u'doctype': u'DocField',
-		u'fieldname': u'reserved_warehouse',
+		u'fieldname': u'batch_no',
 		u'fieldtype': u'Link',
-		u'label': u'Reserved Warehouse',
-		u'no_copy': 1,
-		u'oldfieldname': u'reserved_warehouse',
+		u'label': u'Batch No',
+		u'oldfieldname': u'batch_no',
 		u'oldfieldtype': u'Link',
-		u'options': u'Warehouse',
+		u'options': u'Batch',
 		u'permlevel': 0,
-		u'print_hide': 1,
-		u'reqd': 0,
-		u'trigger': u'Client',
-		u'width': u'150px'
+		u'print_hide': 1
 	},
 
 	# DocField
 	{
 		u'allow_on_submit': 0,
-		u'colour': u'White:FFF',
-		u'default': u'0.00',
+		u'default': u'',
 		u'depends_on': u'',
 		u'description': u'',
 		u'doctype': u'DocField',
-		u'fieldname': u'projected_qty',
-		u'fieldtype': u'Float',
-		u'hidden': 1,
+		u'fieldname': u'item_name',
+		u'fieldtype': u'Data',
+		u'hidden': 0,
 		u'in_filter': 0,
-		u'label': u'Projected Qty',
-		u'no_copy': 1,
-		u'oldfieldname': u'projected_qty',
-		u'oldfieldtype': u'Currency',
+		u'label': u'Item Name',
+		u'no_copy': 0,
+		u'oldfieldname': u'',
+		u'oldfieldtype': u'',
 		u'options': u'',
-		u'permlevel': 1,
-		u'print_hide': 1,
+		u'permlevel': 0,
+		u'print_hide': 0,
 		u'report_hide': 0,
 		u'reqd': 0,
 		u'search_index': 0,
 		u'unique': 0,
-		u'width': u'70px'
-	},
-
-	# DocField
-	{
-		u'doctype': u'DocField',
-		u'fieldname': u'quotation',
-		u'fieldtype': u'Link',
-		u'hidden': 0,
-		u'in_filter': 1,
-		u'label': u'Quotation',
-		u'oldfieldname': u'prevdoc_docname',
-		u'oldfieldtype': u'Link',
-		u'options': u'Quotation',
-		u'permlevel': 1,
-		u'print_hide': 1,
-		u'search_index': 1
-	},
-
-	# DocField
-	{
-		u'doctype': u'DocField',
-		u'fieldname': u'item_name',
-		u'fieldtype': u'Data',
-		u'label': u'Item Name',
-		u'permlevel': 0
+		u'width': u''
 	},
 
 	# DocField
@@ -378,35 +413,99 @@
 		u'fieldname': u'description',
 		u'fieldtype': u'Text',
 		u'label': u'Description',
-		u'permlevel': 0
+		u'oldfieldname': u'description',
+		u'oldfieldtype': u'Text',
+		u'permlevel': 0,
+		u'width': u'300px'
+	},
+
+	# DocField
+	{
+		u'doctype': u'DocField',
+		u'fieldname': u'uom',
+		u'fieldtype': u'Link',
+		u'label': u'UOM',
+		u'oldfieldname': u'uom',
+		u'oldfieldtype': u'Link',
+		u'options': u'UOM',
+		u'permlevel': 0,
+		u'reqd': 1
+	},
+
+	# DocField
+	{
+		u'doctype': u'DocField',
+		u'fieldname': u'conversion_factor',
+		u'fieldtype': u'Currency',
+		u'label': u'Conversion Factor',
+		u'oldfieldname': u'conversion_factor',
+		u'oldfieldtype': u'Currency',
+		u'permlevel': 1,
+		u'reqd': 1
 	},
 
 	# DocField
 	{
 		u'doctype': u'DocField',
 		u'fieldname': u'stock_uom',
-		u'fieldtype': u'Data',
-		u'hidden': 0,
-		u'label': u'UOM',
+		u'fieldtype': u'Link',
+		u'in_filter': 0,
+		u'label': u'Stock UOM',
 		u'oldfieldname': u'stock_uom',
-		u'oldfieldtype': u'Data',
+		u'oldfieldtype': u'Link',
+		u'options': u'UOM',
 		u'permlevel': 1,
-		u'print_hide': 1,
-		u'reqd': 0,
-		u'width': u'70px'
+		u'reqd': 1,
+		u'search_index': 0
 	},
 
 	# DocField
 	{
-		u'allow_on_submit': 1,
+		u'allow_on_submit': 0,
+		u'default': u'',
+		u'depends_on': u'',
+		u'description': u'',
 		u'doctype': u'DocField',
-		u'fieldname': u'page_break',
-		u'fieldtype': u'Check',
-		u'label': u'Page Break',
-		u'oldfieldname': u'page_break',
-		u'oldfieldtype': u'Check',
+		u'fieldname': u'sales_order',
+		u'fieldtype': u'Link',
+		u'hidden': 0,
+		u'in_filter': 0,
+		u'label': u'Sales Order',
+		u'no_copy': 0,
+		u'oldfieldname': u'',
+		u'oldfieldtype': u'',
+		u'options': u'Sales Order',
 		u'permlevel': 0,
-		u'print_hide': 1,
-		u'report_hide': 1
+		u'print_hide': 0,
+		u'report_hide': 0,
+		u'reqd': 0,
+		u'search_index': 0,
+		u'unique': 0,
+		u'width': u''
+	},
+
+	# DocField
+	{
+		u'allow_on_submit': 0,
+		u'default': u'',
+		u'depends_on': u'',
+		u'description': u'',
+		u'doctype': u'DocField',
+		u'fieldname': u'purchase_order',
+		u'fieldtype': u'Link',
+		u'hidden': 0,
+		u'in_filter': 0,
+		u'label': u'Purchase Order',
+		u'no_copy': 0,
+		u'oldfieldname': u'',
+		u'oldfieldtype': u'',
+		u'options': u'Purchase Order',
+		u'permlevel': 0,
+		u'print_hide': 0,
+		u'report_hide': 0,
+		u'reqd': 0,
+		u'search_index': 0,
+		u'unique': 0,
+		u'width': u''
 	}
 ]
