@@ -5,7 +5,7 @@
 	{
 		u'creation': u'2012-07-26 13:40:15',
 		u'docstatus': 0,
-		u'modified': '2012-09-03 14:56:11',
+		u'modified': '2012-09-06 11:23:41',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -34,7 +34,6 @@
 		u'issingle': 0,
 		u'istable': 0,
 		u'max_attachments': 0,
-		'modifed': '2012-09-03 14:56:11',
 		u'module': u'Selling',
 		u'name': u'__common__',
 		u'name_case': u'',
@@ -52,7 +51,6 @@
 	# These values are common for all DocField
 	{
 		'doctype': u'DocField',
-		'modifed': '2012-09-03 14:56:11',
 		u'name': u'__common__',
 		u'parent': u'Sales Order',
 		u'parentfield': u'fields',
@@ -62,7 +60,6 @@
 	# These values are common for all DocPerm
 	{
 		'doctype': u'DocPerm',
-		'modifed': '2012-09-03 14:56:11',
 		u'name': u'__common__',
 		u'parent': u'Sales Order',
 		u'parentfield': u'permissions',
@@ -180,19 +177,28 @@
 
 	# DocField
 	{
+		u'allow_on_submit': 0,
 		u'colour': u'White:FFF',
+		u'default': u'',
+		u'depends_on': u'',
 		u'description': u'Select the price list as entered in "Price List" master. This will pull the reference rates of items against this price list as specified in "Item" master.',
 		u'doctype': u'DocField',
-		u'fieldname': u'price_list_name',
+		u'fieldname': u'price_list',
 		u'fieldtype': u'Select',
+		u'hidden': 0,
+		u'in_filter': 0,
 		u'label': u'Price List',
+		u'no_copy': 0,
 		u'oldfieldname': u'price_list_name',
 		u'oldfieldtype': u'Select',
 		u'options': u'link:Price List',
 		u'permlevel': 0,
 		u'print_hide': 1,
+		u'report_hide': 0,
 		u'reqd': 1,
+		u'search_index': 0,
 		u'trigger': u'Client',
+		u'unique': 0,
 		u'width': u'100px'
 	},
 
@@ -211,15 +217,28 @@
 
 	# DocField
 	{
+		u'allow_on_submit': 0,
 		u'colour': u'White:FFF',
+		u'default': u'',
+		u'depends_on': u'',
 		u'description': u"Rate at which Price list currency is converted to company's base currency",
 		u'doctype': u'DocField',
-		u'fieldname': u'plc_conversion_rate',
+		u'fieldname': u'plc_exchange_rate',
 		u'fieldtype': u'Float',
-		u'label': u'Price List Currency Conversion Rate',
+		u'hidden': 0,
+		u'in_filter': 0,
+		u'label': u'Price List Currency Exchange Rate',
+		u'no_copy': 0,
+		u'oldfieldname': u'',
+		u'oldfieldtype': u'',
+		u'options': u'',
 		u'permlevel': 0,
 		u'print_hide': 1,
-		u'reqd': 1
+		u'report_hide': 0,
+		u'reqd': 1,
+		u'search_index': 0,
+		u'unique': 0,
+		u'width': u''
 	},
 
 	# DocField
@@ -241,19 +260,28 @@
 
 	# DocField
 	{
+		u'allow_on_submit': 0,
 		u'colour': u'White:FFF',
 		u'default': u'1.00',
+		u'depends_on': u'',
 		u'description': u"Rate at which customer's currency is converted to company's base currency",
 		u'doctype': u'DocField',
-		u'fieldname': u'conversion_rate',
+		u'fieldname': u'exchange_rate',
 		u'fieldtype': u'Float',
-		u'label': u'Conversion Rate',
+		u'hidden': 0,
+		u'in_filter': 0,
+		u'label': u'Exchange Rate',
+		u'no_copy': 0,
 		u'oldfieldname': u'conversion_rate',
 		u'oldfieldtype': u'Currency',
+		u'options': u'',
 		u'permlevel': 0,
 		u'print_hide': 1,
+		u'report_hide': 0,
 		u'reqd': 1,
+		u'search_index': 0,
 		u'trigger': u'Client',
+		u'unique': 0,
 		u'width': u'100px'
 	},
 
@@ -335,14 +363,27 @@
 
 	# DocField
 	{
+		u'allow_on_submit': 0,
+		u'default': u'',
+		u'depends_on': u'',
+		u'description': u'',
 		u'doctype': u'DocField',
 		u'fieldname': u'terms',
 		u'fieldtype': u'Text Editor',
+		u'hidden': 0,
+		u'in_filter': 0,
 		u'label': u'Terms and Conditions Details',
+		u'no_copy': 0,
 		u'oldfieldname': u'terms',
 		u'oldfieldtype': u'Text Editor',
+		u'options': u'',
 		u'permlevel': 0,
-		u'print_hide': 0
+		u'print_hide': 0,
+		u'report_hide': 0,
+		u'reqd': 0,
+		u'search_index': 0,
+		u'unique': 0,
+		u'width': u''
 	},
 
 	# DocField
@@ -429,15 +470,27 @@
 
 	# DocField
 	{
+		u'allow_on_submit': 0,
+		u'default': u'',
+		u'depends_on': u'',
+		u'description': u'',
 		u'doctype': u'DocField',
-		u'fieldname': u'customer_address',
+		u'fieldname': u'party_address',
 		u'fieldtype': u'Link',
 		u'hidden': 0,
 		u'in_filter': 1,
-		u'label': u'Customer Address',
+		u'label': u'Party Address',
+		u'no_copy': 0,
+		u'oldfieldname': u'',
+		u'oldfieldtype': u'',
 		u'options': u'Address',
 		u'permlevel': 0,
-		u'print_hide': 1
+		u'print_hide': 1,
+		u'report_hide': 0,
+		u'reqd': 0,
+		u'search_index': 0,
+		u'unique': 0,
+		u'width': u''
 	},
 
 	# DocField
