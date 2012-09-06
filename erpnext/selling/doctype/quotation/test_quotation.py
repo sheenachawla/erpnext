@@ -30,10 +30,10 @@ base_quote = {
 	"party": "Robert Smith",
 	"order_type": "Sales",
 	"currency": "INR",
-	"conversion_rate": 1,
+	"exchange_rate": 1,
 	"price_list_name": "Standard",
 	"price_list_currency": "INR",
-	"plc_conversion_rate": 1,
+	"plc_exchange_rate": 1,
 	"__islocal": 1
 }
 
@@ -97,23 +97,23 @@ class TestQuotation(TestBase):
 		self.assertRaises(webnotes.ValidationError, webnotes.model.insert, 
 			[base_quote, quote_item])
 
-	def test_conversion_rate(self):
-		# conversion rate not specified
+	def test_exchange_rate(self):
+		# exchange rate not specified
 		quote = base_quote.copy()
-		quote.update({"conversion_rate": ""})
+		quote.update({"exchange_rate": ""})
 		self.assertRaises(webnotes.ValidationError, webnotes.model.insert, [quote, base_quote_item])
 
-		# conversion rate != 1
+		# exchange rate != 1
 		quote = base_quote.copy()
-		quote.update({"conversion_rate": 50})
+		quote.update({"exchange_rate": 50})
 		self.assertRaises(webnotes.ValidationError, webnotes.model.insert, [quote, base_quote_item])
 
-		# price list conversion rate != 1
+		# price list exchange rate != 1
 		quote = base_quote.copy()
-		quote.update({"plc_conversion_rate": 50})
+		quote.update({"plc_exchange_rate": 50})
 		self.assertRaises(webnotes.ValidationError, webnotes.model.insert, [quote, base_quote_item])
 
-		# if diff currency, conversion_rate !=(0, 1)
+		# if diff currency, exchange_rate !=(0, 1)
 		webnotes.conn.set_value('Company', base_quote['company'], 'default_currency', 'USD')
 		self.assertRaises(webnotes.ValidationError, \
 			webnotes.model.insert, [base_quote, base_quote_item])
