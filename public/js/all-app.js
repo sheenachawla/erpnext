@@ -543,7 +543,9 @@ wn.ui.grid_common={add_property_setter_on_resize:function(grid){grid.onColumnsRe
  */
 wn.provide('wn.ui');wn.ui.Listing=Class.extend({init:function(opts){this.opts=opts||{};this.page_length=20;this.start=0;this.data=[];if(opts){this.make();}},prepare_opts:function(){if(this.opts.new_doctype){if(wn.boot.profile.can_read.indexOf(this.opts.new_doctype)==-1){this.opts.new_doctype=null;}else{this.opts.new_doctype=get_doctype_label(this.opts.new_doctype);}}
 if(!this.opts.no_result_message){this.opts.no_result_message=wn._("Nothing to show");}},make:function(opts){if(opts){this.opts=opts;}
-this.prepare_opts();$.extend(this,this.opts);$(this.parent).html(repl('\
+this.prepare_opts();$.extend(this,this.opts);opts.str_add_filter=wn._("Add Filter")
+opts.str_search=wn._("Search")
+$(this.parent).html(repl('\
    <div class="wnlist">\
     <h4 class="title hide">%(title)s</h4>\
     \
@@ -552,9 +554,9 @@ this.prepare_opts();$.extend(this,this.opts);$(this.parent).html(repl('\
       <div class="filter_area"></div>\
       <div>\
        <button class="btn btn-small btn-info search-btn">\
-        <i class="icon-refresh icon-white"></i> Search</button>\
+        <i class="icon-refresh icon-white"></i> %(str_search)s</button>\
        <button class="btn btn-small add-filter-btn">\
-        <i class="icon-plus"></i> Add Filter</button>\
+        <i class="icon-plus"></i> %(str_add_filter)s</button>\
       </div>\
      </div>\
     </div>\
@@ -972,25 +974,25 @@ this.controls[key].set_input(val);}}});
 /*
  *	lib/js/wn/form/form_assign.js
  */
-wn.ui.AssignTo=Class.extend({init:function(opts){$.extend(this,opts);this.make_button();this.make_dropdown();if(this.form_page.doclist.doc.get('__assigned_to')){this.set_assign_button_text(wn.boot.user_info[this.form_page.doclist.doc.get('__assigned_to')]);}},make_button:function(){this.$w=$('<div class="btn-group">\
+wn.ui.AssignTo=Class.extend({init:function(opts){$.extend(this,opts);this.make_button();this.make_dropdown();if(this.form_page.doclist.doc.get('__assigned_to')){this.set_assign_button_text(wn.boot.user_info[this.form_page.doclist.doc.get('__assigned_to')]);}},make_button:function(){this.$w=$(repl('<div class="btn-group">\
    <span class="label dropdown-toggle" \
     style="width: 180px; overflow: hidden; text-align: left; display: inline-block;" \
-    data-toggle="dropdown">Not Assigned</span>\
+    data-toggle="dropdown">%(not_assigned)s</span>\
    <ul class="dropdown-menu">\
    </ul>\
-  </div>').appendTo(this.form_page.$sidebar);},make_dropdown:function(){this.assign_btn=this.$w.find('.dropdown-toggle');var ul=this.$w.find('ul');var me=this;$.each(keys(wn.boot.user_info).sort().concat(''),function(i,v){if(v!='Guest'){if(v){var ui=$.extend(wn.boot.user_info[v],{id:v});}else{var ui={fullname:'Not Assigned',id:null};$('<li class="divider"></li>').appendTo(ul);}
+  </div>',{not_assigned:wn._("Not Assigned")})).appendTo(this.form_page.$sidebar);},make_dropdown:function(){this.assign_btn=this.$w.find('.dropdown-toggle');var ul=this.$w.find('ul');var me=this;$.each(keys(wn.boot.user_info).sort().concat(''),function(i,v){if(v!='Guest'){if(v){var ui=$.extend(wn.boot.user_info[v],{id:v});}else{var ui={fullname:wn._("Not Assigned"),id:null};$('<li class="divider"></li>').appendTo(ul);}
 $('<a></a>').html(ui.fullname).data('user-info',ui).appendTo($('<li>').appendTo(ul)).click(function(){me.assign($(this).data('user-info'));});}});this.assign_btn.dropdown();},assign:function(user_info){this.assign_btn.attr('disabled','disabled').text('Updating...');var me=this;if(user_info.id){wn.model.insert({doctype:'ToDo',parent:this.form_page.doclist.doc.get('name'),parenttype:this.form_page.doclist.doc.get('doctype'),owner:user_info.id,description:'You have been assigned this.',priority:'Medium',assigned_by:user},function(r){me.set_assign_button_text(user_info);})}else{wn.call({method:'core.doctype.todo.todo.remove_todo',args:{parent:this.form_page.doclist.doc.get('name'),parenttype:this.form_page.doclist.doc.get('doctype')},callback:function(r){me.set_assign_button_text(user_info);}});}},set_assign_button_text:function(user_info){if(user_info.id){this.assign_btn.text(user_info.fullname).addClass('label-success',user_info.id);}else{this.assign_btn.text(user_info.fullname).removeClass('label-success',user_info.id);}
 this.assign_btn.attr('disabled',null);this.assign_to=user_info.id;},})
 /*
  *	lib/js/wn/form/form_comments.js
  */
-wn.ui.Comments=Class.extend({init:function(opts){$.extend(this,opts);this.make_body();var me=this;$.each(this.form_page.doclist.doc.get('__comments')||[],function(i,v){me.render_comment(v);})},make_body:function(){var me=this;this.$w=$('<div class="comments-area"><br>\
-   <b>Comments:</b><br>\
+wn.ui.Comments=Class.extend({init:function(opts){$.extend(this,opts);this.make_body();var me=this;$.each(this.form_page.doclist.doc.get('__comments')||[],function(i,v){me.render_comment(v);})},make_body:function(){var me=this;this.$w=$(repl('<div class="comments-area"><br>\
+   <b>%(comments)s:</b><br>\
    <textarea style="width: 190px; height: 36px;" \
     class="comment comment-text"></textarea>\
-   <button class="btn btn-small">Add Comment</button>\
+   <button class="btn btn-small">%(add_comment)s</button>\
    <div class="comment-list" style="margin-top: 17px;"></div>\
-   </div>').appendTo(this.form_page.$sidebar);this.$w.find('.btn').click(function(){me.add_comment(me.$w.find('textarea').val());})},add_comment:function(comment){var me=this;wn.model.insert({doctype:'Comment',comment:comment,parenttype:this.form_page.doclist.doc.get('doctype'),parent:this.form_page.doclist.doc.get('name'),parentfield:'comments',comment_by:user,},function(r){me.$w.find('textarea').val('');me.render_comment(r.docs[0]);},this.$w.find('.btn'))},render_comment:function(comment){comment.date=prettyDate(comment.creation);comment.comment_by_fullname=wn.boot.user_info[comment.comment_by].fullname;$(repl('<div style="margin-bottom: 7px; border-bottom: 1px dashed #888; \
+   </div>',{comments:wn._("Comments"),add_comment:wn._("Add Comment")})).appendTo(this.form_page.$sidebar);this.$w.find('.btn').click(function(){me.add_comment(me.$w.find('textarea').val());})},add_comment:function(comment){var me=this;wn.model.insert({doctype:'Comment',comment:comment,parenttype:this.form_page.doclist.doc.get('doctype'),parent:this.form_page.doclist.doc.get('name'),parentfield:'comments',comment_by:user,},function(r){me.$w.find('textarea').val('');me.render_comment(r.docs[0]);},this.$w.find('.btn'))},render_comment:function(comment){comment.date=prettyDate(comment.creation);comment.comment_by_fullname=wn.boot.user_info[comment.comment_by].fullname;$(repl('<div style="margin-bottom: 7px; border-bottom: 1px dashed #888; \
    padding-bottom: 7px;">\
     <div class="comment">%(comment)s</div>\
     <div style="font-size: 80%">\
@@ -1024,8 +1026,7 @@ me.apply_status();},btn);},make_action_buttons:function(){this.action_btn_group=
    <li><a href="#" class="action-refresh"><i class="icon icon-refresh"></i> %(refresh)s</a></li>\
    <li><a href="#" class="action-delete"><i class="icon icon-remove"></i> %(delete)s</a></li>\
   </ul>\
-  </div>',{"actions":wn._("Actions"),"new":wn._("New"),"print":wn._("Print"),"email":wn._("Email"),"copy":wn._("Copy"),"refresh":wn._("Refresh"),"delete":wn._("Delete")})).appendTo(this.page.appframe.$w.find('.appframe-toolbar'));this.action_btn_group.find('.dropdown-toggle').dropdown();var me=this;this.action_btn_group.find('.action-new').click(function(){var new_doclist=wn.model.create(me.doctype);wn.set_route('Form',me.doctype,new_doclist.doc.get('name'));return false;});this.action_btn_group.find('.action-copy').click(function(){var new_doclist=me.doclist.copy();wn.set_route('Form',me.doctype,new_doclist.doc.get('name'));return false;});},make_help_buttons:function(){var meta=this.form.meta.doc;var me=this;if(meta.get('description')){this.page.appframe.add_help_button(wn._(meta.get('description')));}},make_doctype_button:function(){this.doctype_btn=this.page.appframe.add_button(meta.get('name'),function(){wn.set_route('List',meta.get('name'));}).addClass('btn-inverse');this.doctype_btn.parent().css('float','right');},make_status_buttons:function(){var me=this;var ds_labels=wn.model.get_docstatus_labels(this.form.meta.doc.get('name'));console.log(ds_labels)
-this.docstatus_btns={};this.docstatus_btns[0]=this.page.appframe.add_button(wn._(ds_labels[0]),function(){me.save(this,0);});this.docstatus_btns[1]=$('<button class="btn btn-small"></button>').html(wn._(ds_labels[1])).appendTo(this.docstatus_btns[0].parent()).click(function(){me.save(this,1);});this.docstatus_btns[2]=$('<button class="btn btn-small"></button>').html(wn._(ds_labels[2])).appendTo(this.docstatus_btns[0].parent()).click(function(){me.save(this,2);});this.docstatus_btns[0].parent().css('float','right');this.docstatus_btn_class={0:'btn-info',1:'btn-success',2:'btn-danger'};this.apply_status();this.doclist.on('change docstatus',function(){me.apply_status();});},apply_status:function(){var ds=this.doclist.doc.get('docstatus',0);var me=this;$.each.call(this,[0,1,2],function(i,v){me.docstatus_btns[v].removeClass(me.docstatus_btn_class[v]).attr('disabled',null);});this.docstatus_btns[ds].addClass(this.docstatus_btn_class[ds]).attr('disabled','disabled');}});
+  </div>',{"actions":wn._("Actions"),"new":wn._("New"),"print":wn._("Print"),"email":wn._("Email"),"copy":wn._("Copy"),"refresh":wn._("Refresh"),"delete":wn._("Delete")})).appendTo(this.page.appframe.$w.find('.appframe-toolbar'));this.action_btn_group.find('.dropdown-toggle').dropdown();var me=this;this.action_btn_group.find('.action-new').click(function(){var new_doclist=wn.model.create(me.doctype);wn.set_route('Form',me.doctype,new_doclist.doc.get('name'));return false;});this.action_btn_group.find('.action-copy').click(function(){var new_doclist=me.doclist.copy();wn.set_route('Form',me.doctype,new_doclist.doc.get('name'));return false;});},make_help_buttons:function(){var meta=this.form.meta.doc;var me=this;if(meta.get('description')){this.page.appframe.add_help_button(wn._(meta.get('description')));}},make_doctype_button:function(){this.doctype_btn=this.page.appframe.add_button(meta.get('name'),function(){wn.set_route('List',meta.get('name'));}).addClass('btn-inverse');this.doctype_btn.parent().css('float','right');},make_status_buttons:function(){var me=this;var ds_labels=wn.model.get_docstatus_labels(this.form.meta.doc.get('name'));this.docstatus_btns={};this.docstatus_btns[0]=this.page.appframe.add_button(wn._(ds_labels[0]),function(){me.save(this,0);});this.docstatus_btns[1]=$('<button class="btn btn-small"></button>').html(wn._(ds_labels[1])).appendTo(this.docstatus_btns[0].parent()).click(function(){me.save(this,1);});this.docstatus_btns[2]=$('<button class="btn btn-small"></button>').html(wn._(ds_labels[2])).appendTo(this.docstatus_btns[0].parent()).click(function(){me.save(this,2);});this.docstatus_btns[0].parent().css('float','right');this.docstatus_btn_class={0:'btn-info',1:'btn-success',2:'btn-danger'};this.apply_status();this.doclist.on('change docstatus',function(){me.apply_status();});},apply_status:function(){var ds=this.doclist.doc.get('docstatus',0);var me=this;$.each.call(this,[0,1,2],function(i,v){me.docstatus_btns[v].removeClass(me.docstatus_btn_class[v]).attr('disabled',null);});this.docstatus_btns[ds].addClass(this.docstatus_btn_class[ds]).attr('disabled','disabled');}});
 /*
  *	lib/js/wn/form/form_tags.js
  */

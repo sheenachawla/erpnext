@@ -523,7 +523,9 @@ wn.ui.grid_common={add_property_setter_on_resize:function(grid){grid.onColumnsRe
  */
 wn.provide('wn.ui');wn.ui.Listing=Class.extend({init:function(opts){this.opts=opts||{};this.page_length=20;this.start=0;this.data=[];if(opts){this.make();}},prepare_opts:function(){if(this.opts.new_doctype){if(wn.boot.profile.can_read.indexOf(this.opts.new_doctype)==-1){this.opts.new_doctype=null;}else{this.opts.new_doctype=get_doctype_label(this.opts.new_doctype);}}
 if(!this.opts.no_result_message){this.opts.no_result_message=wn._("Nothing to show");}},make:function(opts){if(opts){this.opts=opts;}
-this.prepare_opts();$.extend(this,this.opts);$(this.parent).html(repl('\
+this.prepare_opts();$.extend(this,this.opts);opts.str_add_filter=wn._("Add Filter")
+opts.str_search=wn._("Search")
+$(this.parent).html(repl('\
    <div class="wnlist">\
     <h4 class="title hide">%(title)s</h4>\
     \
@@ -532,9 +534,9 @@ this.prepare_opts();$.extend(this,this.opts);$(this.parent).html(repl('\
       <div class="filter_area"></div>\
       <div>\
        <button class="btn btn-small btn-info search-btn">\
-        <i class="icon-refresh icon-white"></i> Search</button>\
+        <i class="icon-refresh icon-white"></i> %(str_search)s</button>\
        <button class="btn btn-small add-filter-btn">\
-        <i class="icon-plus"></i> Add Filter</button>\
+        <i class="icon-plus"></i> %(str_add_filter)s</button>\
       </div>\
      </div>\
     </div>\
