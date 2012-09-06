@@ -5,7 +5,7 @@
 	{
 		u'creation': u'2012-08-07 15:42:44',
 		u'docstatus': 0,
-		u'modified': '2012-08-31 18:54:23',
+		u'modified': '2012-09-05 14:19:59',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -32,7 +32,6 @@
 		u'issingle': 0,
 		u'istable': 0,
 		u'max_attachments': 0,
-		'modifed': '2012-08-31 18:54:23',
 		u'module': u'Buying',
 		u'name': u'__common__',
 		u'name_case': u'',
@@ -45,7 +44,6 @@
 	# These values are common for all DocField
 	{
 		'doctype': u'DocField',
-		'modifed': '2012-08-31 18:54:23',
 		u'name': u'__common__',
 		u'parent': u'Supplier Quotation',
 		u'parentfield': u'fields',
@@ -55,7 +53,6 @@
 	# These values are common for all DocPerm
 	{
 		'doctype': u'DocPerm',
-		'modifed': '2012-08-31 18:54:23',
 		u'name': u'__common__',
 		u'parent': u'Supplier Quotation',
 		u'parentfield': u'permissions',
@@ -243,71 +240,27 @@
 
 	# DocField
 	{
-		u'doctype': u'DocField',
-		u'fieldname': u'net_total_import',
-		u'fieldtype': u'Currency',
-		u'label': u'Net Total (Import)',
-		u'no_copy': 0,
-		u'oldfieldname': u'net_total_import',
-		u'oldfieldtype': u'Currency',
-		u'permlevel': 1,
-		u'print_hide': 1
-	},
-
-	# DocField
-	{
-		u'doctype': u'DocField',
-		u'fieldname': u'other_charges_added_import',
-		u'fieldtype': u'Currency',
-		u'label': u'Taxes and Charges Added (Import)',
-		u'no_copy': 0,
-		u'oldfieldname': u'other_charges_added_import',
-		u'oldfieldtype': u'Currency',
-		u'permlevel': 1,
-		u'print_hide': 1,
-		u'report_hide': 0
-	},
-
-	# DocField
-	{
-		u'doctype': u'DocField',
-		u'fieldname': u'other_charges_deducted_import',
-		u'fieldtype': u'Currency',
-		u'label': u'Taxes and Charges Deducted (Import)',
-		u'no_copy': 0,
-		u'oldfieldname': u'other_charges_deducted_import',
-		u'oldfieldtype': u'Currency',
-		u'permlevel': 1,
-		u'print_hide': 1,
-		u'report_hide': 0
-	},
-
-	# DocField
-	{
-		u'doctype': u'DocField',
-		u'fieldname': u'grand_total_import',
-		u'fieldtype': u'Currency',
-		u'label': u'Grand Total (Import)',
-		u'no_copy': 0,
-		u'oldfieldname': u'grand_total_import',
-		u'oldfieldtype': u'Currency',
-		u'permlevel': 1,
-		u'print_hide': 1,
-		u'report_hide': 0
-	},
-
-	# DocField
-	{
+		u'allow_on_submit': 0,
+		u'default': u'',
+		u'depends_on': u'',
+		u'description': u'',
 		u'doctype': u'DocField',
 		u'fieldname': u'net_total',
 		u'fieldtype': u'Currency',
-		u'label': u'Net Total*',
+		u'hidden': 0,
+		u'in_filter': 0,
+		u'label': u'Net Total',
 		u'no_copy': 1,
 		u'oldfieldname': u'net_total',
 		u'oldfieldtype': u'Currency',
+		u'options': u'',
 		u'permlevel': 1,
 		u'print_hide': 1,
-		u'reqd': 0
+		u'report_hide': 0,
+		u'reqd': 0,
+		u'search_index': 0,
+		u'unique': 0,
+		u'width': u''
 	},
 
 	# DocField
@@ -338,15 +291,27 @@
 
 	# DocField
 	{
+		u'allow_on_submit': 0,
+		u'default': u'',
+		u'depends_on': u'',
+		u'description': u'',
 		u'doctype': u'DocField',
 		u'fieldname': u'total_tax',
 		u'fieldtype': u'Currency',
-		u'label': u'Total Tax*',
+		u'hidden': 0,
+		u'in_filter': 0,
+		u'label': u'Total Tax',
 		u'no_copy': 1,
 		u'oldfieldname': u'total_tax',
 		u'oldfieldtype': u'Currency',
+		u'options': u'',
 		u'permlevel': 1,
-		u'print_hide': 1
+		u'print_hide': 1,
+		u'report_hide': 0,
+		u'reqd': 0,
+		u'search_index': 0,
+		u'unique': 0,
+		u'width': u''
 	},
 
 	# DocField
@@ -376,44 +341,77 @@
 
 	# DocField
 	{
+		u'allow_on_submit': 0,
+		u'default': u'',
+		u'depends_on': u'',
+		u'description': u'',
 		u'doctype': u'DocField',
 		u'fieldname': u'terms_section_break',
 		u'fieldtype': u'Section Break',
+		u'hidden': 0,
+		u'in_filter': 0,
 		u'label': u'Terms and Conditions',
+		u'no_copy': 0,
+		u'oldfieldname': u'',
 		u'oldfieldtype': u'Section Break',
-		u'permlevel': 0
-	},
-
-	# DocField
-	{
-		u'doctype': u'DocField',
-		u'fieldname': u'terms_html',
-		u'fieldtype': u'HTML',
-		u'label': u'Terms and Conditions HTML',
-		u'oldfieldtype': u'HTML',
-		u'options': u'You can add Terms and Notes that will be printed in the Transaction',
+		u'options': u'',
 		u'permlevel': 0,
-		u'print_hide': 1
+		u'print_hide': 0,
+		u'report_hide': 0,
+		u'reqd': 0,
+		u'search_index': 0,
+		u'unique': 0,
+		u'width': u''
 	},
 
 	# DocField
 	{
+		u'allow_on_submit': 0,
+		u'default': u'',
+		u'depends_on': u'',
+		u'description': u'',
 		u'doctype': u'DocField',
 		u'fieldname': u'terms',
 		u'fieldtype': u'Text Editor',
-		u'label': u'Terms and Conditions1',
+		u'hidden': 0,
+		u'in_filter': 0,
+		u'label': u'Terms and Conditions',
+		u'no_copy': 0,
 		u'oldfieldname': u'terms',
 		u'oldfieldtype': u'Text Editor',
-		u'permlevel': 0
+		u'options': u'',
+		u'permlevel': 0,
+		u'print_hide': 0,
+		u'report_hide': 0,
+		u'reqd': 0,
+		u'search_index': 0,
+		u'unique': 0,
+		u'width': u''
 	},
 
 	# DocField
 	{
+		u'allow_on_submit': 0,
+		u'default': u'',
+		u'depends_on': u'',
+		u'description': u'',
 		u'doctype': u'DocField',
 		u'fieldname': u'contact_section',
 		u'fieldtype': u'Section Break',
+		u'hidden': 0,
+		u'in_filter': 0,
 		u'label': u'Contact Info',
-		u'permlevel': 0
+		u'no_copy': 0,
+		u'oldfieldname': u'',
+		u'oldfieldtype': u'',
+		u'options': u'',
+		u'permlevel': 0,
+		u'print_hide': 0,
+		u'report_hide': 0,
+		u'reqd': 0,
+		u'search_index': 0,
+		u'unique': 0,
+		u'width': u''
 	},
 
 	# DocField
@@ -452,24 +450,6 @@
 
 	# DocField
 	{
-		u'colour': u'White:FFF',
-		u'doctype': u'DocField',
-		u'fieldname': u'stopped',
-		u'fieldtype': u'Check',
-		u'in_filter': 1,
-		u'label': u'Stopped?',
-		u'no_copy': 1,
-		u'oldfieldname': u'status',
-		u'oldfieldtype': u'Select',
-		u'options': u'',
-		u'permlevel': 1,
-		u'print_hide': 1,
-		u'reqd': 0,
-		u'search_index': 0
-	},
-
-	# DocField
-	{
 		u'default': u'No',
 		u'doctype': u'DocField',
 		u'fieldname': u'is_subcontracted',
@@ -482,41 +462,15 @@
 
 	# DocField
 	{
-		u'doctype': u'DocField',
-		u'fieldname': u'amended_from',
-		u'fieldtype': u'Data',
-		u'hidden': 1,
-		u'label': u'Amended From',
-		u'no_copy': 1,
-		u'oldfieldname': u'amended_from',
-		u'oldfieldtype': u'Data',
-		u'permlevel': 1,
-		u'print_hide': 1,
-		u'report_hide': 0
-	},
-
-	# DocField
-	{
-		u'description': u'The date at which current entry is corrected in the system.',
-		u'doctype': u'DocField',
-		u'fieldname': u'amendment_date',
-		u'fieldtype': u'Date',
-		u'hidden': 1,
-		u'label': u'Amendment Date',
-		u'no_copy': 1,
-		u'oldfieldname': u'amendment_date',
-		u'oldfieldtype': u'Date',
-		u'permlevel': 0,
-		u'print_hide': 1
-	},
-
-	# DocField
-	{
+		u'allow_on_submit': 0,
 		u'colour': u'White:FFF',
+		u'default': u'',
+		u'depends_on': u'',
 		u'description': u'Select the relevant company name if you have multiple companies',
 		u'doctype': u'DocField',
 		u'fieldname': u'company',
 		u'fieldtype': u'Link',
+		u'hidden': 0,
 		u'in_filter': 1,
 		u'label': u'Company',
 		u'no_copy': 0,
@@ -525,8 +479,11 @@
 		u'options': u'Company',
 		u'permlevel': 0,
 		u'print_hide': 1,
+		u'report_hide': 0,
 		u'reqd': 1,
-		u'search_index': 1
+		u'search_index': 1,
+		u'unique': 0,
+		u'width': u''
 	},
 
 	# DocField

@@ -1,0 +1,80 @@
+# DocType Validator, Purchase Request
+[
+
+	# These values are common in all dictionaries
+	{
+		u'creation': '2012-08-21 10:21:18',
+		u'docstatus': 0,
+		u'modified': '2012-09-05 17:13:24',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
+	},
+
+	# These values are common for all DocType Validator
+	{
+		'doctype': u'DocType Validator',
+		'for_doctype': u'Purchase Request',
+		u'name': u'__common__'
+	},
+
+	# These values are common for all DocType Link Filter
+	{
+		'condition': u'=',
+		'doctype': u'DocType Link Filter',
+		'fieldname': u'is_purchase_item',
+		'link_field': u'item_code',
+		u'name': u'__common__',
+		'parent': u'Purchase Request',
+		'parentfield': u'link_filters',
+		'parenttype': u'DocType Validator',
+		'table_field': u'purchase_request_items',
+		'value': u'Yes'
+	},
+
+	# These values are common for all DocType Conditional Property
+	{
+		'doctype': u'DocType Conditional Property',
+		'if_table_field': u'purchase_request_items',
+		u'name': u'__common__',
+		'parent': u'Purchase Request',
+		'parentfield': u'conditional_properties',
+		'parenttype': u'DocType Validator'
+	},
+
+	# DocType Validator, Purchase Request
+	{
+		u'doctype': u'DocType Validator',
+		'name': u'Purchase Request'
+	},
+
+	# DocType Link Filter
+	{
+		u'doctype': u'DocType Link Filter'
+	},
+
+	# DocType Conditional Property
+	{
+		u'doctype': u'DocType Conditional Property',
+		'if_condition': u'Filled',
+		'if_field': u'schedule_date',
+		'if_value': u'',
+		'then_condition': u'<=',
+		'then_field': u'posting_date',
+		'then_table_field': u'',
+		'then_value': u'field:if.schedule_date'
+	},
+
+	# DocType Conditional Property
+	{
+		u'doctype': u'DocType Conditional Property',
+		'if_condition': u'=',
+		'if_field': u'item_code',
+		'if_reference_field': u'is_stock_item',
+		'if_value': u'Yes',
+		'then_condition': u'Filled',
+		'then_field': u'warehouse',
+		'then_reference_field': u'',
+		'then_table_field': u'purchase_request_items',
+		'then_value': u''
+	}
+]

@@ -5,7 +5,7 @@
 	{
 		u'creation': u'2012-08-31 16:55:04',
 		u'docstatus': 0,
-		u'modified': '2012-08-31 17:00:39',
+		u'modified': '2012-09-05 15:44:20',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -20,7 +20,7 @@
 		u'autoname': u'Prompt',
 		u'default_print_format': u'Standard',
 		u'description': u'Standard tax template that can be applied on any item in Sales and Purchase transactions. This template can contain list of tax heads and also other expense / income heads like "Insurance", "Handling" etc.\n\n#### Description of Columns\n\n- Account Head: The Account ledger under which this tax will be booked\n- Description: Description of the tax (that will be printed in invoices / quotes).\n- Cost Center: If the tax / charge is an income (like shipping) or expense it needs to be booked against a Cost Center.\n- Rate: Tax rate.\n- Amount: Tax amount.\n- Is this Tax included in Basic Rate?: If you check this, it means that this tax will not be shown below the item table, but will be included in the Basic Rate in your main item table. This is useful where you want give a flat price (inclusive of all taxes) price to customers.',
-		u'docstatus_labels': u'',
+		u'docstatus_labels': u'Draft, Submitted, Cancelled',
 		'doctype': u'DocType',
 		u'document_type': u'Setup',
 		u'hide_heading': 0,
@@ -31,7 +31,7 @@
 		u'issingle': 0,
 		u'istable': 0,
 		u'max_attachments': 0,
-		u'modifed': '2012-08-31 17:00:39',
+		'modifed': '2012-09-05 15:44:20',
 		u'module': u'Accounts',
 		u'name': u'__common__',
 		u'name_case': u'',
@@ -43,7 +43,7 @@
 	# These values are common for all DocField
 	{
 		'doctype': u'DocField',
-		u'modifed': '2012-08-31 17:00:39',
+		'modifed': '2012-09-05 15:44:20',
 		u'name': u'__common__',
 		u'parent': u'Taxes and Charges',
 		u'parentfield': u'fields',
@@ -54,7 +54,7 @@
 	# These values are common for all DocPerm
 	{
 		'doctype': u'DocPerm',
-		u'modifed': '2012-08-31 17:00:39',
+		'modifed': '2012-09-05 15:44:20',
 		u'name': u'__common__',
 		u'parent': u'Taxes and Charges',
 		u'parentfield': u'permissions',

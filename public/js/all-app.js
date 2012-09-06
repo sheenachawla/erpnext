@@ -197,9 +197,9 @@ $.each(this.doclist,function(i,d){var meta=wn.model.get('DocType',d.get('doctype
 if(reqd.length){$.each(reqd,function(i,info){if(info[1].get('parent')){msgprint(repl("<b>%(label)s</b> in <b>%(parent)s</b> \
       table row %(idx)s is mandatory.",{label:info[0].get('label'),idx:info[1].get('idx'),parent:wn.model.get('DocType',info[1].get('parenttype')).get({fieldname:info[1].get('parentfield')})[0].get('label')}));}else{msgprint(repl("<b>%(label)s</b> in <b>%(parent)s</b> is mandatory.",info[0].fields));}});msgprint('<div class="alert alert-error">Please enter some values in the above fields.</div>');throw'mandatory error';}},reset:function(doclist){var oldname=this.doc.get('name');this.doc.fields=doclist[0];this.name=this.doc.get('name');this.doclist.splice(1);doclist=doclist.splice(1);for(i in doclist){this.add(doclist[i]);}
 if(oldname!=this.name){delete wn.doclists[this.doctype][oldname];}
-this.trigger('reset');},get_docs:function(){return $.map(this.doclist,function(d){return d.fields;});},rename:function(){this.name=this.doclist[0].get('name');},meta:function(){return wn.model.get('DocType',this.doc.get('doctype'));},add_child:function(parentfield){var docfield=this.meta().get({fieldname:parentfield,doctype:'DocField'})[0];var doc=new wn.model.Document(docfield.get('options'));doc.extend({parent:this.doc.get('name'),parenttype:this.doc.get('doctype'),parentfield:parentfield,idx:this.get({parentfield:docfield.get('fieldname')}).length+1})
+this.dirty=false;this.trigger('reset');},get_docs:function(){return $.map(this.doclist,function(d){return d.fields;});},rename:function(){this.name=this.doclist[0].get('name');},meta:function(){return wn.model.get('DocType',this.doc.get('doctype'));},add_child:function(parentfield){var docfield=this.meta().get({fieldname:parentfield,doctype:'DocField'})[0];var doc=new wn.model.Document(docfield.get('options'));doc.extend({parent:this.doc.get('name'),parenttype:this.doc.get('doctype'),parentfield:parentfield,idx:this.get({parentfield:docfield.get('fieldname')}).length+1})
 wn.model.set_defaults(doc);this.add(doc);return doc;},remove_child:function(doc){this.doclist.splice(this.doclist.indexOf(doc),1);this.renum_idx(doc.get('parentfield'));},renum_idx:function(parentfield){$.each(this.get({parentfield:parentfield}),function(i,d){d.set('idx',i+1);});},copy:function(){var new_doclist=new wn.model.DocList();this.each(function(d){var new_doc=d.copy();if(d.get('parent'))
-new_doc.set('parent',new_doclist.doc.get('name'));new_doclist.add(new_doc);});console.log(new_doclist);return new_doclist;},get_perm:function(){if(!this.perm){this.perm=wn.model.perm.get(this.doc.get('doctype'),this.doc.get('name'));}
+new_doc.set('parent',new_doclist.doc.get('name'));new_doclist.add(new_doc);});return new_doclist;},get_perm:function(){if(!this.perm){this.perm=wn.model.perm.get(this.doc.get('doctype'),this.doc.get('name'));}
 return this.perm;},trigger_change_event:function(key,val,doc){this.trigger('change',key,val,doc);if(doc.get('parentfield')){this.trigger('change '+doc.get('parentfield')+' '+key,key,val,doc);}else{this.trigger('change '+key,key,val,doc);}}});
 /*
  *	lib/js/wn/model/permission.js
@@ -430,14 +430,14 @@ var time_to_ampm=wn.datetime.time_to_ampm;var time_to_hhmm=wn.datetime.time_to_h
 /*
  *	lib/js/legacy/utils/msgprint.js
  */
-var msg_dialog;function msgprint(msg,title){if(!msg)return;if(msg instanceof Array){$.each(msg,function(i,v){if(v)msgprint(v);})
+var msg_dialog;function msgprint(msg,title,exc){if(!msg)return;if(msg instanceof Array){$.each(msg,function(i,v){if(v)msgprint(v);})
 return;}
 if(typeof(msg)!='string')
 msg=JSON.stringify(msg);if(msg.substr(0,8)=='__small:'){show_alert(msg.substr(8));return;}
 if(!msg_dialog){msg_dialog=new wn.ui.Dialog({title:"Message",});msg_dialog.msg_area=$('<div class="msgprint">').appendTo(msg_dialog.body);msg_dialog.on('hide',function(){msg_dialog.msg_area.empty();})}
 if(msg.search(/<br>|<p>|<li>/)==-1)
 msg=replace_newlines(msg);msg_dialog.set_title(title||'Message')
-msg_dialog.msg_area.append('<p>'+msg+'</p>');msg_dialog.show();}
+msg_dialog.msg_area.append('<p>'+msg+'</p>');msg_dialog.show();if(exc)throw msg;}
 function show_alert(txt,add_class){if(!$('#dialog-container').length){$('<div id="dialog-container">').appendTo('body');}
 if(!$('#alert-container').length){$('<div id="alert-container" style="position: fixed; bottom: 8px; right: 8px; \
    z-index: 10;"></div>').appendTo('#dialog-container');}
@@ -966,9 +966,10 @@ wn.ui.new_form=function(opts){if(opts.doc&&wn.form_classes[opts.doc.get('doctype
 wn.form_classes={};wn.ui.Form=Class.extend({init:function(opts){$.extend(this,opts);this.controls={};if(this.doc){this.meta=wn.model.get('DocType',this.doc.get('doctype'));this.fields=$.map(this.meta.get('DocField',{}),function(d){return d.fields;});if(this.doc.get('__islocal')&&this.meta.doc.get('autoname')=='Prompt'){this.doc.set('name','');this.fields=[{"fieldtype":"Data","fieldname":"name",permlevel:0,"label":"New "+this.doc.get('doctype')+" Name",reqd:1}].concat(this.fields);}
 this.doc.form=this;}
 this.setup&&this.setup();this.make_form();this.listen();},make_form:function(){var me=this;this.$form=$('<form class="form-horizontal" style="clear: both;">').appendTo(this.parent).submit(function(){return false;});if(this.fields[0].fieldtype!='Section Break'){me.make_fieldset('_first_section');}
-$.each(this.fields,function(i,df){if(df.fieldtype=='Section Break'){me.make_fieldset(df.fieldname,df.label);}else{me.controls[df.fieldname]=wn.ui.make_control({docfield:df,parent:me.last_fieldset,doc:me.doc,doclist:me.doclist,form:me});if(me.controls[df.fieldname])
+$.each(this.fields,function(i,df){if(df.fieldtype=='Section Break'){me.make_fieldset(df.fieldname,df.label,df.description);}else{me.controls[df.fieldname]=wn.ui.make_control({docfield:df,parent:me.last_fieldset,doc:me.doc,doclist:me.doclist,form:me});if(me.controls[df.fieldname])
 me.controls[df.fieldname].trigger_make_event();}});$.each(me.controls,function(i,control){control&&control.set_init_value&&control.set_init_value();})
-this.$form.find(':input:first').focus();},make_fieldset:function(name,legend){var $fset=$('<fieldset data-name="'+name+'"></fieldset>').appendTo(this.$form);if(legend){$('<legend>').text(wn._(legend)).appendTo($fset);}
+this.$form.find(':input:first').focus();},make_fieldset:function(name,legend,description){var $fset=$('<fieldset data-name="'+name+'"></fieldset>').appendTo(this.$form);if(legend){$('<legend>').text(wn._(legend)).appendTo($fset);}
+if(description){$('<div class="help-block">'+description+'</div>').appendTo($fset);}
 this.last_fieldset=$fset;},listen:function(){var me=this;if(this.doclist){this.doclist.on('change',function(key,val,doc){me.reset_value(key,val,doc);});this.doclist.on('change docstatus',function(key,val,doc){$.each(me.controls,function(i,control){control&&control.apply_disabled&&control.apply_disabled();});})}},reset_value:function(key,val,doc){if(doc.get('parentfield')){if(this.controls[doc.get('parentfield')]){this.controls[doc.get('parentfield')].set();}}else{if(this.controls[key]&&this.controls[key].get()!==val)
 this.controls[key].set_input(val);}}});
 /*

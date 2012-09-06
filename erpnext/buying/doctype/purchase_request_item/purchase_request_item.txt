@@ -5,7 +5,7 @@
 	{
 		u'creation': u'2012-05-10 13:55:35',
 		u'docstatus': 0,
-		u'modified': '2012-08-29 18:24:11',
+		u'modified': '2012-09-04 14:41:58',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -21,6 +21,7 @@
 		u'colour': u'White:FFF',
 		u'default_print_format': u'Standard',
 		u'description': u'',
+		u'docstatus_labels': u'',
 		'doctype': u'DocType',
 		u'document_type': u'',
 		u'hide_heading': 0,
@@ -30,8 +31,7 @@
 		u'is_submittable': 0,
 		u'issingle': 0,
 		u'istable': 1,
-		u'max_attachments': u'',
-		'modifed': '2012-08-29 18:24:11',
+		u'max_attachments': 0,
 		u'module': u'Buying',
 		u'name': u'__common__',
 		u'name_case': u'',
@@ -47,7 +47,6 @@
 	# These values are common for all DocField
 	{
 		'doctype': u'DocField',
-		'modifed': '2012-08-29 18:24:11',
 		u'name': u'__common__',
 		u'parent': u'Purchase Request Item',
 		u'parentfield': u'fields',
@@ -79,18 +78,28 @@
 
 	# DocField
 	{
+		u'allow_on_submit': 0,
 		u'colour': u'White:FFF',
 		u'default': u'0.00',
+		u'depends_on': u'',
+		u'description': u'',
 		u'doctype': u'DocField',
 		u'fieldname': u'qty',
 		u'fieldtype': u'Currency',
+		u'hidden': 0,
+		u'in_filter': 0,
 		u'label': u'Quantity',
 		u'no_copy': 0,
 		u'oldfieldname': u'qty',
 		u'oldfieldtype': u'Currency',
+		u'options': u'',
 		u'permlevel': 0,
+		u'print_hide': 0,
+		u'report_hide': 0,
 		u'reqd': 1,
+		u'search_index': 0,
 		u'trigger': u'Client',
+		u'unique': 0,
 		u'width': u'80px'
 	},
 
@@ -111,16 +120,26 @@
 
 	# DocField
 	{
+		u'allow_on_submit': 0,
+		u'default': u'',
+		u'depends_on': u'',
+		u'description': u'Date by which this Item is required to be received',
 		u'doctype': u'DocField',
 		u'fieldname': u'schedule_date',
 		u'fieldtype': u'Date',
-		u'label': u'Required Date',
+		u'hidden': 0,
+		u'in_filter': 0,
+		u'label': u'Required By',
 		u'no_copy': 1,
 		u'oldfieldname': u'schedule_date',
 		u'oldfieldtype': u'Date',
+		u'options': u'',
 		u'permlevel': 0,
 		u'print_hide': 0,
+		u'report_hide': 0,
 		u'reqd': 1,
+		u'search_index': 0,
+		u'unique': 0,
 		u'width': u'100px'
 	},
 

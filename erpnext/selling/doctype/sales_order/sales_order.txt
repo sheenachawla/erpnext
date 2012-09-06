@@ -5,7 +5,7 @@
 	{
 		u'creation': u'2012-07-26 13:40:15',
 		u'docstatus': 0,
-		u'modified': '2012-08-31 14:23:08',
+		u'modified': '2012-09-03 14:56:11',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -34,7 +34,7 @@
 		u'issingle': 0,
 		u'istable': 0,
 		u'max_attachments': 0,
-		'modifed': '2012-08-31 14:23:08',
+		'modifed': '2012-09-03 14:56:11',
 		u'module': u'Selling',
 		u'name': u'__common__',
 		u'name_case': u'',
@@ -52,7 +52,7 @@
 	# These values are common for all DocField
 	{
 		'doctype': u'DocField',
-		'modifed': '2012-08-31 14:23:08',
+		'modifed': '2012-09-03 14:56:11',
 		u'name': u'__common__',
 		u'parent': u'Sales Order',
 		u'parentfield': u'fields',
@@ -62,7 +62,7 @@
 	# These values are common for all DocPerm
 	{
 		'doctype': u'DocPerm',
-		'modifed': '2012-08-31 14:23:08',
+		'modifed': '2012-09-03 14:56:11',
 		u'name': u'__common__',
 		u'parent': u'Sales Order',
 		u'parentfield': u'permissions',
@@ -298,55 +298,26 @@
 
 	# DocField
 	{
+		u'allow_on_submit': 0,
+		u'default': u'',
+		u'depends_on': u'',
+		u'description': u'',
 		u'doctype': u'DocField',
 		u'fieldname': u'grand_total',
 		u'fieldtype': u'Currency',
-		u'label': u'Grand Total*',
+		u'hidden': 0,
+		u'in_filter': 0,
+		u'label': u'Grand Total',
+		u'no_copy': 0,
 		u'oldfieldname': u'grand_total',
 		u'oldfieldtype': u'Currency',
+		u'options': u'',
 		u'permlevel': 1,
 		u'print_hide': 1,
+		u'report_hide': 0,
 		u'reqd': 0,
-		u'width': u'150px'
-	},
-
-	# DocField
-	{
-		u'doctype': u'DocField',
-		u'fieldname': u'rounded_total',
-		u'fieldtype': u'Currency',
-		u'label': u'Rounded Total',
-		u'oldfieldname': u'rounded_total',
-		u'oldfieldtype': u'Currency',
-		u'permlevel': 1,
-		u'print_hide': 1,
-		u'width': u'150px'
-	},
-
-	# DocField
-	{
-		u'doctype': u'DocField',
-		u'fieldname': u'grand_total_export',
-		u'fieldtype': u'Currency',
-		u'label': u'Grand Total (Export)',
-		u'oldfieldname': u'grand_total_export',
-		u'oldfieldtype': u'Currency',
-		u'permlevel': 1,
-		u'print_hide': 0,
-		u'reqd': 0,
-		u'width': u'150px'
-	},
-
-	# DocField
-	{
-		u'doctype': u'DocField',
-		u'fieldname': u'rounded_total_export',
-		u'fieldtype': u'Currency',
-		u'label': u'Rounded Total (Export)',
-		u'oldfieldname': u'rounded_total_export',
-		u'oldfieldtype': u'Currency',
-		u'permlevel': 1,
-		u'print_hide': 0,
+		u'search_index': 0,
+		u'unique': 0,
 		u'width': u'150px'
 	},
 
@@ -535,15 +506,26 @@
 	# DocField
 	{
 		u'allow_on_submit': 1,
+		u'default': u'',
+		u'depends_on': u'',
+		u'description': u'',
 		u'doctype': u'DocField',
 		u'fieldname': u'letter_head',
 		u'fieldtype': u'Select',
+		u'hidden': 0,
+		u'in_filter': 0,
 		u'label': u'Letter Head',
+		u'no_copy': 0,
 		u'oldfieldname': u'letter_head',
 		u'oldfieldtype': u'Select',
-		u'options': u'\nDefault\nERP Grey Large\nERP LOGO\nERPNext Logo Black\nERPNext WT Logo',
+		u'options': u'link:Letter Head',
 		u'permlevel': 0,
-		u'print_hide': 1
+		u'print_hide': 1,
+		u'report_hide': 0,
+		u'reqd': 0,
+		u'search_index': 0,
+		u'unique': 0,
+		u'width': u''
 	},
 
 	# DocField
