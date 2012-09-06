@@ -19,7 +19,7 @@ import webnotes
 import webnotes.model
 from webnotes.utils import flt
 from webnotes import msgprint
-from webnotes.model.controller.selling import SalesController
+from controllers.selling import SalesController
 
 class StockController(SalesController):
 	pass

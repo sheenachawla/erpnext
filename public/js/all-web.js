@@ -321,20 +321,19 @@ if(d.search('-')!=-1){var t=d.split('-');return new Date(t[0],t[1]-1,t[2],tm[0],
 new_dt=new Date(dt.getFullYear(),dt.getMonth()+months,dt.getDate())
 if(new_dt.getDate()!=dt.getDate()){return dateutil.month_end(new Date(dt.getFullYear(),dt.getMonth()+months,1))}
 return dateutil.obj_to_str(new_dt);},month_start:function(){var d=new Date();return d.getFullYear()+'-'+int_to_str(d.getMonth()+1,2)+'-01';},month_end:function(d){if(!d)var d=new Date();var m=d.getMonth()+1;var y=d.getFullYear();last_date=month_last[m];if(m==2&&(y%4)==0&&((y%100)!=0||(y%400)==0))
-last_date=29;return y+'-'+int_to_str(m,2)+'-'+last_date;},get_user_fmt:function(){var t=sys_defaults.date_format;if(!t)t='dd-mm-yyyy';return t;},str_to_user:function(val,no_time_str){var user_fmt=dateutil.get_user_fmt();var time_str='';if(val==null||val=='')return null;if(val.search(':')!=-1){var tmp=val.split(' ');if(tmp[1])
-time_str=' '+tmp[1];var d=tmp[0];}else{var d=val;}
-if(no_time_str)time_str='';d=d.split('-');if(d.length==3){if(user_fmt=='dd-mm-yyyy')
-val=d[2]+'-'+d[1]+'-'+d[0]+time_str;else if(user_fmt=='dd/mm/yyyy')
-val=d[2]+'/'+d[1]+'/'+d[0]+time_str;else if(user_fmt=='yyyy-mm-dd')
-val=d[0]+'-'+d[1]+'-'+d[2]+time_str;else if(user_fmt=='mm/dd/yyyy')
-val=d[1]+'/'+d[2]+'/'+d[0]+time_str;else if(user_fmt=='mm-dd-yyyy')
-val=d[1]+'-'+d[2]+'-'+d[0]+time_str;}
-return val;},full_str:function(){var d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()+' '
-+d.getHours()+':'+d.getMinutes()+':'+d.getSeconds();},user_to_str:function(d){var user_fmt=this.get_user_fmt();if(user_fmt=='dd-mm-yyyy'){var d=d.split('-');return d[2]+'-'+d[1]+'-'+d[0];}
-else if(user_fmt=='dd/mm/yyyy'){var d=d.split('/');return d[2]+'-'+d[1]+'-'+d[0];}
-else if(user_fmt=='yyyy-mm-dd'){return d;}
-else if(user_fmt=='mm/dd/yyyy'){var d=d.split('/');return d[2]+'-'+d[0]+'-'+d[1];}
-else if(user_fmt=='mm-dd-yyyy'){var d=d.split('-');return d[2]+'-'+d[0]+'-'+d[1];}},global_date_format:function(d){if(d.substr)d=this.str_to_obj(d);return nth(d.getDate())+' '+month_list_full[d.getMonth()]+' '+d.getFullYear();},get_today:function(){var today=new Date();var m=(today.getMonth()+1)+'';if(m.length==1)m='0'+m;var d=today.getDate()+'';if(d.length==1)d='0'+d;return today.getFullYear()+'-'+m+'-'+d;},get_cur_time:function(){var d=new Date();var hh=d.getHours()+''
+last_date=29;return y+'-'+int_to_str(m,2)+'-'+last_date;},get_user_fmt:function(){var t=sys_defaults.date_format;if(!t)t='dd-mm-yyyy';return t;},get_date_and_time_str:function(val){if(val.search(":")==-1){return[val,''];}else{return val.split(' ');}},str_to_user:function(val,no_time_str){var user_fmt=dateutil.get_user_fmt();if(!val)return val;[datestr,timestr]=dateutil.get_date_and_time_str(val);d=datestr.split('-');if(d.length==3){if(user_fmt=='dd-mm-yyyy')
+val=d[2]+'-'+d[1]+'-'+d[0];else if(user_fmt=='dd/mm/yyyy')
+val=d[2]+'/'+d[1]+'/'+d[0];else if(user_fmt=='yyyy-mm-dd')
+val=d[0]+'-'+d[1]+'-'+d[2];else if(user_fmt=='mm/dd/yyyy')
+val=d[1]+'/'+d[2]+'/'+d[0];else if(user_fmt=='mm-dd-yyyy')
+val=d[1]+'-'+d[2]+'-'+d[0];}
+return val+(timestr?(' '+timestr):"");},full_str:function(){var d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()+' '
++d.getHours()+':'+d.getMinutes()+':'+d.getSeconds();},user_to_str:function(val){var user_fmt=this.get_user_fmt();if(!val)return val;[datestr,timestr]=dateutil.get_date_and_time_str(val);if(user_fmt=='dd-mm-yyyy'){var d=datestr.split('-');var val=d[2]+'-'+d[1]+'-'+d[0];}
+else if(user_fmt=='dd/mm/yyyy'){var d=datestr.split('/');var val=d[2]+'-'+d[1]+'-'+d[0];}
+else if(user_fmt=='yyyy-mm-dd'){var val=datestr;}
+else if(user_fmt=='mm/dd/yyyy'){var d=datestr.split('/');var val=d[2]+'-'+d[0]+'-'+d[1];}
+else if(user_fmt=='mm-dd-yyyy'){var d=datestr.split('-');var val=d[2]+'-'+d[0]+'-'+d[1];}
+return val+(timestr?(' '+timestr):"");},global_date_format:function(d){if(d.substr)d=this.str_to_obj(d);return nth(d.getDate())+' '+month_list_full[d.getMonth()]+' '+d.getFullYear();},get_today:function(){var today=new Date();var m=(today.getMonth()+1)+'';if(m.length==1)m='0'+m;var d=today.getDate()+'';if(d.length==1)d='0'+d;return today.getFullYear()+'-'+m+'-'+d;},get_cur_time:function(){var d=new Date();var hh=d.getHours()+''
 var mm=cint(d.getMinutes()/5)*5+''
 return(hh.length==1?'0'+hh:hh)+':'+(mm.length==1?'0'+mm:mm);}}
 wn.datetime.only_date=function(val){if(val==null||val=='')return null;if(val.search(':')!=-1){var tmp=val.split(' ');var d=tmp[0].split('-');}else{var d=val.split('-');}
@@ -523,7 +522,9 @@ wn.ui.grid_common={add_property_setter_on_resize:function(grid){grid.onColumnsRe
  */
 wn.provide('wn.ui');wn.ui.Listing=Class.extend({init:function(opts){this.opts=opts||{};this.page_length=20;this.start=0;this.data=[];if(opts){this.make();}},prepare_opts:function(){if(this.opts.new_doctype){if(wn.boot.profile.can_read.indexOf(this.opts.new_doctype)==-1){this.opts.new_doctype=null;}else{this.opts.new_doctype=get_doctype_label(this.opts.new_doctype);}}
 if(!this.opts.no_result_message){this.opts.no_result_message=wn._("Nothing to show");}},make:function(opts){if(opts){this.opts=opts;}
-this.prepare_opts();$.extend(this,this.opts);$(this.parent).html(repl('\
+this.prepare_opts();$.extend(this,this.opts);this.opts.str_add_filter=wn._("Add Filter")
+this.opts.str_search=wn._("Search")
+$(this.parent).html(repl('\
    <div class="wnlist">\
     <h4 class="title hide">%(title)s</h4>\
     \
@@ -532,9 +533,9 @@ this.prepare_opts();$.extend(this,this.opts);$(this.parent).html(repl('\
       <div class="filter_area"></div>\
       <div>\
        <button class="btn btn-small btn-info search-btn">\
-        <i class="icon-refresh icon-white"></i> Search</button>\
+        <i class="icon-refresh icon-white"></i> %(str_search)s</button>\
        <button class="btn btn-small add-filter-btn">\
-        <i class="icon-plus"></i> Add Filter</button>\
+        <i class="icon-plus"></i> %(str_add_filter)s</button>\
       </div>\
      </div>\
     </div>\
