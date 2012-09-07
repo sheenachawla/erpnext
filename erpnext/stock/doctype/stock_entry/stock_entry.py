@@ -33,6 +33,7 @@ class StockEntryController(StockController):
 		self.item_table_fieldname = 'stock_entry_items'
 		
 	def validate(self):
+		return
 		self.validate_max_discount()
 		self.validate_exchange_rate()
 		self.validate_project()

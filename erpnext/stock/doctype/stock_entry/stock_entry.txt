@@ -5,7 +5,7 @@
 	{
 		u'creation': u'2012-07-17 13:32:12',
 		u'docstatus': 0,
-		u'modified': '2012-09-06 11:47:16',
+		u'modified': '2012-09-06 18:04:54',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -25,7 +25,7 @@
 		u'description': u'',
 		u'docstatus_labels': u'',
 		'doctype': u'DocType',
-		u'document_type': u'',
+		u'document_type': u'Transaction',
 		u'hide_heading': 0,
 		u'hide_toolbar': 0,
 		u'in_create': 0,
@@ -228,38 +228,25 @@
 	# DocField
 	{
 		u'allow_on_submit': 0,
+		u'default': u'',
+		u'depends_on': u'',
 		u'description': u'The date at which current entry will get or has actually executed.',
 		u'doctype': u'DocField',
 		u'fieldname': u'posting_date',
-		u'fieldtype': u'Date',
+		u'fieldtype': u'Date Time',
 		u'hidden': 0,
 		u'in_filter': 1,
 		u'label': u'Posting Date',
 		u'no_copy': 1,
 		u'oldfieldname': u'posting_date',
 		u'oldfieldtype': u'Date',
+		u'options': u'',
 		u'print_hide': 1,
 		u'report_hide': 0,
 		u'reqd': 1,
-		u'search_index': 1
-	},
-
-	# DocField
-	{
-		u'allow_on_submit': 0,
-		u'doctype': u'DocField',
-		u'fieldname': u'posting_time',
-		u'fieldtype': u'Time',
-		u'hidden': 0,
-		u'in_filter': 0,
-		u'label': u'Posting Time',
-		u'no_copy': 1,
-		u'oldfieldname': u'posting_time',
-		u'oldfieldtype': u'Time',
-		u'print_hide': 1,
-		u'report_hide': 0,
-		u'reqd': 1,
-		u'search_index': 0
+		u'search_index': 1,
+		u'unique': 0,
+		u'width': u''
 	},
 
 	# DocField
@@ -661,14 +648,86 @@
 		u'width': u''
 	},
 
+	# DocField
+	{
+		u'allow_on_submit': 0,
+		u'default': u'',
+		u'depends_on': u'',
+		u'description': u'',
+		u'doctype': u'DocField',
+		u'fieldname': u'total_section',
+		u'fieldtype': u'Section Break',
+		u'hidden': 0,
+		u'in_filter': 0,
+		u'label': u'Totals',
+		u'no_copy': 0,
+		u'oldfieldname': u'',
+		u'oldfieldtype': u'',
+		u'options': u'',
+		u'print_hide': 0,
+		u'report_hide': 0,
+		u'reqd': 0,
+		u'search_index': 0,
+		u'unique': 0,
+		u'width': u''
+	},
+
+	# DocField
+	{
+		u'allow_on_submit': 0,
+		u'default': u'',
+		u'depends_on': u'',
+		u'description': u'',
+		u'doctype': u'DocField',
+		u'fieldname': u'price_list_section',
+		u'fieldtype': u'Section Break',
+		u'hidden': 0,
+		u'in_filter': 0,
+		u'label': u'Price List & Currency',
+		u'no_copy': 0,
+		u'oldfieldname': u'',
+		u'oldfieldtype': u'',
+		u'options': u'',
+		u'print_hide': 0,
+		u'report_hide': 0,
+		u'reqd': 0,
+		u'search_index': 0,
+		u'unique': 0,
+		u'width': u''
+	},
+
+	# DocField
+	{
+		u'allow_on_submit': 0,
+		u'default': u'',
+		u'depends_on': u'',
+		u'description': u'',
+		u'doctype': u'DocField',
+		u'fieldname': u'terms_section',
+		u'fieldtype': u'Section Break',
+		u'hidden': 0,
+		u'in_filter': 0,
+		u'label': u'Terms and Conditions',
+		u'no_copy': 0,
+		u'oldfieldname': u'',
+		u'oldfieldtype': u'',
+		u'options': u'',
+		u'print_hide': 0,
+		u'report_hide': 0,
+		u'reqd': 0,
+		u'search_index': 0,
+		u'unique': 0,
+		u'width': u''
+	},
+
 	# DocPerm
 	{
-		u'amend': 0,
-		u'cancel': 0,
+		u'amend': 1,
+		u'cancel': 1,
 		u'create': 1,
 		u'doctype': u'DocPerm',
 		u'permlevel': 0,
-		u'role': u'testrole',
+		u'role': u'Material Manager',
 		u'submit': 1,
 		u'write': 1
 	},
@@ -683,6 +742,19 @@
 		u'role': u'Material Manager',
 		u'submit': 0,
 		u'write': 0
+	},
+
+	# DocPerm
+	{
+		u'amend': 1,
+		u'cancel': 1,
+		u'create': 1,
+		u'doctype': u'DocPerm',
+		u'match': u'',
+		u'permlevel': 0,
+		u'role': u'Material User',
+		u'submit': 1,
+		u'write': 1
 	},
 
 	# DocPerm
@@ -711,25 +783,17 @@
 
 	# DocPerm
 	{
-		u'amend': 0,
-		u'cancel': 0,
-		u'create': 0,
 		u'doctype': u'DocPerm',
 		u'permlevel': 1,
-		u'role': u'Production User',
-		u'submit': 0,
-		u'write': 0
+		u'role': u'Production User'
 	},
 
 	# DocPerm
 	{
-		u'amend': 0,
-		u'cancel': 0,
 		u'create': 0,
 		u'doctype': u'DocPerm',
 		u'permlevel': 2,
 		u'role': u'Production User',
-		u'submit': 0,
 		u'write': 1
 	},
 
@@ -747,100 +811,16 @@
 
 	# DocPerm
 	{
-		u'amend': 0,
-		u'cancel': 0,
-		u'create': 0,
 		u'doctype': u'DocPerm',
 		u'permlevel': 1,
-		u'role': u'Production Manager',
-		u'submit': 0,
-		u'write': 0
+		u'role': u'Production Manager'
 	},
 
 	# DocPerm
 	{
-		u'amend': 0,
-		u'cancel': 0,
-		u'create': 0,
 		u'doctype': u'DocPerm',
 		u'permlevel': 2,
 		u'role': u'Production Manager',
-		u'submit': 0,
 		u'write': 1
-	},
-
-	# DocField
-	{
-		u'allow_on_submit': 0,
-		u'default': u'',
-		u'depends_on': u'',
-		u'description': u'',
-		u'doctype': u'DocField',
-		u'fieldname': u'total_section',
-		u'fieldtype': u'Section Break',
-		u'hidden': 0,
-		u'in_filter': 0,
-		u'label': u'Totals',
-		u'localname': u'New DocField 5',
-		u'no_copy': 0,
-		u'oldfieldname': u'',
-		u'oldfieldtype': u'',
-		u'options': u'',
-		u'print_hide': 0,
-		u'report_hide': 0,
-		u'reqd': 0,
-		u'search_index': 0,
-		u'unique': 0,
-		u'width': u''
-	},
-
-	# DocField
-	{
-		u'allow_on_submit': 0,
-		u'default': u'',
-		u'depends_on': u'',
-		u'description': u'',
-		u'doctype': u'DocField',
-		u'fieldname': u'price_list_section',
-		u'fieldtype': u'Section Break',
-		u'hidden': 0,
-		u'in_filter': 0,
-		u'label': u'Price List & Currency',
-		u'localname': u'New DocField 6',
-		u'no_copy': 0,
-		u'oldfieldname': u'',
-		u'oldfieldtype': u'',
-		u'options': u'',
-		u'print_hide': 0,
-		u'report_hide': 0,
-		u'reqd': 0,
-		u'search_index': 0,
-		u'unique': 0,
-		u'width': u''
-	},
-
-	# DocField
-	{
-		u'allow_on_submit': 0,
-		u'default': u'',
-		u'depends_on': u'',
-		u'description': u'',
-		u'doctype': u'DocField',
-		u'fieldname': u'terms_section',
-		u'fieldtype': u'Section Break',
-		u'hidden': 0,
-		u'in_filter': 0,
-		u'label': u'Terms and Conditions',
-		u'localname': u'New DocField 7',
-		u'no_copy': 0,
-		u'oldfieldname': u'',
-		u'oldfieldtype': u'',
-		u'options': u'',
-		u'print_hide': 0,
-		u'report_hide': 0,
-		u'reqd': 0,
-		u'search_index': 0,
-		u'unique': 0,
-		u'width': u''
 	}
 ]

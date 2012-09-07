@@ -5,7 +5,7 @@
 	{
 		u'creation': u'2012-07-26 13:40:14',
 		u'docstatus': 0,
-		u'modified': '2012-09-06 15:49:56',
+		u'modified': '2012-09-06 15:50:06',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -64,8 +64,7 @@
 		u'name': u'__common__',
 		u'parent': u'Quotation',
 		u'parentfield': u'permissions',
-		u'parenttype': u'DocType',
-		u'read': 1
+		u'parenttype': u'DocType'
 	},
 
 	# DocType, Quotation
@@ -146,6 +145,7 @@
 		u'print_hide': 1,
 		u'report_hide': 0,
 		u'reqd': 0,
+		u'search_fields': [u'party_type', u'party_group'],
 		u'search_index': 1,
 		u'trigger': u'Client',
 		u'unique': 0,
@@ -169,6 +169,7 @@
 		u'options': u'Lead',
 		u'permlevel': 0,
 		u'print_hide': 1,
+		u'search_fields': [u'lead_name', u'lead_owner', u'status'],
 		u'trigger': u'Client',
 		u'width': u''
 	},
@@ -250,7 +251,7 @@
 		u'no_copy': 0,
 		u'oldfieldname': u'price_list_name',
 		u'oldfieldtype': u'Select',
-		u'options': u'link:Price List',
+		u'options': u'\nDefault Price List\nIn Euro\nIn INR\nNew List\nStandard\nStandard 1',
 		u'permlevel': 0,
 		u'print_hide': 1,
 		u'report_hide': 0,
@@ -277,7 +278,7 @@
 		u'no_copy': 0,
 		u'oldfieldname': u'',
 		u'oldfieldtype': u'',
-		u'options': u'link:Currency',
+		u'options': u'\nAED\nAFN\nALL\nAMD\nANG\nAOA\nARS\nAUD\nAZN\nBAM\nBBD\nBDT\nBGN\nBHD\nBIF\nBMD\nBND\nBOB\nBRL\nBSD\nBTN\nBWP\nBYR\nBZD\nCAD\nCDF\nCFA\nCFP\nCHF\nCLP\nCNY\nCOP\nCRC\nCUC\nCZK\nDJF\nDKK\nDOP\nDZD\nEEK\nEGP\nERN\nETB\nEUR\nFJD\nFKP\nFMG\nGBP\nGEL\nGHS\nGIP\nGMD\nGNF\nGQE\nGTQ\nGYD\nHKD\nHNL\nHRK\nHTG\nHUF\nINR\nJMD\nJOD\nJPY\nKES\nKGS\nKHR\nKMF\nKPW\nKRW\nKWD\nKYD\nKZT\nLAK\nLBP\nLKR\nLRD\nLSL\nLTL\nLVL\nLYD\nMAD\nMDL\nMGA\nMKD\nMMK\nMNT\nMOP\nMRO\nMUR\nMVR\nMWK\nMXN\nMYR\nMZM\nNAD\nNGN\nNIO\nNOK\nNPR\nNRs\nNZD\nOMR\nPAB\nPEN\nPGK\nPHP\nPKR\nPLN\nPYG\nQAR\nRMB\nRON\nRSD\nRUB\nRWF\nSAR\nSCR\nSDG\nSDR\nSEK\nSGD\nSHP\nSOS\nSRD\nSTD\nSYP\nSZL\nTHB\nTJS\nTMT\nTND\nTRY\nTTD\nTWD\nTZS\nUAE\nUAH\nUGX\nUSD\nUYU\nUZS\nVEB\nVND\nVUV\nWST\nXAF\nXCD\nXDR\nXOF\nXPF\nYEN\nYER\nYTL\nZAR\nZMK\nZWR',
 		u'permlevel': 0,
 		u'print_hide': 1,
 		u'report_hide': 0,
@@ -324,7 +325,7 @@
 		u'label': u'Currency',
 		u'oldfieldname': u'currency',
 		u'oldfieldtype': u'Select',
-		u'options': u'link:Currency',
+		u'options': u'\nAED\nAFN\nALL\nAMD\nANG\nAOA\nARS\nAUD\nAZN\nBAM\nBBD\nBDT\nBGN\nBHD\nBIF\nBMD\nBND\nBOB\nBRL\nBSD\nBTN\nBWP\nBYR\nBZD\nCAD\nCDF\nCFA\nCFP\nCHF\nCLP\nCNY\nCOP\nCRC\nCUC\nCZK\nDJF\nDKK\nDOP\nDZD\nEEK\nEGP\nERN\nETB\nEUR\nFJD\nFKP\nFMG\nGBP\nGEL\nGHS\nGIP\nGMD\nGNF\nGQE\nGTQ\nGYD\nHKD\nHNL\nHRK\nHTG\nHUF\nINR\nJMD\nJOD\nJPY\nKES\nKGS\nKHR\nKMF\nKPW\nKRW\nKWD\nKYD\nKZT\nLAK\nLBP\nLKR\nLRD\nLSL\nLTL\nLVL\nLYD\nMAD\nMDL\nMGA\nMKD\nMMK\nMNT\nMOP\nMRO\nMUR\nMVR\nMWK\nMXN\nMYR\nMZM\nNAD\nNGN\nNIO\nNOK\nNPR\nNRs\nNZD\nOMR\nPAB\nPEN\nPGK\nPHP\nPKR\nPLN\nPYG\nQAR\nRMB\nRON\nRSD\nRUB\nRWF\nSAR\nSCR\nSDG\nSDR\nSEK\nSGD\nSHP\nSOS\nSRD\nSTD\nSYP\nSZL\nTHB\nTJS\nTMT\nTND\nTRY\nTTD\nTWD\nTZS\nUAE\nUAH\nUGX\nUSD\nUYU\nUZS\nVEB\nVND\nVUV\nWST\nXAF\nXCD\nXDR\nXOF\nXPF\nYEN\nYER\nYTL\nZAR\nZMK\nZWR',
 		u'permlevel': 0,
 		u'print_hide': 1,
 		u'reqd': 1,
@@ -585,6 +586,7 @@
 		u'print_hide': 1,
 		u'report_hide': 0,
 		u'reqd': 0,
+		u'search_fields': [u'customer', u'supplier', u'sales_partner', u'country', u'state'],
 		u'search_index': 0,
 		u'trigger': u'Client',
 		u'unique': 0,
@@ -634,7 +636,7 @@
 		u'label': u'Letter Head',
 		u'oldfieldname': u'letter_head',
 		u'oldfieldtype': u'Select',
-		u'options': u'link:Letter Head',
+		u'options': u'\nAP LH\ncompany logo\nERPNext\nOfficeOne\nSample',
 		u'permlevel': 0,
 		u'print_hide': 1
 	},
@@ -652,7 +654,8 @@
 		u'options': u'Print Heading',
 		u'permlevel': 0,
 		u'print_hide': 1,
-		u'report_hide': 1
+		u'report_hide': 1,
+		u'search_fields': [u'print_heading']
 	},
 
 	# DocField
@@ -675,6 +678,7 @@
 		u'create': 0,
 		u'doctype': u'DocPerm',
 		u'permlevel': 1,
+		u'read': 1,
 		u'role': u'Sales Manager',
 		u'submit': 0,
 		u'write': 0
@@ -687,6 +691,7 @@
 		u'create': 1,
 		u'doctype': u'DocPerm',
 		u'permlevel': 0,
+		u'read': 1,
 		u'role': u'Sales Manager',
 		u'submit': 1,
 		u'write': 1
@@ -698,7 +703,9 @@
 		u'cancel': 1,
 		u'create': 1,
 		u'doctype': u'DocPerm',
+		u'match': u'',
 		u'permlevel': 0,
+		u'read': 1,
 		u'role': u'Sales User',
 		u'submit': 1,
 		u'write': 1
@@ -711,6 +718,7 @@
 		u'create': 0,
 		u'doctype': u'DocPerm',
 		u'permlevel': 1,
+		u'read': 1,
 		u'role': u'Sales User',
 		u'submit': 0,
 		u'write': 0
@@ -719,8 +727,9 @@
 	# DocPerm
 	{
 		u'doctype': u'DocPerm',
-		u'match': u'',
+		u'match': u'customer_name',
 		u'permlevel': 0,
+		u'read': 1,
 		u'role': u'Customer'
 	},
 
@@ -731,6 +740,7 @@
 		u'create': 1,
 		u'doctype': u'DocPerm',
 		u'permlevel': 0,
+		u'read': 1,
 		u'role': u'Maintenance Manager',
 		u'submit': 1,
 		u'write': 1
@@ -740,6 +750,7 @@
 	{
 		u'doctype': u'DocPerm',
 		u'permlevel': 1,
+		u'read': 1,
 		u'role': u'Maintenance Manager'
 	},
 
@@ -750,6 +761,7 @@
 		u'create': 1,
 		u'doctype': u'DocPerm',
 		u'permlevel': 0,
+		u'read': 1,
 		u'role': u'Maintenance User',
 		u'submit': 1,
 		u'write': 1
@@ -759,6 +771,14 @@
 	{
 		u'doctype': u'DocPerm',
 		u'permlevel': 1,
+		u'read': 1,
 		u'role': u'Maintenance User'
+	},
+
+	# DocPerm
+	{
+		u'doctype': u'DocPerm',
+		u'permlevel': 0,
+		u'role': u'Purchase Manager'
 	}
 ]
