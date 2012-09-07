@@ -16,20 +16,28 @@
 
 from __future__ import unicode_literals
 import webnotes
-
+from webnotes.utils import getdate
 from website.web_page import PageController
 
 class ItemController(PageController):
 	def on_rename(self,newdn,olddn):
 		webnotes.conn.sql("update tabItem set item_code = %s where name = %s", (newdn, olddn))
+	# 
+	# def get_tax_rate(self, tax_type):
+	# 	from webnotes.utils import flt
+	# 	return { "tax_rate": flt(webnotes.conn.get_value("Account", tax_type, "tax_rate")) }
+	# 
+	# def check_if_sle_exists(self):
+	# 	"""returns 'exists' or 'not exists'"""
+	# 	sle = webnotes.conn.get_value("Stock Ledger Entry",
+	# 		{"item_code": self.doc.name, "is_cancelled['No']": "No"}, "name")
+	# 
+	# 	return sle and 'exists' or 'not exists'
 
-	def get_tax_rate(self, tax_type):
-		from webnotes.utils import flt
-		return { "tax_rate": flt(webnotes.conn.get_value("Account", tax_type, "tax_rate")) }
-
-	def check_if_sle_exists(self):
-		"""returns 'exists' or 'not exists'"""
-		sle = webnotes.conn.get_value("Stock Ledger Entry",
-			{"item_code": self.doc.name, "is_cancelled['No']": "No"}, "name")
-
-		return sle and 'exists' or 'not exists'
+	def check_end_of_life(self):
+		# check if end of life has reached
+		if self.doc.end_of_life and self.doc.end_of_life <= nowdate():
+			import stock
+			webnotes.msgprint("""Item "%s" has reached its end of life""",
+				raise_exception=stock.ItemEndOfLifeError)
+		
