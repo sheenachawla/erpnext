@@ -320,12 +320,12 @@ wn.datetime={str_to_obj:function(d){if(typeof d=="object")return d;if(!d)return 
 if(d.search('-')!=-1){var t=d.split('-');return new Date(t[0],t[1]-1,t[2],tm[0],tm[1]);}else if(d.search('/')!=-1){var t=d.split('/');return new Date(t[0],t[1]-1,t[2],tm[0],tm[1]);}else{return new Date();}},obj_to_str:function(d){if(typeof d=='string')return d;return d.getFullYear()+'-'+int_to_str(d.getMonth()+1,2)+'-'+int_to_str(d.getDate(),2);},obj_to_user:function(d){return dateutil.str_to_user(dateutil.obj_to_str(d));},get_diff:function(d1,d2){if(typeof d1=='string')d1=dateutil.str_to_obj(d1);if(typeof d2=='string')d2=dateutil.str_to_obj(d2);return((d1-d2)/86400000);},get_day_diff:function(d1,d2){return dateutil.get_diff(new Date(d1.getYear(),d1.getMonth(),d1.getDate(),0,0),new Date(d2.getYear(),d2.getMonth(),d2.getDate(),0,0))},add_days:function(d,days){var dt=dateutil.str_to_obj(d);var new_dt=new Date(dt.getTime()+(days*24*60*60*1000));return dateutil.obj_to_str(new_dt);},add_months:function(d,months){dt=dateutil.str_to_obj(d)
 new_dt=new Date(dt.getFullYear(),dt.getMonth()+months,dt.getDate())
 if(new_dt.getDate()!=dt.getDate()){return dateutil.month_end(new Date(dt.getFullYear(),dt.getMonth()+months,1))}
-return dateutil.obj_to_str(new_dt);},month_start:function(){var d=new Date();return d.getFullYear()+'-'+int_to_str(d.getMonth()+1,2)+'-01';},month_end:function(d){if(!d)var d=new Date();var m=d.getMonth()+1;var y=d.getFullYear();last_date=month_last[m];if(m==2&&(y%4)==0&&((y%100)!=0||(y%400)==0))
-last_date=29;return y+'-'+int_to_str(m,2)+'-'+last_date;},get_user_fmt:function(){var t=sys_defaults.date_format;if(!t)t='dd-mm-yyyy';return t;},get_date_and_time_str:function(val){if(val.search(":")==-1){return[val,''];}else{return val.split(' ');}},str_to_user:function(val,no_time_str){var user_fmt=dateutil.get_user_fmt();if(!val)return val;[datestr,timestr]=dateutil.get_date_and_time_str(val);d=datestr.split('-');if(d.length==3){if(user_fmt=='dd-mm-yyyy')
-val=d[2]+'-'+d[1]+'-'+d[0];else if(user_fmt=='dd/mm/yyyy')
-val=d[2]+'/'+d[1]+'/'+d[0];else if(user_fmt=='yyyy-mm-dd')
-val=d[0]+'-'+d[1]+'-'+d[2];else if(user_fmt=='mm/dd/yyyy')
-val=d[1]+'/'+d[2]+'/'+d[0];else if(user_fmt=='mm-dd-yyyy')
+return dateutil.obj_to_str(new_dt);},month_start:function(){var d=new Date();return d.getFullYear()+'-'+int_to_str(d.getMonth()+1,2)+'-01';},month_end:function(d){if(!d)var d=new Date();var m=d.getMonth()+1;var y=d.getFullYear();last_date=month_last[m];if(m==2&&(y%4)==0&&((y%100)!=0||(y%400)==0)){last_date=29;}
+return y+'-'+int_to_str(m,2)+'-'+last_date;},get_user_fmt:function(){var t=sys_defaults.date_format;if(!t)t='dd-mm-yyyy';return t;},get_date_and_time_str:function(val){if(val.search(":")==-1){return[val,''];}else{return val.split(' ');}},str_to_user:function(val,no_time_str){var user_fmt=dateutil.get_user_fmt();if(!val)return val;dt=dateutil.get_date_and_time_str(val);datestr=dt[0],timestr=dt[1];d=datestr.split('-');if(d.length==3){if(user_fmt==='dd-mm-yyyy')
+val=d[2]+'-'+d[1]+'-'+d[0];else if(user_fmt==='dd/mm/yyyy')
+val=d[2]+'/'+d[1]+'/'+d[0];else if(user_fmt==='yyyy-mm-dd')
+val=d[0]+'-'+d[1]+'-'+d[2];else if(user_fmt==='mm/dd/yyyy')
+val=d[1]+'/'+d[2]+'/'+d[0];else if(user_fmt==='mm-dd-yyyy')
 val=d[1]+'-'+d[2]+'-'+d[0];}
 return val+(timestr?(' '+timestr):"");},full_str:function(){var d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()+' '
 +d.getHours()+':'+d.getMinutes()+':'+d.getSeconds();},user_to_str:function(val){var user_fmt=this.get_user_fmt();if(!val)return val;[datestr,timestr]=dateutil.get_date_and_time_str(val);if(user_fmt=='dd-mm-yyyy'){var d=datestr.split('-');var val=d[2]+'-'+d[1]+'-'+d[0];}

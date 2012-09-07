@@ -26,8 +26,8 @@ class BuyingController(DocListController):
 			itemdoc = webnotes.model.get("Item", child.item_code)[0]
 			
 			# check if purchase item
-			if itemdoc.is_purchase_item != "Yes":
-				webnotes.msgprint("""Item "%s" is not a Purchase Item""", raise_exception=True)
+			# if itemdoc.is_purchase_item != "Yes":
+			# 	webnotes.msgprint("""Item "%s" is not a Purchase Item""", raise_exception=True)
 
 			# check if end of life has reached
 			if itemdoc.end_of_life and getdate(itemdoc.end_of_life) <= \

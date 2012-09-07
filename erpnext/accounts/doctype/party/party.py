@@ -19,7 +19,7 @@ import webnotes
 import webnotes.model
 from webnotes.utils import cstr, get_defaults, flt, fmt_money
 from webnotes.model.doc import Document, make_autoname
-from webnotes import msgprint
+from webnotes import msgprint, _
 from webnotes.model.controller import DocListController
 
 class PartyController(DocListController):	
@@ -58,8 +58,9 @@ class PartyController(DocListController):
 			webnotes.model.insert_variants(values, [{'doctype': dt}])
 			
 	def check_credit_limit(self, company, current_amount=0):
-		credit_limit = self.doc.credit_limit or \
-			webnotes.conn.get_value('Company', company, 'credit_limit')
+		"""checked only for customers i.e. in sales transaction"""
+		credit_limit = flt(self.doc.credit_limit or \
+			webnotes.conn.get_value('Company', company, 'credit_limit'))
 		
 		prev_outstanding = webnotes.conn.sql("""select sum(debit) - sum(credit) \
 			from `tabGL Entry` where party = %s and company = %s""", 
@@ -67,12 +68,13 @@ class PartyController(DocListController):
 		total_outstanding = flt(prev_outstanding) + flt(current_amount)
 		
 		# if outstanding greater than credit limit and not authorized person
-		if credit_limit > 0 and flt(total_outstanding) > credit_limit and not self.get_authorized_user():
-			msgprint("Total Outstanding amount (%s) for <b>%s</b> can not be \
-				greater than credit limit (%s). To change your credit limit settings, \
-				please update the <b>%s</b>" % \
+		if credit_limit > 0 and total_outstanding > credit_limit and \
+				not self.get_authorized_user():
+			msgprint(_("Total Outstanding amount (%s) for <b>%s</b> can not be \
+				greater than Credit Limit (%s). To change your Credit Limit settings, \
+				please update the <b>%s</b>") % \
 				(fmt_money(total_outstanding), self.doc.name, fmt_money(credit_limit), 
-				self.doc.credit_limit and 'Customer' or 'Company'),
+				_(self.doc.credit_limit and 'Party' or 'Company')),
 				raise_exception=webnotes.ValidationError)
 
 	def get_authorized_user(self):
