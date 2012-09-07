@@ -50,13 +50,7 @@ base_so_item = {
 	"__islocal": 1
 }
 
-class TestSalesOrder(TestBase):
-	def test_delivery_date_greater_than_po_date(self):	
-		so = base_so.copy()
-		so.update({'po_date':add_days(nowdate(), -5), 'delivery_date':add_days(nowdate(), -10)})
-		self.assertRaises(webnotes.ValidationError, \
-			webnotes.model.insert, [so, base_so_item])
-	
+class TestSalesOrder(TestBase):	
 	def test_duplicate_sales_order_against_po(self):
 		so = base_so.copy()
 		so.update({'po_no': 'PO000001', 'docstatus': 1})
