@@ -30,7 +30,7 @@ base_so = {
 	"order_type": "Sales",
 	"currency": "INR",
 	"exchange_rate": 1,
-	"price_list_name": "Standard",
+	"price_list": "Standard",
 	"price_list_currency": "INR",
 	"plc_exchange_rate": 1,
 	"__islocal": 1

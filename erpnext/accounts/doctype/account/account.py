@@ -38,7 +38,7 @@ class AccountController(DocListController):
 
 	def validate_rate_for_tax(self):
 		if self.doc.account_type == 'Tax' and not self.doc.tax_rate:
-			msgprint("Please Enter Rate", raise_exception=webnotes.MandatoryError)
+			msgprint(_("Please Enter Rate"), raise_exception=webnotes.MandatoryError)
 
 	def validate_parent(self):
 		"""
@@ -46,7 +46,7 @@ class AccountController(DocListController):
 		"""
 		if self.doc.parent_account:
 			if self.doc.parent_account == self.doc.name:
-				msgprint("You can not assign itself as parent account"
+				msgprint(_("You can not assign itself as parent account")
 					, raise_exception=webnotes.CircularLinkError)
 			elif not self.doc.is_pl_account or not self.doc.debit_or_credit:
 				par = webnotes.conn.get_value("Account", \
@@ -55,20 +55,21 @@ class AccountController(DocListController):
 				self.doc.debit_or_credit = par[1]
 		elif self.doc.account_name not in ['Income','Source of Funds (Liabilities)',\
 		 	'Expenses','Application of Funds (Assets)']:
-			msgprint("Parent Account is mandatory", raise_exception=webnotes.MandatoryError)
+			msgprint(_("Parent Account is mandatory"), raise_exception=webnotes.MandatoryError)
 	
 	def validate_duplicate_account(self):
 		"""Account name must be unique"""
 		if (self.doc.__islocal or not self.doc.name) \
 				and webnotes.conn.exists("Account", {"account_name": self.doc.account_name, \
 				"company": self.doc.company}):
-			msgprint("Account Name already exists, please rename", raise_exception=webnotes.NameError)
+			msgprint(_("Account Name already exists, please rename"), raise_exception=webnotes.NameError)
 				
 	def validate_root_details(self):
 		#does not exists parent
 		if self.doc.account_name in ['Income','Source of Funds (Liabilities)', \
-			'Expenses', 'Application of Funds (Assets)'] and self.doc.parent_account:
-			msgprint("You can not assign parent for root account", raise_exception=webnotes.ValidationError)
+				'Expenses', 'Application of Funds (Assets)'] and self.doc.parent_account:
+			msgprint(_("You can not assign parent for root account"), 
+				raise_exception=webnotes.ValidationError)
 
 		# Debit / Credit
 		if self.doc.account_name in ['Income','Source of Funds (Liabilities)']:
@@ -84,26 +85,26 @@ class AccountController(DocListController):
 
 	def validate_mandatory(self):
 		if not self.doc.debit_or_credit or not self.doc.is_pl_account:
-			msgprint("'Debit or Credit' and 'Is PL Account' field is mandatory"
-				, raise_exception=webnotes.MandatoryError)
+			msgprint(_("'Debit or Credit' and 'Is PL Account' field is mandatory"), 	
+				raise_exception=webnotes.MandatoryError)
 
 	def convert_group_to_ledger(self):
 		# if child exists
 		if webnotes.conn.exists("Account", {"parent_account": self.doc.name}):
-			msgprint("Account: %s has existing child. You can not convert \
+			msgprint(_("Account: %s has existing child. You can not convert \
 				this account to ledger.	To proceed, move those children under \
-				another parent and try again," 
-				% self.doc.name, raise_exception=webnotes.ValidationError)
+				another parent and try again," % self.doc.name), 
+				raise_exception=webnotes.ValidationError)
 		else:
 			webnotes.conn.set(self.doc, 'group_or_ledger', 'Ledger')
 			return 1
 			
 	def convert_ledger_to_group(self):
 		if self.check_gle_exists():
-			msgprint("Account with existing transaction can not be converted to group.", 
+			msgprint(_("Account with existing transaction can not be converted to group."), 
 				raise_exception=webnotes.ValidationError)
 		elif self.doc.account_type:
-			msgprint("Cannot convert to Group because Account Type is selected.", 
+			msgprint(_("Cannot convert to Group because Account Type is selected."), 
 				raise_exception=webnotes.ValidationError)
 		else:
 			webnotes.conn.set(self.doc, 'group_or_ledger', 'Group')
@@ -128,21 +129,24 @@ class AccountController(DocListController):
 
 	def validate_before_trash(self):
 		"""Account with with existing gl entries cannot be inactive"""
+		if not self.doc.parent_account:
+			msgprint(_("Root Account can not be deleted"), 
+				raise_exception=webnotes.ValidationError)
 		if self.check_gle_exists():
-			msgprint("Account with existing transaction \
-				(Sales Invoice / Purchase Invoice / Journal Voucher) can not be trashed"
-				, raise_exception=webnotes.ValidationError)
+			msgprint(_("Account with existing transaction \
+				(Sales Invoice / Purchase Invoice / Journal Voucher) can not be trashed"), 
+				raise_exception=webnotes.ValidationError)
 		if webnotes.conn.exists("Account", {'parent_account': self.doc.name}):
-			msgprint("Child account exists for this account. You can not trash this account."
-				, raise_exception=webnotes.ValidationError)
+			msgprint(_("Child account exists for this account. You can not trash this account."), 
+				raise_exception=webnotes.ValidationError)
 	
 	def on_rename(self,newdn,olddn):
 		new_name = newdn.split(" - ")
 		company_abbr = webnotes.conn.get_value("Company", self.doc.company, "abbr")
 		
 		if new_name[-1].lower() != company_abbr.lower():
-			msgprint("Please add company abbreviation: <b>%s</b> in \
-				new account name" % company_abbr, raise_exception=webnotes.NameError)
+			msgprint(_("Please add company abbreviation: <b>%s</b> in \
+				new account name" % company_abbr), raise_exception=webnotes.NameError)
 		else:
 			new_acc_name = " - ".join(new_name[:-1])
 			webnotes.conn.set_value("Account", olddn, "account_name", new_acc_name)

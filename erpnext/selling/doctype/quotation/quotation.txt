@@ -5,7 +5,7 @@
 	{
 		u'creation': u'2012-07-26 13:40:14',
 		u'docstatus': 0,
-		u'modified': '2012-09-06 11:24:43',
+		u'modified': '2012-09-06 15:49:56',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -127,6 +127,7 @@
 
 	# DocField
 	{
+		u'allow_on_submit': 0,
 		u'colour': u'White:FFF',
 		u'default': u'',
 		u'depends_on': u'',
@@ -137,13 +138,17 @@
 		u'hidden': 0,
 		u'in_filter': 1,
 		u'label': u'Party',
+		u'no_copy': 0,
 		u'oldfieldname': u'customer',
 		u'oldfieldtype': u'Link',
-		u'options': u'party',
+		u'options': u'Party',
 		u'permlevel': 0,
 		u'print_hide': 1,
+		u'report_hide': 0,
+		u'reqd': 0,
 		u'search_index': 1,
 		u'trigger': u'Client',
+		u'unique': 0,
 		u'width': u''
 	},
 
