@@ -5,7 +5,7 @@
 	{
 		u'creation': '2012-09-07 12:34:27',
 		u'docstatus': 0,
-		u'modified': '2012-09-07 12:46:07',
+		u'modified': '2012-09-07 18:50:21',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -31,22 +31,6 @@
 		'value': u'Customer, Customer and Supplier'
 	},
 
-	# These values are common for all DocType Conditional Property
-	{
-		'doctype': u'DocType Conditional Property',
-		'if_condition': u'=',
-		'if_field': u'order_type',
-		'if_table_field': u'',
-		u'name': u'__common__',
-		'parent': u'Quotation',
-		'parentfield': u'conditional_properties',
-		'parenttype': u'DocType Validator',
-		'then_condition': u'=',
-		'then_field': u'item_code',
-		'then_table_field': u'quotation_items',
-		'then_value': u'Yes'
-	},
-
 	# DocType Validator, Quotation
 	{
 		u'doctype': u'DocType Validator',
@@ -56,19 +40,5 @@
 	# DocType Link Filter
 	{
 		u'doctype': u'DocType Link Filter'
-	},
-
-	# DocType Conditional Property
-	{
-		u'doctype': u'DocType Conditional Property',
-		'if_value': u'Sales',
-		'then_reference_field': u'is_sales_item'
-	},
-
-	# DocType Conditional Property
-	{
-		u'doctype': u'DocType Conditional Property',
-		'if_value': u'Maintenance',
-		'then_reference_field': u'is_service_item'
 	}
 ]

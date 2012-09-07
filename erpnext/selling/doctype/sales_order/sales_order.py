@@ -49,12 +49,9 @@ class SalesOrderController(SalesController):
 		if self.doc.docstatus == 1:
 			get_controller('Party',self.doc.party).check_credit_limit(
 				self.doc.company, self.doc.grand_total * self.doc.exchange_rate)
-		
-	def on_update(self):
-		if self.doc.docstatus == 2:
-			self.check_if_nextdoc_exists(['Delivery Note Item', 'Sales Invoice Item',
-				'Maintenance Schedule Item', 'Maintenance Visit Purpose'])
-			
+			from core.doctype.doctype_mapper.doctype_mapper import validate_prev_doclist
+			validate_prev_doclist('Quotation', 'Sales Order', self.doclist)
+	
 	def validate_po(self):
 		if self.doc.customer_po and self.doc.party:
 			so = webnotes.conn.sql("""select name from `tabSales Order`
