@@ -5,7 +5,7 @@
 	{
 		u'creation': u'2012-06-08 16:07:58',
 		u'docstatus': 0,
-		u'modified': '2012-09-06 14:16:56',
+		u'modified': '2012-09-10 18:24:35',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -408,5 +408,31 @@
 		u'permlevel': 0,
 		u'print_hide': 1,
 		u'report_hide': 1
+	},
+
+	# DocField
+	{
+		u'allow_on_submit': 0,
+		u'default': u'',
+		u'depends_on': u'',
+		u'description': u'',
+		u'doctype': u'DocField',
+		u'fieldname': u'quotation_item',
+		u'fieldtype': u'Link',
+		u'hidden': 1,
+		u'in_filter': 0,
+		u'label': u'Quotation Item',
+		'localname': u'New DocField 1',
+		u'no_copy': 0,
+		u'oldfieldname': u'',
+		u'oldfieldtype': u'',
+		u'options': u'Quotation Item',
+		u'permlevel': 0,
+		u'print_hide': 1,
+		u'report_hide': 0,
+		u'reqd': 0,
+		u'search_index': 0,
+		u'unique': 0,
+		u'width': u''
 	}
 ]

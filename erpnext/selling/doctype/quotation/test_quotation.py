@@ -53,12 +53,12 @@ base_quote_item = {
 
 base_taxes_master = [
 	{
-		'doctype': 'Taxes and Charges', 'name': 'default_taxes_and_charges', 
+		'doctype': 'Taxes and Charges', 'name': 'default_taxes', 
 		'company': 'East Wind Corporation', 'is_default': 1, "__islocal": 1
 	},
 	{
 		'doctype': 'Taxes and Charges Account', 'parentfield': 'taxes_and_charges_accounts',
-		'account': 'Service Tax - EW', 'rate': 10, 
+		'account': 'Travelling Expenses - EW', 'rate': 10, 
 		'description': 'service tax', "__islocal": 1
 	},
 	{
@@ -69,27 +69,9 @@ base_taxes_master = [
 ]
 
 def load_data():
-	webnotes.model.insert([{
-		"doctype": "Account", "account_name": "Service Tax",
-		"parent_account": "Duties and Taxes - EW",
-		"group_or_ledger": "Ledger", "debit_or_credit": "Credit",
-		"is_pl_account": "No", "company": "East Wind Corporation"
-	}])
 	return webnotes.model.insert(base_taxes_master)
 
-class TestQuotation(TestBase):
-	def test_item_type(self):
-		# not sales item
-		webnotes.conn.set_value('Item', 'Home Desktop 100', 'is_sales_item', 'No')
-		self.assertRaises(webnotes.ValidationError, \
-			webnotes.model.insert, [base_quote, base_quote_item])
-			
-		# not service item
-		quote = base_quote.copy()
-		quote.update({"order_type": "Maintenance"})
-		self.assertRaises(webnotes.ValidationError, \
-			webnotes.model.insert, [quote, base_quote_item])
-	
+class TestQuotation(TestBase):	
 	def test_max_discount(self):
 		webnotes.conn.set_value('Item', 'Home Desktop 100', 'max_discount', 50)
 		quote_item = base_quote_item.copy()
@@ -131,16 +113,16 @@ class TestQuotation(TestBase):
 		so = base_so.copy()
 		so.update({"docstatus": 1})
 		so_item = base_so_item.copy()
-		so_item.update({"quotation": quote_ctlr.doc.name})
+		so_item.update({"quotation": quote_ctlr.doc.name, \
+			"quotation_item": quote_ctlr.doclist[1].name})
 		webnotes.model.insert([so, so_item])
 		
 		quote_ctlr.doc.docstatus = 2
 		self.assertRaises(webnotes.ValidationError, quote_ctlr.save)
 		
 	def test_taxes_and_totals(self):
-		taxes_ctlr = load_data()
 		quote_item = base_quote_item.copy()
-		quote_item.update({'taxes_and_charges': taxes_ctlr.doc.name})
+		quote_item.update({'taxes_and_charges': 'default_taxes'})
 		
 		quote = base_quote.copy()
 		quote.update({"docstatus": 1})

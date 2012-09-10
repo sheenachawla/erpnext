@@ -51,7 +51,7 @@ class SalesOrderController(SalesController):
 		if self.doc.customer_po and self.doc.party:
 			so = webnotes.conn.sql("""select name from `tabSales Order`
 				where customer_po = %s and docstatus = 1 and party = %s
-				and name != %s""", (self.doc.po_no, cstr(self.doc.name), self.doc.party))
+				and name != %s""", (self.doc.customer_po, self.doc.party, cstr(self.doc.name)))
 			if so:
 				msgprint(_("""Another Sales Order (%s) exists against same 
 					Customer's Purchase Order and Party.""") % so[0]['name'],

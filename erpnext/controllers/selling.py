@@ -25,11 +25,15 @@ from webnotes.model.controller import DocListController
 
 class SalesController(DocListController):
 	def validate(self):
-		self.validate_max_discount()
-		self.validate_exchange_rate()
-		self.validate_project()
-		self.get_sales_team_contribution()
-		self.calculate_totals()
+		if self.doc.docstatus != 2:
+			self.validate_max_discount()
+			self.validate_exchange_rate()
+			self.validate_project()
+			self.get_sales_team_contribution()
+			self.calculate_totals()
+		else:		
+			from core.doctype.doctype_mapper.doctype_mapper import is_next_submitted
+			is_next_submitted(self.doc.doctype, self.doc.name)
 	
 	def validate_max_discount(self):
 		for d in self.doclist.get({'parentfield': self.item_table_fieldname}):
@@ -62,6 +66,20 @@ class SalesController(DocListController):
 			self.doclist.get({'parentfield': 'sales_team'})])
 		for d in self.doclist.get({"parentfield": 'sales_team'}):
 			d.allocated_percentage = d.allocated_percentage*100/total_contribution
+		
+	def is_next_submitted(self, nextdoc_types):
+		"""
+			check whether submitted next document type exists against current doc
+			nextdoc_types is list of item tables of next doc
+		"""
+		for d in nextdoc_types:
+			nextdoc = webnotes.conn.get_value(d, \
+				{self.doc.doctype.lower().replace(' ', '_'): self.doc.name, \
+				'docstatus': 1}, ['parent', 'parenttype'], as_dict=1)
+			if nextdoc:
+				msgprint(_("""Submitted %s: %s exists against this %s.""") % 
+				(nextdoc.parenttype, nextdoc.parent, nextdoc.parenttype),
+				raise_exception=webnotes.ValidationError)
 				
 	def validate_project(self):
 		if self.doc.get('project_name'):

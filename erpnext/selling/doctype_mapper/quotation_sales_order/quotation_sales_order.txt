@@ -3,9 +3,9 @@
 
 	# These values are common in all dictionaries
 	{
-		u'creation': u'2010-09-20 12:33:35',
+		u'creation': u'2012-09-10 14:54:27',
 		u'docstatus': 0,
-		u'modified': '2012-09-07 18:28:41',
+		u'modified': '2012-09-10 18:10:19',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -49,13 +49,23 @@
 	# Table Mapper Detail
 	{
 		u'doctype': u'Table Mapper Detail',
-		u'from_field': u'quotation_details',
+		u'from_field': u'quotation_items',
 		u'from_table': u'Quotation Item',
 		u'match_id': 1,
 		u'reference_doctype_key': u'prevdoc_doctype',
-		u'to_field': u'sales_order_details',
+		u'to_field': u'sales_order_items',
 		u'to_table': u'Sales Order Item',
 		u'validation_logic': u'name is not null'
+	},
+
+	# Table Mapper Detail
+	{
+		u'doctype': u'Table Mapper Detail',
+		u'from_field': u'sales_team',
+		u'from_table': u'Sales Team',
+		u'match_id': 2,
+		u'to_field': u'sales_team',
+		u'to_table': u'Sales Team'
 	},
 
 	# Field Mapper Detail
@@ -74,7 +84,6 @@
 		u'condition': u'>=',
 		u'doctype': u'Field Mapper Detail',
 		u'from_field': u'posting_date',
-		u'localname': u'New Field Mapper Detail 4',
 		u'map': 0,
 		u'match_id': 0,
 		u'to_field': u'posting_date'
@@ -85,21 +94,9 @@
 		u'condition': u'=',
 		u'doctype': u'Field Mapper Detail',
 		u'from_field': u'order_type',
-		u'localname': u'New Field Mapper Detail 5',
 		u'map': 1,
 		u'match_id': 0,
 		u'to_field': u'order_type'
-	},
-
-	# Table Mapper Detail
-	{
-		u'doctype': u'Table Mapper Detail',
-		u'from_field': u'sales_team',
-		u'from_table': u'Sales Team',
-		u'localname': u'New Table Mapper Detail 1',
-		u'match_id': 2,
-		u'to_field': u'sales_team',
-		u'to_table': u'Sales Team'
 	},
 
 	# Field Mapper Detail
@@ -107,7 +104,6 @@
 		u'condition': u'=',
 		u'doctype': u'Field Mapper Detail',
 		u'from_field': u'stock_uom',
-		'localname': u'New Field Mapper Detail 6',
 		u'map': 1,
 		u'match_id': 1,
 		u'to_field': u'stock_uom'
