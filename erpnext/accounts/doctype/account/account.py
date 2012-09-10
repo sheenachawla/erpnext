@@ -17,7 +17,7 @@
 from __future__ import unicode_literals
 import webnotes
 from webnotes.utils import flt
-from webnotes import msgprint
+from webnotes import msgprint, _
 from webnotes.model.controller import DocListController
 
 class AccountController(DocListController):

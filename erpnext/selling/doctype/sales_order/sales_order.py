@@ -19,13 +19,7 @@ TODO:
 
 * get projected qty from warehouse on posting date
 * make maintenance schedule
-* get_item_details
-* validate_approving_authority
 
-* DocTypeValidator: 
-**	If order_type is Sales, Expected Delivery Date is mandatory
-**	If amend_from, amendment_date is mandatory
-**	Expected Delivery Date cannot be before Posting Date
 ** validate with quotation thr: posting_date, order_type, submitted
 
 
@@ -49,12 +43,10 @@ class SalesOrderController(SalesController):
 		if self.doc.docstatus == 1:
 			get_controller('Party',self.doc.party).check_credit_limit(
 				self.doc.company, self.doc.grand_total * self.doc.exchange_rate)
-		
-	def on_update(self):
-		if self.doc.docstatus == 2:
-			self.check_if_nextdoc_exists(['Delivery Note Item', 'Sales Invoice Item',
-				'Maintenance Schedule Item', 'Maintenance Visit Purpose'])
-			
+				
+			from core.doctype.doctype_mapper.doctype_mapper import validate_prev_doclist
+			validate_prev_doclist('Quotation', 'Sales Order', self.doclist)
+	
 	def validate_po(self):
 		if self.doc.customer_po and self.doc.party:
 			so = webnotes.conn.sql("""select name from `tabSales Order`

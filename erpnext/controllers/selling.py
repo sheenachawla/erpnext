@@ -62,36 +62,6 @@ class SalesController(DocListController):
 			self.doclist.get({'parentfield': 'sales_team'})])
 		for d in self.doclist.get({"parentfield": 'sales_team'}):
 			d.allocated_percentage = d.allocated_percentage*100/total_contribution
-		
-	# def check_if_nextdoc_exists(self, nextdoc_types, event = 'cancel'):
-	# 	"""
-	# 		check whether submitted next document type exists against current doc
-	# 		nextdoc_types is list of item tables of next doc
-	# 	"""
-	# 	for d in nextdoc_types:
-	# 		nextdoc = webnotes.conn.get_value(d, \
-	# 			{self.doc.doctype.lower().replace(' ', '_'): self.doc.name, \
-	# 			'docstatus': 1}, ['parent', 'parenttype'], as_dict=1)
-	# 		if nextdoc:
-	# 			msgprint(_("""Submitted %s: %s exists against this %s. 
-	# 			To %s this document first cancel %s""") % 
-	# 			(nextdoc['parenttype'], nextdoc['parent'], self.doc.doctype, event, \
-	# 			nextdoc['parenttype']), raise_exception=webnotes.ValidationError)
-				
-	# def validate_items(self):
-	# 	if self.doc.get('order_type'):
-	# 		for d in self.doclist.get({'parentfield': self.item_table_fieldname}):
-	# 			self.validate_item_type(d.item_code)
-				
-	# def validate_item_type(self, item_code):
-	# 	item_type = webnotes.conn.get_value('Item', item_code, \
-	# 		['is_sales_item', 'is_service_item'], as_dict=1)
-	# 	if self.doc.order_type == 'Sales' and item_type['is_sales_item'] == 'No':
-	# 		msgprint("Item: %s is not a sales item" % 
-	# 		item_code, raise_exception=webnotes.ValidationError)
-	# 	elif self.doc.order_type == 'Maintenance' and item_type['is_service_item'] == 'No':
-	# 		msgprint("Item %s is not a maintenance item" %
-	# 			item_code, raise_exception=webnotes.ValidationError)
 				
 	def validate_project(self):
 		if self.doc.get('project_name'):

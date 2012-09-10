@@ -50,13 +50,7 @@ base_so_item = {
 	"__islocal": 1
 }
 
-class TestSalesOrder(TestBase):
-	def test_delivery_date_greater_than_po_date(self):	
-		so = base_so.copy()
-		so.update({'po_date':add_days(nowdate(), -5), 'delivery_date':add_days(nowdate(), -10)})
-		self.assertRaises(webnotes.ValidationError, \
-			webnotes.model.insert, [so, base_so_item])
-	
+class TestSalesOrder(TestBase):	
 	def test_duplicate_sales_order_against_po(self):
 		so = base_so.copy()
 		so.update({'po_no': 'PO000001', 'docstatus': 1})
@@ -132,28 +126,26 @@ class TestSalesOrder(TestBase):
 		from selling.doctype.quotation.test_quotation import \
 			base_quote, base_quote_item
 		quote_ctlr = webnotes.model.insert([base_quote, base_quote_item])
+
+		so = base_so.copy()
+		so.update({'docstatus': 1})
 		so_item = base_so_item.copy()
 		so_item.update({"quotation": quote_ctlr.doc.name})
 		
-		# quotation not submitted
-		self.assertRaises(webnotes.ValidationError, webnotes.model.insert, 
-			[base_so, so_item])
+		# quotation not submitted		
+		self.assertRaises(webnotes.IntegrityError, webnotes.model.insert, 
+			[so, so_item])
 	
 		# so posting date before quote posting date
-		quote_ctlr.submit()
 		so = base_so.copy()
-		so.update({'posting_date': add_days(nowdate(), -2)})
+		so.update({'posting_date': add_days(nowdate(), -2), 'docstatus': 1})
 		self.assertRaises(webnotes.ValidationError, webnotes.model.insert, [so, so_item])
 	
 		# order type not matched
-		webnotes.conn.set_value('Item', 'Home Desktop 100', 'is_service_item', 'Yes')
 		so = base_so.copy()
-		so.update({'order_type': 'Maintenance'})
+		so.update({'stock_uom': 'Mtr', 'docstatus': 1})
 		self.assertRaises(webnotes.ValidationError, webnotes.model.insert, [so, so_item])
 	
-	# def test_so_cancel_if_nextdoc(self):
-	# 	# to be done after DN, SI cleanup
-	# 	pass
 	
 	def test_taxes_and_totals(self):
 		from selling.doctype.quotation.test_quotation import load_data

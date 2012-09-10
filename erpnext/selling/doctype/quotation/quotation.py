@@ -15,16 +15,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-"""
-TODO:
-
-* get_item_details
-* DocTypeValidator: 
-**	If amend_from, amendment_date is mandatory
-* validate_approving_authority
-
-"""
-
 from __future__ import unicode_literals
 import webnotes
 from webnotes import msgprint
@@ -33,7 +23,3 @@ from controllers.selling import SalesController
 class QuotationController(SalesController):
 	def setup(self):
 		self.item_table_fieldname = 'quotation_items'
-	
-	def on_update(self):
-		if self.doc.docstatus == 2:
-			self.check_if_nextdoc_exists(['Sales Order Item'])

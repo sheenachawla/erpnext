@@ -25,33 +25,33 @@ class TrasactionController(DocListController):
 		for child in self.doclist.get({"parentfield": self.item_table_fieldname}):
 			get_controller("Item", child.item_code).check_end_of_life()
 	
-	def validate_previous_doclist(self, fieldname, item_fieldname):
-		"""Validates current item row against previous item row"""
-		doctypelist = webnotes.model.get_doctype(self.doc.doctype)
-		prev_doctype = doctypelist.get_field(fieldname,
-		 	parentfield=self.item_table_fieldname).options
-
-		def errmsg(errfield, item, prev_item):
-			label = doctypelist.get_label(errfield, parent=item.doctype)
-			webnotes.msgprint("""%s of row # %d in the %s table
-				cannot be different from the one in row # %d in the %s table 
-				of %s: "%s" """ % (label, item.idx, item.doctype, prev_item.idx, 
-				prev_item.doctype, prev_doctype, item.get(fieldname)),
-				raise_exception=True)
-
-		prev_doclist_cache = {}
-		for item in self.doclist.get({"parentfield": self.item_table_fieldname}):
-			if item.get(fieldname):
-				prev_item = prev_doclist_cache.setdefault(item.get(fieldname),
-					webnotes.model.get(prev_doctype, name)).getone({
-						"name": item.get(item_fieldname)})
-				
-				if item.item_code != prev_item.item_code:
-					# mismatch in item code
-					errmsg("item_code", item, prev_item)
-				if item.warehouse != prev_item.warehouse:
-					# mismatch in warehouse
-					errmsg("warehouse", item, prev_item)
-				if item.uom != prev_item.uom:
-					# mismatch in UOM
-					errmsg("uom", item, prev_item)
+	# def validate_previous_doclist(self, fieldname, item_fieldname):
+	# 	"""Validates current item row against previous item row"""
+	# 	doctypelist = webnotes.model.get_doctype(self.doc.doctype)
+	# 	prev_doctype = doctypelist.get_field(fieldname,
+	# 	 	parentfield=self.item_table_fieldname).options
+	# 
+	# 	def errmsg(errfield, item, prev_item):
+	# 		label = doctypelist.get_label(errfield, parent=item.doctype)
+	# 		webnotes.msgprint("""%s of row # %d in the %s table
+	# 			cannot be different from the one in row # %d in the %s table 
+	# 			of %s: "%s" """ % (label, item.idx, item.doctype, prev_item.idx, 
+	# 			prev_item.doctype, prev_doctype, item.get(fieldname)),
+	# 			raise_exception=True)
+	# 
+	# 	prev_doclist_cache = {}
+	# 	for item in self.doclist.get({"parentfield": self.item_table_fieldname}):
+	# 		if item.get(fieldname):
+	# 			prev_item = prev_doclist_cache.setdefault(item.get(fieldname),
+	# 				webnotes.model.get(prev_doctype, name)).getone({
+	# 					"name": item.get(item_fieldname)})
+	# 			
+	# 			if item.item_code != prev_item.item_code:
+	# 				# mismatch in item code
+	# 				errmsg("item_code", item, prev_item)
+	# 			if item.warehouse != prev_item.warehouse:
+	# 				# mismatch in warehouse
+	# 				errmsg("warehouse", item, prev_item)
+	# 			if item.uom != prev_item.uom:
+	# 				# mismatch in UOM
+	# 				errmsg("uom", item, prev_item)
