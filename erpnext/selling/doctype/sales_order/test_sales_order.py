@@ -134,7 +134,16 @@ class TestSalesOrder(TestBase):
 	
 		# order type not matched
 		so = base_so.copy()
-		so.update({'stock_uom': 'Mtr', 'docstatus': 1})
+		so.update({'docstatus': 1})
+		so_item = base_so_item.copy()
+		so_item.update({
+			"quotation": quote_ctlr.doc.name, 
+			"quotation_item": quote_ctlr.doclist[1].name,
+			"stock_uom": "Mtr"
+		})
+		print """testing 1"""
+		import pprint
+		pprint.pprint(quote_ctlr.doclist[1])
 		self.assertRaises(webnotes.IntegrityError, webnotes.model.insert, [so, so_item])
 	
 	
