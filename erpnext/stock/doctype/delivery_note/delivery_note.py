@@ -26,7 +26,6 @@ TO_DO:
 
 """
 
-from __future__ import unicode_literals
 import webnotes
 import webnotes.model
 from webnotes.utils import cstr, flt, getdate

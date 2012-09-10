@@ -14,8 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import unicode_literals
-def load_data():
+def load_data(session):
 	"""install freshdb and run setup"""
 	
 	import conf, getpass
@@ -38,5 +37,4 @@ def load_data():
 		'timezone': 'Asia/Calcutta'
 	}
 	import json
-	import webnotes.model
-	webnotes.model.get_controller("Setup Control", "Setup Control").setup_account(json.dumps(args))
+	session.controller("Setup Control", "Setup Control").setup_account(json.dumps(args))

@@ -15,25 +15,24 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from __future__ import unicode_literals
 import webnotes
 
-def execute():
+def execute(session):
 	print "installing default records"
-	set_home_page()
-	set_all_roles_to_admin()
-	create_default_master_records()
-	save_features_setup()
-	update_patch_log()
+	set_home_page(session)
+	set_all_roles_to_admin(session)
+	create_default_master_records(session)
+	save_features_setup(session)
+	update_patch_log(session)
 	
-def execute_core():
-	create_default_roles()
+def execute_core(session):
+	create_default_roles(session)
 
-def set_home_page():
+def set_home_page(session):
 	"""Set default home page"""
-	webnotes.conn.set_value('Control Panel', None, 'home_page', 'desktop')
+	session.db.set_value('Control Panel', None, 'home_page', 'desktop')
 	
-def save_features_setup():
+def save_features_setup(session):
 	"""save global defaults and features setup"""
 	doc = {"doctype": "Features Setup", "name": "Features Setup"}
 
@@ -47,36 +46,35 @@ def save_features_setup():
 	]
 	doc.update(dict(zip(flds, [1]*len(flds))))
 	
-	webnotes.model.insert(doc)
+	session.insert(doc)
 	
-def set_all_roles_to_admin():
+def set_all_roles_to_admin(session):
 	"""Set all roles to administrator profile"""
-	webnotes.model.get_controller("Setup Control").add_roles(webnotes.model.get("Profile", "Administrator")[0])
+	session.controller("Setup Control").add_roles(session.get_doclist("Profile", "Administrator")[0])
 	
-def update_patch_log():
+def update_patch_log(session):
 	"""Update patch version and patch log"""
-	from webnotes.utils import set_default
 	from webnotes.modules import patch_handler
 	from patches import patch_list
 	
 	version = max(patch_list.patch_dict.keys())
-	set_default('patch_version', version)
+	session.db.set_default('patch_version', version)
 	
 	for d in patch_list.patch_dict.get(version):
 		pm = 'patches.' + version + '.' + d
 		patch_handler.update_patch_log(pm)
 
 
-def create_doc(records):
+def create_doc(session, records):
 	for data in records:
 		if data.get('name'):
-			if not webnotes.conn.exists(data['doctype'], data.get('name')):
-				webnotes.model.insert(data)
-		elif not webnotes.conn.exists(data):
-			webnotes.model.insert(data)
+			if not session.db.exists(data['doctype'], data.get('name')):
+				session.insert(data)
+		elif not session.db.exists(data):
+			session.insert(data)
 
 	
-def create_default_roles():
+def create_default_roles(session):
 	roles = [
 		{"doctype":"Role", "role_name":"Accounts Manager", "name":"Accounts Manager"},
 		{"doctype":"Role", "role_name":"Accounts User", "name":"Accounts User"},
@@ -107,10 +105,10 @@ def create_default_roles():
 		{"doctype":"Role", "role_name":"Blogger", "name":"Blogger"},
 		{"doctype":"Role", "role_name":"Website Manager", "name":"Website Manager"},
 	]
-	create_doc(roles)
+	create_doc(session, roles)
 
 
-def create_default_master_records():
+def create_default_master_records(session):
 	records = [
 		# item group
 		{'doctype': 'Item Group', 'item_group_name': 'All Item Groups', 'is_group': 'Yes', 'name': 'All Item Groups', 'parent_item_group': ''},
@@ -708,4 +706,4 @@ def create_default_master_records():
 		{'voucher_type': 'doctype', 'doctype': 'GL Mapper Detail', 'voucher_no': 'name', 'against_voucher': 'name', 'transaction_date': 'voucher_date', 'debit': 'grand_total', 'parent': 'Sales Invoice', 'company': 'company', 'aging_date': 'aging_date', 'fiscal_year': 'fiscal_year', 'remarks': 'remarks', 'account': 'debit_to', 'idx': '3', 'against_voucher_type': "value:'Sales Invoice'", 'against': 'against_income_account', 'credit': 'value:0', 'parenttype': 'GL Mapper', 'is_opening': 'is_opening', 'posting_date': 'posting_date', 'parentfield': 'fields'},
 
 	]
-	create_doc(records)
+	create_doc(session, records)

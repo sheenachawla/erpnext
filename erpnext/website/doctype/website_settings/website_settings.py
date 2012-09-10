@@ -14,7 +14,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import unicode_literals
 class DocType:
 	def __init__(self, d, dl):
 		self.doc, self.doclist = d, dl
@@ -35,11 +34,7 @@ class DocType:
 		
 		# clear web cache
 		import website.web_cache
-		#website.web_cache.refresh_cache(build=['Blog'])
-		website.web_cache.refresh_cache()
-
-		from webnotes.session_cache import clear_cache
-		clear_cache('Guest')
+		website.web_cache.delete_page_cache(page_name)
 
 	def set_home_page(self):
 

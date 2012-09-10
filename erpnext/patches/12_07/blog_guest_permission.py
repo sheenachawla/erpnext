@@ -1,4 +1,3 @@
-from __future__ import unicode_literals
 def execute():
 	"""allocate read write permission to guest for doctype 'Blog'"""
 	import webnotes

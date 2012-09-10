@@ -14,7 +14,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import unicode_literals
 import webnotes
 import webnotes.model
 
@@ -123,21 +122,21 @@ class SetupControlController(DocListController):
 		d.priority = 'High'
 		d.date = nowdate()
 		d.parenttype = 'Customer'
-		d.save(1)
+		d.save(self.session, 1)
 
 		d = Document('ToDo')
 		d.description = 'Create your first Item'
 		d.priority = 'High'
 		d.parenttype = nowdate()
 		d.parent = 'Item'
-		d.save(1)
+		d.save(self.session, 1)
 
 		d = Document('ToDo')
 		d.description = 'Create your first Supplier'
 		d.priority = 'High'
 		d.date = nowdate()
 		d.parenttype = 'Supplier'
-		d.save(1)
+		d.save(self.session, 1)
 
 	def create_email_digest(self):
 		"""
@@ -176,7 +175,7 @@ class SetupControlController(DocListController):
 				if (exists and exists[0]) and exists[0][0]:
 					continue
 				else:
-					edigest.save(1)
+					edigest.save(self.session, 1)
 		
 	# Get Fiscal year Details
 	# ------------------------
@@ -226,7 +225,7 @@ class SetupControlController(DocListController):
 		pr.last_name = user_lname
 		pr.name = pr.email = user_email
 		pr.enabled = 1
-		pr.save(1)
+		pr.save(self.session, 1)
 		if pwd: webnotes.conn.sql("UPDATE `tabProfile` SET password=PASSWORD(%s) WHERE name=%s", (pwd, user_email))
 		self.add_roles(pr)
 	
@@ -238,7 +237,7 @@ class SetupControlController(DocListController):
 			'Sales Manager', 'Sales User', 'Sales Master Manager', 'Support Manager', 'Support Team', \
 			'System Manager', 'Website Manager']
 		
-		profile_controller = webnotes.model.get_controller([pr])
+		profile_controller = self.session.controller([pr])
 		
 		for r in roles_list:
 			profile_controller.add_child({

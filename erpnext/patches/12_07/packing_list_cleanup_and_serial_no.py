@@ -1,4 +1,3 @@
-from __future__ import unicode_literals
 def execute():
 	import webnotes
 	from webnotes.utils import flt

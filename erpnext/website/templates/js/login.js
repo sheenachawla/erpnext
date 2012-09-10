@@ -41,10 +41,10 @@ wn.pages.login.on('load', function() {
 // Login Callback
 erpnext.login.onLoginReply = function(r, rtext) {
 	$('#login_btn').done_working();
-    if(r.message=="Logged In"){
+    if(r.messages[0]=="Logged In"){
         window.location.href='app.html' + (get_url_arg('page') ? ('?page='+get_url_arg('page')) : '');
     } else {
-        $i('login_message').innerHTML = '<span style="color: RED;">'+(r.message)+'</span>';
+        $i('login_message').innerHTML = '<span style="color: RED;">'+(r.messages[0])+'</span>';
         //if(r.exc)alert(r.exc);
     }
 }
@@ -54,8 +54,8 @@ erpnext.login.onLoginReply = function(r, rtext) {
 erpnext.login.doLogin = function(){
 
     var args = {};
-    args['usr']=$i("login_id").value;
-    args['pwd']=$i("password").value;
+    args['user']=$i("login_id").value;
+    args['password']=$i("password").value;
     if($i('remember_me').checked) 
       args['remember_me'] = 1;
 

@@ -15,7 +15,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # add additional columns
-from __future__ import unicode_literals
 from webnotes.utils import flt
 
 cl = [c[0] for c in sql("""select distinct account_head 

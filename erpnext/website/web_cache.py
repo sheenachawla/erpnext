@@ -16,24 +16,23 @@
 
 # html generation functions
 
-from __future__ import unicode_literals
 template_map = {
 	'Web Page': 'html/web_page.html',
 	'Blog': 'html/blog_page.html',
 	'Item': 'html/product_page.html',
 }
 
-def get_html(page_name, comments=''):
-	import conf
-	
+import conf
+
+def get_html(session, page_name, comments=''):
 	html = ''
 	
 	# load from cache, if auto cache clear is falsy
 	if not (hasattr(conf, 'auto_cache_clear') and conf.auto_cache_clear or 0):
-		html = load_from_cache(page_name)
+		html = session.memc.get_value("page:" + page_name)
 
 	if not html:
-		html = load_into_cache(page_name)
+		html = load_into_cache(session, page_name)
 		comments += "\n\npage load status: fresh"
 	
 	# insert comments
@@ -42,42 +41,13 @@ def get_html(page_name, comments=''):
 	
 	return html
 
-def load_from_cache(page_name):
-	import webnotes
-	
-	result = search_cache(page_name)
-
-	if not result:
-		if page_name in get_predefined_pages():
-			# if a predefined page doesn't exist, load it into cache
-			return None
-		else:
-			# if page doesn't exist, raise exception
-			raise Exception, "Page %s not found" % page_name
-
-	return result[0][0]
-
-def load_into_cache(page_name):
-	args = prepare_args(page_name)
-	
-	html = build_html(args)
-	
-	# create cache entry for predefined pages, if not exists
-	if page_name in get_predefined_pages():
-		create_cache(page_name)
-	
-	import webnotes
-	webnotes.conn.begin()
-	webnotes.conn.set_value('Web Cache', page_name, 'html', html)
-	webnotes.conn.commit()
-	
+def load_into_cache(session, page_name):
+	html = build_html(prepare_args(session, page_name))	
+	session.memc.set_value("page:" + page_name, html)
 	return html
 
 def get_predefined_pages():
-	"""
-		gets a list of predefined pages
-		they do not exist in `tabWeb Page`
-	"""
+	"""gets a list of predefined pages, they do not exist in `tabWeb Page`"""
 	import os
 	import conf
 	import website.utils
@@ -91,78 +61,83 @@ def get_predefined_pages():
 
 	return page_list
 
-def prepare_args(page_name):
+def prepare_args(session, page_name):
 	import webnotes
 	if page_name == 'index':
-		page_name = get_home_page()
+		page_name = session.bootinfo.home_page
 	
 	if page_name in get_predefined_pages():
 		args = {
 			'template': 'pages/%s.html' % page_name,
 			'name': page_name,
-			'webnotes': webnotes
+			'session': session
 		}
 	else:
-		args = get_doc_fields(page_name)
+		args = get_doc_fields(session, page_name)
 	
-	args.update(get_outer_env())
+	args.update(get_outer_env(session))
 	
 	return args
+
+def get_doc_fields(session, page_name):
+	doctype, name = get_source_doc(session, page_name)
 	
-def get_home_page():
-	import webnotes
-	doc_name = webnotes.conn.get_value('Website Settings', None, 'home_page')
-	if doc_name:
-		page_name = webnotes.conn.get_value('Web Page', doc_name, 'page_name')
-	else:
-		page_name = 'login'
-
-	return page_name
-
-def get_doc_fields(page_name):
-	import webnotes
-	res = webnotes.conn.get_value('Web Cache', page_name, ['doc_type', 'doc_name'])
-	if not res:
+	if not doctype:
 		raise Exception, "Page %s not found" % page_name
-	
-	doc_type, doc_name = res
-	
-	import webnotes.model.code
-	obj = webnotes.model.code.get_obj(doc_type, doc_name)
-	
-	if hasattr(obj, 'prepare_template_args'):
-		obj.prepare_template_args()
 		
-	args = obj.doc
-	args['template'] = template_map[doc_type]
+	con = session.controller(doctype, name)
+		
+	if hasattr(con, 'prepare_template_args'):
+		con.prepare_template_args()
+		
+	args = con.doc
+	args['template'] = template_map[doctype]
 	
 	return args
-
-def get_outer_env():
-	"""
-		env dict for outer template
-	"""
-	import webnotes
-	return {
-		'top_bar_items': webnotes.conn.sql("""\
-			select * from `tabTop Bar Item`
-			where parent='Website Settings' and parentfield='top_bar_items'
-			order by idx asc""", as_dict=1),
 	
-		'footer_items': webnotes.conn.sql("""\
+def get_source_doc(session, page_name):
+	"""get source doc for the given page name"""
+	for doctype in ['Web Page', 'Blog', 'Item']:		
+		name = session.db.sql("""select name from `tabWeb Page` where page_name=%s""", page_name)
+		if name:
+			return doctype, name[0][0]
+			
+	return None, None
+
+def get_outer_env(session):
+	"""env dict for outer.html template"""
+	all_top_items = session.db.sql("""\
+		select * from `tabTop Bar Item`
+		where parent='Website Settings' and parentfield='top_bar_items'
+		order by idx asc""", as_dict=1)
+		
+	top_items = [d for d in all_top_items if not d['parent_label']]
+	
+	# attach child items to top bar
+	for d in all_top_items:
+		if d['parent_label']:
+			for t in top_items:
+				if t['label']==d['parent_label']:
+					if not 'child_items' in t:
+						t['child_items'] = []
+					t['child_items'].append(d)
+					break
+	
+	return {
+		'top_bar_items': top_items,
+	
+		'footer_items': session.db.sql("""\
 			select * from `tabTop Bar Item`
 			where parent='Website Settings' and parentfield='footer_items'
 			order by idx asc""", as_dict=1),
 			
-		'brand': webnotes.conn.get_value('Website Settings', None, 'brand_html') or 'ERPNext',
-		'copyright': webnotes.conn.get_value('Website Settings', None, 'copyright'),
-		'favicon': webnotes.conn.get_value('Website Settings', None, 'favicon')
+		'brand': session.db.get_value('Website Settings', None, 'brand_html') or 'ERPNext',
+		'copyright': session.db.get_value('Website Settings', None, 'copyright'),
+		'favicon': session.db.get_value('Website Settings', None, 'favicon')
 	}
-
+	
 def build_html(args):
-	"""
-		build html using jinja2 templates
-	"""
+	"""build html using jinja2 templates"""
 	import os
 	import conf
 	templates_path = os.path.join(conf.modules_path, 'website', 'templates')
@@ -172,30 +147,7 @@ def build_html(args):
 	html = jenv.get_template(args['template']).render(args)
 	return html
 
-# cache management
-def search_cache(page_name):
-	if not page_name: return ()
-	import webnotes
-	return webnotes.conn.sql("""\
-		select html, doc_type, doc_name
-		from `tabWeb Cache`
-		where name = %s""", page_name, as_dict=False)
-
-def create_cache(page_name, doc_type=None, doc_name=None):
-	# check if a record already exists
-	result = search_cache(page_name)
-	if result: return
-	
-	# create a Web Cache record
-	import webnotes.model.doc
-	d = webnotes.model.doc.Document('Web Cache')
-	d.name = page_name
-	d.doc_type = doc_type
-	d.doc_name = doc_name
-	d.html = None
-	d.save()
-
-def clear_cache(page_name, doc_type=None, doc_name=None):
+def clear_cache(session, page_name, doc_type=None, doc_name=None):
 	"""
 		* if no page name, clear whole cache
 		* if page_name, doc_type and doc_name match, clear cache's copy
@@ -203,53 +155,16 @@ def clear_cache(page_name, doc_type=None, doc_name=None):
 	"""
 	import webnotes
 
-	if not page_name:
-		webnotes.conn.sql("""update `tabWeb Cache` set html = ''""")
-		return
-	
-	result = search_cache(page_name)
-
-	if not doc_type or (result and result[0][1] == doc_type and result[0][2] == doc_name):
-		webnotes.conn.set_value('Web Cache', page_name, 'html', '')
+	if page_name:
+		session.memc.delete_value("page:" + page_name)
 	else:
-		webnotes.msgprint("""Page with name "%s" already exists as a %s.
-			Please save it with another name.""" % (page_name, result[0][1]),
-			raise_exception=1)
-
-def delete_cache(page_name):
+		session.memc.flush_keys("page:")
+	
+def delete_page_cache(session, page_name):
 	"""
 		delete entry of page_name from Web Cache
 		used when:
 			* web page is deleted
 			* blog is un-published
 	"""
-	import webnotes
-	webnotes.conn.sql("""delete from `tabWeb Cache` where name=%s""", page_name)
-
-def refresh_cache(build=None):
-	"""delete and re-create web cache entries"""
-	import webnotes
-	
-	# webnotes.conn.sql("delete from `tabWeb Cache`")
-	
-	clear_cache(None)
-	
-	query_map = {
-		'Web Page': """select page_name, name from `tabWeb Page` where docstatus=0""",
-		'Blog': """\
-			select page_name, name from `tabBlog`
-			where docstatus = 0 and ifnull(published, 0) = 1""",
-		'Item': """\
-			select page_name, name from `tabItem`
-			where docstatus = 0 and ifnull(show_in_website, 0) = 1""",
-	}
-
-	for dt in query_map:
-		if build and dt in build: 
-			for result in webnotes.conn.sql(query_map[dt], as_dict=1):
-				create_cache(result['page_name'], dt, result['name'])
-				load_into_cache(result['page_name'])
-			
-	for page_name in get_predefined_pages():
-		create_cache(page_name, None, None)
-		if build: load_into_cache(page_name)
+	session.memc.delete_value("page:" + page_name)

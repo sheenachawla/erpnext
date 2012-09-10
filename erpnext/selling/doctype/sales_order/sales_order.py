@@ -31,7 +31,6 @@ TODO:
 
 """
 
-from __future__ import unicode_literals
 import webnotes
 from webnotes import msgprint
 from webnotes.utils import getdate, cstr

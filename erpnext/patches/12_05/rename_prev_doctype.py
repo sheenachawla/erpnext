@@ -1,4 +1,3 @@
-from __future__ import unicode_literals
 def execute():
 	import webnotes
 	dt_list = webnotes.conn.sql("select parent, fieldname from `tabDocField` where fieldname in ('against_doctype', 'prevdoc_doctype')")

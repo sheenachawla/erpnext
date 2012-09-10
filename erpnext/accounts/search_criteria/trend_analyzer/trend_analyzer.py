@@ -15,7 +15,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # ********************************************* INITIALIZATION *******************************************
-from __future__ import unicode_literals
 out = []
 
 # Filter Values

@@ -1,4 +1,3 @@
-from __future__ import unicode_literals
 def execute():
 	"""allow read permission to all for report list"""
 	import webnotes

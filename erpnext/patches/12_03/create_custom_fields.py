@@ -1,5 +1,4 @@
 # do not run this patch
-from __future__ import unicode_literals
 field_list = [
 ['Contact', 'notes'],
 ['Contact', 'birthday'],

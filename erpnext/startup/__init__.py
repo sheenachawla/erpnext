@@ -15,7 +15,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # default settings that can be made for a profile.
-from __future__ import unicode_literals
 
 product_name = "ERPNext"
 profile_defaults = {

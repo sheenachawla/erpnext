@@ -14,7 +14,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import unicode_literals
 import webnotes
 import home
 
@@ -27,7 +26,7 @@ def on_login_post_session(login_manager):
 	# Clear previous sessions i.e. logout previous log-in attempts
 	exception_list = ['demo@webnotestech.com', 'Administrator', 'Guest']
 	if webnotes.session['user'] not in exception_list:
-		sid_list = webnotes.conn.sql("""
+		sid_list = session.db.sql("""
 			DELETE FROM `tabSessions`
 			WHERE
 				user=%s AND
@@ -55,41 +54,42 @@ def doclist_all(doc, method):
 	"""doclist trigger called from webnotes.model.controller on any event"""
 	home.update_feed(doc, method)
 	
-def boot_session(bootinfo):
+def boot_session(session, bootinfo):
 	"""boot session - send website info if guest"""
 	import webnotes
-	import webnotes.model.doc
+	import webnotes.model.doclist
 	
-	bootinfo['custom_css'] = webnotes.conn.get_value('Style Settings', None, 'custom_css') or ''
-	bootinfo['website_settings'] = webnotes.model.doc.getsingle('Website Settings')
+	bootinfo['custom_css'] = session.db.get_value('Style Settings', None, 'custom_css') or ''
+	bootinfo['website_settings'] = webnotes.model.doclist.load_main(session, 'Website Settings','Website Settings')
 
-	if webnotes.session['user']=='Guest':
-		bootinfo['website_menus'] = webnotes.conn.sql("""select label, url, 
+	if session.user =='Guest':
+		bootinfo['website_menus'] = session.db.sql("""select label, url, 
 			parent_label, parentfield
 			from `tabTop Bar Item` where parent='Website Settings' order by idx asc""", as_dict=1)
 		bootinfo['startup_code'] = \
-			webnotes.conn.get_value('Website Settings', None, 'startup_code')
+			session.db.get_value('Website Settings', None, 'startup_code')
+		bootinfo.home_page = session.db.get_value('Website Settings', None, 'home_page')
 	else:	
-		bootinfo['letter_heads'] = get_letter_heads()
+		bootinfo['letter_heads'] = get_letter_heads(session)
 
 		import webnotes.model.doctype
-		bootinfo['docs'] += webnotes.model.doctype.get('Event')
-		bootinfo['docs'] += webnotes.model.doctype.get('Search Criteria')
+		bootinfo['docs'] += session.get_doctype('Event')
+		bootinfo['docs'] += session.get_doctype('Search Criteria')
 		
-		bootinfo['modules_list'] = webnotes.conn.get_global('modules_list')
+		bootinfo['modules_list'] = session.db.get_global('modules_list')
 		
 		# if no company, show a dialog box to create a new company
-		bootinfo['setup_complete'] = webnotes.conn.sql("""select name from 
+		bootinfo['setup_complete'] = session.db.sql("""select name from 
 			tabCompany limit 1""") and 'Yes' or 'No'
 			
-		bootinfo['user_background'] = webnotes.conn.get_value("Profile", webnotes.session['user'], 'background_image') or ''
+		bootinfo['user_background'] = session.db.get_value("Profile", session.user, 'background_image') or ''
 		
 		# load subscription info
 		import conf
 		for key in ['max_users', 'expires_on', 'max_space', 'status']:
 			if hasattr(conf, key): bootinfo[key] = getattr(conf, key)
 			
-		company = webnotes.conn.sql("select name, default_currency from `tabCompany`", as_dict=1)
+		company = session.db.sql("select name, default_currency from `tabCompany`", as_dict=1)
 		company_dict = {}
 		for c in company:
 			company_dict.setdefault(c['name'], {}).update(c)
@@ -99,15 +99,15 @@ def boot_session(bootinfo):
 		# developer mode
 		bootinfo["developer_mode"] = getattr(conf, "developer_mode", 0)
 
-def get_letter_heads():
+def get_letter_heads(session):
 	"""load letter heads with startup"""
 	import webnotes
-	ret = webnotes.conn.sql("""select name, content from `tabLetter Head` 
+	ret = session.db.sql("""select name, content from `tabLetter Head` 
 		where ifnull(disabled,0)=0""")
 	return dict(ret)
 	
 
-def check_if_expired():
+def check_if_expired(session):
 	"""check if account is expired. If expired, do not allow login"""
 	import conf
 	# check if expires_on is specified
@@ -144,11 +144,11 @@ def check_if_expired():
 
 def get_web_script():
 	"""returns web startup script"""
-	return webnotes.conn.get_value('Website Settings', None, 'startup_code') or ''
+	return session.db.get_value('Website Settings', None, 'startup_code') or ''
 
 def get_web_style():
 	"""returns web css"""
-	return webnotes.conn.get_value('Style Settings', None, 'custom_css') or ''
+	return session.db.get_value('Style Settings', None, 'custom_css') or ''
 
 def get_web_header(page_name):
 	"""get website header"""

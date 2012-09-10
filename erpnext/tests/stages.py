@@ -14,7 +14,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import unicode_literals
 stages = {
 	"Install": {
 		"data": [
@@ -64,25 +63,25 @@ import webnotes
 committed = []
 webnotes.testing = 1
 
-def upto(stage, with_tests=False):
+def upto(session, stage, with_tests=False):
 	"""commit data upto a stage"""
 	global committed
-	
+		
 	# build dependent stages
 	stagedata = stages[stage]
 	if "stages" in stagedata:
 		for reqd_stage in stagedata["stages"]:
 			if not reqd_stage in committed:
-				upto(reqd_stage, with_tests)
+				upto(session, reqd_stage, with_tests)
 	
 	# commit data or test files required for this stage
 	if "data" in stagedata:
 		for data_module_name in stagedata["data"]:
 			module = __import__(data_module_name, fromlist = [data_module_name.split(".")[-1]])
 			if hasattr(module, 'load_data'):
-				webnotes.conn.begin()
-				module.load_data()
-				webnotes.conn.commit()
+				session.db.begin()
+				module.load_data(session)
+				session.db.commit()
 	
 	if with_tests:
 		test_stage(stage)
@@ -92,16 +91,17 @@ def upto(stage, with_tests=False):
 		for test_module_name in stagedata["tests"]:
 			module = __import__(test_module_name, fromlist = [test_module_name.split(".")[-1]])
 			if hasattr(module, 'load_data'):
-				webnotes.conn.begin()
-				module.load_data()
-				webnotes.conn.commit()
+				session.db.begin()
+				module.load_data(session)
+				session.db.commit()
 			
 	committed.append(stage)
 
-def test_stage(stage):
+def test_stage(session, stage):
 	"""run a stage"""
 	import unittest, conf, sys
-	webnotes.connect(conf.test_db_name)
+	from webnotes.db import Database
+	session.db = Database(conf.test_db_name)
 	
 	stagedata = stages[stage]
 	if not stagedata.get("tests"): return

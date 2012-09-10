@@ -1,4 +1,3 @@
-from __future__ import unicode_literals
 def execute():
 	"""add unique constraint to series table's name column"""
 	import webnotes

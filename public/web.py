@@ -18,29 +18,20 @@
 
 """
 	return a dynamic page from website templates
-
 	all html pages related to website are generated here
 """
-from __future__ import unicode_literals
-import cgi, cgitb, os, sys
-cgitb.enable()
+
+import sys
 
 # import libs
 sys.path.append('..')
+
 import conf
+
 sys.path.append('../lib/py')
 sys.path.append(conf.modules_path)
 
-def init():
-	import webnotes
-	webnotes.get_cgi_fields()
-	webnotes.connect()
-
-def respond():
-	import webnotes
-	import website.utils
-	return website.utils.render(webnotes.form.get('page'))
-
-if __name__=="__main__":
-	init()
-	respond()
+if __name__ == '__main__':
+	import wsgiref.handlers
+	import webnotes.app
+	wsgiref.handlers.CGIHandler().run(webnotes.app.application)

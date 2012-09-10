@@ -14,7 +14,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import unicode_literals
 import webnotes
 import website.utils
 from website.web_page import PageController
@@ -30,12 +29,10 @@ class DocType(PageController):
 
 	def if_home_clear(self):
 		"""if home page, clear cache"""
-		if webnotes.conn.get_value("Website Settings", None, "home_page")==self.doc.name:
-			from webnotes.session_cache import clear_cache
-			clear_cache('Guest')
-			import website.web_cache
-			website.web_cache.clear_cache(self.doc.page_name)
-			website.web_cache.clear_cache('index')
+		if self.session.bootinfo.home_page == self.doc.name:
+			from webnotes.session_cache import delete_page_cache
+			delete_page_cache(self.doc.name)
+			delete_page_cache('index')
 			
 	def prepare_template_args(self):
 		self.markdown_to_html(['head_section','main_section', 'side_section'])

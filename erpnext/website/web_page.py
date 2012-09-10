@@ -14,7 +14,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import unicode_literals
 import webnotes
 import website.utils
 import website.web_cache
@@ -58,15 +57,9 @@ class PageController(DocListController):
 		# delete web cache entry of old name
 		if hasattr(self, 'old_page_name') and self.old_page_name and \
 				self.old_page_name != self.doc.page_name:
-			self.delete_web_cache(self.old_page_name)
-		
-		website.web_cache.create_cache(self.doc.page_name, self.doc.doctype, self.doc.name)
-		website.web_cache.clear_cache(self.doc.page_name, self.doc.doctype, self.doc.name)
-		
-	def delete_web_cache(self, page_name):
-		"""delete entry of page name from Web Cache"""
-		website.web_cache.delete_cache(page_name)
-
+			website.web_cache.delete_page_cache(self.old_page_name)
+		website.web_cache.delete_page_cache(self.doc.page_name)
+				
 	def markdown_to_html(self, fields_list):
 		"""convert fields from markdown to html"""
 		import markdown2

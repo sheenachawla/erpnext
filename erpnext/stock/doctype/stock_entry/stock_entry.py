@@ -22,7 +22,6 @@
 # update serial no status
 # maintain 
 
-from __future__ import unicode_literals
 import webnotes
 from webnotes.utils import cstr, flt, getdate, now
 from webnotes import msgprint

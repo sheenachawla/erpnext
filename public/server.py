@@ -22,10 +22,7 @@
 # OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 # 
 
-
-from __future__ import unicode_literals
-import cgi, cgitb, os, sys
-cgitb.enable()
+import sys
 
 # import libs
 sys.path.append('..')
@@ -35,46 +32,7 @@ import conf
 sys.path.append('../lib/py')
 sys.path.append(conf.modules_path)
 
-def init():
-	import webnotes
-	webnotes.get_cgi_fields()
-	
-	# init request
-	import webnotes
-	try:
-		import webnotes.auth
-		webnotes.http_request = webnotes.auth.HTTPRequest()
-		return True
-	except webnotes.AuthenticationError, e:
-		return True
-	#except webnotes.UnknownDomainError, e:
-	#	print "Location: " + (conf.redirect_404)
-	except webnotes.SessionStopped, e:
-		if 'cmd' in webnotes.form:
-			import webnotes.handler
-			webnotes.handler.print_json()
-		else:
-			print "Content-Type: text/html"
-			print
-			print """<html>
-				<body style="background-color: #EEE;">
-					<h3 style="width: 900px; background-color: #FFF; border: 2px solid #AAA; padding: 20px; font-family: Arial; margin: 20px auto">
-						Updating.
-						We will be back in a few moments...
-					</h3>
-				</body>
-				</html>"""
-
-def respond():
-	import webnotes
-	if 'cmd' in webnotes.form:
-		import webnotes.handler
-		webnotes.handler.handle()
-	else:
-		print "Content-Type: text/html"
-		print
-		print "<html><head><script>window.location.href='index.html';</script></head></html>"
-
-if __name__=="__main__":
-	if init():
-		respond()
+if __name__ == '__main__':
+	import wsgiref.handlers
+	import webnotes.app
+	wsgiref.handlers.CGIHandler().run(webnotes.app.application)

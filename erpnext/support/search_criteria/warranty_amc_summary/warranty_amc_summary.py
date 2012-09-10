@@ -15,7 +15,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from __future__ import unicode_literals
 opt = filter_values.get('based_on')
 opt_dict = {'Territory':'territory', 'Item Group':'item_group'}
 

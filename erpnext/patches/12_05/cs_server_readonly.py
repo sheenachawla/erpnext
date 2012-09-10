@@ -1,4 +1,3 @@
-from __future__ import unicode_literals
 def execute():
 	"""Make server custom script readonly for system manager"""
 	import webnotes.model.doc

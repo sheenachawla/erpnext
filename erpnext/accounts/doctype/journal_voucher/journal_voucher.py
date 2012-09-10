@@ -22,7 +22,6 @@
 # Against JV can not be same document
 """
 
-from __future__ import unicode_literals
 import webnotes
 from webnotes.utils import flt
 from controllers.accounts import AccountsController

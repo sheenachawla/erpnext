@@ -16,7 +16,6 @@
 
 # Add columns
 # -----------
-from __future__ import unicode_literals
 row_list = [['ID','Data','150px','']]
 
 for r in row_list:

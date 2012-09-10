@@ -25,7 +25,6 @@ TODO:
 
 """
 
-from __future__ import unicode_literals
 import webnotes
 from webnotes import msgprint
 from controllers.selling import SalesController
