@@ -16,12 +16,7 @@
 
 import webnotes
 
-from webnotes.utils import flt
-
-
-sql = webnotes.conn.sql
-	
-
+from webnotes.utils import flt	
 
 class DocType:
   def __init__(self, doc, doclist=[]):

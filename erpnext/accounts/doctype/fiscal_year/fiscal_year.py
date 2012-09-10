@@ -16,16 +16,21 @@
 
 import webnotes
 from webnotes.utils import cstr, add_days
-from webnotes import msgprint
 from webnotes.model.controller import DocListController
 
 class FiscalYearController(DocListController):
 	def validate(self):
-		if webnotes.conn.sql("select name from `tabFiscal Year` where year_start_date < %s"\
-			, self.doc.year_start_date) and not self.doc.past_year:
-			msgprint("Please enter Past Year", raise_exception=webnotes.MandatoryError)
+		prev_year = self.session.db.sql("select name from `tabFiscal Year` where year_start_date < %s",
+			self.doc.year_start_date, as_list=1)
+			
+		print self.doc
+		print self.session.db.cur_db_name
+			
+		if prev_year and not self.doc.past_year:
+			self.session.msgprint("Please enter Past Year", raise_exception=webnotes.MandatoryError)
 
 	def validate_date_within_year(self, dt, dt_label):
 		yed=add_days(cstr(self.doc.year_start_date),365)
 		if cstr(dt) < cstr(self.doc.year_start_date) or cstr(dt) > cstr(yed):
-			msgprint("%s not within the fiscal year"%(field_label), raise_exception=webnotes.ValidationError)
+			self.session.msgprint("%s not within the fiscal year"%(field_label), 
+				raise_exception=webnotes.ValidationError)

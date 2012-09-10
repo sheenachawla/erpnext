@@ -79,9 +79,9 @@ def upto(session, stage, with_tests=False):
 		for data_module_name in stagedata["data"]:
 			module = __import__(data_module_name, fromlist = [data_module_name.split(".")[-1]])
 			if hasattr(module, 'load_data'):
-				session.db.begin()
+				if stage!='Install': session.db.begin()
 				module.load_data(session)
-				session.db.commit()
+				if stage!='Install': session.db.commit()
 	
 	if with_tests:
 		test_stage(stage)

@@ -62,7 +62,7 @@ def update_patch_log(session):
 	
 	for d in patch_list.patch_dict.get(version):
 		pm = 'patches.' + version + '.' + d
-		patch_handler.update_patch_log(pm)
+		patch_handler.update_patch_log(session, pm)
 
 
 def create_doc(session, records):

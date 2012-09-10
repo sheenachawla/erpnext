@@ -37,4 +37,5 @@ def load_data(session):
 		'timezone': 'Asia/Calcutta'
 	}
 	import json
+
 	session.controller("Setup Control", "Setup Control").setup_account(json.dumps(args))

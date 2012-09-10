@@ -19,7 +19,6 @@ import webnotes.model
 
 from webnotes.utils import cint, cstr, getdate, now, nowdate, get_first_day, get_last_day
 from webnotes.model.doc import Document
-from webnotes import session, form, msgprint
 
 from webnotes.model.controller import DocListController
 class SetupControlController(DocListController):
@@ -28,15 +27,15 @@ class SetupControlController(DocListController):
 	def setup_account(self, args):
 		import webnotes, json
 		args = json.loads(args)
-		webnotes.conn.begin()
+		self.session.db.begin()
 
 		curr_fiscal_year, fy_abbr, fy_start_date, fy_end_date = self.get_fy_details(args.get('fy_start'))
 
-		args['name'] = webnotes.session.get('user')
+		args['name'] = self.session.user
 
 		# Update Profile
 		if not args.get('last_name') or args.get('last_name')=='None': args['last_name'] = None
-		webnotes.conn.sql("""\
+		self.session.db.sql("""\
 			UPDATE `tabProfile` SET first_name=%(first_name)s,
 			last_name=%(last_name)s
 			WHERE name=%(name)s AND docstatus<2""", args)
@@ -100,41 +99,41 @@ class SetupControlController(DocListController):
 		
 		self.create_email_digest()
 
-		import webnotes.session_cache
-		webnotes.session_cache.clear()
-		msgprint("Company setup is complete")
+		import webnotes.sessions
+		webnotes.sessions.clear()
+		self.session.msgprint("Company setup is complete")
 		
 		import webnotes.utils
 		user_fullname = (args.get('first_name') or '') + (args.get('last_name')
 				and (" " + args.get('last_name')) or '')
-		webnotes.conn.commit()
+		self.session.db.commit()
 		return {'sys_defaults': webnotes.utils.get_defaults(), 'user_fullname': user_fullname}
 
 	def create_feed_and_todo(self):
 		"""update activty feed and create todo for creation of item, customer, vendor"""
 		import home
-		home.make_feed('Comment', 'ToDo', '', webnotes.session['user'],
+		home.make_feed('Comment', 'ToDo', '', self.session.user,
 			'<i>"' + 'Setup Complete. Please check your <a href="#!todo">\
 			To Do List</a>' + '"</i>', '#6B24B3')
 
 		d = Document('ToDo')
 		d.description = 'Create your first Customer'
 		d.priority = 'High'
-		d.date = nowdate()
+		d.date = nowdate(self.session)
 		d.parenttype = 'Customer'
 		d.save(self.session, 1)
 
 		d = Document('ToDo')
 		d.description = 'Create your first Item'
 		d.priority = 'High'
-		d.parenttype = nowdate()
+		d.parenttype = nowdate(self.session)
 		d.parent = 'Item'
 		d.save(self.session, 1)
 
 		d = Document('ToDo')
 		d.description = 'Create your first Supplier'
 		d.priority = 'High'
-		d.date = nowdate()
+		d.date = nowdate(self.session)
 		d.parenttype = 'Supplier'
 		d.save(self.session, 1)
 
@@ -148,7 +147,7 @@ class SetupControlController(DocListController):
 			* Enabled by default
 		"""
 		import webnotes
-		companies_list = webnotes.conn.sql("SELECT company_name FROM `tabCompany`", as_list=1)
+		companies_list = self.session.db.sql("SELECT company_name FROM `tabCompany`", as_list=1)
 
 		import webnotes.utils
 		system_managers = webnotes.utils.get_system_managers_list()
@@ -169,7 +168,7 @@ class SetupControlController(DocListController):
 						'income', 'bank_balance', 'stock_below_rl',
 						'income_year_to_date', 'enabled']:
 					edigest[f] = 1
-				exists = webnotes.conn.sql("""\
+				exists = self.session.db.sql("""\
 					SELECT name FROM `tabEmail Digest`
 					WHERE name = %s""", edigest.name)
 				if (exists and exists[0]) and exists[0][0]:
@@ -181,14 +180,14 @@ class SetupControlController(DocListController):
 	# ------------------------
 	def get_fy_details(self, fy_start):
 		st = {'1st Jan':'01-01','1st Apr':'04-01','1st Jul':'07-01', '1st Oct': '10-01'}
-		curr_year = getdate(nowdate()).year
-		if cint(getdate(nowdate()).month) < cint((st[fy_start].split('-'))[0]):
-			curr_year = getdate(nowdate()).year - 1
+		curr_year = getdate(nowdate(self.session)).year
+		if cint(getdate(nowdate(self.session)).month) < cint((st[fy_start].split('-'))[0]):
+			curr_year = getdate(nowdate(self.session)).year - 1
 		start_date = cstr(curr_year)+'-'+cstr(st[fy_start])
 		end_date = get_last_day(get_first_day(start_date,0,11)).strftime('%Y-%m-%d')
 		
 		if(fy_start == '1st Jan'):
-			fy = cstr(getdate(nowdate()).year)
+			fy = cstr(getdate(nowdate(self.session)).year)
 			abbr = cstr(fy)[-2:]
 		else:
 			fy = cstr(curr_year) + '-' + cstr(curr_year+1)
@@ -201,19 +200,19 @@ class SetupControlController(DocListController):
 	def create_records(self, master_dict):
 		for d in master_dict.keys():
 			master_dict[d]["doctype"] = d
-			webnotes.model.insert(master_dict[d])
+			self.session.insert(master_dict[d])
 
 	# Set System Defaults
 	# --------------------
 	def set_defaults(self, def_args):
 		args = def_args.copy()
 		args.update({"doctype": "Global Defaults", "name": "Global Defaults"})
-		webnotes.model.update(args)
+		self.session.update(args)
 
 	# Set Control Panel Defaults
 	# --------------------------
 	def set_cp_defaults(self, industry, country, timezone, company_name):
-		webnotes.model.update({"doctype": "Control Panel", "name": "Control Panel",
+		self.session.update({"doctype": "Control Panel", "name": "Control Panel",
 			"company_name": company_name, "industry": industry, "time_zone": timezone,
 			"country": country})
 
@@ -226,7 +225,7 @@ class SetupControlController(DocListController):
 		pr.name = pr.email = user_email
 		pr.enabled = 1
 		pr.save(self.session, 1)
-		if pwd: webnotes.conn.sql("UPDATE `tabProfile` SET password=PASSWORD(%s) WHERE name=%s", (pwd, user_email))
+		if pwd: self.session.db.sql("UPDATE `tabProfile` SET password=PASSWORD(%s) WHERE name=%s", (pwd, user_email))
 		self.add_roles(pr)
 	
 	def add_roles(self, pr):

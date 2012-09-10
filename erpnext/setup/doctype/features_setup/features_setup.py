@@ -21,4 +21,4 @@ class FeaturesSetupController(DocListController):
 	def validate(self):
 		for key in self.doc:
 			if key not in webnotes.model.default_fields:
-				webnotes.conn.set_default(key, self.doc[key])
+				self.session.db.set_default(key, self.doc[key])
