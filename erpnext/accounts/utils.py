@@ -17,17 +17,17 @@
 import webnotes
 import webnotes.model
 	
-def get_balance_on(account, dt):
-	acc = webnotes.conn.get_value('Account', account, \
+def get_balance_on(session, account, dt):
+	acc = session.db.get_value('Account', account, \
 		['lft', 'rgt', 'debit_or_credit', 'is_pl_account'], as_dict=1)
 	cond = ""
 	if acc.is_pl_account == 'Yes':
-		year_start_date = webnotes.conn.sql("select year_start_date from `tabFiscal Year` \
+		year_start_date = session.db.sql("select year_start_date from `tabFiscal Year` \
 			where year_start_date < %s order by year_start_date limit 1", dt)
 		year_start_date = year_start_date and year_start_date[0][0] or ''
 		cond += " and posting_date >= %s" % year_start_date
 		
-	bal = webnotes.conn.sql("""
+	bal = session.db.sql("""
 		SELECT sum(ifnull(debit, 0)) - sum(ifnull(credit, 0)) 
 		FROM `tabGL Entry`
 		WHERE account in (select name from `tabAccount` where lft >= %s and rgt <= %s) 
@@ -37,11 +37,3 @@ def get_balance_on(account, dt):
 	if acc['debit_or_credit'] == 'Credit':
 		bal = -bal
 	return bal
-	
-def add_account(args):
-	args.update({"doctype": "Account"})
-	return webnotes.model.insert(args)
-
-def add_cost_center(args):
-	args.update({"doctype": "Cost Center"})
-	return webnotes.model.insert(args)

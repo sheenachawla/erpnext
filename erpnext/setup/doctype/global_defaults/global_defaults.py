@@ -43,17 +43,17 @@ keydict = {
 class GlobalDefaultsController(DocListController):
 	def on_update(self):
 		for key in keydict:
-			webnotes.conn.set_default(key, self.doc.get(keydict[key], ''))
+			self.session.db.set_default(key, self.doc.get(keydict[key], ''))
 			
 		# update year start date and year end date from fiscal_year
-		ysd, yed = webnotes.conn.get_value('Fiscal Year', self.doc.current_fiscal_year, \
+		ysd, yed = self.session.db.get_value('Fiscal Year', self.doc.current_fiscal_year, \
 			['year_start_date', 'year_end_date'])
 			
 		from webnotes.utils import get_first_day, get_last_day
 		if ysd:
-			webnotes.conn.set_default('year_start_date', ysd.strftime('%Y-%m-%d'))
+			self.session.db.set_default('year_start_date', ysd.strftime('%Y-%m-%d'))
 		if yed:
-			webnotes.conn.set_default('year_end_date', yed.strftime('%Y-%m-%d'))
+			self.session.db.set_default('year_end_date', yed.strftime('%Y-%m-%d'))
 		
 	def get_defaults(self):
-		return webnotes.conn.get_defaults()
+		return self.session.db.get_defaults()

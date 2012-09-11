@@ -15,12 +15,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import webnotes
-from webnotes.utils import cstr, get_defaults, set_default
+from webnotes.utils import cstr
 from webnotes.model.controller import DocListController
 
 class CompanyController(DocListController):
-	# Create default accounts
-	# ---------------------------------------------------
 	def create_default_accounts(self):
 		self.fld_dict = {'account_name':0,'parent_account':1,'group_or_ledger':2,'is_pl_account':3,'account_type':4,'debit_or_credit':5,'company':6,'tax_rate':7}
 		acc_list_common = [['Application of Funds (Assets)','','Group','No','','Debit',self.doc.name,''],
@@ -126,30 +124,23 @@ class CompanyController(DocListController):
 		for d in acc_list_common:
 			self.add_acc(d)
 
-		country = webnotes.conn.sql("select value from tabSingles where field = 'country' and doctype = 'Control Panel'")
+		country = self.session.db.sql("select value from tabSingles where field = 'country' and doctype = 'Control Panel'")
 		country = country and cstr(country[0][0]) or ''
 
 		# load taxes (only for India)
 		if country == 'India':
 			for d in acc_list_india:
+				ac.update({"doctype":"Account"})
 				self.add_acc(d)
 
-	# Create account
-	# ---------------------------------------------------
 	def add_acc(self,lst):
 		import accounts.utils
-		ac = {"freeze_account": "No"}
+		ac = {"freeze_account": "No", "doctype": "Account"}
 		for d in self.fld_dict.keys():
 			ac[d] = (d == 'parent_account' and lst[self.fld_dict[d]]) and lst[self.fld_dict[d]] +' - '+ self.doc.abbr or lst[self.fld_dict[d]]
 		
-		accounts.utils.add_account(ac)
+		self.session.insert(ac)
 
-		webnotes.conn.sql("commit")
-		webnotes.conn.sql("start transaction")
-
-
-	# Set letter head
-	# ---------------------------------------------------
 	def set_letter_head(self):
 		if not self.doc.letter_head:
 			if self.doc.address:
@@ -161,65 +152,62 @@ class CompanyController(DocListController):
 			 
 				self.doc.letter_head = header
 
-	# Set default AR and AP group
-	# ---------------------------------------------------
 	def set_default_groups(self):
 		if not self.doc.receivables_group:
-			webnotes.conn.set(self.doc, 'receivables_group', 'Accounts Receivable - '+self.doc.abbr)
+			self.session.db.set(self.doc, 'receivables_group', 'Accounts Receivable - '+self.doc.abbr)
 		if not self.doc.payables_group:
-			webnotes.conn.set(self.doc, 'payables_group', 'Accounts Payable - '+self.doc.abbr)
+			self.session.db.set(self.doc, 'payables_group', 'Accounts Payable - '+self.doc.abbr)
 			
 			
-	# Create default cost center
-	# ---------------------------------------------------
 	def create_default_cost_center(self):
-		import accounts.utils
-		cc_list = [{'cost_center_name':'Root','company_name':self.doc.name,'company_abbr':self.doc.abbr,'group_or_ledger':'Group','parent_cost_center':'','old_parent':''}, {'cost_center_name':'Default CC Ledger','company_name':self.doc.name,'company_abbr':self.doc.abbr,'group_or_ledger':'Ledger','parent_cost_center':'Root - ' + self.doc.abbr,'old_parent':''}]
-		for c in cc_list:
-			accounts.utils.add_cost_center(c)
+		cc_list = [{'cost_center_name':'Root','company_name':self.doc.name,'doctype':'Cost Center',
+			'company_abbr':self.doc.abbr,'group_or_ledger':'Group',
+			'parent_cost_center':'','old_parent':''}, 
+			{'cost_center_name':'Default Cost Center','company_name':self.doc.name,'doctype':'Cost Center',
+			'company_abbr':self.doc.abbr,'group_or_ledger':'Ledger',
+			'parent_cost_center':'Root - ' + self.doc.abbr,'old_parent':''}]
 			
-	# On update
-	# ---------------------------------------------------
+		for c in cc_list:
+			self.session.insert(c)
+			
 	def on_update(self):
 		self.set_letter_head()
-		ac = webnotes.conn.sql("select name from tabAccount where account_name='Income' and company=%s", self.doc.name)
+		ac = self.session.db.sql("select name from tabAccount where account_name='Income' and company=%s", self.doc.name)
 		if not ac:
 			self.create_default_accounts()
 		self.set_default_groups()
-		cc = webnotes.conn.sql("select name from `tabCost Center` where cost_center_name = 'Root' and company_name = '%s'"%(self.doc.name))
+		cc = self.session.db.sql("select name from `tabCost Center` where cost_center_name = 'Root' and company_name = '%s'"%(self.doc.name))
 		if not cc:
 			self.create_default_cost_center()
 
-	# 
-	# ---------------------------------------------------	
 	def on_trash(self):
 		"""
 			Trash accounts and cost centers for this company if no gl entry exists
 		"""
-		rec = webnotes.conn.sql("SELECT name from `tabGL Entry` where ifnull(is_cancelled, 'No') = 'No' and company = %s", self.doc.name)
+		rec = self.session.db.sql("SELECT name from `tabGL Entry` where ifnull(is_cancelled, 'No') = 'No' and company = %s", self.doc.name)
 		if not rec:
 			# delete gl entry
-			webnotes.conn.sql("delete from `tabGL Entry` where company = %s", self.doc.name)
+			self.session.db.sql("delete from `tabGL Entry` where company = %s", self.doc.name)
 
 			#delete tabAccount
-			webnotes.conn.sql("delete from `tabAccount` where company = %s order by lft desc, rgt desc", self.doc.name)
+			self.session.db.sql("delete from `tabAccount` where company = %s order by lft desc, rgt desc", self.doc.name)
 			
 			#delete cost center child table - budget detail
-			webnotes.conn.sql("delete bd.* from `tabBudget Detail` bd, `tabCost Center` cc where bd.parent = cc.name and cc.company_name = %s", self.doc.name)
+			self.session.db.sql("delete bd.* from `tabBudget Detail` bd, `tabCost Center` cc where bd.parent = cc.name and cc.company_name = %s", self.doc.name)
 			#delete cost center
-			webnotes.conn.sql("delete from `tabCost Center` WHERE company_name = %s order by lft desc, rgt desc", self.doc.name)
+			self.session.db.sql("delete from `tabCost Center` WHERE company_name = %s order by lft desc, rgt desc", self.doc.name)
 			
 			#update value as blank for tabDefaultValue defkey=company
-			webnotes.conn.sql("update `tabDefaultValue` set defvalue = '' where defkey='company' and defvalue = %s", self.doc.name)
+			self.session.db.sql("update `tabDefaultValue` set defvalue = '' where defkey='company' and defvalue = %s", self.doc.name)
 			
 			#update value as blank for tabSingles Global Defaults
-			webnotes.conn.sql("update `tabSingles` set value = '' where doctype='Global Defaults' and field = 'default_company' and value = %s", self.doc.name)
+			self.session.db.sql("update `tabSingles` set value = '' where doctype='Global Defaults' and field = 'default_company' and value = %s", self.doc.name)
 
 		
 	# on rename
 	# ---------
 	def on_rename(self,newdn,olddn):		
-		webnotes.conn.sql("update `tabCompany` set company_name = '%s' where name = '%s'" %(newdn,olddn))	
-		webnotes.conn.sql("update `tabSingles` set value = %s where doctype='Global Defaults' and field = 'default_company' and value = %s", (newdn, olddn))	
-		if get_defaults('company') == olddn:
-			set_default('company', newdn)
+		self.session.db.sql("update `tabCompany` set company_name = '%s' where name = '%s'" %(newdn,olddn))	
+		self.session.db.sql("update `tabSingles` set value = %s where doctype='Global Defaults' and field = 'default_company' and value = %s", (newdn, olddn))	
+		if self.session.db.get_defaults('company') == olddn:
+			self.session.db.set_default('company', newdn)

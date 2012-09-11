@@ -24,18 +24,3 @@ def load_data(session):
 	
 	inst = Installer('root', root_pwd)
 	inst.import_from_db(conf.test_db_name, verbose = 1)
-
-	args = {
-		'first_name': 'John',
-		'last_name': 'Doe',
-		'company_name': 'East Wind Corporation',
-		'company_abbr': 'EW',
-		'fy_start': '1st Apr',
-		'currency': 'INR',
-		'industry': 'Information Technology',
-		'country': 'India',
-		'timezone': 'Asia/Calcutta'
-	}
-	import json
-
-	session.controller("Setup Control", "Setup Control").setup_account(json.dumps(args))

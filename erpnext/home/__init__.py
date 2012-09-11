@@ -54,18 +54,18 @@ feed_dict = {
 	'Blog': ['%(title)s', '#000080']
 }
 
-def make_feed(feedtype, doctype, name, owner, subject, color):
+def make_feed(session, feedtype, doctype, name, owner, subject, color):
 	"makes a new Feed record"
 	from webnotes.model.doc import Document
 	from webnotes.utils import get_fullname
 
 	if feedtype in ('Login', 'Comment', 'Assignment'):
 		# delete old login, comment feed
-		webnotes.conn.sql("""delete from tabFeed where 
+		session.db.sql("""delete from tabFeed where 
 			datediff(curdate(), creation) > 7 and doc_type in ('Comment', 'Login', 'Assignment')""")
 	else:
 		# one feed per item
-		webnotes.conn.sql("""delete from tabFeed
+		session.db.sql("""delete from tabFeed
 			where doc_type=%s and doc_name=%s 
 			and ifnull(feed_type,'') != 'Comment'""", (doctype, name))
 
@@ -76,12 +76,12 @@ def make_feed(feedtype, doctype, name, owner, subject, color):
 	f.doc_name = name
 	f.subject = subject
 	f.color = color
-	f.full_name = get_fullname(owner)
-	f.save()
+	f.full_name = get_fullname(session, owner)
+	f.save(session)
 
-def update_feed(doc, method=None):   
+def update_feed(session, doc, method=None):   
 	"adds a new feed"
 	if method in ['on_update', 'on_submit']:
 		subject, color = feed_dict.get(doc.doctype, [None, None])
 		if subject:			
-			make_feed('', doc.doctype, doc.name, doc.owner, subject % doc, color)
+			make_feed(session, '', doc.doctype, doc.name, doc.owner, subject % doc, color)

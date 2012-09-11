@@ -61,7 +61,7 @@ class AccountsController(DocListController):
 			tmp=gle['debit']
 			gle['debit'], gle['credit'] = abs(flt(gle['credit'])), abs(flt(tmp))
 		# insert gl entry	
-		webnotes.model.insert(gle)
+		self.session.insert(gle)
 		
 		# add to total_debit, total_credit
 		self.total_debit += flt(gle['debit'])

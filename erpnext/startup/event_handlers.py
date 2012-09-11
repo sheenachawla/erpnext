@@ -45,14 +45,14 @@ def on_login_post_session(login_manager):
 			login_manager.user=='Administrator' and '#8CA2B3' or '#1B750D')		
 
 
-def comment_added(doc):
+def comment_added(session, doc):
 	"""add comment to feed"""
-	home.make_feed('Comment', doc.parenttype, doc.parent, doc.comment_by,
+	home.make_feed(session, 'Comment', doc.parenttype, doc.parent, doc.comment_by,
 		'<i>"' + doc.comment + '"</i>', '#6B24B3')
 
-def doclist_all(doc, method):
+def doclist_all(session, doc, method):
 	"""doclist trigger called from webnotes.model.controller on any event"""
-	home.update_feed(doc, method)
+	home.update_feed(session, doc, method)
 	
 def boot_session(session, bootinfo):
 	"""boot session - send website info if guest"""
@@ -139,23 +139,3 @@ def check_if_expired(session):
 	
 	webnotes.response['message'] = 'Account Expired'
 	raise webnotes.AuthenticationError
-
-#### website
-
-def get_web_script():
-	"""returns web startup script"""
-	return session.db.get_value('Website Settings', None, 'startup_code') or ''
-
-def get_web_style():
-	"""returns web css"""
-	return session.db.get_value('Style Settings', None, 'custom_css') or ''
-
-def get_web_header(page_name):
-	"""get website header"""
-	from website.utils import get_header
-	return get_header(page_name)
-
-def get_web_footer(page_name):
-	"""get website footer"""
-	from website.utils import get_footer
-	return get_footer(page_name)

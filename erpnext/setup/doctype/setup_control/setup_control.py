@@ -22,13 +22,9 @@ from webnotes.model.doc import Document
 
 from webnotes.model.controller import DocListController
 class SetupControlController(DocListController):
-	# Account Setup
-	# ---------------
 	def setup_account(self, args):
 		import webnotes, json
 		args = json.loads(args)
-		self.session.db.begin()
-
 		curr_fiscal_year, fy_abbr, fy_start_date, fy_end_date = self.get_fy_details(args.get('fy_start'))
 
 		args['name'] = self.session.user
@@ -88,7 +84,7 @@ class SetupControlController(DocListController):
 
 		# Set 
 		self.set_defaults(def_args)
-		
+				
 		cp_args = {}
 		for k in ['industry', 'country', 'timezone', 'company_name']:
 			cp_args[k] = args[k]
@@ -99,20 +95,19 @@ class SetupControlController(DocListController):
 		
 		self.create_email_digest()
 
-		import webnotes.sessions
-		webnotes.sessions.clear()
+		self.session.clear_cache()
 		self.session.msgprint("Company setup is complete")
 		
 		import webnotes.utils
 		user_fullname = (args.get('first_name') or '') + (args.get('last_name')
 				and (" " + args.get('last_name')) or '')
-		self.session.db.commit()
-		return {'sys_defaults': webnotes.utils.get_defaults(), 'user_fullname': user_fullname}
+
+		return {'sys_defaults': self.session.db.get_defaults(), 'user_fullname': user_fullname}
 
 	def create_feed_and_todo(self):
 		"""update activty feed and create todo for creation of item, customer, vendor"""
 		import home
-		home.make_feed('Comment', 'ToDo', '', self.session.user,
+		home.make_feed(self.session, 'Comment', 'ToDo', '', self.session.user,
 			'<i>"' + 'Setup Complete. Please check your <a href="#!todo">\
 			To Do List</a>' + '"</i>', '#6B24B3')
 
@@ -150,7 +145,7 @@ class SetupControlController(DocListController):
 		companies_list = self.session.db.sql("SELECT company_name FROM `tabCompany`", as_list=1)
 
 		import webnotes.utils
-		system_managers = webnotes.utils.get_system_managers_list()
+		system_managers = webnotes.utils.get_system_managers_list(self.session)
 		if not system_managers: return
 		
 		from webnotes.model.doc import Document
@@ -212,9 +207,10 @@ class SetupControlController(DocListController):
 	# Set Control Panel Defaults
 	# --------------------------
 	def set_cp_defaults(self, industry, country, timezone, company_name):
-		self.session.update({"doctype": "Control Panel", "name": "Control Panel",
-			"company_name": company_name, "industry": industry, "time_zone": timezone,
+		cp = self.session.controller('Control Panel', 'Control Panel')
+		cp.doc.update({"company_name": company_name, "industry": industry, "time_zone": timezone,
 			"country": country})
+		cp.save()
 
 	# Create Profile
 	# --------------

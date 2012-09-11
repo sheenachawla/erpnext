@@ -100,8 +100,6 @@ def upto(session, stage, with_tests=False):
 def test_stage(session, stage):
 	"""run a stage"""
 	import unittest, conf, sys
-	from webnotes.db import Database
-	session.db = Database(conf.test_db_name)
 	
 	stagedata = stages[stage]
 	if not stagedata.get("tests"): return

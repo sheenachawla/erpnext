@@ -23,9 +23,6 @@ class FiscalYearController(DocListController):
 		prev_year = self.session.db.sql("select name from `tabFiscal Year` where year_start_date < %s",
 			self.doc.year_start_date, as_list=1)
 			
-		print self.doc
-		print self.session.db.cur_db_name
-			
 		if prev_year and not self.doc.past_year:
 			self.session.msgprint("Please enter Past Year", raise_exception=webnotes.MandatoryError)
 
