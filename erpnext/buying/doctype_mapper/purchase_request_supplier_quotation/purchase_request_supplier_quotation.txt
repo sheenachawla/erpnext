@@ -5,24 +5,20 @@
 	{
 		u'creation': u'2012-08-29 12:21:19',
 		u'docstatus': 0,
-		u'modified': '2012-08-29 12:27:45',
+		u'modified': '2012-09-07 18:10:03',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
 
 	# These values are common for all Field Mapper Detail
 	{
-		u'checking_operator': u'=',
+		u'condition': u'=',
 		'doctype': u'Field Mapper Detail',
-		u'from_field': u'company',
-		u'map': u'Yes',
-		u'match_id': 0,
-		'modifed': '2012-08-29 12:27:45',
+		u'map': 1,
 		u'name': u'__common__',
 		u'parent': u'Purchase Request-Supplier Quotation',
 		u'parentfield': u'field_mapper_details',
-		u'parenttype': u'DocType Mapper',
-		u'to_field': u'company'
+		u'parenttype': u'DocType Mapper'
 	},
 
 	# These values are common for all Table Mapper Detail
@@ -31,7 +27,6 @@
 		u'from_field': u'purchase_request_items',
 		u'from_table': u'Purchase Request Item',
 		u'match_id': 1,
-		'modifed': '2012-08-29 12:27:45',
 		u'name': u'__common__',
 		u'parent': u'Purchase Request-Supplier Quotation',
 		u'parentfield': u'table_mapper_details',
@@ -48,7 +43,6 @@
 		u'from_doctype': u'Purchase Request',
 		u'is_custom': 0,
 		u'is_default': 0,
-		'modifed': '2012-08-29 12:27:45',
 		u'module': u'Buying',
 		u'name': u'__common__',
 		u'ref_doc_submitted': 1,
@@ -68,6 +62,37 @@
 
 	# Field Mapper Detail
 	{
-		u'doctype': u'Field Mapper Detail'
+		u'checking_operator': u'=',
+		u'doctype': u'Field Mapper Detail',
+		u'from_field': u'company',
+		u'match_id': 0,
+		u'to_field': u'company'
+	},
+
+	# Field Mapper Detail
+	{
+		u'doctype': u'Field Mapper Detail',
+		u'from_field': u'item_code',
+		u'localname': u'New Field Mapper Detail 1',
+		u'match_id': 1,
+		u'to_field': u'item_code'
+	},
+
+	# Field Mapper Detail
+	{
+		u'doctype': u'Field Mapper Detail',
+		u'from_field': u'warehouse',
+		u'localname': u'New Field Mapper Detail 2',
+		u'match_id': 1,
+		u'to_field': u'warehouse'
+	},
+
+	# Field Mapper Detail
+	{
+		u'doctype': u'Field Mapper Detail',
+		u'from_field': u'uom',
+		u'localname': u'New Field Mapper Detail 3',
+		u'match_id': 1,
+		u'to_field': u'uom'
 	}
 ]

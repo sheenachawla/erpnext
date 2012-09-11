@@ -32,7 +32,3 @@ from controllers.selling import SalesController
 class QuotationController(SalesController):
 	def setup(self):
 		self.item_table_fieldname = 'quotation_items'
-	
-	def on_update(self):
-		if self.doc.docstatus == 2:
-			self.check_if_nextdoc_exists(['Sales Order Item'])

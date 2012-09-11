@@ -20,7 +20,6 @@ from webnotes import _
 from webnotes.utils import flt
 from webnotes.utils.nestedset import NestedSetController
 
-
 class AccountController(NestedSetController):
 	def setup(self):
 		self.nsm_parent_field = 'parent_account'
@@ -62,13 +61,15 @@ class AccountController(NestedSetController):
 		if (self.doc.__islocal or not self.doc.name) \
 				and self.session.db.exists("Account", {"account_name": self.doc.account_name, \
 				"company": self.doc.company}):
-			self.session.msgprint(_("Account Name already exists, please rename"), raise_exception=webnotes.NameError)
+			self.session.msgprint(_("Account Name already exists, please rename"), 
+				raise_exception=webnotes.NameError)
 				
 	def validate_root_details(self):
 		#does not exists parent
 		if self.doc.account_name in ['Income','Source of Funds (Liabilities)', \
 			'Expenses', 'Application of Funds (Assets)'] and self.doc.parent_account:
-			self.session.msgprint(_("You can not assign parent for root account"), raise_exception=webnotes.ValidationError)
+			self.session.msgprint(_("You can not assign parent for root account"), 
+				raise_exception=webnotes.ValidationError)
 
 		# Debit / Credit
 		if self.doc.account_name in ['Income','Source of Funds (Liabilities)']:
@@ -128,9 +129,12 @@ class AccountController(NestedSetController):
 
 	def validate_before_trash(self):
 		"""Account with with existing gl entries cannot be inactive"""
+		if not self.doc.parent_account:
+			msgprint(_("Root Account can not be deleted"), 
+				raise_exception=webnotes.ValidationError)
 		if self.check_gle_exists():
-			self.session.msgprint(_("Account with existing transaction \
-				(Sales Invoice / Purchase Invoice / Journal Voucher) can not be trashed")
+			self.session.msgprint(_("""Account with existing transaction \
+				(Sales Invoice / Purchase Invoice / Journal Voucher) can not be trashed""")
 				, raise_exception=webnotes.ValidationError)
 		if self.session.db.exists("Account", {'parent_account': self.doc.name}):
 			self.session.msgprint(_("Child account exists for this account. You can not trash this account.")

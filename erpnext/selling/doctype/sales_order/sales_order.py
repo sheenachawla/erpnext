@@ -19,20 +19,14 @@ TODO:
 
 * get projected qty from warehouse on posting date
 * make maintenance schedule
-* get_item_details
-* validate_approving_authority
 
-* DocTypeValidator: 
-**	If order_type is Sales, Expected Delivery Date is mandatory
-**	If amend_from, amendment_date is mandatory
-**	Expected Delivery Date cannot be before Posting Date
 ** validate with quotation thr: posting_date, order_type, submitted
 
 
 """
 
 import webnotes
-from webnotes import msgprint
+from webnotes import msgprint, _
 from webnotes.utils import getdate, cstr
 from webnotes.model import get_controller
 from controllers.selling import SalesController
@@ -41,30 +35,23 @@ class SalesOrderController(SalesController):
 	def setup(self):
 		self.item_table_fieldname = 'sales_order_items'
 		
-	def validate(self):		
+	def validate(self):
 		super(SalesOrderController, self).validate()
 		self.validate_po()
 		
 		if self.doc.docstatus == 1:
-			get_controller('Party',self.doc.party).check_credit_limit\
-				(self.doc.company, self.doc.grand_total)
-		
-	def on_update(self):
-		if self.doc.docstatus == 2:
-			self.check_if_nextdoc_exists(['Delivery Note Item', 'Sales Invoice Item', \
-				'Maintenance Schedule Item', 'Maintenance Visit Purpose'])
-			
+			get_controller('Party',self.doc.party).check_credit_limit(
+				self.doc.company, self.doc.grand_total * self.doc.exchange_rate)
+				
+			from core.doctype.doctype_mapper.doctype_mapper import validate_prev_doclist
+			validate_prev_doclist('Quotation', 'Sales Order', self.doclist)
+	
 	def validate_po(self):
-		if self.doc.po_date and self.doc.delivery_date \
-			and getdate(self.doc.po_date) > getdate(self.doc.delivery_date):
-			msgprint("Expected Delivery Date cannot be before Purchase Order Date", 
-				raise_exception=webnotes.MandatoryError)
-
-		if self.doc.po_no and self.doc.party:
-			so = webnotes.conn.sql("select name from `tabSales Order` \
-				where ifnull(po_no, '') = %s and name != %s and docstatus < 2\
-				and party = %s", (self.doc.po_no, cstr(self.doc.name), self.doc.party))
+		if self.doc.customer_po and self.doc.party:
+			so = webnotes.conn.sql("""select name from `tabSales Order`
+				where customer_po = %s and docstatus = 1 and party = %s
+				and name != %s""", (self.doc.customer_po, self.doc.party, cstr(self.doc.name)))
 			if so:
-				msgprint("""Another Sales Order (%s) exists against same PO No and Party. 
-					Please be sure, you are not making duplicate entry.""" % 
-					so[0]['name'], raise_exception=webnotes.ValidationError)
+				msgprint(_("""Another Sales Order (%s) exists against same 
+					Customer's Purchase Order and Party.""") % so[0]['name'],
+					raise_exception=webnotes.ValidationError)

@@ -29,7 +29,7 @@ base_so = {
 	"order_type": "Sales",
 	"currency": "INR",
 	"exchange_rate": 1,
-	"price_list_name": "Standard",
+	"price_list": "Standard",
 	"price_list_currency": "INR",
 	"plc_exchange_rate": 1,
 	"__islocal": 1
@@ -49,35 +49,17 @@ base_so_item = {
 	"__islocal": 1
 }
 
-class TestSalesOrder(TestBase):
-	def test_delivery_date_greater_than_po_date(self):	
-		so = base_so.copy()
-		so.update({'po_date':add_days(nowdate(), -5), 'delivery_date':add_days(nowdate(), -10)})
-		self.assertRaises(webnotes.ValidationError, \
-			webnotes.model.insert, [so, base_so_item])
-	
+class TestSalesOrder(TestBase):	
 	def test_duplicate_sales_order_against_po(self):
 		so = base_so.copy()
-		so.update({'po_no': 'PO000001', 'docstatus': 1})
+		so.update({'customer_po': 'PO000001', 'docstatus': 1})
 		webnotes.model.insert([so, base_so_item])
 		
 		so_duplicate = base_so.copy()
-		so_duplicate.update({'po_no': 'PO000001'})
+		so_duplicate.update({'customer_po': 'PO000001', 'docstatus': 1})
 		self.assertRaises(webnotes.ValidationError, webnotes.model.insert, 
 			[so_duplicate, base_so_item])
-			
-	def test_item_type(self):
-		# not sales item
-		webnotes.conn.set_value('Item', 'Home Desktop 100', 'is_sales_item', 'No')
-		self.assertRaises(webnotes.ValidationError, \
-			webnotes.model.insert, [base_so, base_so_item])
-			
-		# not service item
-		so = base_so.copy()
-		so.update({"order_type": "Maintenance"})
-		self.assertRaises(webnotes.ValidationError, \
-			webnotes.model.insert, [so, base_so_item])
-		
+					
 	def test_project(self):
 		project = {
 			'doctype': 'Project', 'name': 'PROJ001', 'status': 'Open',
@@ -126,40 +108,47 @@ class TestSalesOrder(TestBase):
 		self.assertRaises(webnotes.ValidationError, \
 			webnotes.model.insert, [so, so_item])
 		
-	# def test_validate_with_quote(self):
-	# 	# save quotation
-	# 	from selling.doctype.quotation.test_quotation import \
-	# 		base_quote, base_quote_item
-	# 	quote_ctlr = webnotes.model.insert([base_quote, base_quote_item])
-	# 	so_item = base_so_item.copy()
-	# 	so_item.update({"quotation": quote_ctlr.doc.name})
-	# 	
-	# 	# quotation not submitted		
-	# 	self.assertRaises(webnotes.ValidationError, webnotes.model.insert, 
-	# 		[base_so, so_item])
-	# 
-	# 	# so posting date before quote posting date
-	# 	quote_ctlr.submit()
-	# 	so = base_so.copy()
-	# 	so.update({'posting_date': add_days(nowdate(), -2)})
-	# 	self.assertRaises(webnotes.ValidationError, webnotes.model.insert, [so, so_item])
-	# 
-	# 	# order type not matched
-	# 	webnotes.conn.set_value('Item', 'Home Desktop 100', 'is_service_item', 'Yes')
-	# 	so = base_so.copy()
-	# 	so.update({'order_type': 'Maintenance'})
-	# 	self.assertRaises(webnotes.ValidationError, webnotes.model.insert, [so, so_item])
+	def test_validate_with_quote(self):
+		# save quotation
+		from selling.doctype.quotation.test_quotation import \
+			base_quote, base_quote_item
+		quote = base_quote.copy()
+		quote.update({'docstatus': 1})
+		quote_ctlr = webnotes.model.insert([quote, base_quote_item])
+
+		so = base_so.copy()
+		so.update({'docstatus': 1, 'order_type': 'Maintenance'})
+		so_item = base_so_item.copy()
+		so_item.update({"quotation": quote_ctlr.doc.name, \
+			"quotation_item": quote_ctlr.doclist[1].name})
+		
+		# quotation not submitted		
+		self.assertRaises(webnotes.IntegrityError, webnotes.model.insert, 
+			[so, so_item])
 	
-	# def test_so_cancel_if_nextdoc(self):
-	# 	# to be done after DN, SI cleanup
-	# 	pass
+		# so posting date before quote posting date
+		so = base_so.copy()
+		so.update({'posting_date': add_days(nowdate(), -2), 'docstatus': 1})
+		self.assertRaises(webnotes.IntegrityError, webnotes.model.insert, [so, so_item])
+	
+		# order type not matched
+		so = base_so.copy()
+		so.update({'docstatus': 1})
+		so_item = base_so_item.copy()
+		so_item.update({
+			"quotation": quote_ctlr.doc.name, 
+			"quotation_item": quote_ctlr.doclist[1].name,
+			"stock_uom": "Mtr"
+		})
+		print """testing 1"""
+		import pprint
+		pprint.pprint(quote_ctlr.doclist[1])
+		self.assertRaises(webnotes.IntegrityError, webnotes.model.insert, [so, so_item])
+	
 	
 	def test_taxes_and_totals(self):
-		from selling.doctype.quotation.test_quotation import load_data
-		taxes_ctlr = load_data()
-		
 		so_item = base_so_item.copy()
-		so_item.update({'taxes_and_charges': taxes_ctlr.doc.name})
+		so_item.update({'taxes_and_charges': 'default_taxes'})
 		
 		so = base_so.copy()
 		so.update({"docstatus": 1})

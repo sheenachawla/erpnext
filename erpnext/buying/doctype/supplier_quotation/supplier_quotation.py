@@ -18,13 +18,16 @@ import webnotes
 
 from controllers.buying import BuyingController
 class SupplierQuotationController(BuyingController):
+	def setup(self):
+		self.item_table_fieldname = 'supplier_quotation_items'
+	
 	def validate(self):
 		if self.doc.docstatus != 2:
 			# validate for draft, submit
 			super(SupplierQuotationController, self).validate_items(
 				"supplier_quotation_items")
 			super(SupplierQuotationController, self).validate_previous_doclist(
-				"supplier_quotation_items", "purchase_request", "purchase_request_item")
+				"purchase_request", "purchase_request_item")
 			# TODO: validate reference values
 		else:
 			# validate for cancel

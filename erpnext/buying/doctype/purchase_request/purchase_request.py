@@ -20,6 +20,9 @@ from webnotes.utils import getdate, now_datetime, comma_and, flt
 
 from controllers.buying import BuyingController
 class PurchaseRequestController(BuyingController):
+	def setup(self):
+		self.item_table_fieldname = 'purchase_request_items'
+	
 	def validate(self):
 		if self.doc.docstatus != 2:
 			# validate for draft, submit

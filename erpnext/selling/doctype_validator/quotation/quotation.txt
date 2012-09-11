@@ -1,0 +1,44 @@
+# DocType Validator, Quotation
+[
+
+	# These values are common in all dictionaries
+	{
+		u'creation': '2012-09-07 12:34:27',
+		u'docstatus': 0,
+		u'modified': '2012-09-07 18:50:21',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
+	},
+
+	# These values are common for all DocType Validator
+	{
+		'doctype': u'DocType Validator',
+		'for_doctype': u'Quotation',
+		u'name': u'__common__'
+	},
+
+	# These values are common for all DocType Link Filter
+	{
+		'condition': u'in',
+		'doctype': u'DocType Link Filter',
+		'fieldname': u'party_type',
+		'link_field': u'party',
+		u'name': u'__common__',
+		'parent': u'Quotation',
+		'parentfield': u'link_filters',
+		'parenttype': u'DocType Validator',
+		'table_field': u'',
+		'value': u'Customer, Customer and Supplier'
+	},
+
+	# DocType Validator, Quotation
+	{
+		u'doctype': u'DocType Validator',
+		'name': u'Quotation'
+	},
+
+	# DocType Link Filter
+	{
+		u'doctype': u'DocType Link Filter'
+	}
+]
