@@ -85,7 +85,7 @@ def get_doc_fields(session, page_name):
 	if not doctype:
 		raise Exception, "Page %s not found" % page_name
 		
-	con = session.controller(doctype, name)
+	con = session.get_controller(doctype, name)
 		
 	if hasattr(con, 'prepare_template_args'):
 		con.prepare_template_args()

@@ -25,17 +25,17 @@ base_party = {
 	"territory": "Default", "party_group": "Default Party Group"
 }
 
-def load_data():
-	make_party_groups()
-	make_parties()
+def load_data(session):
+	make_party_groups(session)
+	make_parties(session)
 
-def make_party_groups():
-	webnotes.model.insert({
+def make_party_groups(session):
+	session.insert({
 		"doctype": "Party Group", "name": "Default Party Group"
 	})
 
-def make_lead():
-	webnotes.model.insert({
+def make_lead(session):
+	session.insert({
 		"doctype": "Lead", "name": "LEAD001", "lead_name": "Robert Smith",
 		"status": "Open", "naming_series": "LEAD",
 		"address_line1": "F/102, 247 Park",
@@ -44,7 +44,7 @@ def make_lead():
 		"phone": "9090909090"
 	})
 
-def make_parties():
+def make_parties(session):
 	# make customer and supplier
 	parties = [
 		{"doctype": "Party", "name": "Robert Smith", "party_type": "Customer and Supplier"}, 
@@ -52,28 +52,28 @@ def make_parties():
 		{"doctype": "Party", "name": "Medern Associates", "party_type": "Supplier"}
 	]
 	for p in parties:
-		webnotes.model.insert(p)
+		session.insert(p)
 	
 	
 class TestParty(TestBase):
 	def setUp(self):
 		super(TestParty, self).setUp()
-		make_party_groups()
-		make_lead()
+		make_party_groups(self.session)
+		make_lead(self.session)
 		
 	def test_party_creation(self):
-		webnotes.model.insert(base_party)
-		self.assertTrue(webnotes.conn.exists("Party", "test_party"))
-		self.assertTrue(webnotes.conn.exists("Party", "test_party"))
+		self.session.insert(base_party)
+		self.assertTrue(self.session.db.exists("Party", "test_party"))
+		self.assertTrue(self.session.db.exists("Party", "test_party"))
 		
 	def test_lead_status(self):
-		webnotes.model.insert_variants(base_party, [{'lead_id': 'LEAD001'}])
-		self.assertEqual(webnotes.conn.get_value("Lead", "LEAD001", "status"), "Converted")
+		self.session.insert_variants(base_party, [{'lead_id': 'LEAD001'}])
+		self.assertEqual(self.session.db.get_value("Lead", "LEAD001", "status"), "Converted")
 
 	def test_address_and_contact(self):
-		webnotes.model.insert_variants(base_party, [{'lead_id': 'LEAD001'}])
+		self.session.insert_variants(base_party, [{'lead_id': 'LEAD001'}])
 		self.assertTrue(
-			webnotes.conn.get_value("Address", {
+			self.session.db.get_value("Address", {
 				"party": "test_party",
 				"address_type": "Office",
 				"email_id": "email@domain.com",
@@ -85,7 +85,7 @@ class TestParty(TestBase):
 			})
 		)
 		self.assertTrue(
-			webnotes.conn.get_value("Contact", {
+			self.session.db.get_value("Contact", {
 				"party": "test_party",
 				"email_id": "email@domain.com",
 				"is_primary_contact": 1,
@@ -95,17 +95,16 @@ class TestParty(TestBase):
 		)
 
 	def test_party_deletion(self):
-		webnotes.model.insert_variants(base_party, [{'lead_name': 'LEAD001'}])
-		webnotes.model.delete_doc('Party', 'test_party')
+		self.session.insert_variants(base_party, [{'lead_name': 'LEAD001'}])
+		self.session.delete_doc('Party', 'test_party')
 		
-		self.assertFalse(webnotes.conn.exists("Address", "test_party-Office"))
-		self.assertEqual(webnotes.conn.get_value("Lead", "LEAD001", "status"), "Open")
+		self.assertFalse(self.session.db.exists("Address", "test_party-Office"))
+		self.assertEqual(self.session.db.get_value("Lead", "LEAD001", "status"), "Open")
 
 	def test_party_renaming(self):
-		webnotes.model.insert(base_party)
+		self.session.insert(base_party)
 
-		from webnotes.model.rename_doc import rename_doc
-		rename_doc("Party", "test_party", "test_party_renamed")
+		self.session.rename_doc("Party", "test_party", "test_party_renamed")
 
-		self.assertFalse(webnotes.conn.exists("Party", "test_part"))
-		self.assertTrue(webnotes.conn.exists("Party", "test_party_renamed"))
+		self.assertFalse(self.session.db.exists("Party", "test_part"))
+		self.assertTrue(self.session.db.exists("Party", "test_party_renamed"))

@@ -32,52 +32,52 @@ base_item = {
 	'inspection_required': 'No',
 }
 
-def load_data():
-	make_item_groups()
-	webnotes.model.insert_test_data("Item")
+def load_data(session):
+	make_item_groups(session)
+	session.insert_test_data("Item")
 	
-def make_item_groups():
-	webnotes.model.insert_test_data("Item Group",
+def make_item_groups(session):
+	session.insert_test_data("Item Group",
 		sort_fn=lambda ig: (ig[0].get('parent_item_group'), ig[0].get('name')))
 
 class TestItem(TestBase):
 	def setUp(self):
 		super(TestItem, self).setUp()
-		make_item_groups()
+		make_item_groups(session)
 	
 	def test_item_creation(self):
-		webnotes.model.insert_variants(base_item, [{
+		self.session.insert_variants(base_item, [{
 			"name":"Home Desktop 1000"
 		}])
-		self.assertTrue(webnotes.conn.exists("Item", "Home Desktop 1000"))
+		self.assertTrue(self.session.db.exists("Item", "Home Desktop 1000"))
 		
 		# test item creation with autoname
-		webnotes.model.insert_variants(base_item, [{
+		self.session.insert_variants(base_item, [{
 			"item_code": "Home Desktop 2000",
 		}])
-		self.assertTrue(webnotes.conn.exists("Item", "Home Desktop 2000"))
+		self.assertTrue(self.session.db.exists("Item", "Home Desktop 2000"))
 
 	def test_duplicate(self):
-		webnotes.model.insert([{"doctype": "Price List", "name": "Retail",
+		self.session.insert([{"doctype": "Price List", "name": "Retail",
 			"price_list_name": "Retail"}])
 		
 		item = base_item.copy()
 		item.update({"name":"Home Desktop 1000"})
 		ref_rate_detail = {"doctype":"Item Price", "price_list_name":"Retail", 
 			"ref_currency":"INR", "parentfield":"ref_rate_details", "parenttype":"Item"}
-		self.assertRaises(webnotes.DuplicateEntryError, webnotes.model.insert, [item, 
+		self.assertRaises(webnotes.DuplicateEntryError, self.session.insert, [item, 
 			ref_rate_detail, ref_rate_detail])
 		
 		item = item.copy()
 		item["name"] = "Home Desktop 2000"
-		webnotes.model.insert([item, ref_rate_detail])
+		self.session.insert([item, ref_rate_detail])
 		
 	def test_link_validation(self):
 		item = base_item.copy()
 		
 		# expenses is a group
 		item.update({"name":"Home Desktop 1000", "purchase_account":"Expenses - EW"})
-		self.assertRaises(webnotes.LinkFilterError, webnotes.model.insert, [item])
+		self.assertRaises(webnotes.LinkFilterError, self.session.insert, [item])
 
 		# check if link filter error occurs for child item
 		item = base_item.copy()
@@ -89,14 +89,14 @@ class TestItem(TestBase):
 			"tax_type": "Tax Assets - EW",
 			"tax_rate": 10.0
 		}
-		self.assertRaises(webnotes.LinkFilterError, webnotes.model.insert, [item, item_tax])
+		self.assertRaises(webnotes.LinkFilterError, self.session.insert, [item, item_tax])
 
 		# valid entry
 		item["name"] = "Home Desktop 3000"
 		item["purchase_account"] = "Miscellaneous Expenses - EW"
 		item_tax["tax_type"] = "Sales Promotion Expenses - EW"
-		webnotes.model.insert([item, item_tax])
-		self.assertTrue(webnotes.conn.exists("Item", "Home Desktop 3000"))
+		self.session.insert([item, item_tax])
+		self.assertTrue(self.session.db.exists("Item", "Home Desktop 3000"))
 		
 	def test_conditional_validation(self):
 		item = base_item.copy()
@@ -108,7 +108,7 @@ class TestItem(TestBase):
 			"has_serial_no": "Yes",
 			"is_stock_item": "No"
 		})
-		self.assertRaises(webnotes.ConditionalPropertyError, webnotes.model.insert, [item])
+		self.assertRaises(webnotes.ConditionalPropertyError, self.session.insert, [item])
 		
 		# check if error is raised if net weight is specified, but weight uom is not
 		item = base_item.copy()
@@ -116,7 +116,7 @@ class TestItem(TestBase):
 			"name": "Home Desktop 2000",
 			"net_weight": 500,
 		})
-		self.assertRaises(webnotes.ConditionalPropertyError, webnotes.model.insert, [item])
+		self.assertRaises(webnotes.ConditionalPropertyError, self.session.insert, [item])
 		
 		# valid entry
 		item = base_item.copy()
@@ -128,8 +128,8 @@ class TestItem(TestBase):
 			"net_weight": 500,
 			"weight_uom": "Kg"
 		})
-		webnotes.model.insert([item])
-		self.assertTrue(webnotes.conn.exists("Item", "Home Desktop 3000"))
+		self.session.insert([item])
+		self.assertTrue(self.session.db.exists("Item", "Home Desktop 3000"))
 	
 	def test_if_sle_exists(self):
 		# insert item
@@ -137,7 +137,7 @@ class TestItem(TestBase):
 		item.update({
 			"name": "Home Desktop 1000"
 		})
-		webnotes.model.insert(item)
+		self.session.insert(item)
 		
 		from webnotes.utils import nowdate
 		from utilities import get_fiscal_year
@@ -156,27 +156,27 @@ class TestItem(TestBase):
 			"fiscal_year": get_fiscal_year(nowdate()),
 			"is_cancelled": "Yes",
 		}
-		webnotes.model.insert([sle])
-		self.assertEqual(webnotes.model.get_controller("Item", item["name"]).check_if_sle_exists(), 
+		self.session.insert([sle])
+		self.assertEqual(self.session.get_controller("Item", item["name"]).check_if_sle_exists(), 
 			"not exists")
 		
 		# create valid stock ledger entry and test if sle exists
 		sle["is_cancelled"] = "No"
-		webnotes.model.insert([sle])
-		self.assertEqual(webnotes.model.get_controller("Item", item["name"]).check_if_sle_exists(),
+		self.session.insert([sle])
+		self.assertEqual(self.session.get_controller("Item", item["name"]).check_if_sle_exists(),
 			"exists")
 	
 	def test_get_tax_rate(self):
 		# insert item
 		item = base_item.copy()
 		item.update({"name": "Home Desktop 1000"})
-		webnotes.model.insert([item])
+		self.session.insert([item])
 		
 		# update account with tax rate
-		acc = webnotes.model.get_controller("Account", "Sales Promotion Expenses - EW").doc
+		acc = self.session.get_controller("Account", "Sales Promotion Expenses - EW").doc
 		acc.update({"tax_rate": 5.0})
 		acc.save()
 		
 		# test if correct value is fetched
-		item_controller = webnotes.model.get_controller("Item", item["name"])
+		item_controller = self.session.get_controller("Item", item["name"])
 		self.assertEqual(item_controller.get_tax_rate("Sales Promotion Expenses - EW")["tax_rate"], 5.0)

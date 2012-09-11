@@ -50,7 +50,7 @@ def save_features_setup(session):
 	
 def set_all_roles_to_admin(session):
 	"""Set all roles to administrator profile"""
-	session.controller("Setup Control").add_roles(session.get_doclist("Profile", "Administrator")[0])
+	session.get_controller("Setup Control").add_roles(session.get_doclist("Profile", "Administrator")[0])
 	
 def update_patch_log(session):
 	"""Update patch version and patch log"""

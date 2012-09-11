@@ -207,7 +207,7 @@ class SetupControlController(DocListController):
 	# Set Control Panel Defaults
 	# --------------------------
 	def set_cp_defaults(self, industry, country, timezone, company_name):
-		cp = self.session.controller('Control Panel', 'Control Panel')
+		cp = self.session.get_controller('Control Panel', 'Control Panel')
 		cp.doc.update({"company_name": company_name, "industry": industry, "time_zone": timezone,
 			"country": country})
 		cp.save()
@@ -232,7 +232,7 @@ class SetupControlController(DocListController):
 			'Sales Manager', 'Sales User', 'Sales Master Manager', 'Support Manager', 'Support Team', \
 			'System Manager', 'Website Manager']
 		
-		profile_controller = self.session.controller([pr])
+		profile_controller = self.session.get_controller([pr])
 		
 		for r in roles_list:
 			profile_controller.add_child({

@@ -32,7 +32,7 @@ def load_data(session):
 		'timezone': 'Asia/Calcutta'
 	}
 	try:
-		session.controller("Setup Control", "Setup Control").setup_account(json.dumps(args))
+		session.get_controller("Setup Control", "Setup Control").setup_account(json.dumps(args))
 	except Exception, e:
 		self.session.db.rollback()
 		raise e
@@ -52,7 +52,7 @@ class TestAccountSetup(TestBase):
 			'country': 'India',
 			'timezone': 'Asia/Calcutta'
 		}
-		self.session.controller("Setup Control", "Setup Control").setup_account(json.dumps(args))		
+		self.session.get_controller("Setup Control", "Setup Control").setup_account(json.dumps(args))		
 		
 	def test_setup(self):
 		# Currency
