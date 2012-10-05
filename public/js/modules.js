@@ -128,7 +128,10 @@ erpnext.module_page.hide_links = function(wrapper) {
 	
 	// pages
 	$(wrapper).find('[data-role]').each(function() {
-		if(!has_common(user_roles, [$(this).attr("data-role"), "System Manager"])) {
+		// can define multiple roles
+		var data_roles = $.map($(this).attr("data-role").split(","), function(role) {
+			return role.trim(); });
+		if(!has_common(user_roles, ["System Manager"].concat(data_roles))) {
 			var html = $(this).html();
 			$(this).parent().css('color', '#999');
 			$(this).replaceWith('<span title="Only accessible by Roles: '+
@@ -167,7 +170,11 @@ erpnext.module_page.make_list = function(module, wrapper) {
 		parent: $parent2,
 		method: 'utilities.get_report_list',
 		render_row: function(row, data) {
-			$(row).html(repl('<a href="#!Report2/%(ref_doctype)s/%(name)s" \
+			data.report_type = data.is_query_report 
+				? "query-report" 
+				: repl("Report2/%(ref_doctype)s", data)
+			
+			$(row).html(repl('<a href="#!%(report_type)s/%(name)s" \
 				data-doctype="%(ref_doctype)s">\
 				%(name)s</a>', data))
 		},
