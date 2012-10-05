@@ -60,7 +60,7 @@ class DocType:
 	# -------------------------------------------------------------------
 	def get_permissions(self,doctype):
 		import webnotes.model.doctype
-		doclist = webnotes.model.doctype.get(doctype, form=0)
+		doclist = webnotes.model.doctype.get(doctype)
 		
 		ptype = [{
 				'role': perm.role,
@@ -194,9 +194,8 @@ class DocType:
 						
 						sql("update tabDocType set modified = %s where name = %s",(now(), parent))
 
-
-		from webnotes.utils.cache import CacheItem
-		CacheItem(parent).clear()		
+		from webnotes.model.doctype import clear_cache
+		clear_cache(parent)
 
 		msgprint("Permissions Updated")
 				
