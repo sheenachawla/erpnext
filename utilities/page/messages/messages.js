@@ -22,8 +22,7 @@ wn.pages.messages.onload = function(wrapper) {
 		title: "Messages"
 	});
 	
-	$('<div><div class="avatar avatar-large">\
-		<img id="avatar-image" src="lib/images/ui/avatar.png"></div>\
+	$('<div><span id="avatar-area"></span>\
 		<h3 style="display: inline-block" id="message-title">Everyone</h3>\
 	</div><hr>\
 	<div id="post-message">\
@@ -86,7 +85,7 @@ erpnext.Messages = Class.extend({
 		$('#message-title').html(contact==user ? "Everyone" :
 			wn.user_info(contact).fullname)
 
-		$('#avatar-image').attr("src", wn.user_info(contact).image);
+		$('#avatar-area').html(wn.avatar(contact, true));
 
 		$("#show-everyone").toggle(contact!=user);
 		
@@ -127,7 +126,7 @@ erpnext.Messages = Class.extend({
 				
 				data.creation = dateutil.comment_when(data.creation);
 				data.comment_by_fullname = wn.user_info(data.owner).fullname;
-				data.image = wn.user_info(data.owner).image;
+				data.avatar = wn.avatar(data.owner);
 				data.mark_html = "";
 
 				data.reply_html = '';
@@ -152,7 +151,7 @@ erpnext.Messages = Class.extend({
 				}
 
 				wrapper.innerHTML = repl('<div class="message %(cls)s">%(mark_html)s\
-						<span class="avatar avatar-small"><img src="%(image)s"></span><b>%(comment)s</b>\
+						<b>%(comment)s</b>\
 						%(delete_html)s\
 						<div class="help">by %(comment_by_fullname)s, %(creation)s</div>\
 					</div>\
@@ -188,17 +187,17 @@ erpnext.Messages = Class.extend({
 					var p = r.message[i];
 					if(p.name != user) {
 						p.fullname = wn.user_info(p.name).fullname;
-						p.image = wn.user_info(p.name).image;
+						p.avatar = wn.avatar(p.name);
 						p.name = p.name.replace('@', '__at__');
-						p.status_color = p.has_session ? "green" : "#ddd";
 						p.status = p.has_session ? "Online" : "Offline";
-						$(repl('<p>\
-							<span class="avatar avatar-small" \
-								style="border: 3px solid %(status_color)s" \
-								title="%(status)s"><img src="%(image)s"></span>\
-							<a href="#!messages/%(name)s">%(fullname)s</a>\
-							</p>', p))
-							.appendTo($body);						
+						$(repl('<p>%(avatar)s\
+								<a href="#!messages/%(name)s">%(fullname)s</a></p>', p))
+							.appendTo($body)
+						
+						console.log($body.find(".avatar:last"));
+						$body.find(".avatar:last").css({
+							"border": "3px solid " + (p.has_session ? "green" : "#ddd")
+						});			
 					}
 				}
 			}

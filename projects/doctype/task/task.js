@@ -20,20 +20,3 @@ cur_frm.fields_dict['project'].get_query = function(doc,cdt,cdn){
   return repl('SELECT distinct `tabProject`.`name` FROM `tabProject` WHERE %(cond)s `tabProject`.`name` LIKE "%s" ORDER BY `tabProject`.`name` ASC LIMIT 50', {cond:cond});
 }
 
-
-cur_frm.cscript.project = function(doc, cdt, cdn){
-  if(doc.project) get_server_fields('get_project_details', '','', doc, cdt, cdn, 1);
-}
-
-cur_frm.fields_dict['customer'].get_query = function(doc,cdt,cdn){
-  var cond='';
-  if(doc.project) cond = 'ifnull(`tabProject`.customer, "") = `tabCustomer`.name AND ifnull(`tabProject`.name, "") = "'+doc.project+'" AND';
-  return repl('SELECT distinct `tabCustomer`.`name` FROM `tabCustomer`, `tabProject` WHERE %(cond)s `tabCustomer`.`name` LIKE "%s" ORDER BY `tabCustomer`.`name` ASC LIMIT 50', {cond:cond});
-}
-
-cur_frm.cscript.customer = function(doc, cdt, cdn){
-  if(doc.customer) get_server_fields('get_customer_details', '','', doc, cdt, cdn, 1);
-  else doc.customer_name ='';
-}
-
-
