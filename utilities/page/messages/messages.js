@@ -151,7 +151,7 @@ erpnext.Messages = Class.extend({
 				}
 
 				wrapper.innerHTML = repl('<div class="message %(cls)s">%(mark_html)s\
-						<b>%(comment)s</b>\
+						%(avatar)s <b>%(comment)s</b>\
 						%(delete_html)s\
 						<div class="help">by %(comment_by_fullname)s, %(creation)s</div>\
 					</div>\
