@@ -6,7 +6,6 @@ wn.doclistviews['Support Ticket'] = wn.views.ListView.extend({
 			"`tabSupport Ticket`.status", 
 			"`tabSupport Ticket`.subject",
 			"`tabSupport Ticket`.description",
-			'`tabSupport Ticket`.modified_by'
 			
 		]);
 		this.stats = this.stats.concat(['status']);
@@ -40,7 +39,7 @@ wn.doclistviews['Support Ticket'] = wn.views.ListView.extend({
 	
 	columns: [
 		{width: '3%', content: 'check'},
-		{width: '5%', content:'avatar_modified'},
+		{width: '5%', content:'avatar'},
 		{width: '20%', content:'name'},
 		{width: '10%', content:'status_html'},		
 		{width: '50%', content:'description+tags', css: {color:'#222'}},

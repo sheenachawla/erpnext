@@ -185,5 +185,5 @@ KBAnswer = function(body, data, ans_list) {
 	
 }
 
-
-wn.require('app/utilities/page/kb_common/kb_common.js');
+wn.require('lib/js/legacy/widgets/tags.js');
+wn.require('app/js/kb_common.js');

@@ -5,7 +5,6 @@ wn.doclistviews['Lead'] = wn.views.ListView.extend({
 			'tabLead.lead_name',
 			'tabLead.status',
 			'tabLead.source',
-			'tabLead.modified_by'
 		]);
 		this.stats = this.stats.concat(['status', 'source', 'rating', 'company']);
 	},
@@ -26,7 +25,7 @@ wn.doclistviews['Lead'] = wn.views.ListView.extend({
 
 	columns: [
 		{width: '3%', content: 'check'},
-		{width: '5%', content:'avatar_modified'},
+		{width: '5%', content:'avatar'},
 		{width: '30%', content:'lead_name'},
 		{width: '12%', content:'status_html'},
 		{width: '38%', content:'lead_status+tags', css: {color:'#222'}},

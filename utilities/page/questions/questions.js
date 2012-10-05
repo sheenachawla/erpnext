@@ -215,4 +215,5 @@ KBQuestion = function(parent, det, kb) {
 	this.make()
 }
 
+wn.require('lib/js/legacy/widgets/tags.js');
 wn.require('app/js/kb_common.js');
