@@ -61,7 +61,7 @@ $.extend(cur_frm.cscript, {
 	// make thread listing
 	//
 	make_listing: function(doc) {
-		cur_frm.fields_dict['thread_html'].wrapper.innerHTML = '';
+		$(cur_frm.fields_dict['thread_html'].wrapper).html("");
 		
 		// render first message
 		new EmailMessage($a(cur_frm.fields_dict['thread_html'].wrapper, 'div'), {
