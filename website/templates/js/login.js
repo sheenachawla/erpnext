@@ -21,7 +21,16 @@ wn.pages["{{ name }}"].onload = function(wrapper) {
 	$bs(lw, '1px 1px 3px #888');
 
 	$('#login_btn').click(erpnext.login.doLogin)
-		
+	
+	if(window.localStorage) {
+		if(localStorage.getItem("usr")) {
+			$("#login_id").val(localStorage.getItem("usr"))
+		}
+		if(localStorage.getItem("pwd")) {
+			$("#password").val(localStorage.getItem("pwd"))
+		}
+	}
+	
 	$('#password').keypress(function(ev){
 		if(ev.which==13 && $('#password').val()) {
 			$('form').submit(function() {
@@ -30,41 +39,52 @@ wn.pages["{{ name }}"].onload = function(wrapper) {
 			});
 		}
 	});
+	
+	if($("#login_id").val() && $("#password").val()) {
+		erpnext.login.doLogin();
+	}
+	
 	$(document).trigger('login_rendered');
 }
 
 // Login Callback
 erpnext.login.onLoginReply = function(r, rtext) {
 	$('#login_btn').done_working();
-    if(r.message=="Logged In"){
-        window.location.href='app.html' + (get_url_arg('page') ? ('?page='+get_url_arg('page')) : '');
-    } else {
-        $i('login_message').innerHTML = '<span style="color: RED;">'+(r.message)+'</span>';
-        //if(r.exc)alert(r.exc);
-    }
+	if(r.message=="Logged In"){
+		window.location.href='app.html' + (get_url_arg('page') ? ('?page='+get_url_arg('page')) : '');
+	} else {
+		$i('login_message').innerHTML = '<span style="color: RED;">'+(r.message)+'</span>';
+		//if(r.exc)alert(r.exc);
+	}
 }
 
 
 // Login
 erpnext.login.doLogin = function(){
 
-    var args = {};
-    args['usr']=$i("login_id").value;
-    args['pwd']=$i("password").value;
-    //if($i('remember_me').checked) 
-      //args['remember_me'] = 1;
+	var args = {};
+	args['usr']=$i("login_id").value;
+	args['pwd']=$i("password").value;
+
+	if($i('remember_me').checked) {
+		if(window.localStorage) {
+			localStorage.setItem("usr") = args.usr;
+			localStorage.setItem("pwd") = args.pwd;						
+		}
+	}
+
 
 	$('#login_btn').set_working();
 	$('#login_message').empty();
 	
-    $c("login", args, erpnext.login.onLoginReply);
+	$c("login", args, erpnext.login.onLoginReply);
 
 	return false;
 }
 
 
 erpnext.login.show_forgot_password = function(){
-    // create dialog
+	// create dialog
 	var d = new wn.ui.Dialog({
 		title:"Forgot Password",
 		fields: [
