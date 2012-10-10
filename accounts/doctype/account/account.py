@@ -66,7 +66,7 @@ class DocType:
 				msgprint("Parent account can not be a ledger", raise_exception=1)
 			elif par and self.doc.debit_or_credit and par[0][3] != self.doc.debit_or_credit:
 				msgprint("You can not move a %s account under %s account" % (self.doc.debit_or_credit, par[0][3]), raise_exception=1)
-			elif par and not self.doc.is_pl_account:
+			elif par:
 				self.doc.is_pl_account = par[0][2]
 				self.doc.debit_or_credit = par[0][3]
 		elif self.doc.account_name not in ['Income','Source of Funds (Liabilities)',\
@@ -77,7 +77,8 @@ class DocType:
 	# Account name must be unique
 	def validate_duplicate_account(self):
 		if (self.doc.fields.get('__islocal') or (not self.doc.name)) and sql("select name from tabAccount where account_name=%s and company=%s", (self.doc.account_name, self.doc.company)):
-			msgprint("Account Name already exists, please rename", raise_exception=1)
+			msgprint("Account Name %s already exists, please rename" % (self.doc.account_name),
+				raise_exception=1)
 				
 	def validate_root_details(self):
 		#does not exists parent

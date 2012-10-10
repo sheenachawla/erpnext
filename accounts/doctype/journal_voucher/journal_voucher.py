@@ -17,24 +17,17 @@
 # Please edit this list and import only required elements
 from __future__ import unicode_literals
 import webnotes
-
-from webnotes.utils import cint, cstr, flt, fmt_money, formatdate, getTraceback, get_defaults, getdate, has_common, month_name, now, nowdate, sendmail, set_default, str_esc_quote, user_format, validate_email_add
-from webnotes.model import db_exists
+from webnotes.utils import cint, cstr, flt, fmt_money, formatdate, getdate, now
 from webnotes.model.doc import Document, addchild, getchildren, make_autoname
-from webnotes.model.doclist import getlist, copy_doclist
-from webnotes.model.code import get_obj, get_server_obj, run_server_obj, updatedb, check_syntax
-from webnotes import session, form, msgprint, errprint
-
-set = webnotes.conn.set
-sql = webnotes.conn.sql
-get_value = webnotes.conn.get_value
-in_transaction = webnotes.conn.in_transaction
-convert_to_lists = webnotes.conn.convert_to_lists
-	
-# -----------------------------------------------------------------------------------------
+from webnotes.model.doclist import getlist
+from webnotes.model.code import get_obj
+from webnotes import msgprint, errprint
 from utilities.transaction_base import TransactionBase
+from controllers.accounts import AccountsController
+sql = webnotes.conn.sql
 
-class DocType:
+
+class DocType(AccountsController):
 	def __init__(self,d,dl):
 		self.doc, self.doclist = d,dl
 		self.master_type = {}
@@ -297,7 +290,7 @@ class DocType:
 			master_type, acc_type = chk_type and cstr(chk_type[0][0]) or '', chk_type and cstr(chk_type[0][1]) or ''
 			if master_type in ['Supplier', 'Customer']:
 				if not self.doc.pay_to_recd_from:
-					self.doc.pay_to_recd_from = get_value(master_type, ' - '.join(d.account.split(' - ')[:-1]), master_type == 'Customer' and 'customer_name' or 'supplier_name')
+					self.doc.pay_to_recd_from = webnotes.conn.get_value(master_type, ' - '.join(d.account.split(' - ')[:-1]), master_type == 'Customer' and 'customer_name' or 'supplier_name')
 			
 			if acc_type == 'Bank or Cash':
 				dcc = TransactionBase().get_company_currency(self.doc.company)
@@ -368,7 +361,7 @@ class DocType:
 		if self.doc.voucher_type in ['Bank Voucher', 'Contra Voucher', 'Journal Entry']:
 			self.check_credit_days()
 		self.check_account_against_entries()
-		get_obj(dt='GL Control').make_gl_entries(self.doc, self.doclist)
+		self.make_gl_entries()
 
 	def validate_against_jv(self):
 		for d in getlist(self.doclist, 'entries'):
@@ -382,7 +375,7 @@ class DocType:
 	
 	def on_cancel(self):
 		self.check_tds_payment_voucher()
-		get_obj(dt='GL Control').make_gl_entries(self.doc, self.doclist, cancel=1)
+		self.make_gl_entries(cancel=1)
 
 	def check_tds_payment_voucher(self):
 		tdsp =	sql("select parent from `tabTDS Payment Detail` where voucher_no = '%s' and docstatus = 1 and parent not like 'old%'")

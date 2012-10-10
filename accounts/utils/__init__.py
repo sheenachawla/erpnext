@@ -17,7 +17,7 @@
 from __future__ import unicode_literals
 
 import webnotes
-from webnotes.utils import nowdate
+from webnotes.utils import nowdate, flt
 
 def get_fiscal_year(date):
 	from webnotes.utils import formatdate
