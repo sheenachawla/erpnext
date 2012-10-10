@@ -194,7 +194,6 @@ erpnext.Messages = Class.extend({
 								<a href="#!messages/%(name)s">%(fullname)s</a></p>', p))
 							.appendTo($body)
 						
-						console.log($body.find(".avatar:last"));
 						$body.find(".avatar:last").css({
 							"border": "3px solid " + (p.has_session ? "green" : "#ddd")
 						});			

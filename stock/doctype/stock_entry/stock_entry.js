@@ -15,10 +15,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 cur_frm.cscript.onload = function(doc, cdt, cdn) {
-  if (!doc.posting_date) doc.posting_date = dateutil.obj_to_str(new Date());
-  if (!doc.transfer_date) doc.transfer_date = dateutil.obj_to_str(new Date());
-  if(!doc.purpose) set_multiple(cdt, cdn, {purpose:'Material Issue'});
-  cfn_set_fields(doc, cdt, cdn);
+	if (!doc.posting_date) doc.posting_date = dateutil.obj_to_str(new Date());
+	if (!doc.transfer_date) doc.transfer_date = dateutil.obj_to_str(new Date());
+	if(!doc.posting_time) doc.posting_time = dateutil.get_cur_time();
+	if(!doc.purpose) set_multiple(cdt, cdn, {purpose:'Material Issue'});
+	cfn_set_fields(doc, cdt, cdn);
 }
 
 
