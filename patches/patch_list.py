@@ -623,4 +623,16 @@ patch_list = [
 		'patch_module': 'patches.october_2012',
 		'patch_file': 'remove_old_customer_contact_address',
 	},
+	{
+		'patch_module': 'patches.october_2012',
+		'patch_file': 'company_fiscal_year_docstatus_patch',
+	},
+	{
+		'patch_module': 'patches.october_2012',
+		'patch_file': 'update_account_property',
+	},
+	{
+		'patch_module': 'patches.october_2012',
+		'patch_file': 'remove_old_trial_bal',
+	},
 ]
