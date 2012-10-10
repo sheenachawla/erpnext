@@ -31,11 +31,9 @@ get_value = webnotes.conn.get_value
 in_transaction = webnotes.conn.in_transaction
 convert_to_lists = webnotes.conn.convert_to_lists
 
-# -----------------------------------------------------------------------------------------
+from controllers.accounts import AccountsController
 
-from utilities.transaction_base import TransactionBase
-
-class DocType(TransactionBase):
+class DocType(AccountsController):
 	def __init__(self, doc, doclist=[]):
 		self.doc = doc
 		self.doclist = doclist
@@ -44,19 +42,12 @@ class DocType(TransactionBase):
 		self.fname = 'purchase_receipt_details'
 		self.count = 0
 
-	# Autoname
-	# ---------
 	def autoname(self):
 		self.doc.name = make_autoname(self.doc.naming_series+'.#####')
-
-
-	# Client Trigger Functions
-	#----------------------------------------------------------------------------------------------------
 
 	def get_default_schedule_date(self):
 		get_obj(dt = 'Purchase Common').get_default_schedule_date(self)
 
-#-----------------Validation For Fiscal Year------------------------
 	def validate_fiscal_year(self):
 		get_obj(dt = 'Purchase Common').validate_fiscal_year(self.doc.fiscal_year,self.doc.posting_date,'Transaction Date')
 
@@ -84,8 +75,6 @@ class DocType(TransactionBase):
 	def get_uom_details(self, arg = ''):
 		return get_obj(dt='Purchase Common').get_uom_details(arg)
 
-	# GET TERMS & CONDITIONS
-	# =====================================================================================
 	def get_tc_details(self):
 		return get_obj('Purchase Common').get_tc_details(self)
 
@@ -106,10 +95,6 @@ class DocType(TransactionBase):
 				msgprint(cstr(self.doc.purchase_order_no) + " Purchase Order details have already been pulled. ")
 				raise Exception
 
-
-	# validation
-	#-------------------------------------------------------------------------------------------------------------
-	# validate accepted and rejected qty
 	def validate_accepted_rejected_qty(self):
 		for d in getlist(self.doclist, "purchase_receipt_details"):
 
@@ -139,11 +124,13 @@ class DocType(TransactionBase):
 
 	# update valuation rate
 	def update_valuation_rate(self):
-		total_b_cost = flt(self.doc.buying_cost_transport) + flt(self.doc.buying_cost_taxes) + flt(self.doc.buying_cost_other)
 		for d in getlist(self.doclist, 'purchase_receipt_details'):
-			if flt(self.doc.net_total) and flt(d.qty):
-				#d.valuation_rate = (flt(d.purchase_rate) + ((flt(d.amount) * (total_b_cost)) / (self.doc.net_total * flt(d.qty))) + (flt(d.rm_supp_cost) / flt(d.qty))) / flt(d.conversion_factor)
-				d.valuation_rate = (flt(d.purchase_rate) + ((flt(d.amount) * (total_b_cost)) / (self.doc.net_total * flt(d.qty))) + (flt(d.rm_supp_cost) / flt(d.qty)) + (flt(d.item_tax_amount)/flt(d.qty))) / flt(d.conversion_factor)
+			if flt(d.qty):
+				d.valuation_rate = (
+						flt(d.purchase_rate) + 
+						(flt(d.rm_supp_cost) / flt(d.qty)) + 
+						(flt(d.item_tax_amount)/flt(d.qty)) 
+					) / flt(d.conversion_factor)
 
 	# Check for Stopped status
 	def check_for_stopped_status(self, pc_obj):
@@ -153,9 +140,8 @@ class DocType(TransactionBase):
 				check_list.append(d.prevdoc_docname)
 				pc_obj.check_for_stopped_status( d.prevdoc_doctype, d.prevdoc_docname)
 
-	#check in manage account if purchase order required or not.
-	# ====================================================================================
 	def po_required(self):
+		"""check in manage account if purchase order required or not."""
 		res = sql("select value from `tabSingles` where doctype = 'Global Defaults' and field = 'po_required'")
 		if res and res[0][0]== 'Yes':
 			 for d in getlist(self.doclist,'purchase_receipt_details'):
@@ -183,11 +169,12 @@ class DocType(TransactionBase):
 		self.check_for_stopped_status(pc_obj)
 
 		# get total in words
-		dcc = TransactionBase().get_company_currency(self.doc.company)
+		dcc = super(DocType, self).get_company_currency(self.doc.company)
 		self.doc.in_words = pc_obj.get_total_in_words(dcc, self.doc.grand_total)
 		self.doc.in_words_import = pc_obj.get_total_in_words(self.doc.currency, self.doc.grand_total_import)
 		# update valuation rate
 		self.update_valuation_rate()
+		print self.doc.doctype, len(self.doclist)
 
 
 	# On Update
@@ -207,11 +194,6 @@ class DocType(TransactionBase):
 			if d.rejected_serial_no:
 				d.rejected_serial_no = d.rejected_serial_no.replace(',', '\n')
 				d.save()
-
-
-
-	# On Submit
-	# -----------------------------------------------------------------------------------------------------
 
  # Update Stock
 	def update_stock(self, is_submit):
@@ -313,11 +295,59 @@ class DocType(TransactionBase):
 
 		# Update last purchase rate
 		pc_obj.update_last_purchase_rate(self, 1)
+		
+		# make gl entry
+		self.make_gl_entries()
 
+	def make_gl_entries(self, cancel=False):
+		abbr = webnotes.conn.get_value("Company", self.doc.company, "abbr")
+		common_gl_dict = {
+			'company': self.doc.company, 
+			'posting_date': self.doc.posting_date,
+			'voucher_type': self.doc.doctype,
+			'voucher_no': self.doc.name,
+			'aging_date': self.doc.posting_date,
+			'remarks': self.doc.remarks,
+			'is_cancelled': cancel and "Yes" or "No",
+			'fiscal_year': self.doc.fiscal_year,
+			'debit': 0,
+			'credit': 0
+		}
+		
+		item_gl_entries = []
+		
+		def _add_item_gl_entry(args):
+			gl_dict = common_gl_dict.copy()
+			gl_dict.update(args)
+			item_gl_entries.append(gl_dict)
+			
+		def _get_ac_name(val):
+			return "%s - %s" % (val, abbr)
+			
+		for item in getlist(self.doclist, 'purchase_receipt_item'):
+			# debit stock in hand 
+			_add_item_gl_entry({
+				"account": _get_ac_name("%s - Warehouse" % (item["warehouse"],)),
+				"against": _get_ac_name("Stock Received But Not Billed"),
+				"debit": d.valuation_rate
+			})
 
+			# credit stock received but not billed
+			_add_item_gl_entry({
+				"account": _get_ac_name("Stock Received But Not Billed"),
+				"against": _get_ac_name("%s - Warehouse" % (item["warehouse"],)),
+				"credit": d.valuation_rate
+			})
+				
+		super(DocType, self).make_gl_entries(cancel=cancel, gl_map=item_gl_entries)
+				
+	def get_stock_in_hand_account(self, warehouse, company_account):
+		if not hasattr(self, "warehouse_account"):
+			self.warehouse_account = {}
+		
+		return self.warehouse_account.setdefault(warehouse, 
+			webnotes.conn.get_value("Warehouse", warehouse, "stock_in_hand") or company_account)
 
-	#On Cancel
-	#----------------------------------------------------------------------------------------------------
 	def check_next_docstatus(self):
 		submit_rv = sql("select t1.name from `tabPurchase Invoice` t1,`tabPurchase Invoice Item` t2 where t1.name = t2.parent and t2.purchase_receipt = '%s' and t1.docstatus = 1" % (self.doc.name))
 		if submit_rv:
@@ -351,6 +381,8 @@ class DocType(TransactionBase):
 
 		# 6. Update last purchase rate
 		pc_obj.update_last_purchase_rate(self, 0)
+		
+		self.make_gl_entries(cancel=True)
 
 
 #----------- code for Sub-contracted Items -------------------

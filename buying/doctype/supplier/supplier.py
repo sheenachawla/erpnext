@@ -63,9 +63,9 @@ class DocType:
 	# update credit days and limit in account
 	# ----------------------------------------
 	def update_credit_days_limit(self):
-		sql("update tabAccount set credit_days = '%s' where name = '%s'" % (self.doc.credit_days, self.doc.name + " - " + self.get_company_abbr()))
-
-
+		webnotes.conn.sql("""update tabAccount set credit_days=%s where name=%s""",
+			(cint(self.doc.credit_days), "%s - %s" % (self.doc.name, self.get_company_abbr())))
+		
 	def on_update(self):
 		if not self.doc.naming_series:
 			self.doc.naming_series = ''
@@ -134,7 +134,12 @@ class DocType:
 			if not sql("select name from tabAccount where name=%s", (self.doc.name + " - " + abbr)):
 				parent_account = self.get_parent_account(abbr)
 				
-				arg = {'account_name':self.doc.name,'parent_account': parent_account, 'group_or_ledger':'Ledger', 'company':self.doc.company,'account_type':'','tax_rate':'0','master_type':'Supplier','master_name':self.doc.name,'address':self.doc.address}
+				arg = {
+					'account_name': self.doc.name, 'parent_account': parent_account,
+					'group_or_ledger': 'Ledger', 'company': self.doc.company, 'account_type':'',
+					'tax_rate':'0', 'master_type': 'Supplier', 'master_name': self.doc.name,
+					'address': self.doc.address
+				}
 				# create
 				ac = get_obj('GL Control').add_ac(cstr(arg))
 				msgprint("Created Account Head: "+ac)

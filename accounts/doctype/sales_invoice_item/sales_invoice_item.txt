@@ -3,11 +3,11 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-06-08 16:07:55',
-		'docstatus': 0,
-		'modified': '2012-07-09 11:00:18',
-		'modified_by': u'Administrator',
-		'owner': u'Administrator'
+		u'creation': '2012-07-09 12:37:57',
+		u'docstatus': 0,
+		u'modified': '2012-10-08 15:22:36',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
 	},
 
 	# These values are common for all DocType
@@ -15,10 +15,10 @@
 		'autoname': u'INVD.######',
 		'colour': u'White:FFF',
 		'default_print_format': u'Standard',
-		'doctype': 'DocType',
+		u'doctype': u'DocType',
 		'istable': 1,
 		'module': u'Accounts',
-		'name': '__common__',
+		u'name': u'__common__',
 		'section_style': u'Tray',
 		'server_code_error': u' ',
 		'show_in_menu': 0,
@@ -27,8 +27,8 @@
 
 	# These values are common for all DocField
 	{
-		'doctype': u'DocField',
-		'name': '__common__',
+		u'doctype': u'DocField',
+		u'name': u'__common__',
 		'parent': u'Sales Invoice Item',
 		'parentfield': u'fields',
 		'parenttype': u'DocType'
@@ -36,13 +36,13 @@
 
 	# DocType, Sales Invoice Item
 	{
-		'doctype': 'DocType',
-		'name': u'Sales Invoice Item'
+		u'doctype': u'DocType',
+		u'name': u'Sales Invoice Item'
 	},
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'barcode',
 		'fieldtype': u'Data',
 		'label': u'Barcode',
@@ -52,7 +52,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'item_code',
 		'fieldtype': u'Link',
 		'in_filter': 1,
@@ -69,7 +69,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'customer_item_code',
 		'fieldtype': u'Data',
 		'hidden': 1,
@@ -80,7 +80,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'item_name',
 		'fieldtype': u'Data',
 		'in_filter': 0,
@@ -95,7 +95,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'description',
 		'fieldtype': u'Text',
 		'label': u'Description',
@@ -108,7 +108,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'qty',
 		'fieldtype': u'Currency',
 		'label': u'Qty',
@@ -121,7 +121,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'stock_uom',
 		'fieldtype': u'Data',
 		'label': u'UOM',
@@ -131,7 +131,7 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'ref_rate',
 		'fieldtype': u'Currency',
 		'label': u'Price List Rate',
@@ -146,7 +146,7 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'adj_rate',
 		'fieldtype': u'Float',
 		'label': u'Discount (%)',
@@ -159,7 +159,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'export_rate',
 		'fieldtype': u'Currency',
 		'label': u'Basic Rate',
@@ -172,7 +172,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'export_amount',
 		'fieldtype': u'Currency',
 		'label': u'Amount',
@@ -184,7 +184,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'base_ref_rate',
 		'fieldtype': u'Currency',
 		'label': u'Price List Rate*',
@@ -197,7 +197,7 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'basic_rate',
 		'fieldtype': u'Currency',
 		'in_filter': 0,
@@ -213,7 +213,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'amount',
 		'fieldtype': u'Currency',
 		'label': u'Amount*',
@@ -226,7 +226,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'warehouse',
 		'fieldtype': u'Link',
 		'hidden': 0,
@@ -241,7 +241,7 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'income_account',
 		'fieldtype': u'Link',
 		'in_filter': 1,
@@ -258,8 +258,18 @@
 
 	# DocField
 	{
+		u'doctype': u'DocField',
+		'fieldname': u'expense_account',
+		'fieldtype': u'Link',
+		'label': u'Expense Account',
+		'options': u'Account',
+		'permlevel': 0
+	},
+
+	# DocField
+	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'cost_center',
 		'fieldtype': u'Link',
 		'in_filter': 1,
@@ -276,7 +286,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'serial_no',
 		'fieldtype': u'Small Text',
 		'in_filter': 1,
@@ -289,7 +299,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'batch_no',
 		'fieldtype': u'Link',
 		'label': u'Batch No',
@@ -300,7 +310,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'item_group',
 		'fieldtype': u'Link',
 		'hidden': 1,
@@ -315,7 +325,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'brand',
 		'fieldtype': u'Data',
 		'hidden': 1,
@@ -329,7 +339,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'actual_qty',
 		'fieldtype': u'Currency',
 		'label': u'Available Qty at Warehouse',
@@ -341,7 +351,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'delivered_qty',
 		'fieldtype': u'Currency',
 		'label': u'Delivered Qty',
@@ -353,7 +363,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'sales_order',
 		'fieldtype': u'Link',
 		'in_filter': 1,
@@ -369,7 +379,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'so_detail',
 		'fieldtype': u'Data',
 		'hidden': 1,
@@ -384,7 +394,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'delivery_note',
 		'fieldtype': u'Link',
 		'in_filter': 1,
@@ -400,7 +410,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'dn_detail',
 		'fieldtype': u'Data',
 		'hidden': 1,
@@ -415,7 +425,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'item_tax_rate',
 		'fieldtype': u'Small Text',
 		'hidden': 1,
@@ -428,7 +438,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'clear_pending',
 		'fieldtype': u'Check',
 		'hidden': 1,
@@ -443,7 +453,7 @@
 	# DocField
 	{
 		'allow_on_submit': 1,
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'page_break',
 		'fieldtype': u'Check',
 		'label': u'Page Break',

@@ -17,6 +17,7 @@
 # Please edit this list and import only required elements
 from __future__ import unicode_literals
 import webnotes
+import webnotes.model
 
 from webnotes.utils import add_days, add_months, add_years, cint, cstr, date_diff, default_fields, flt, fmt_money, formatdate, getTraceback, get_defaults, get_first_day, get_last_day, getdate, has_common, month_name, now, nowdate, replace_newlines, sendmail, set_default, str_esc_quote, user_format, validate_email_add
 from webnotes.model import db_exists
@@ -68,8 +69,6 @@ class DocType:
 			raise Exception
 
 
-	# update bin
-	# ----------
 	def update_bin(self, actual_qty, reserved_qty, ordered_qty, indented_qty, planned_qty, item_code, dt, sle_id = '',posting_time = '', serial_no = '', is_cancelled = 'No',doc_type='',doc_name='',is_amended='No'):
 		self.validate_asset(item_code)
 		it_det = get_value('Item', item_code, 'is_stock_item')
@@ -80,17 +79,6 @@ class DocType:
 		else:
 			msgprint("[Stock Update] Ignored %s since it is not a stock item" % item_code)
 
-	# repost stock
-	# ------------
-	def repost_stock(self):
-		bl = sql("select name from tabBin where warehouse=%s", self.doc.name)
-		for b in bl:
-			bobj = get_obj('Bin',b[0])
-			bobj.update_entries_after(posting_date = '0000-00-00', posting_time = '00:00')
-
-			sql("COMMIT")
-			sql("START TRANSACTION")
-
 	def check_state(self):
 		return "\n" + "\n".join([i[0] for i in sql("select state_name from `tabState` where `tabState`.country='%s' " % self.doc.country)])
 
@@ -100,7 +88,7 @@ class DocType:
 				msgprint("Please enter valid Email Id.")
 				raise Exception
 		if not self.doc.warehouse_type:
-			msgprint("[Warehouse Type is Mandatory] Please Enter	Please Entry warehouse type in Warehouse " + self.doc.name)
+			msgprint("Warehouse Type is Mandatory" + self.doc.name)
 			raise Exception
 		wt = sql("select warehouse_type from `tabWarehouse` where name ='%s'" % self.doc.name)
 		if cstr(self.doc.warehouse_type) != cstr(wt and wt[0][0] or ''):
@@ -121,3 +109,15 @@ class DocType:
 			mdgprint("Warehosue can not be deleted as stock ledger entry exists for this warehosue.", raise_exception=1)
 		else:
 			sql("delete from `tabStock Ledger Entry` where warehouse = %s", self.doc.name)
+
+	
+	def on_update(self):
+		# create a warehouse account under Stock In Hand
+		for company_detail in webnotes.conn.sql("select name, abbr from `tabCompany`", as_dict=1):
+			webnotes.model.insert({
+				"doctype": "Account",
+				"account_name": "%s - Warehouse" % (self.doc.name,),
+				"parent_account": "%s - %s" % ("Stock In Hand", company_detail['abbr']),
+				"company": company_detail['name'],
+				"group_or_ledger": "Ledger"
+			})

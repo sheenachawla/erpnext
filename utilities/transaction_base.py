@@ -22,7 +22,7 @@ from webnotes.model.doclist import getlist, copy_doclist
 from webnotes.model.code import get_obj
 from webnotes import msgprint
 
-class TransactionBase:
+class TransactionBase(object):
 
 	# Get Customer Default Primary Address - first load
 	# -----------------------

@@ -3,11 +3,11 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-05-15 12:15:00',
-		'docstatus': 0,
-		'modified': '2012-08-10 12:15:45',
-		'modified_by': u'Administrator',
-		'owner': u'Administrator'
+		u'creation': '2012-08-10 13:05:42',
+		u'docstatus': 0,
+		u'modified': '2012-10-09 17:54:17',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
 	},
 
 	# These values are common for all DocType
@@ -16,10 +16,10 @@
 		'allow_trash': 1,
 		'autoname': u'field:company_name',
 		'colour': u'White:FFF',
-		'doctype': 'DocType',
+		u'doctype': u'DocType',
 		'document_type': u'Master',
 		'module': u'Setup',
-		'name': '__common__',
+		u'name': u'__common__',
 		'section_style': u'Tabbed',
 		'server_code_error': u' ',
 		'show_in_menu': 0,
@@ -28,8 +28,8 @@
 
 	# These values are common for all DocField
 	{
-		'doctype': u'DocField',
-		'name': '__common__',
+		u'doctype': u'DocField',
+		u'name': u'__common__',
 		'parent': u'Company',
 		'parentfield': u'fields',
 		'parenttype': u'DocType'
@@ -37,8 +37,8 @@
 
 	# These values are common for all DocPerm
 	{
-		'doctype': u'DocPerm',
-		'name': '__common__',
+		u'doctype': u'DocPerm',
+		u'name': u'__common__',
 		'parent': u'Company',
 		'parentfield': u'permissions',
 		'parenttype': u'DocType',
@@ -47,46 +47,14 @@
 
 	# DocType, Company
 	{
-		'doctype': 'DocType',
-		'name': u'Company'
-	},
-
-	# DocPerm
-	{
-		'amend': 0,
-		'cancel': 1,
-		'create': 1,
-		'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'System Manager',
-		'submit': 0,
-		'write': 1
-	},
-
-	# DocPerm
-	{
-		'amend': 0,
-		'cancel': 1,
-		'create': 1,
-		'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'System Manager',
-		'submit': 0,
-		'write': 1
-	},
-
-	# DocPerm
-	{
-		'cancel': 0,
-		'doctype': u'DocPerm',
-		'permlevel': 1,
-		'role': u'All'
+		u'doctype': u'DocType',
+		u'name': u'Company'
 	},
 
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'details',
 		'fieldtype': u'Section Break',
 		'label': u'Company Details',
@@ -97,7 +65,7 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'company_name',
 		'fieldtype': u'Data',
 		'label': u'Company',
@@ -110,7 +78,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'cb0',
 		'fieldtype': u'Column Break',
 		'permlevel': 0
@@ -120,7 +88,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'Please Enter Abbreviation or Short Name properly as it will be added as Suffix to all Account Heads.',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'abbr',
 		'fieldtype': u'Data',
 		'label': u'Abbr',
@@ -133,7 +101,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'default_settings',
 		'fieldtype': u'Section Break',
 		'label': u'Default Settings',
@@ -143,7 +111,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'default_currency',
 		'fieldtype': u'Select',
 		'label': u'Default Currency',
@@ -154,8 +122,28 @@
 
 	# DocField
 	{
+		u'doctype': u'DocField',
+		'fieldname': u'default_income_account',
+		'fieldtype': u'Link',
+		'label': u'Default Income Account',
+		'options': u'Account',
+		'permlevel': 0
+	},
+
+	# DocField
+	{
+		u'doctype': u'DocField',
+		'fieldname': u'default_expense_account',
+		'fieldtype': u'Link',
+		'label': u'Default Expense Account',
+		'options': u'Account',
+		'permlevel': 0
+	},
+
+	# DocField
+	{
 		'depends_on': u'eval:!doc.__islocal',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'default_bank_account',
 		'fieldtype': u'Link',
 		'label': u'Default Bank Account',
@@ -170,7 +158,7 @@
 	# DocField
 	{
 		'depends_on': u'eval:!doc.__islocal',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'receivables_group',
 		'fieldtype': u'Link',
 		'label': u'Receivables Group',
@@ -185,7 +173,7 @@
 	# DocField
 	{
 		'depends_on': u'eval:!doc.__islocal',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'payables_group',
 		'fieldtype': u'Link',
 		'label': u'Payables Group',
@@ -199,7 +187,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'column_break0',
 		'fieldtype': u'Column Break',
 		'oldfieldtype': u'Column Break',
@@ -210,7 +198,7 @@
 	# DocField
 	{
 		'depends_on': u'eval:!doc.__islocal',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'credit_days',
 		'fieldtype': u'Int',
 		'label': u'Credit Days',
@@ -222,7 +210,7 @@
 	# DocField
 	{
 		'depends_on': u'eval:!doc.__islocal',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'credit_limit',
 		'fieldtype': u'Currency',
 		'label': u'Credit Limit',
@@ -235,7 +223,7 @@
 	{
 		'colour': u'White:FFF',
 		'depends_on': u'eval:!doc.__islocal',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'yearly_bgt_flag',
 		'fieldtype': u'Select',
 		'label': u'If Yearly Budget Exceeded',
@@ -248,7 +236,7 @@
 	# DocField
 	{
 		'depends_on': u'eval:!doc.__islocal',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'monthly_bgt_flag',
 		'fieldtype': u'Select',
 		'label': u'If Monthly Budget Exceeded',
@@ -262,7 +250,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'For reference only.',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'company_info',
 		'fieldtype': u'Section Break',
 		'label': u'Company Info',
@@ -271,7 +259,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'address',
 		'fieldtype': u'Small Text',
 		'label': u'Address',
@@ -282,7 +270,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'column_break1',
 		'fieldtype': u'Column Break',
 		'oldfieldtype': u'Column Break',
@@ -292,7 +280,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'phone_no',
 		'fieldtype': u'Data',
 		'label': u'Phone No',
@@ -304,7 +292,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'fax',
 		'fieldtype': u'Data',
 		'label': u'Fax',
@@ -316,7 +304,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'email',
 		'fieldtype': u'Data',
 		'label': u'Email',
@@ -328,7 +316,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'website',
 		'fieldtype': u'Data',
 		'label': u'Website',
@@ -341,7 +329,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'Company registration numbers for your reference. Example: VAT Registration Numbers etc.',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'registration_info',
 		'fieldtype': u'Section Break',
 		'label': u'Registration Info',
@@ -354,7 +342,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'Company registration numbers for your reference. Tax numbers etc.',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'registration_details',
 		'fieldtype': u'Code',
 		'label': u'Registration Details',
@@ -365,7 +353,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'trash_reason',
 		'fieldtype': u'Small Text',
 		'label': u'Trash Reason',
@@ -373,5 +361,37 @@
 		'oldfieldname': u'trash_reason',
 		'oldfieldtype': u'Small Text',
 		'permlevel': 1
+	},
+
+	# DocPerm
+	{
+		'amend': 0,
+		'cancel': 1,
+		'create': 1,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'System Manager',
+		'submit': 0,
+		'write': 1
+	},
+
+	# DocPerm
+	{
+		'amend': 0,
+		'cancel': 1,
+		'create': 1,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'System Manager',
+		'submit': 0,
+		'write': 1
+	},
+
+	# DocPerm
+	{
+		'cancel': 0,
+		u'doctype': u'DocPerm',
+		'permlevel': 1,
+		'role': u'All'
 	}
 ]

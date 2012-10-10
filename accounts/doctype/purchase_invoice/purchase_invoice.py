@@ -549,7 +549,7 @@ class DocType(TransactionBase):
 
 
 	def make_gl_entries(self, is_cancel = 0):
-		get_obj(dt='GL Control').make_gl_entries(self.doc, self.doclist, cancel = is_cancel, \
+		get_obj(dt='GL Control').make_gl_entries(self.doclist, cancel = is_cancel, \
 			use_mapper = (self.doc.write_off_account and self.doc.write_off_amount and 'Purchase Invoice with write off' or ''))
 
 

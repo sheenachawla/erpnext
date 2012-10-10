@@ -574,7 +574,7 @@ class DocType(TransactionBase):
 	def make_gl_entries(self, is_cancel=0):
 		mapper = self.doc.is_pos and self.doc.write_off_account and 'POS with write off' or self.doc.is_pos and not self.doc.write_off_account and 'POS' or ''
 		update_outstanding = self.doc.is_pos and self.doc.write_off_account and 'No' or 'Yes'
-		get_obj(dt='GL Control').make_gl_entries(self.doc, self.doclist,cancel = is_cancel, use_mapper = mapper, update_outstanding = update_outstanding, merge_entries = cint(self.doc.is_pos) != 1 and 1 or 0)
+		get_obj(dt='GL Control').make_gl_entries(self.doclist,cancel = is_cancel, use_mapper = mapper, update_outstanding = update_outstanding, merge_entries = cint(self.doc.is_pos) != 1 and 1 or 0)
 		
 
 	def update_c_form(self):
