@@ -2,11 +2,21 @@
 
 [https://erpnext.com](https://erpnext.com)
 
-Includes Accounting, Inventory, CRM, Sales, Purchase, Projects, HRMS. Built on Python / MySQL.
+ERPNext is a web based ERP that includes Accounting, Inventory, CRM, Sales, Purchase, Projects, HRMS. 
+
+Database supported is MySQL. Server-side application written in Python and based on
+[wnframework](https://github.com/webnotes/wnframework).
+
+ERPNext is under active development so if you are using it and updating regularly,
+you might have to hit our forms.
+
+Easiest way to use ERPNext is to use our [hosted service](https://erpnext.com), it 
+also pays for the development, or download a [virtual image](https://erpnext.com/download-erpnext.html). If you want to set it up yourself,
+please read the instructions carefully.
 
 ## Platform
 
-ERPNext is built on [wnframework](https://github.com/webnotes/wnframework) (Version 2.0)
+ERPNext is built on  (Version 2.0)
 
 ## User Guide
 
@@ -40,4 +50,4 @@ Please join our forums for more questions:
 
 GNU/General Public License (see licence.txt)
 
-Along with the GPL, the name "ERPNext" must be retained in all derivatives.
+**Note:** The name "ERPNext" must be retained in all derivatives.
