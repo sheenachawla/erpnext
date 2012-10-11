@@ -378,7 +378,7 @@ class DocType(AccountsController):
 		self.make_gl_entries(cancel=1)
 
 	def check_tds_payment_voucher(self):
-		tdsp =	sql("select parent from `tabTDS Payment Detail` where voucher_no = '%s' and docstatus = 1 and parent not like 'old%'")
+		tdsp =	sql("select parent from `tabTDS Payment Detail` where voucher_no = %s and docstatus = 1 and parent not like 'old%%'", self.doc.name)
 		if tdsp:
 			msgprint("TDS Payment voucher '%s' has been made against this voucher. Please cancel the payment voucher to proceed." % (tdsp and tdsp[0][0] or ''))
 			raise Exception
