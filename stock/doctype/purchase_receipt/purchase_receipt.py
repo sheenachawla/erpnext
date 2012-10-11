@@ -159,7 +159,7 @@ class DocType(AccountsController):
 		self.validate_inspection()						 # Validate Inspection
 		get_obj('Stock Ledger').validate_serial_no(self, 'purchase_receipt_details')
 		self.validate_challan_no()
-
+		
 		pc_obj = get_obj(dt='Purchase Common')
 		pc_obj.validate_for_items(self)
 		pc_obj.validate_mandatory(self)
@@ -167,15 +167,13 @@ class DocType(AccountsController):
 		pc_obj.get_prevdoc_date(self)
 		pc_obj.validate_reference_value(self)
 		self.check_for_stopped_status(pc_obj)
-
+		
 		# get total in words
 		dcc = super(DocType, self).get_company_currency(self.doc.company)
 		self.doc.in_words = pc_obj.get_total_in_words(dcc, self.doc.grand_total)
 		self.doc.in_words_import = pc_obj.get_total_in_words(self.doc.currency, self.doc.grand_total_import)
 		# update valuation rate
 		self.update_valuation_rate()
-		print self.doc.doctype, len(self.doclist)
-
 
 	# On Update
 	# ----------------------------------------------------------------------------------------------------
@@ -187,7 +185,6 @@ class DocType(AccountsController):
 		self.update_rw_material_detail()
 		get_obj('Stock Ledger').scrub_serial_nos(self)
 		self.scrub_rejected_serial_nos()
-
 
 	def scrub_rejected_serial_nos(self):
 		for d in getlist(self.doclist, 'purchase_receipt_details'):
@@ -300,7 +297,13 @@ class DocType(AccountsController):
 		self.make_gl_entries()
 
 	def make_gl_entries(self, cancel=False):
-		abbr = webnotes.conn.get_value("Company", self.doc.company, "abbr")
+		abbr, stock_in_hand = webnotes.conn.get_value("Company", self.doc.company,
+			["abbr", "stock_in_hand"])
+			
+		if not stock_in_hand:
+			webnotes.msgprint("""Please specify "Stock In Hand" account 
+				for company: %s""" % (self.doc.company,), raise_exception=1)
+
 		common_gl_dict = {
 			'company': self.doc.company, 
 			'posting_date': self.doc.posting_date,
@@ -324,30 +327,25 @@ class DocType(AccountsController):
 		def _get_ac_name(val):
 			return "%s - %s" % (val, abbr)
 			
-		for item in getlist(self.doclist, 'purchase_receipt_item'):
+		for item in getlist(self.doclist, 'purchase_receipt_details'):
 			# debit stock in hand 
 			_add_item_gl_entry({
-				"account": _get_ac_name("%s - Warehouse" % (item["warehouse"],)),
+				"account": stock_in_hand,
 				"against": _get_ac_name("Stock Received But Not Billed"),
-				"debit": d.valuation_rate
+				"debit": item.valuation_rate * item.qty,
+				"remarks": self.doc.remarks or "Accounting Entry for Stock"
 			})
 
 			# credit stock received but not billed
 			_add_item_gl_entry({
 				"account": _get_ac_name("Stock Received But Not Billed"),
-				"against": _get_ac_name("%s - Warehouse" % (item["warehouse"],)),
-				"credit": d.valuation_rate
+				"against": stock_in_hand,
+				"credit": item.valuation_rate * item.qty,
+				"remarks": self.doc.remarks or "Accounting Entry for Stock"
 			})
-				
+
 		super(DocType, self).make_gl_entries(cancel=cancel, gl_map=item_gl_entries)
 				
-	def get_stock_in_hand_account(self, warehouse, company_account):
-		if not hasattr(self, "warehouse_account"):
-			self.warehouse_account = {}
-		
-		return self.warehouse_account.setdefault(warehouse, 
-			webnotes.conn.get_value("Warehouse", warehouse, "stock_in_hand") or company_account)
-
 	def check_next_docstatus(self):
 		submit_rv = sql("select t1.name from `tabPurchase Invoice` t1,`tabPurchase Invoice Item` t2 where t1.name = t2.parent and t2.purchase_receipt = '%s' and t1.docstatus = 1" % (self.doc.name))
 		if submit_rv:

@@ -4,10 +4,9 @@ def execute():
 	for d in webnotes.conn.sql("""select name, abbr from tabCompany""", as_dict=1):
 		acc_list = [
 			make_account_dict('Stock Assets', 'Current Assets', d, 'Group'),
-				make_account_dict('Stock In Hand', 'Stock Assets', d, 'Group'),
-					# |
-					# --> Ledgers of warehouse
-				make_account_dict('Stock Delivered But Not Billed', 'Stock Assets', d, 'Ledger'),
+				make_account_dict('Stock In Hand', 'Stock Assets', d, 'Ledger'),
+				make_account_dict('Stock Delivered But Not Billed', 'Stock Assets', 
+					d, 'Ledger'),
 			make_account_dict('Stock Liabilities', 'Current Liabilities', d, 'Group'),
 				make_account_dict('Stock Received But Not Billed', 'Stock Liabilities',
 				 	d, 'Ledger'),
@@ -21,11 +20,6 @@ def execute():
 				insert(acc)
 			else:
 				print "Account %s already exists" % acc_name
-				
-		# warehouse ledgers
-		for warehouse in webnotes.conn.sql("""select name from `tabWarehouse`"""):
-			insert(make_account_dict("%s - Warehouse" % (warehouse[0],), 
-				"Stock In Hand", d, "Ledger"))
 		
 def make_account_dict(account, parent, company_detail, group_or_ledger):
 	return {

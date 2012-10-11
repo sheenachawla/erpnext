@@ -109,15 +109,3 @@ class DocType:
 			mdgprint("Warehosue can not be deleted as stock ledger entry exists for this warehosue.", raise_exception=1)
 		else:
 			sql("delete from `tabStock Ledger Entry` where warehouse = %s", self.doc.name)
-
-	
-	def on_update(self):
-		# create a warehouse account under Stock In Hand
-		for company_detail in webnotes.conn.sql("select name, abbr from `tabCompany`", as_dict=1):
-			webnotes.model.insert({
-				"doctype": "Account",
-				"account_name": "%s - Warehouse" % (self.doc.name,),
-				"parent_account": "%s - %s" % ("Stock In Hand", company_detail['abbr']),
-				"company": company_detail['name'],
-				"group_or_ledger": "Ledger"
-			})

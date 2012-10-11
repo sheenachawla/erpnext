@@ -45,13 +45,11 @@ class DocType:
 		mandatory = ['account','remarks','voucher_type','voucher_no','fiscal_year','company']
 		for k in mandatory:
 			if not self.doc.fields.get(k):
-				msgprint("%s is mandatory for GL Entry" % k)
-				raise Exception
+				msgprint("%s is mandatory for GL Entry" % k, raise_exception=1)
 				
 		# Zero value transaction is not allowed
 		if not (flt(self.doc.debit) or flt(self.doc.credit)):
-			msgprint("GL Entry: Debit or Credit amount is mandatory for %s" % self.doc.account)
-			raise Exception
+			msgprint("GL Entry: Debit or Credit amount is mandatory for %s" % self.doc.account, raise_exception=1)
 			
 			
 		# COMMMENTED below to allow zero amount (+ and -) entry in tax table

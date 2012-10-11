@@ -28,11 +28,14 @@ abbr = webnotes.conn.get_value("Company", company, "abbr")
 
 def load_data():
 	# create default warehouse
-	webnotes.model.insert({"doctype": "Warehouse", "warehouse_name": "Default Warehouse",
-		"warehouse_type": "Stores"})
+	if not webnotes.conn.exists("Warehouse", "Default Warehouse"):
+		webnotes.model.insert({"doctype": "Warehouse", 
+			"warehouse_name": "Default Warehouse",
+			"warehouse_type": "Stores"})
 	
 	# create UOM: Nos.
-	webnotes.model.insert({"doctype": "UOM", "uom_name": "Nos"})
+	if not webnotes.conn.exists("UOM", "Nos"):
+		webnotes.model.insert({"doctype": "UOM", "uom_name": "Nos"})
 	
 	from webnotes.tests import insert_test_data
 	# create item groups and items
@@ -44,20 +47,48 @@ def load_data():
 	webnotes.model.insert({"doctype": "Supplier Type", "supplier_type": "Manufacturing"})
 	
 	# create supplier
-	webnotes.model.insert({"doctype": "Supplier", "supplier_name": "North East Traders",
+	webnotes.model.insert({"doctype": "Supplier", "supplier_name": "East Wind Inc.",
 		"supplier_type": "Manufacturing", "company": company})
+		
+	# create account heads for taxes
+	webnotes.model.insert({"doctype": "Account", "account_name": "Shipping Charges",
+		"parent_account": "Stock Expenses - %s" % abbr, "company": company,
+		"group_or_ledger": "Ledger"})
+	webnotes.model.insert({"doctype": "Account", "account_name": "Customs Duty",
+		"parent_account": "Stock Expenses - %s" % abbr, "company": company,
+		"group_or_ledger": "Ledger"})
+	webnotes.model.insert({"doctype": "Account", "account_name": "Tax Assets",
+		"parent_account": "Current Assets - %s" % abbr, "company": company,
+		"group_or_ledger": "Group"})
+	webnotes.model.insert({"doctype": "Account", "account_name": "VAT - Test",
+		"parent_account": "Tax Assets - %s" % abbr, "company": company,
+		"group_or_ledger": "Group"})
 
 
-base_purchase_receipt = {"doctype": "Purchase Receipt", "supplier": "North East Traders",
+base_purchase_receipt = {"doctype": "Purchase Receipt", "supplier": "East Wind Inc.",
 	"naming_series": "PR", "posting_date": nowdate(), "posting_time": "12:05",
 	"company": company, "fiscal_year": webnotes.conn.get_default("fiscal_year"), 
 	"currency": webnotes.conn.get_default("currency"), "conversion_rate": 1
 }
 
-base_purchase_receipt_item = {"doctype": "Purchase Receipt Item", "item_code": "Home Desktop 100",
-	"qty": 10, "received_qty": 10, "rejected_qty": 0, "purchase_rate": "10", 
-	"amount": "100", "warehouse": "Default Warehouse", "parentfield": "purchase_receipt_details",
+base_purchase_receipt_item = {"doctype": "Purchase Receipt Item", 
+	"item_code": "Home Desktop 100",
+	"qty": 10, "received_qty": 10, "rejected_qty": 0, "purchase_rate": 50, 
+	"amount": 500, "warehouse": "Default Warehouse", 
+	"parentfield": "purchase_receipt_details",
 	"conversion_factor": 1, "uom": "Nos", "stock_uom": "Nos"}
+	
+shipping_charges = {"doctype": "Purchase Taxes and Charges", "charge_type": "Actual",
+	"account_head": "Shipping Charges - %s" % abbr, "rate": 100, "tax_amount": 100,
+	"category": "Valuation and Total", "parentfield": "purchase_tax_details"}
+
+vat = {"doctype": "Purchase Taxes and Charges", "charge_type": "Actual",
+	"account_head": "VAT - Test - %s" % abbr, "rate": 120, "tax_amount": 120,
+	"category": "Total", "parentfield": "purchase_tax_details"}
+
+customs_duty = {"doctype": "Purchase Taxes and Charges", "charge_type": "Actual",
+	"account_head": "Customs Duty - %s" % abbr, "rate": 150, "tax_amount": 150,
+	"category": "Valuation", "parentfield": "purchase_tax_details"}
 
 class TestPurchaseReceipt(unittest.TestCase):
 	def setUp(self):
@@ -67,27 +98,23 @@ class TestPurchaseReceipt(unittest.TestCase):
 	def test_purchase_receipt(self):
 		# warehouse does not have stock in hand specified
 		self.run_purchase_receipt_test([base_purchase_receipt.copy(),
-			base_purchase_receipt_item.copy()], 
-			"Default Warehouse - Warehouse - %s" % (abbr,), 
+			base_purchase_receipt_item.copy(), shipping_charges, vat, customs_duty], 
+			"Stock In Hand - %s" % (abbr,), 
 			"Stock Received But Not Billed - %s" % (abbr,))
 	
 	def run_purchase_receipt_test(self, purchase_receipt, debit_account, credit_account):
-		print len(purchase_receipt)
 		dl = webnotes.model.insert(purchase_receipt)
-		print len(dl.doclist)
 		dl.submit()
 		dl.load_from_db()
-		print len(dl.doclist)
-				
+		print [d.doctype for d in dl.doclist]
+						
 		gle = webnotes.conn.sql("""select account, ifnull(debit, 0), ifnull(credit, 0)
 			from `tabGL Entry` where voucher_no = %s""", dl.doclist[0].name)
-		print gle
 		
 		gle_map = dict(((entry[0], entry) for entry in gle))
-		print gle_map.keys()
 		
-		self.assertEquals(gle_map[debit_account], (debit_account, 100.0, 0.0))
-		self.assertEquals(gle_map[credit_account], (credit_account, 0.0, 100.0))
+		self.assertEquals(gle_map[debit_account], (debit_account, 750.0, 0.0))
+		self.assertEquals(gle_map[credit_account], (credit_account, 0.0, 750.0))
 		
 	def tearDown(self):
 		webnotes.conn.rollback()

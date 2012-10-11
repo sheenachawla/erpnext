@@ -157,7 +157,7 @@ class AccountsController(TransactionBase):
 		
 	def check_budget(self, cancel):
 		for gle in self.merged_entries:
-			if gle['cost_center']:
+			if gle.get('cost_center'):
 				#check budget only if account is expense account
 				acc_details = webnotes.conn.get_value("Account", gle['account'], 
 					['is_pl_account', 'debit_or_credit'])
