@@ -26,9 +26,10 @@ wn.require('app/setup/doctype/notification_control/notification_control.js');
 //========================== On Load ================================================================
 cur_frm.cscript.onload = function(doc, cdt, cdn) {
 	if(!doc.fiscal_year && doc.__islocal){ set_default_values(doc);}
-	if (!doc.posting_date) doc.posting_date = dateutil.obj_to_str(new Date());
-	if (!doc.transaction_date) doc.transaction_date = dateutil.obj_to_str(new Date());
-	if (!doc.status) doc.status = 'Draft';
+	if(!doc.posting_date) doc.posting_date = dateutil.obj_to_str(new Date());
+	if(!doc.posting_time) doc.posting_time = dateutil.get_cur_time();
+	if(!doc.transaction_date) doc.transaction_date = dateutil.obj_to_str(new Date());
+	if(!doc.status) doc.status = 'Draft';
 }
 
 cur_frm.cscript.onload_post_render = function(doc, dt, dn) {

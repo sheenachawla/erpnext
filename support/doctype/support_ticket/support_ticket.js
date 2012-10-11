@@ -29,19 +29,9 @@ $.extend(cur_frm.cscript, {
 		// help area
 		//
 		if(in_list(user_roles,'System Manager')) {
-			cur_frm.page_layout.footer.help_area.innerHTML = '';
-			new wn.widgets.Footer({
-				parent:cur_frm.page_layout.footer.help_area,
-				columns:2,
-				items: [
-					{
-						column: 0,
-						label:'Email Settings',
-						description:'Integrate your incoming support emails to support ticket',
-						onclick: function() { loaddoc('Email Settings','Email Settings'); }
-					}, 					
-				]
-			})			
+			cur_frm.page_layout.footer.help_area.innerHTML = '<hr>\
+				<p><a href="#Form/Email Settings/Email Settings">Email Settings</a><br>\
+				<span class="help">Integrate incoming support emails to Support Ticket</span></p>';
 		}
 		
 		if(!doc.customer) hide_field(['customer_name','address_display','contact_display','contact_mobile','contact_email']);		
@@ -71,7 +61,7 @@ $.extend(cur_frm.cscript, {
 	// make thread listing
 	//
 	make_listing: function(doc) {
-		cur_frm.fields_dict['thread_html'].wrapper.innerHTML = '';
+		$(cur_frm.fields_dict['thread_html'].wrapper).html("");
 		
 		// render first message
 		new EmailMessage($a(cur_frm.fields_dict['thread_html'].wrapper, 'div'), {

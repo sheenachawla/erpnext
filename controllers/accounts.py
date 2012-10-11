@@ -18,9 +18,9 @@ from __future__ import unicode_literals
 
 import webnotes
 from webnotes.utils import nowdate, flt, cstr
-from webnotes.model.doctype import get_fields
+import webnotes.model.doctype
 from webnotes.model.code import get_obj
-from webnotes.model.doclist import getlist
+from webnotes.model.utils import getlist
 from webnotes.model.doc import Document
 from utilities.transaction_base import TransactionBase
 
@@ -60,7 +60,9 @@ class AccountsController(TransactionBase):
 				self.entries.append(gl_dict)
 			
 		# get entries
-		gl_fields = ", ".join(get_fields("GL Mapper Detail"))
+		gl_fields = ", ".join([d.fieldname for d in \
+			webnotes.model.doctype.get("GL Mapper Detail").get({
+			"doctype": "DocField", "parent": "GL Mapper Detail"})])
 		entry_map_list = webnotes.conn.sql("""select %s from `tabGL Mapper Detail` 
 			where parent = %s""" % (gl_fields, '%s'), mapper or self.doc.doctype, as_dict=1)
 		

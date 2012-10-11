@@ -21,7 +21,7 @@ import webnotes
 from webnotes.utils import add_days, add_months, add_years, cint, cstr, date_diff, default_fields, flt, fmt_money, formatdate, getTraceback, get_defaults, get_first_day, get_last_day, getdate, has_common, month_name, now, nowdate, replace_newlines, sendmail, set_default, str_esc_quote, user_format, validate_email_add
 from webnotes.model import db_exists
 from webnotes.model.doc import Document, addchild, getchildren, make_autoname
-from webnotes.model.doclist import getlist, copy_doclist
+from webnotes.model.utils import getlist
 from webnotes.model.code import get_obj, get_server_obj, run_server_obj, updatedb, check_syntax
 from webnotes import session, form, msgprint, errprint
 
@@ -60,13 +60,13 @@ class DocType:
 			par = sql("select name, group_or_ledger, is_pl_account, debit_or_credit from tabAccount where name =%s",self.doc.parent_account)
 			if not par:
 				msgprint("Parent account does not exists", raise_exception=1)
-			elif par and par[0][0] == self.doc.name:
+			elif par[0][0] == self.doc.name:
 				msgprint("You can not assign itself as parent account", raise_exception=1)
-			elif par and par[0][1] != 'Group':
+			elif par[0][1] != 'Group':
 				msgprint("Parent account can not be a ledger", raise_exception=1)
-			elif par and self.doc.debit_or_credit and par[0][3] != self.doc.debit_or_credit:
+			elif self.doc.debit_or_credit and par[0][3] != self.doc.debit_or_credit:
 				msgprint("You can not move a %s account under %s account" % (self.doc.debit_or_credit, par[0][3]), raise_exception=1)
-			elif par:
+			else:
 				self.doc.is_pl_account = par[0][2]
 				self.doc.debit_or_credit = par[0][3]
 		elif self.doc.account_name not in ['Income','Source of Funds (Liabilities)',\

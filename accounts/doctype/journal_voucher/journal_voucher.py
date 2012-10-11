@@ -19,7 +19,7 @@ from __future__ import unicode_literals
 import webnotes
 from webnotes.utils import cint, cstr, flt, fmt_money, formatdate, getdate, now
 from webnotes.model.doc import Document, addchild, getchildren, make_autoname
-from webnotes.model.doclist import getlist
+from webnotes.model.utils import getlist
 from webnotes.model.code import get_obj
 from webnotes import msgprint, errprint
 from utilities.transaction_base import TransactionBase

@@ -16,7 +16,7 @@
 
 from __future__ import unicode_literals
 import webnotes
-from webnotes.model.doclist import getlist
+from webnotes.model.utils import getlist
 from webnotes import msgprint
 
 from webnotes.utils.nestedset import DocTypeNestedSet

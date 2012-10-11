@@ -3,9 +3,9 @@
 
 	# These values are common in all dictionaries
 	{
-		u'creation': '2012-09-18 11:20:27',
+		u'creation': '2012-10-03 11:57:18',
 		u'docstatus': 0,
-		u'modified': '2012-09-26 13:05:15',
+		u'modified': '2012-10-09 18:10:00',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -743,18 +743,6 @@
 		'label': u'Get Terms and Conditions',
 		'oldfieldtype': u'Button',
 		'options': u'get_tc_details',
-		'permlevel': 0,
-		'print_hide': 1
-	},
-
-	# DocField
-	{
-		u'doctype': u'DocField',
-		'fieldname': u'terms_html',
-		'fieldtype': u'HTML',
-		'label': u'Terms and Conditions HTML',
-		'oldfieldtype': u'HTML',
-		'options': u'You can add Terms and Notes that will be printed in the Transaction',
 		'permlevel': 0,
 		'print_hide': 1
 	},

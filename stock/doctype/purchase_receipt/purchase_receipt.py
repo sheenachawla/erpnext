@@ -17,20 +17,12 @@
 # Please edit this list and import only required elements
 from __future__ import unicode_literals
 import webnotes
-
-from webnotes.utils import add_days, add_months, add_years, cint, cstr, date_diff, default_fields, flt, fmt_money, formatdate, getTraceback, get_defaults, get_first_day, get_last_day, getdate, has_common, month_name, now, nowdate, replace_newlines, sendmail, set_default, str_esc_quote, user_format, validate_email_add
-from webnotes.model import db_exists
-from webnotes.model.doc import Document, addchild, getchildren, make_autoname
-from webnotes.model.doclist import getlist, copy_doclist
-from webnotes.model.code import get_obj, get_server_obj, run_server_obj, updatedb, check_syntax
-from webnotes import session, form, msgprint, errprint
-
-set = webnotes.conn.set
+from webnotes.utils import add_days, cint, cstr, flt, get_defaults, getdate
+from webnotes.model.doc import addchild, make_autoname
+from webnotes.model.utils import getlist
+from webnotes.model.code import get_obj
+from webnotes import msgprint, errprint
 sql = webnotes.conn.sql
-get_value = webnotes.conn.get_value
-in_transaction = webnotes.conn.in_transaction
-convert_to_lists = webnotes.conn.convert_to_lists
-
 from controllers.accounts import AccountsController
 
 class DocType(AccountsController):
@@ -154,7 +146,7 @@ class DocType(AccountsController):
 	def validate(self):
 		self.po_required()
 		self.validate_fiscal_year()
-		set(self.doc, 'status', 'Draft')			 # set status as "Draft"
+		webnotes.conn.set(self.doc, 'status', 'Draft')			 # set status as "Draft"
 		self.validate_accepted_rejected_qty()
 		self.validate_inspection()						 # Validate Inspection
 		get_obj('Stock Ledger').validate_serial_no(self, 'purchase_receipt_details')
@@ -278,7 +270,7 @@ class DocType(AccountsController):
 		get_obj('Authorization Control').validate_approving_authority(self.doc.doctype, self.doc.company, self.doc.grand_total)
 
 		# Set status as Submitted
-		set(self.doc,'status', 'Submitted')
+		webnotes.conn.set(self.doc,'status', 'Submitted')
 		pc_obj = get_obj('Purchase Common')
 
 		# Update Previous Doc i.e. update pending_qty and Status accordingly
@@ -357,8 +349,6 @@ class DocType(AccountsController):
 		pc_obj = get_obj('Purchase Common')
 
 		self.check_for_stopped_status(pc_obj)
-		# 1.Check if Purchase Invoice has been submitted against current Purchase Order
-		# pc_obj.check_docstatus(check = 'Next', doctype = 'Purchase Invoice', docname = self.doc.name, detail_doctype = 'Purchase Invoice Item')
 
 		submitted = sql("select t1.name from `tabPurchase Invoice` t1,`tabPurchase Invoice Item` t2 where t1.name = t2.parent and t2.purchase_receipt = '%s' and t1.docstatus = 1" % self.doc.name)
 		if submitted:
@@ -366,7 +356,7 @@ class DocType(AccountsController):
 			raise Exception
 
 		# 2.Set Status as Cancelled
-		set(self.doc,'status','Cancelled')
+		webnotes.conn.set(self.doc,'status','Cancelled')
 
 		# 3. Cancel Serial No
 		get_obj('Stock Ledger').update_serial_record(self, 'purchase_receipt_details', is_submit = 0, is_incoming = 1)

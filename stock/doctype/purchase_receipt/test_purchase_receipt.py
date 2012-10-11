@@ -50,10 +50,18 @@ def load_data():
 	webnotes.model.insert({"doctype": "Supplier", "supplier_name": "East Wind Inc.",
 		"supplier_type": "Manufacturing", "company": company})
 		
+	# create default cost center if not exists
+	if not webnotes.conn.exists("Cost Center", "Default Cost Center - %s" % abbr):
+		dl = webnotes.model.insert({"doctype": "Cost Center", "group_or_ledger": "Ledger",
+			"cost_center_name": "Default Cost Center", 
+			"parent_cost_center": "Root - %s" % abbr,
+			"company_name": company, "company_abbr": abbr})
+		
 	# create account heads for taxes
 	webnotes.model.insert({"doctype": "Account", "account_name": "Shipping Charges",
 		"parent_account": "Stock Expenses - %s" % abbr, "company": company,
 		"group_or_ledger": "Ledger"})
+		
 	webnotes.model.insert({"doctype": "Account", "account_name": "Customs Duty",
 		"parent_account": "Stock Expenses - %s" % abbr, "company": company,
 		"group_or_ledger": "Ledger"})
@@ -74,13 +82,14 @@ base_purchase_receipt = {"doctype": "Purchase Receipt", "supplier": "East Wind I
 base_purchase_receipt_item = {"doctype": "Purchase Receipt Item", 
 	"item_code": "Home Desktop 100",
 	"qty": 10, "received_qty": 10, "rejected_qty": 0, "purchase_rate": 50, 
-	"amount": 500, "warehouse": "Default Warehouse", 
+	"amount": 500, "warehouse": "Default Warehouse", "item_tax_amount": 250,
 	"parentfield": "purchase_receipt_details",
 	"conversion_factor": 1, "uom": "Nos", "stock_uom": "Nos"}
 	
 shipping_charges = {"doctype": "Purchase Taxes and Charges", "charge_type": "Actual",
 	"account_head": "Shipping Charges - %s" % abbr, "rate": 100, "tax_amount": 100,
-	"category": "Valuation and Total", "parentfield": "purchase_tax_details"}
+	"category": "Valuation and Total", "parentfield": "purchase_tax_details",
+	"cost_center": "Default Cost Center - %s" % abbr}
 
 vat = {"doctype": "Purchase Taxes and Charges", "charge_type": "Actual",
 	"account_head": "VAT - Test - %s" % abbr, "rate": 120, "tax_amount": 120,
@@ -88,7 +97,8 @@ vat = {"doctype": "Purchase Taxes and Charges", "charge_type": "Actual",
 
 customs_duty = {"doctype": "Purchase Taxes and Charges", "charge_type": "Actual",
 	"account_head": "Customs Duty - %s" % abbr, "rate": 150, "tax_amount": 150,
-	"category": "Valuation", "parentfield": "purchase_tax_details"}
+	"category": "Valuation", "parentfield": "purchase_tax_details",
+	"cost_center": "Default Cost Center - %s" % abbr}
 
 class TestPurchaseReceipt(unittest.TestCase):
 	def setUp(self):
@@ -106,7 +116,6 @@ class TestPurchaseReceipt(unittest.TestCase):
 		dl = webnotes.model.insert(purchase_receipt)
 		dl.submit()
 		dl.load_from_db()
-		print [d.doctype for d in dl.doclist]
 						
 		gle = webnotes.conn.sql("""select account, ifnull(debit, 0), ifnull(credit, 0)
 			from `tabGL Entry` where voucher_no = %s""", dl.doclist[0].name)

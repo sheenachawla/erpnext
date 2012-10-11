@@ -18,13 +18,13 @@ erpnext.ActivityFeed = Class.extend({
 		this.scrub_data(data);
 		this.add_date_separator(row, data);
 		$(row).append(sprintf('<div style="margin: 0px">\
-			<span class="avatar avatar-small"><img src="%(imgsrc)s" /></span> \
+			%(avatar)s \
 			<span %(onclick)s class="label %(add_class)s">%(feed_type)s</span>\
 			%(link)s %(subject)s <span class="user-info">%(by)s</span></div>', data));
 	},
 	scrub_data: function(data) {
 		data.by = wn.user_info(data.owner).fullname;
-		data.imgsrc = wn.user_info(data.owner).image;
+		data.avatar = wn.avatar(data.owner);
 		
 		// feedtype
 		if(!data.feed_type) {

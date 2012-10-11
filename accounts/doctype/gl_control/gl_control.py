@@ -20,7 +20,7 @@ import webnotes
 
 from webnotes.utils import add_days, cint, cstr, date_diff, flt, get_defaults, getdate, nowdate, sendmail 
 from webnotes.model.doc import Document, addchild, make_autoname
-from webnotes.model.doclist import getlist
+from webnotes.model.utils import getlist
 from webnotes.model.code import get_obj
 from webnotes import msgprint
 from webnotes.utils.email_lib import sendmail
@@ -383,6 +383,8 @@ def assign_task_to_owner(inv, msg, users):
 
 def create_new_invoice(prev_rv):
 	# clone rv
+	from webnotes.model.utils import clone
+	
 	new_rv = clone(prev_rv)
 
 	mdict = {'Monthly': 1, 'Quarterly': 3, 'Half-yearly': 6, 'Yearly': 12}
