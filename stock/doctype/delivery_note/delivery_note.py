@@ -24,9 +24,9 @@ from webnotes.model.code import get_obj
 from webnotes import msgprint, errprint
 sql = webnotes.conn.sql
 
-from controllers.accounts import AccountsController
+from controllers.stock import StockController
 
-class DocType(AccountsController):
+class DocType(StockController):
 	def __init__(self, doc, doclist=[]):
 		self.doc = doc
 		self.doclist = doclist
@@ -266,41 +266,37 @@ class DocType(AccountsController):
 	
 		
 	def make_gl_entries(self, cancel=False):
-		abbr, stock_in_hand = webnotes.conn.get_value("Company", self.doc.company,
-			["abbr", "stock_in_hand"])
+		abbr, stock_in_hand = self.get_company_details()
+		gl_entries = []
 			
-		if not stock_in_hand:
-			webnotes.msgprint("""Please specify "Stock In Hand" account 
-				for company: %s""" % (self.doc.company,), raise_exception=1)
-
-		item_gl_entries = []
-			
-		for item in getlist(self.doclist, 'purchase_receipt_details'):
-			incoming_rate = self.get_incoming_rate(d.item_code)
+		for item in getlist(self.doclist, 'delivery_note_details'):
+			# get valuation rate as per FIFO
+			valuation_rate = self.get_incoming_rate(self.doc.posting_date, self.doc.posting_time, 	
+				d.item_code, d.warehouse, d.qty, d.serial_no)
+				
 			# debit stock in hand 
-			item_gl_entries.append(
+			gl_entries.append(
 				self.get_gl_dict({
 					"account": stock_in_hand,
 					"against": "Stock Delivered But Not Billed - %s" % abbr,
-					"credit": ,
+					"credit": valuation_rate * item.qty,
 					"remarks": self.doc.remarks or "Accounting Entry for Stock"
-				})
+				}, cancel)
 			)
 
 			# credit stock received but not billed
-			item_gl_entries.append(
+			gl_entries.append(
 				self.get_gl_dict({
 					"account": "Stock Delivered But Not Billed - %s" % abbr,
 					"against": stock_in_hand,
-					"debit": ,
+					"debit": valuation_rate * item.qty,
 					"remarks": self.doc.remarks or "Accounting Entry for Stock"
-				})
+				}, cancel)
 			)
 
-		super(DocType, self).make_gl_entries(cancel=cancel, gl_map=item_gl_entries)
+		super(DocType, self).make_gl_entries(cancel=cancel, gl_map=gl_entries)
 
-
-
+	
 	def validate_packed_qty(self):
 		"""
 			Validate that if packed qty exists, it should be equal to qty
