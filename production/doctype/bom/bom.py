@@ -250,9 +250,10 @@ class DocType:
 		check_list = []
 		for m in getlist(self.doclist, 'bom_materials'):
 			# check if operation no not in op table
-			if m.operation_no not in self.op:
+			if cstr(m.operation_no) not in self.op:
 				msgprint("""Operation no: %s against item: %s at row no: %s is not present 
-					at Operations table"""% (m.operation_no, m.item_code, m.idx), raise_exception = 1)
+					at Operations table""" % 
+					(m.operation_no, m.item_code, m.idx), raise_exception = 1)
 		
 			item = self.get_item_det(m.item_code)
 			if item[0]['is_manufactured_item'] == 'Yes' or item[0]['is_sub_contracted_item'] == 'Yes':

@@ -71,6 +71,22 @@ def load_data():
 	webnotes.model.insert({"doctype": "Account", "account_name": "VAT - Test",
 		"parent_account": "Tax Assets - %s" % abbr, "company": company,
 		"group_or_ledger": "Group"})
+		
+	# create BOM
+	webnotes.model.insert([
+		{
+			"doctype": "BOM", "item": "Nebula 7", "quantity": 1, "is_active": "Yes", 
+			"is_default": "Yes", "uom": "Nos"
+		},
+		{
+			"doctype": "BOM Operation", "operation_no": 1, "parentfield": "bom_operations",
+			"opn_description": "Development"
+		}, 
+		{
+			"doctype": "BOM Item", "item_code": "Android Jack D", "operation_no": 1, "qty": 5,
+			"rate": 20, "amount": 100, "stock_uom": "Nos", "parentfield": "bom_materials"
+		}
+	])
 
 
 base_purchase_receipt = {"doctype": "Purchase Receipt", "supplier": "East Wind Inc.",
@@ -100,6 +116,7 @@ customs_duty = {"doctype": "Purchase Taxes and Charges", "charge_type": "Actual"
 	"category": "Valuation", "parentfield": "purchase_tax_details",
 	"cost_center": "Default Cost Center - %s" % abbr}
 
+
 class TestPurchaseReceipt(unittest.TestCase):
 	def setUp(self):
 		webnotes.conn.begin()
@@ -110,9 +127,10 @@ class TestPurchaseReceipt(unittest.TestCase):
 		self.run_purchase_receipt_test([base_purchase_receipt.copy(),
 			base_purchase_receipt_item.copy(), shipping_charges, vat, customs_duty], 
 			"Stock In Hand - %s" % (abbr,), 
-			"Stock Received But Not Billed - %s" % (abbr,))
+			"Stock Received But Not Billed - %s" % (abbr,), 750.0)
 	
-	def run_purchase_receipt_test(self, purchase_receipt, debit_account, credit_account):
+	def run_purchase_receipt_test(self, purchase_receipt, debit_account, 
+			credit_account, stock_value):
 		dl = webnotes.model.insert(purchase_receipt)
 		dl.submit()
 		dl.load_from_db()
@@ -122,8 +140,17 @@ class TestPurchaseReceipt(unittest.TestCase):
 		
 		gle_map = dict(((entry[0], entry) for entry in gle))
 		
-		self.assertEquals(gle_map[debit_account], (debit_account, 750.0, 0.0))
-		self.assertEquals(gle_map[credit_account], (credit_account, 0.0, 750.0))
+		self.assertEquals(gle_map[debit_account], (debit_account, stock_value, 0.0))
+		self.assertEquals(gle_map[credit_account], (credit_account, 0.0, stock_value))
+		
+	def atest_subcontracting(self):
+		item = base_purchase_receipt_item.copy()
+		item.update({"item_code": "Nebula 7"})
+		
+		self.run_purchase_receipt_test([base_purchase_receipt.copy(), item,
+			shipping_charges, vat, customs_duty], 
+			"Stock In Hand - %s" % (abbr,), 
+			"Stock Received But Not Billed - %s" % (abbr,), 1750.0)
 		
 	def tearDown(self):
 		webnotes.conn.rollback()

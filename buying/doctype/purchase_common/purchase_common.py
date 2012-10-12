@@ -188,21 +188,21 @@ class DocType(TransactionBase):
 		ret = { 'projected_qty' : bin and flt(bin[0]['projected_qty']) or 0 }
 		return ret
 
+	def get_conversion_factor(self, item_code, uom):
+		return 
+
 	def get_uom_details(self, arg = ''):
 		"""fetches details on change of UOM"""
 		import json
 		arg, ret = json.loads(arg), {}
 	
-		uom = webnotes.conn.sql("""\
-			select conversion_factor
-			from `tabUOM Conversion Detail`
-			where parent = %s and uom = %s""", (arg['item_code'],arg['uom']), as_dict = 1)
-		
-		if not uom: return ret
+		conversion_factor = webnotes.conn.get_value("UOM Conversion Detail", 
+			{"parent": arg['item_code'], "uom": arg['uom']}, "conversion_factor")
+			
+		if not conversion_factor: return ret
 		
 		last_purchase_details, last_purchase_date = self.get_last_purchase_details(arg['item_code'], arg['doc_name'])
 
-		conversion_factor = flt(uom[0]['conversion_factor'])
 		conversion_rate = flt(arg['conversion_rate'])
 		purchase_ref_rate = last_purchase_details and \
 							(last_purchase_details['purchase_ref_rate'] * conversion_factor) or 0
@@ -690,3 +690,63 @@ class DocType(TransactionBase):
 			if d.prevdoc_doctype and d.prevdoc_docname:
 				dt = sql("select transaction_date from `tab%s` where name = '%s'" % (d.prevdoc_doctype, d.prevdoc_docname))
 				d.prevdoc_date = dt and dt[0][0].strftime('%Y-%m-%d') or ''
+
+
+	def update_subcontracting_raw_materials(self, obj):
+		obj.doclist = obj.doc.clear_table(obj.doclist, 'items_supplied_for_subcontracting', 1)
+
+		for d in getlist(obj.doclist, obj.fname):
+			item_det = webnotes.conn.get_value("Item", d.item_code, 
+				['is_sub_contracted_item', 'is_purchase_item'])
+			
+			if item_det[0][0] == 'Yes':
+				if item_det[0][1] == 'Yes' and not obj.doc.is_subcontracted:
+					msgprint("""Please enter whether purchase order to be made for subcontracting 
+						or for purchasing, in 'Is Subcontracted' field""", raise_exception=1)
+				elif item_det[0][1] == 'No' or obj.doc.is_subcontracted == 'Yes':
+					self.add_bom(d)
+				
+
+	def add_bom(self, d):
+		bom_det = sql("""
+			select 
+				t1.item, t2.item_code, t2.qty_consumed_per_unit, t2.rate, t2.stock_uom, 
+				t2.name, t2.description, t1.raw_material_cost
+			from 
+				`tabBOM` t1, `tabBOM Item` t2 
+			where 
+				t2.parent = t1.name and t1.item = %s and ifnull(t1.is_default,0) = 1 
+				and t1.docstatus = 1 and t2.docstatus =1
+		""", (d.item_code,), as_dict=1)
+		
+		if not bom_det:
+			msgprint("No default BOM exists for item: %s" % d.item_code, raise_exception=1)
+			
+		for i in bom_det:
+			ch = addchild(obj.doc, 'items_supplied_for_subcontracting', 
+				'Items Supplied For Subcontracting', 1, obj.doclist)
+
+			ch.reference_name = d.name
+			ch.bom_detail_no = i['name'] or ''
+			ch.main_item_code = i['item'] or ''
+			ch.rm_item_code = i['item_code'] or ''
+			ch.description = i['description'] or ''
+			ch.stock_uom = i['stock_uom'] or ''
+			ch.rate = flt(i['rate'])
+			ch.required_qty = flt(i['qty_consumed_per_unit']) * \
+				flt(d.qty) * flt(d.conversion_factor)
+			ch.amount = flt(flt(ch.required_qty)*flt(ch.rate))
+			ch.save()
+			
+		d.rm_supp_cost = bom_det[0]['raw_material_cost']
+		d.save()
+		
+	# update itemwise valuation rate
+	def update_item_valuation_rate(self, obj):
+		for d in getlist(obj.doclist, obj.fname):
+			if flt(d.qty):
+				d.valuation_rate = (
+						flt(d.purchase_rate) + 
+						(flt(d.rm_supp_cost) / flt(d.qty)) + 
+						(flt(d.item_tax_amount)/flt(d.qty)) 
+					) / flt(d.conversion_factor)

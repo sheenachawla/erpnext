@@ -23,9 +23,9 @@ from webnotes.model.utils import getlist
 from webnotes.model.code import get_obj
 from webnotes import msgprint, errprint
 sql = webnotes.conn.sql
-from controllers.accounts import AccountsController
+from controllers.stock import StockController
 
-class DocType(AccountsController):
+class DocType(StockController):
 	def __init__(self, doc, doclist=[]):
 		self.doc = doc
 		self.doclist = doclist
@@ -114,16 +114,6 @@ class DocType(AccountsController):
 			Please enter a valid Challan No.", raise_exception=1)
 
 
-	# update valuation rate
-	def update_valuation_rate(self):
-		for d in getlist(self.doclist, 'purchase_receipt_details'):
-			if flt(d.qty):
-				d.valuation_rate = (
-						flt(d.purchase_rate) + 
-						(flt(d.rm_supp_cost) / flt(d.qty)) + 
-						(flt(d.item_tax_amount)/flt(d.qty)) 
-					) / flt(d.conversion_factor)
-
 	# Check for Stopped status
 	def check_for_stopped_status(self, pc_obj):
 		check_list =[]
@@ -158,23 +148,22 @@ class DocType(AccountsController):
 		pc_obj.validate_conversion_rate(self)
 		pc_obj.get_prevdoc_date(self)
 		pc_obj.validate_reference_value(self)
+		# update item valuation rate
+		pc_obj.update_item_valuation_rate(self)
+
 		self.check_for_stopped_status(pc_obj)
 		
 		# get total in words
 		dcc = super(DocType, self).get_company_currency(self.doc.company)
 		self.doc.in_words = pc_obj.get_total_in_words(dcc, self.doc.grand_total)
 		self.doc.in_words_import = pc_obj.get_total_in_words(self.doc.currency, self.doc.grand_total_import)
-		# update valuation rate
-		self.update_valuation_rate()
 
-	# On Update
-	# ----------------------------------------------------------------------------------------------------
 	def on_update(self):
 		if self.doc.rejected_warehouse:
 			for d in getlist(self.doclist,'purchase_receipt_details'):
 				d.rejected_warehouse = self.doc.rejected_warehouse
 
-		self.update_rw_material_detail()
+		get_obj("Purchase Common").update_subcontracting_raw_materials(self)
 		get_obj('Stock Ledger').scrub_serial_nos(self)
 		self.scrub_rejected_serial_nos()
 
@@ -350,121 +339,10 @@ class DocType(AccountsController):
 		self.make_gl_entries(cancel=True)
 
 
-#----------- code for Sub-contracted Items -------------------
-	#--------check for sub-contracted items and accordingly update PR raw material detail table--------
-	def update_rw_material_detail(self):
-
-		for d in getlist(self.doclist,'purchase_receipt_details'):
-			item_det = sql("select is_sub_contracted_item, is_purchase_item from `tabItem` where name = '%s'"%(d.item_code))
-
-			if item_det[0][0] == 'Yes':
-				if item_det[0][1] == 'Yes':
-					if not self.doc.is_subcontracted:
-						msgprint("Please enter whether purchase receipt to be made for subcontracting or for purchase in 'Is Subcontracted' field .")
-						raise Exception
-					if self.doc.is_subcontracted == 'Yes':
-						if not self.doc.supplier_warehouse:
-							msgprint("Please Enter Supplier Warehouse for subcontracted Items")
-							raise Exception
-						self.add_bom(d)
-					else:
-						self.doclist = self.doc.clear_table(self.doclist,'pr_raw_material_details',1)
-						self.doc.save()
-				elif item_det[0][1] == 'No':
-					if not self.doc.supplier_warehouse:
-						msgprint("Please Enter Supplier Warehouse for subcontracted Items")
-						raise Exception
-					self.add_bom(d)
-
-			self.delete_irrelevant_raw_material()
-			#---------------calculate amt in	Purchase Receipt Item Supplied-------------
-			self.calculate_amount(d)
-
-
-	def add_bom(self, d):
-		#----- fetching default bom from Bill of Materials instead of Item Master --
-		bom_det = sql("select t1.item, t2.item_code, t2.qty_consumed_per_unit, t2.moving_avg_rate, t2.value_as_per_mar, t2.stock_uom, t2.name, t2.description from `tabBOM` t1, `tabBOM Item` t2 where t2.parent = t1.name and t1.item = '%s' and ifnull(t1.is_default,0) = 1 and t1.docstatus = 1 and t2.docstatus =1" % d.item_code)
-		if not bom_det:
-			msgprint("No default BOM exists for item: %s" % d.item_code)
-			raise Exception
-		else:
-			#-------------- add child function--------------------
-			chgd_rqd_qty = []
-			for i in bom_det:
-
-				if i and not sql("select name from `tabPurchase Receipt Item Supplied` where reference_name = '%s' and bom_detail_no = '%s' and parent = '%s' " %(d.name, i[6], self.doc.name)):
-
-					rm_child = addchild(self.doc, 'pr_raw_material_details', 'Purchase Receipt Item Supplied', 1, self.doclist)
-
-					rm_child.reference_name = d.name
-					rm_child.bom_detail_no = i and i[6] or ''
-					rm_child.main_item_code = i and i[0] or ''
-					rm_child.rm_item_code = i and i[1] or ''
-					rm_child.description = i and i[7] or ''
-					rm_child.stock_uom = i and i[5] or ''
-					rm_child.rate = i and flt(i[3]) or flt(i[4])
-					rm_child.conversion_factor = d.conversion_factor
-					rm_child.required_qty = flt(i	and flt(i[2]) or 0) * flt(d.qty) * flt(d.conversion_factor)
-					rm_child.consumed_qty = flt(i	and flt(i[2]) or 0) * flt(d.qty) * flt(d.conversion_factor)
-					rm_child.amount = flt(flt(rm_child.consumed_qty)*flt(rm_child.rate))
-					rm_child.save()
-					chgd_rqd_qty.append(cstr(i[1]))
-				else:
-					act_qty = flt(i	and flt(i[2]) or 0) * flt(d.qty) * flt(d.conversion_factor)
-					for pr_rmd in getlist(self.doclist, 'pr_raw_material_details'):
-						if i and i[6] == pr_rmd.bom_detail_no and (flt(act_qty) != flt(pr_rmd.required_qty) or i[1] != pr_rmd.rm_item_code or i[7] != pr_rmd.description):
-							chgd_rqd_qty.append(cstr(i[1]))
-							pr_rmd.main_item_code = i[0]
-							pr_rmd.rm_item_code = i[1]
-							pr_rmd.description = i[7]
-							pr_rmd.stock_uom = i[5]
-							pr_rmd.required_qty = flt(act_qty)
-							pr_rmd.consumed_qty = flt(act_qty)
-							pr_rmd.rate = i and flt(i[3]) or flt(i[4])
-							pr_rmd.amount = flt(flt(pr_rmd.consumed_qty)*flt(pr_rmd.rate))
-							pr_rmd.save()
-			if chgd_rqd_qty:
-				msgprint("Please check consumed quantity for Raw Material Item Code: '%s'in Raw materials Detail Table" % ((len(chgd_rqd_qty) > 1 and ','.join(chgd_rqd_qty[:-1]) +' and ' + cstr(chgd_rqd_qty[-1:][0]) ) or cstr(chgd_rqd_qty[0])))
-
-
-	# Delete irrelevant raw material from PR Raw material details
-	#--------------------------------------------------------------
-	def delete_irrelevant_raw_material(self):
-		for d in getlist(self.doclist,'pr_raw_material_details'):
-			if not sql("select name from `tabPurchase Receipt Item` where name = '%s' and parent = '%s' and item_code = '%s'" % (d.reference_name, self.doc.name, d.main_item_code)):
-				d.parent = 'old_par:'+self.doc.name
-				d.save()
-
-	def calculate_amount(self, d):
-		amt = 0
-		for i in getlist(self.doclist,'pr_raw_material_details'):
-
-			if(i.reference_name == d.name):
-				#if i.consumed_qty == 0:
-				 # msgprint("consumed qty cannot be 0. Please Enter consumed qty ")
-					#raise Exception
-				i.amount = flt(i.consumed_qty)* flt(i.rate)
-				amt += i.amount
-		d.rm_supp_cost = amt
-		d.save()
-
-
-	# --------------- Back Flush function called on submit and on cancel from update stock
 	def bk_flush_supp_wh(self, is_submit):
-		for d in getlist(self.doclist, 'pr_raw_material_details'):
-			#--------- -ve quantity is passed as raw material qty has to be decreased when PR is submitted and it has to be increased when PR is cancelled
-			consumed_qty = - flt(d.consumed_qty)
-			self.make_sl_entry(d, self.doc.supplier_warehouse, flt(consumed_qty), 0, is_submit)
-
-
-	# get current_stock
-	# ----------------
-	def get_current_stock(self):
-		for d in getlist(self.doclist, 'pr_raw_material_details'):
-			if self.doc.supplier_warehouse:
-				bin = sql("select actual_qty from `tabBin` where item_code = %s and warehouse = %s", (d.rm_item_code, self.doc.supplier_warehouse), as_dict = 1)
-				d.current_stock = bin and flt(bin[0]['actual_qty']) or 0
-
+		"""Back Flush function called on submit and on cancel from update stock"""
+		for d in getlist(self.doclist, 'items_supplied_for_subcontracting'):
+			self.make_sl_entry(d, self.doc.supplier_warehouse, -1*flt(d.required_qty), 0, is_submit)
 
 	def get_rate(self,arg):
 		return get_obj('Purchase Common').get_rate(arg,self)
