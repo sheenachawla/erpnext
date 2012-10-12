@@ -275,91 +275,10 @@ class DocType(TransactionBase):
 		
 		# Step 7 :=> Update last purchase rate 
 		pc_obj.update_last_purchase_rate(self, is_submit = 0)
-		
-#----------- code for Sub-contracted Items -------------------
-	#--------check for sub-contracted items and accordingly update PO raw material detail table--------
-	def update_rw_material_detail(self):
-		for d in getlist(self.doclist,'po_details'):
-			item_det = sql("select is_sub_contracted_item, is_purchase_item from `tabItem` where name = '%s'"%(d.item_code))
-			
-			if item_det[0][0] == 'Yes':
-				if item_det[0][1] == 'Yes':
-					if not self.doc.is_subcontracted:
-						msgprint("Please enter whether purchase order to be made for subcontracting or for purchasing in 'Is Subcontracted' field .")
-						raise Exception
-					if self.doc.is_subcontracted == 'Yes':
-						self.add_bom(d)
-					else:
-						self.doclist = self.doc.clear_table(self.doclist,'po_raw_material_details',1)
-						self.doc.save()
-				elif item_det[0][1] == 'No':
-					self.add_bom(d)
-				
-			self.delete_irrelevant_raw_material()
-			#---------------calculate amt in	Purchase Order Item Supplied-------------
-			self.calculate_amount(d)
-			
-	def add_bom(self, d):
-		#----- fetching default bom from Bill of Materials instead of Item Master --
-		bom_det = sql("select t1.item, t2.item_code, t2.qty_consumed_per_unit, t2.moving_avg_rate, t2.value_as_per_mar, t2.stock_uom, t2.name, t2.parent from `tabBOM` t1, `tabBOM Item` t2 where t2.parent = t1.name and t1.item = '%s' and ifnull(t1.is_default,0) = 1 and t1.docstatus = 1" % d.item_code)
-		
-		if not bom_det:
-			msgprint("No default BOM exists for item: %s" % d.item_code)
-			raise Exception
-		else:
-			#-------------- add child function--------------------
-			chgd_rqd_qty = []
-			for i in bom_det:
-				if i and not sql("select name from `tabPurchase Order Item Supplied` where reference_name = '%s' and bom_detail_no = '%s' and parent = '%s' " %(d.name, i[6], self.doc.name)):
 
-					rm_child = addchild(self.doc, 'po_raw_material_details', 'Purchase Order Item Supplied', 1, self.doclist)
 
-					rm_child.reference_name = d.name
-					rm_child.bom_detail_no = i and i[6] or ''
-					rm_child.main_item_code = i and i[0] or ''
-					rm_child.rm_item_code = i and i[1] or ''
-					rm_child.stock_uom = i and i[5] or ''
-					rm_child.rate = i and flt(i[3]) or flt(i[4])
-					rm_child.conversion_factor = d.conversion_factor
-					rm_child.required_qty = flt(i	and flt(i[2]) or 0) * flt(d.qty) * flt(d.conversion_factor)
-					rm_child.amount = flt(flt(rm_child.consumed_qty)*flt(rm_child.rate))
-					rm_child.save()
-					chgd_rqd_qty.append(cstr(i[1]))
-				else:
-					act_qty = flt(i	and flt(i[2]) or 0) * flt(d.qty) * flt(d.conversion_factor)
-					for po_rmd in getlist(self.doclist, 'po_raw_material_details'):
-						if i and i[6] == po_rmd.bom_detail_no and (flt(act_qty) != flt(po_rmd.required_qty) or i[1] != po_rmd.rm_item_code):
-							chgd_rqd_qty.append(cstr(i[1]))
-							po_rmd.main_item_code = i[0]
-							po_rmd.rm_item_code = i[1]
-							po_rmd.stock_uom = i[5]
-							po_rmd.required_qty = flt(act_qty)
-							po_rmd.rate = i and flt(i[3]) or flt(i[4])
-							po_rmd.amount = flt(flt(po_rmd.consumed_qty)*flt(po_rmd.rate))
-							
-
-	# Delete irrelevant raw material from PR Raw material details
-	#--------------------------------------------------------------	
-	def delete_irrelevant_raw_material(self):
-		for d in getlist(self.doclist,'po_raw_material_details'):
-			if not sql("select name from `tabPurchase Order Item` where name = '%s' and parent = '%s'and item_code = '%s'" % (d.reference_name, self.doc.name, d.main_item_code)):
-				d.parent = 'old_par:'+self.doc.name
-				d.save()
-		
-	def calculate_amount(self, d):
-		amt = 0
-		for i in getlist(self.doclist,'po_raw_material_details'):
-			
-			if(i.reference_name == d.name):
-				i.amount = flt(i.required_qty)* flt(i.rate)
-				amt += i.amount
-		d.rm_supp_cost = amt
-
-	# On Update
-	# ----------------------------------------------------------------------------------------------------		
 	def on_update(self):
-		self.update_rw_material_detail()
-		
+		get_obj("Purchase Common").update_subcontracting_raw_materials(self)		
 
 	def get_rate(self,arg):
 		return get_obj('Purchase Common').get_rate(arg,self)	

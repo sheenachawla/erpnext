@@ -132,7 +132,8 @@ class DocType(AccountsController):
 			'expense_head': item_det and item_det[0]['purchase_account'] or '',
 			'cost_center': item_det and item_det[0]['cost_center'] or '',
 			'item_tax_rate': json.dumps(t),
-			'uom': item_det and item_det[0]['stock_uom'] or ''
+			'uom': item_det and item_det[0]['stock_uom'] or '',
+			'conversion_factor': 1
 		}
 		
 		# get last purchase rate
@@ -620,5 +621,21 @@ class DocType(AccountsController):
 			raise Exception
 
 	def on_update(self):
-		pass
+		self.update_raw_material_cost()
 		
+		# update item valuation rate
+		pc_obj.update_item_valuation_rate(self)
+		
+		
+	def update_raw_material_cost(self):
+		for d in getlist(self.doclist, 'entries'):
+			rm_cost = webnotes.conn.sql("""
+				select raw_material_cost / quantity from `tabBOM` 
+				where item = %s and ifnull(is_default, 'No') = 'Yes' and docstatus != 2
+			""")
+			rm_cost = rm_cost and flt(rm_cost[0][0]) or 0
+			
+			d.conversion_factor = d.conversion_factor or webnotes.conn.get_value(
+				"UOM Conversion Detail", {"parent": d.item_code, "uom": d.uom}, "conversion_factor")
+			
+			d.rm_supp_cost = rm_cost * flt(d.qty) * flt(d.conversion_factor)

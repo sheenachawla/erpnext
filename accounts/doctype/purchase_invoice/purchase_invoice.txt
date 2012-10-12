@@ -5,7 +5,7 @@
 	{
 		u'creation': '2012-07-17 13:24:59',
 		u'docstatus': 0,
-		u'modified': '2012-10-12 14:17:22',
+		u'modified': '2012-10-12 16:04:36',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -1118,25 +1118,6 @@
 		'no_copy': 1,
 		'permlevel': 0,
 		'print_hide': 1
-	},
-
-	# DocField
-	{
-		u'doctype': u'DocField',
-		'fieldname': u'subcontracting_raw_materials_section',
-		'fieldtype': u'Section Break',
-		'label': u'Subcontraning Raw Materials',
-		'permlevel': 0
-	},
-
-	# DocField
-	{
-		u'doctype': u'DocField',
-		'fieldname': u'items_supplied_for_subcontracting',
-		'fieldtype': u'Table',
-		'label': u'Items Supplied For Subcontracting',
-		'options': u'Items Supplied For Subcontracting',
-		'permlevel': 0
 	},
 
 	# DocPerm
