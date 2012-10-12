@@ -3,9 +3,9 @@
 
 	# These values are common in all dictionaries
 	{
-		u'creation': '2012-08-10 13:05:42',
+		u'creation': '2012-10-12 10:59:07',
 		u'docstatus': 0,
-		u'modified': '2012-10-09 17:54:17',
+		u'modified': '2012-10-12 13:36:19',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -32,7 +32,8 @@
 		u'name': u'__common__',
 		'parent': u'Company',
 		'parentfield': u'fields',
-		'parenttype': u'DocType'
+		'parenttype': u'DocType',
+		'permlevel': 0
 	},
 
 	# These values are common for all DocPerm
@@ -58,8 +59,7 @@
 		'fieldname': u'details',
 		'fieldtype': u'Section Break',
 		'label': u'Company Details',
-		'oldfieldtype': u'Section Break',
-		'permlevel': 0
+		'oldfieldtype': u'Section Break'
 	},
 
 	# DocField
@@ -72,7 +72,6 @@
 		'no_copy': 0,
 		'oldfieldname': u'company_name',
 		'oldfieldtype': u'Data',
-		'permlevel': 0,
 		'reqd': 1
 	},
 
@@ -80,8 +79,7 @@
 	{
 		u'doctype': u'DocField',
 		'fieldname': u'cb0',
-		'fieldtype': u'Column Break',
-		'permlevel': 0
+		'fieldtype': u'Column Break'
 	},
 
 	# DocField
@@ -95,7 +93,6 @@
 		'no_copy': 0,
 		'oldfieldname': u'abbr',
 		'oldfieldtype': u'Data',
-		'permlevel': 0,
 		'reqd': 1
 	},
 
@@ -105,8 +102,7 @@
 		'fieldname': u'default_settings',
 		'fieldtype': u'Section Break',
 		'label': u'Default Settings',
-		'oldfieldtype': u'Section Break',
-		'permlevel': 0
+		'oldfieldtype': u'Section Break'
 	},
 
 	# DocField
@@ -116,7 +112,6 @@
 		'fieldtype': u'Select',
 		'label': u'Default Currency',
 		'options': u'link:Currency',
-		'permlevel': 0,
 		'reqd': 1
 	},
 
@@ -126,8 +121,7 @@
 		'fieldname': u'default_income_account',
 		'fieldtype': u'Link',
 		'label': u'Default Income Account',
-		'options': u'Account',
-		'permlevel': 0
+		'options': u'Account'
 	},
 
 	# DocField
@@ -136,8 +130,7 @@
 		'fieldname': u'default_expense_account',
 		'fieldtype': u'Link',
 		'label': u'Default Expense Account',
-		'options': u'Account',
-		'permlevel': 0
+		'options': u'Account'
 	},
 
 	# DocField
@@ -151,7 +144,6 @@
 		'oldfieldname': u'default_bank_account',
 		'oldfieldtype': u'Link',
 		'options': u'Account',
-		'permlevel': 0,
 		'trigger': u'Client'
 	},
 
@@ -166,7 +158,6 @@
 		'oldfieldname': u'receivables_group',
 		'oldfieldtype': u'Link',
 		'options': u'Account',
-		'permlevel': 0,
 		'trigger': u'Client'
 	},
 
@@ -181,7 +172,6 @@
 		'oldfieldname': u'payables_group',
 		'oldfieldtype': u'Link',
 		'options': u'Account',
-		'permlevel': 0,
 		'trigger': u'Client'
 	},
 
@@ -191,7 +181,6 @@
 		'fieldname': u'column_break0',
 		'fieldtype': u'Column Break',
 		'oldfieldtype': u'Column Break',
-		'permlevel': 0,
 		'width': u'50%'
 	},
 
@@ -203,8 +192,7 @@
 		'fieldtype': u'Int',
 		'label': u'Credit Days',
 		'oldfieldname': u'credit_days',
-		'oldfieldtype': u'Int',
-		'permlevel': 0
+		'oldfieldtype': u'Int'
 	},
 
 	# DocField
@@ -215,8 +203,7 @@
 		'fieldtype': u'Currency',
 		'label': u'Credit Limit',
 		'oldfieldname': u'credit_limit',
-		'oldfieldtype': u'Currency',
-		'permlevel': 0
+		'oldfieldtype': u'Currency'
 	},
 
 	# DocField
@@ -229,8 +216,7 @@
 		'label': u'If Yearly Budget Exceeded',
 		'oldfieldname': u'yearly_bgt_flag',
 		'oldfieldtype': u'Select',
-		'options': u'\nWarn\nIgnore\nStop',
-		'permlevel': 0
+		'options': u'\nWarn\nIgnore\nStop'
 	},
 
 	# DocField
@@ -242,8 +228,7 @@
 		'label': u'If Monthly Budget Exceeded',
 		'oldfieldname': u'monthly_bgt_flag',
 		'oldfieldtype': u'Select',
-		'options': u'\nWarn\nIgnore\nStop',
-		'permlevel': 0
+		'options': u'\nWarn\nIgnore\nStop'
 	},
 
 	# DocField
@@ -253,8 +238,7 @@
 		u'doctype': u'DocField',
 		'fieldname': u'company_info',
 		'fieldtype': u'Section Break',
-		'label': u'Company Info',
-		'permlevel': 0
+		'label': u'Company Info'
 	},
 
 	# DocField
@@ -264,8 +248,7 @@
 		'fieldtype': u'Small Text',
 		'label': u'Address',
 		'oldfieldname': u'address',
-		'oldfieldtype': u'Small Text',
-		'permlevel': 0
+		'oldfieldtype': u'Small Text'
 	},
 
 	# DocField
@@ -274,7 +257,6 @@
 		'fieldname': u'column_break1',
 		'fieldtype': u'Column Break',
 		'oldfieldtype': u'Column Break',
-		'permlevel': 0,
 		'width': u'50%'
 	},
 
@@ -286,8 +268,7 @@
 		'label': u'Phone No',
 		'oldfieldname': u'phone_no',
 		'oldfieldtype': u'Data',
-		'options': u'Phone',
-		'permlevel': 0
+		'options': u'Phone'
 	},
 
 	# DocField
@@ -298,8 +279,7 @@
 		'label': u'Fax',
 		'oldfieldname': u'fax',
 		'oldfieldtype': u'Data',
-		'options': u'Phone',
-		'permlevel': 0
+		'options': u'Phone'
 	},
 
 	# DocField
@@ -310,8 +290,7 @@
 		'label': u'Email',
 		'oldfieldname': u'email',
 		'oldfieldtype': u'Data',
-		'options': u'Email',
-		'permlevel': 0
+		'options': u'Email'
 	},
 
 	# DocField
@@ -321,8 +300,7 @@
 		'fieldtype': u'Data',
 		'label': u'Website',
 		'oldfieldname': u'website',
-		'oldfieldtype': u'Data',
-		'permlevel': 0
+		'oldfieldtype': u'Data'
 	},
 
 	# DocField
@@ -334,7 +312,6 @@
 		'fieldtype': u'Section Break',
 		'label': u'Registration Info',
 		'oldfieldtype': u'Section Break',
-		'permlevel': 0,
 		'width': u'50%'
 	},
 
@@ -347,8 +324,7 @@
 		'fieldtype': u'Code',
 		'label': u'Registration Details',
 		'oldfieldname': u'registration_details',
-		'oldfieldtype': u'Code',
-		'permlevel': 0
+		'oldfieldtype': u'Code'
 	},
 
 	# DocField
@@ -359,8 +335,7 @@
 		'label': u'Trash Reason',
 		'no_copy': 1,
 		'oldfieldname': u'trash_reason',
-		'oldfieldtype': u'Small Text',
-		'permlevel': 1
+		'oldfieldtype': u'Small Text'
 	},
 
 	# DocPerm
