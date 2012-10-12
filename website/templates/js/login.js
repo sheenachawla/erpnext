@@ -41,7 +41,8 @@ wn.pages["{{ name }}"].onload = function(wrapper) {
 	});
 	
 	if($("#login_id").val() && $("#password").val()) {
-		erpnext.login.doLogin();
+		$('#remember_me').get(0).checked = true;
+		//erpnext.login.doLogin();
 	}
 	
 	$(document).trigger('login_rendered');
@@ -68,9 +69,12 @@ erpnext.login.doLogin = function(){
 
 	if($i('remember_me').checked) {
 		if(window.localStorage) {
-			localStorage.setItem("usr") = args.usr;
-			localStorage.setItem("pwd") = args.pwd;						
+			localStorage.setItem("usr", args.usr);
+			localStorage.setItem("pwd", args.pwd);
 		}
+	} else {
+		localStorage.setItem("usr", null);
+		localStorage.setItem("pwd", null);
 	}
 
 

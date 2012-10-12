@@ -14,12 +14,10 @@
 
 {% block content %}
 	<div class="layout-wrapper layout-wrapper-appframe" id='login_wrapper'>
-	<div class="appframe-area">
-		<div class="appframe-titlebar">
-			<div class="appframe-title">Login</div>
-		</div>
-	</div>
 	<div class="layout-main" style="padding: 15px;">
+	<div class="login-head">
+		<img src="app/images/erpnext-fade.png">
+	</div>
 	<form autocomplete="on">
 		<table border="0" class="login-box">
 			<tbody>
@@ -29,11 +27,10 @@
 				</tr>
 				<tr>
 					<td>Password</td>
-					<td><input id="password" type="password" style="width: 180px" /></td>
-				</tr>
-				<tr>
-					<td style="text-align:right"><input id="remember_me" type="checkbox" /></td>
-					<td>Remember Me</td>
+					<td>
+						<input id="password" type="password" style="width: 180px" />
+						<br><span id="login_message"></span>
+					</td>
 				</tr>
 				<tr>
 					<td>&nbsp;</td>
@@ -41,14 +38,13 @@
 						<button type="submit" id="login_btn" class="btn btn-small btn-primary">Login</button>
 					</td>
 				</tr>
-				<tr>
-					<td>&nbsp;</td>
-					<td id="login_message">&nbsp;</td>
-				</tr>
 				</tbody>
 		</table>
 	</form>
-	<p style="margin-left: 72px;"><span class="link_type" 
+	<p>
+		<span><input id="remember_me" style="margin-top: -2px; margin-right: 4px"
+			type="checkbox" /> Remember Me</span>
+		<span class="link_type" style="float: right;"
 		onclick="erpnext.login.show_forgot_password()">Forgot Password</span></p>
 	</div>
 	</div>
