@@ -5,7 +5,7 @@
 	{
 		u'creation': '2012-10-12 10:59:07',
 		u'docstatus': 0,
-		u'modified': '2012-10-12 13:36:19',
+		u'modified': '2012-10-12 13:53:47',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -173,6 +173,18 @@
 		'oldfieldtype': u'Link',
 		'options': u'Account',
 		'trigger': u'Client'
+	},
+
+	# DocField
+	{
+		'depends_on': u'eval:!doc.__islocal',
+		'description': u'Account under which, value of available stock is maintained',
+		u'doctype': u'DocField',
+		'fieldname': u'stock_in_hand',
+		'fieldtype': u'Link',
+		'label': u'Stock In Hand Account',
+		'no_copy': 1,
+		'options': u'Account'
 	},
 
 	# DocField
