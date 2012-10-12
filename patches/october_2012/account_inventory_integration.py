@@ -12,7 +12,8 @@ def execute():
 				 	d, 'Ledger'),
 			make_account_dict('Stock Expenses', 'Direct Expenses', d, 'Group'),
 				make_account_dict('Stock Variance', 'Stock Expenses', d, 'Ledger'),
-				make_account_dict('Valuation Price Difference', 'Stock Expenses', d, 'Ledger'),
+				make_account_dict('Valuation Price Difference', 'Stock Expenses', 
+					d, 'Ledger'),
 		]
 		for acc in acc_list:
 			acc_name = "%s - %s" % (acc['account_name'], d['abbr'])

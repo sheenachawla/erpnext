@@ -3,9 +3,9 @@
 
 	# These values are common in all dictionaries
 	{
-		u'creation': '2012-10-12 14:14:57',
+		u'creation': '2012-10-12 14:35:46',
 		u'docstatus': 0,
-		u'modified': '2012-10-12 14:14:57',
+		u'modified': '2012-10-12 15:58:17',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -124,17 +124,6 @@
 	# DocField
 	{
 		u'doctype': u'DocField',
-		'fieldname': u'conversion_factor',
-		'fieldtype': u'Currency',
-		'hidden': 1,
-		'label': u'Conversion Factor',
-		'oldfieldname': u'conversion_factor',
-		'oldfieldtype': u'Currency'
-	},
-
-	# DocField
-	{
-		u'doctype': u'DocField',
 		'fieldname': u'amount',
 		'fieldtype': u'Currency',
 		'label': u'Amount',
@@ -150,15 +139,5 @@
 		'label': u'Stock Uom',
 		'oldfieldname': u'stock_uom',
 		'oldfieldtype': u'Data'
-	},
-
-	# DocField
-	{
-		u'doctype': u'DocField',
-		'fieldname': u'current_stock',
-		'fieldtype': u'Currency',
-		'label': u'Current Stock',
-		'oldfieldname': u'current_stock',
-		'oldfieldtype': u'Currency'
 	}
 ]
