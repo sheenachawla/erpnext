@@ -291,10 +291,10 @@ class DocType(AccountsController):
 	def make_gl_entries(self, cancel=False):
 		abbr, stock_in_hand = self.get_company_details()
 			
-		item_gl_entries = []
+		gl_entries = []
 		for item in getlist(self.doclist, 'purchase_receipt_details'):
 			# debit stock in hand 
-			item_gl_entries.append(
+			gl_entries.append(
 				self.get_gl_dict({
 					"account": stock_in_hand,
 					"against": "Stock Received But Not Billed - %s" % (abbr,),
@@ -304,7 +304,7 @@ class DocType(AccountsController):
 			)
 
 			# credit stock received but not billed
-			item_gl_entries.append(
+			gl_entries.append(
 				self.get_gl_dict({
 					"account": "Stock Received But Not Billed - %s" % (abbr,),
 					"against": stock_in_hand,
@@ -313,7 +313,7 @@ class DocType(AccountsController):
 				}, cancel)
 			)
 
-		super(DocType, self).make_gl_entries(cancel=cancel, gl_map=item_gl_entries)
+		super(DocType, self).make_gl_entries(cancel=cancel, gl_map=gl_entries)
 				
 	def check_next_docstatus(self):
 		submit_rv = sql("select t1.name from `tabPurchase Invoice` t1,`tabPurchase Invoice Item` t2 where t1.name = t2.parent and t2.purchase_receipt = '%s' and t1.docstatus = 1" % (self.doc.name))

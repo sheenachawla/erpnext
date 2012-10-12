@@ -28,11 +28,7 @@ from webnotes import session, form, msgprint, errprint
 set = webnotes.conn.set
 sql = webnotes.conn.sql
 get_value = webnotes.conn.get_value
-in_transaction = webnotes.conn.in_transaction
-convert_to_lists = webnotes.conn.convert_to_lists
 	
-# -----------------------------------------------------------------------------------------
-
 from controllers.accounts import AccountsController
 
 class DocType(AccountsController):
@@ -41,16 +37,9 @@ class DocType(AccountsController):
 		self.tname = 'Purchase Invoice Item'
 		self.fname = 'entries'
 
-	# Autoname
-	# ---------
 	def autoname(self):
 		self.doc.name = make_autoname(self.doc.naming_series+'.####')
 
-
-# ************************** Trigger Functions ****************************
-
-	# Credit To
-	# ----------
 	def get_credit_to(self):
 		acc_head = sql("select name, credit_days from `tabAccount` where (name = %s or (master_name = %s and master_type = 'supplier')) and docstatus != 2", (cstr(self.doc.supplier) + " - " + self.get_company_abbr(),self.doc.supplier))		
 
@@ -72,9 +61,6 @@ class DocType(AccountsController):
 			
 		return ret
 
-
-	# Get Default Cost Center and Expense Head from Item Master
-	# ----------------------------------------------------------
 	def get_default_values(self,args):
 		import json
 		args = json.loads(args)
@@ -89,8 +75,6 @@ class DocType(AccountsController):
 		return ret
 		 
 		
-	# Get Items based on PO or PR
-	# ----------------------------
 	def pull_details(self):
 		if self.doc.purchase_receipt_main:
 			self.validate_duplicate_docname('purchase_receipt')
@@ -114,8 +98,6 @@ class DocType(AccountsController):
 				d.cost_center = item and item[0]['cost_center'] or ''
 			
 
-	# Get Item Details
-	# -----------------		
 	def get_item_details(self, arg=None):
 		if arg:
 			return self.get_pv_details(arg)
@@ -170,8 +152,6 @@ class DocType(AccountsController):
 		return ret
 
 		
-	# Advance Allocation
-	# -------------------
 	def get_advances(self):
 		self.doclist = get_obj('GL Control').get_advances(self, self.doc.credit_to, 'Purchase Invoice Advance','advance_allocation_details','debit')
 		
@@ -193,15 +173,9 @@ class DocType(AccountsController):
 		return ret
 
 
-
-# *************************** Server Utility Functions *****************************
-	# Get Company abbr
-	# -----------------
 	def get_company_abbr(self):
-		return sql("select abbr from tabCompany where name=%s", self.doc.company)[0][0]
+		return webnotes.conn.get_value("Company", self.doc.company, "abbr")
 
-	# Check whether PO or PR is already fetched
-	# ------------------------------------------
 	def validate_duplicate_docname(self,doctype):
 		for d in getlist(self.doclist, 'entries'): 
 			if doctype == 'purchase_receipt' and cstr(self.doc.purchase_receipt_main) == cstr(d.purchase_receipt):
@@ -212,11 +186,6 @@ class DocType(AccountsController):
 				msgprint(cstr(self.doc.purchase_order_main) + " purchase order details have already been pulled.")
 				raise Exception , " Validation Error. "
 
-		
-# **************************** VALIDATE ********************************
-
-	# Check for Item.is_Purchase_item = 'Yes' and Item is active
-	# ------------------------------------------------------------------
 	def check_active_purchase_items(self):
 		for d in getlist(self.doclist, 'entries'):
 			if d.item_code:		# extra condn coz item_code is not mandatory in PV
@@ -228,8 +197,6 @@ class DocType(AccountsController):
 					msgprint("Item : '%s' is not Purchase Item"%(d.item_code))
 					raise Exception
 						
-	# Check Conversion Rate
-	# ----------------------
 	def check_conversion_rate(self):
 		default_currency = TransactionBase().get_company_currency(self.doc.company)		
 		if not default_currency:
@@ -241,7 +208,6 @@ class DocType(AccountsController):
 
 	# 1. Check whether bill is already booked against this bill no. or not
 	# 2. Add Remarks
-	# ---------------------------------------------------------------------
 	def validate_bill_no(self):
 		if self.doc.bill_no and self.doc.bill_no.lower().strip()	not in ['na', 'not applicable', 'none']:
 			b_no = sql("select bill_no, name, ifnull(is_opening,'') from `tabPurchase Invoice` where bill_no = '%s' and credit_to = '%s' and docstatus = 1 and name != '%s' " % (self.doc.bill_no, self.doc.credit_to, self.doc.name))
@@ -256,17 +222,11 @@ class DocType(AccountsController):
 			if not self.doc.remarks:
 				self.doc.remarks = "No Remarks"
 					
-	# Validate Bill No Date
-	# ---------------------
 	def validate_bill_no_date(self):
 		if self.doc.bill_no and not self.doc.bill_date and self.doc.bill_no.lower().strip() not in ['na', 'not applicable', 'none']:
 			msgprint("Please enter Bill Date")
 			raise Exception					
 
-
- 
-	# Clear Advances
-	# ---------------
 	def clear_advances(self):
 		get_obj('GL Control').clear_advances( self, 'Purchase Invoice Advance','advance_allocation_details')
 
@@ -387,13 +347,9 @@ class DocType(AccountsController):
 						self.doc.ded_amount = 0
 						self.doc.total_tds_on_voucher = 0
 
-	# get tds rate
-	# -------------
 	def get_tds_rate(self):
 		return {'rate' : flt(get_value('Account', self.doc.tax_code, 'tax_rate'))}
 
-	# set aging date
-	#-------------------
 	def set_aging_date(self):
 		if self.doc.is_opening != 'Yes':
 			self.doc.aging_date = self.doc.posting_date
@@ -402,8 +358,6 @@ class DocType(AccountsController):
 			raise Exception
 			
 
-	# Set against account for debit to account
-	#------------------------------------------
 	def set_against_expense_account(self):
 		against_acc = []
 		for d in getlist(self.doclist, 'entries'):
@@ -484,7 +438,7 @@ class DocType(AccountsController):
 		dcc = TransactionBase().get_company_currency(self.doc.company)
 		self.doc.in_words = pc_obj.get_total_in_words(dcc, self.doc.grand_total)
 		self.doc.in_words_import = pc_obj.get_total_in_words(self.doc.currency, self.doc.grand_total_import)
-# ***************************** SUBMIT *****************************
+
 	# Check Ref Document docstatus
 	# -----------------------------
 	def check_prev_docstatus(self):
@@ -500,8 +454,6 @@ class DocType(AccountsController):
 					msgprint("Purchase Receipt : "+ cstr(d.purchase_receipt) +" is not submitted")
 					raise Exception , "Validation Error."
 					
-					
-	#--------------------------------------------------------------------
 	def update_against_document_in_jv(self):
 		"""
 			Links invoice and advance voucher:
@@ -531,8 +483,6 @@ class DocType(AccountsController):
 
 
 
-	# On Submit
-	#--------------------------------------------------------------------
 	def on_submit(self):
 		self.check_prev_docstatus()
 		
@@ -548,24 +498,109 @@ class DocType(AccountsController):
 		get_obj(dt = 'Purchase Common').update_prevdoc_detail(self, is_submit = 1)
 
 
-	def make_gl_entries(self, is_cancel = 0):
-		get_obj(dt='GL Control').make_gl_entries(self.doclist, cancel = is_cancel, \
-			use_mapper = (self.doc.write_off_account and self.doc.write_off_amount and 'Purchase Invoice with write off' or ''))
+	def make_gl_entries(self, is_cancel=0):
+		abbr, stock_in_hand = self.get_company_details()
+		
+		gl_entries = []
+		
+		# parent's gl entry
+		gl_entries.append(
+			self.get_gl_dict({
+				"account": self.doc.credit_to,
+				"against": self.doc.against_expense_account,
+				"credit": self.doc.total_amount_to_pay,
+				"remarks": self.doc.remarks,
+				"against_voucher": self.doc.name,
+				"against_voucher_type": self.doc.doctype,
+			}, is_cancel)
+		)
+		
+		valuation_tax = 0
+		
+		# tax table gl entries
+		for tax in getlist(self.doclist, "purchase_tax_details"):
+			if tax.category in ("Total", "Valuation and Total"):
+				gl_entries.append(
+					self.get_gl_dict({
+						"account": tax.account_head,
+						"against": self.doc.credit_to,
+						"debit": (tax.add_deduct_tax == "Add" and 1 or -1) * \
+							flt(tax.tax_amount),
+						"remarks": self.doc.remarks,
+						"cost_center": tax.cost_center
+					}, is_cancel)
+				)
+				
+			if tax.category in ("Valuation", "Valuation and Total"):
+				valuation_tax += flt(tax.tax_amount)
+				
+		# item gl entries
+		stock_item_exists = False
+		for item in getlist(self.doclist, 'entries'):
+			if webnotes.conn.get_value("Item", item.item_code, "is_stock_item")=="Yes":
+				# if it is a stock item, then do stock related gl entries
+				# accounting gl entries will be made when making sales invoice
+				
+				# debit stock received but not billed (credit account) to nullify it, 
+				# since we are making the bill
+				gl_entries.append(
+					self.get_gl_dict({
+						"account": "Stock Received But Not Billed - %s" % (abbr,),
+						"against": self.doc.credit_to,
+						# TODO!!
+						"debit": item.valuation_rate * item.qty,
+						"remarks": self.doc.remarks or "Accounting Entry for Stock"
+					}, is_cancel)
+				)
+				
+				stock_item_exists = True
+				
+			else:
+				# if not a stock item -- book the expense here itself
+				gl_entries.append(
+					self.get_gl_dict({
+						"account": item.expense_head,
+						"against": self.doc.credit_to,
+						"debit": item.amount,
+						"remarks": self.doc.remarks,
+						"cost_center": item.cost_center
+					}, is_cancel)
+				)
+				
+		if stock_item_exists:
+			# credit valuation tax amount in price difference account
+			# this is to balance out valuation included in cost of goods sold
+			gl_entries.append(
+				self.get_gl_dict({
+					"account": "Valuation Price Difference - %s" % (abbr,),
+					"against": self.doc.credit_to,
+					"credit": valuation_tax,
+					"remarks": self.doc.remarks or "Accounting Entry for Stock"
+				}, is_cancel)
+			)
+		
+		# writeoff account includes petty difference in the invoice amount 
+		# and the amount that is paid
+		if self.doc.write_off_account and self.doc.write_off_amount:
+			gl_entries.append(
+				self.get_gl_dict({
+					"account": self.doc.write_off_account,
+					"against": self.doc.credit_to,
+					"credit": self.doc.write_off_amount,
+					"remarks": self.doc.remarks,
+					"cost_center": self.doc.write_off_cost_center
+				}, is_cancel)
+			)
 
+		super(DocType, self).make_gl_entries(cancel=is_cancel, gl_map=gl_entries)
+		
 
-
-
-# ********************************* CANCEL *********************************
-	# Check Next Document's docstatus
-	# --------------------------------
 	def check_next_docstatus(self):
 		submit_jv = sql("select t1.name from `tabJournal Voucher` t1,`tabJournal Voucher Detail` t2 where t1.name = t2.parent and t2.against_voucher = '%s' and t1.docstatus = 1" % (self.doc.name))
 		if submit_jv:
 			msgprint("Journal Voucher : " + cstr(submit_jv[0][0]) + " has been created against " + cstr(self.doc.doctype) + ". So " + cstr(self.doc.doctype) + " cannot be Cancelled.")
 			raise Exception, "Validation Error."
 		
-	# On Cancel
-	# ----------
 	def on_cancel(self):
 		self.check_next_docstatus()
 
@@ -584,7 +619,6 @@ class DocType(AccountsController):
 			msgprint("TDS Payment voucher '%s' has been made against this voucher. Please cancel the payment voucher to proceed." % (tdsp and tdsp[0][0] or ''))
 			raise Exception
 
-	# on update
 	def on_update(self):
 		pass
 		

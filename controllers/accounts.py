@@ -168,17 +168,19 @@ class AccountsController(TransactionBase):
 					get_obj('Budget Control').check_budget(gle, cancel)
 		
 	def get_gl_dict(self, args, cancel):
+		"""this method populates the common properties of a gl entry record"""
 		gl_dict = {
 			'company': self.doc.company, 
 			'posting_date': self.doc.posting_date,
 			'voucher_type': self.doc.doctype,
 			'voucher_no': self.doc.name,
-			'aging_date': self.doc.posting_date,
+			'aging_date': self.doc.fields.get("aging_date") or self.doc.posting_date,
 			'remarks': self.doc.remarks,
 			'is_cancelled': cancel and "Yes" or "No",
 			'fiscal_year': self.doc.fiscal_year,
 			'debit': 0,
-			'credit': 0
+			'credit': 0,
+			'is_opening': self.doc.fields.get("is_opening") or "No",
 		}
 		gl_dict.update(args)
 		return gl_dict
