@@ -289,52 +289,29 @@ class DocType(AccountsController):
 		self.make_gl_entries()
 
 	def make_gl_entries(self, cancel=False):
-		abbr, stock_in_hand = webnotes.conn.get_value("Company", self.doc.company,
-			["abbr", "stock_in_hand"])
+		abbr, stock_in_hand = self.get_company_details()
 			
-		if not stock_in_hand:
-			webnotes.msgprint("""Please specify "Stock In Hand" account 
-				for company: %s""" % (self.doc.company,), raise_exception=1)
-
-		common_gl_dict = {
-			'company': self.doc.company, 
-			'posting_date': self.doc.posting_date,
-			'voucher_type': self.doc.doctype,
-			'voucher_no': self.doc.name,
-			'aging_date': self.doc.posting_date,
-			'remarks': self.doc.remarks,
-			'is_cancelled': cancel and "Yes" or "No",
-			'fiscal_year': self.doc.fiscal_year,
-			'debit': 0,
-			'credit': 0
-		}
-		
 		item_gl_entries = []
-		
-		def _add_item_gl_entry(args):
-			gl_dict = common_gl_dict.copy()
-			gl_dict.update(args)
-			item_gl_entries.append(gl_dict)
-			
-		def _get_ac_name(val):
-			return "%s - %s" % (val, abbr)
-			
 		for item in getlist(self.doclist, 'purchase_receipt_details'):
 			# debit stock in hand 
-			_add_item_gl_entry({
-				"account": stock_in_hand,
-				"against": _get_ac_name("Stock Received But Not Billed"),
-				"debit": item.valuation_rate * item.qty,
-				"remarks": self.doc.remarks or "Accounting Entry for Stock"
-			})
+			item_gl_entries.append(
+				self.get_gl_dict({
+					"account": stock_in_hand,
+					"against": "Stock Received But Not Billed - %s" % (abbr,),
+					"debit": item.valuation_rate * item.qty,
+					"remarks": self.doc.remarks or "Accounting Entry for Stock"
+				}, cancel)
+			)
 
 			# credit stock received but not billed
-			_add_item_gl_entry({
-				"account": _get_ac_name("Stock Received But Not Billed"),
-				"against": stock_in_hand,
-				"credit": item.valuation_rate * item.qty,
-				"remarks": self.doc.remarks or "Accounting Entry for Stock"
-			})
+			item_gl_entries.append(
+				self.get_gl_dict({
+					"account": "Stock Received But Not Billed - %s" % (abbr,),
+					"against": stock_in_hand,
+					"credit": item.valuation_rate * item.qty,
+					"remarks": self.doc.remarks or "Accounting Entry for Stock"
+				}, cancel)
+			)
 
 		super(DocType, self).make_gl_entries(cancel=cancel, gl_map=item_gl_entries)
 				

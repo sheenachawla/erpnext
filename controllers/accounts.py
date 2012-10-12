@@ -167,7 +167,7 @@ class AccountsController(TransactionBase):
 				if acc_details[0]=="Yes" and acc_details[1]=="Debit":
 					get_obj('Budget Control').check_budget(gle, cancel)
 		
-	def get_gl_dict(self, args):			
+	def get_gl_dict(self, args, cancel):
 		gl_dict = {
 			'company': self.doc.company, 
 			'posting_date': self.doc.posting_date,
@@ -182,4 +182,13 @@ class AccountsController(TransactionBase):
 		}
 		gl_dict.update(args)
 		return gl_dict
+	
+	def get_company_details(self):
+		abbr, stock_in_hand = webnotes.conn.get_value("Company", self.doc.company,
+			["abbr", "stock_in_hand"])
 		
+		if not stock_in_hand:
+			webnotes.msgprint("""Please specify "Stock In Hand" account 
+				for company: %s""" % (self.doc.company,), raise_exception=1)
+				
+		return abbr, stock_in_hand
