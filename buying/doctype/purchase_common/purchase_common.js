@@ -90,18 +90,18 @@ var set_dynamic_label_par = function(doc, cdt, cdn, base_curr) {
 	par_cols_import = {'net_total_import': 'Net Total', 'grand_total_import': 'Grand Total', 'in_words_import':	'In Words', 
 		'other_charges_added_import': 'Taxes and Charges Added', 'other_charges_deducted_import': 'Taxes and Charges Deducted'};
 
-	for (d in par_cols_base) cur_frm.fields_dict[d].label_area.innerHTML = par_cols_base[d]+' (' + base_curr + ')';
-	for (d in par_cols_import) cur_frm.fields_dict[d].label_area.innerHTML = par_cols_import[d]+' (' + doc.currency + ')';
-	cur_frm.fields_dict['conversion_rate'].label_area.innerHTML = "Conversion Rate (" + doc.currency +' -> '+ base_curr + ')';
+	for (d in par_cols_base) cur_frm.fields_dict[d].label_span.innerHTML = par_cols_base[d]+' (' + base_curr + ')';
+	for (d in par_cols_import) cur_frm.fields_dict[d].label_span.innerHTML = par_cols_import[d]+' (' + doc.currency + ')';
+	cur_frm.fields_dict['conversion_rate'].label_span.innerHTML = "Conversion Rate (" + doc.currency +' -> '+ base_curr + ')';
 
 	if (doc.doctype == 'Purchase Invoice') {
-		cur_frm.fields_dict['total_tds_on_voucher'].label_area.innerHTML = 'Total TDS On Voucher (' + base_curr + ')';
-		cur_frm.fields_dict['outstanding_amount'].label_area.innerHTML = 'Outstanding Amount (' + base_curr + ')';
-		cur_frm.fields_dict['tds_amount_on_advance'].label_area.innerHTML = 'TDS Amount On Advance (' + base_curr + ')';
-		cur_frm.fields_dict['total_advance'].label_area.innerHTML = 'Total Advance (Incl. TDS) (' + base_curr + ')';
-		cur_frm.fields_dict['total_amount_to_pay'].label_area.innerHTML = 'Total Amount To Pay (' + base_curr + ')';
-		cur_frm.fields_dict['ded_amount'].label_area.innerHTML = 'TDS Amount (' + base_curr + ')';
-	} else cur_frm.fields_dict['rounded_total'].label_area.innerHTML = 'Rounded Total (' + base_curr + ')';
+		cur_frm.fields_dict['total_tds_on_voucher'].label_span.innerHTML = 'Total TDS On Voucher (' + base_curr + ')';
+		cur_frm.fields_dict['outstanding_amount'].label_span.innerHTML = 'Outstanding Amount (' + base_curr + ')';
+		cur_frm.fields_dict['tds_amount_on_advance'].label_span.innerHTML = 'TDS Amount On Advance (' + base_curr + ')';
+		cur_frm.fields_dict['total_advance'].label_span.innerHTML = 'Total Advance (Incl. TDS) (' + base_curr + ')';
+		cur_frm.fields_dict['total_amount_to_pay'].label_span.innerHTML = 'Total Amount To Pay (' + base_curr + ')';
+		cur_frm.fields_dict['ded_amount'].label_span.innerHTML = 'TDS Amount (' + base_curr + ')';
+	} else cur_frm.fields_dict['rounded_total'].label_span.innerHTML = 'Rounded Total (' + base_curr + ')';
 
 }
 
