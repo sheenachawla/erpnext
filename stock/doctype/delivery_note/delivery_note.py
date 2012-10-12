@@ -271,7 +271,7 @@ class DocType(StockController):
 			
 		for item in getlist(self.doclist, 'delivery_note_details'):
 			# get valuation rate as per FIFO
-			valuation_rate = self.get_incoming_rate(self.doc.posting_date, self.doc.posting_time, 	
+			valuation_rate = self.get_valuation_rate(self.doc.posting_date, self.doc.posting_time, 	
 				d.item_code, d.warehouse, d.qty, d.serial_no)
 				
 			# debit stock in hand 

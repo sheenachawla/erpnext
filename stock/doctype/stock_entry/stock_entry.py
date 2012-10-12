@@ -27,14 +27,11 @@ from webnotes import session, form, msgprint, errprint
 
 set = webnotes.conn.set
 sql = webnotes.conn.sql
-get_value = webnotes.conn.get_value
-in_transaction = webnotes.conn.in_transaction
-convert_to_lists = webnotes.conn.convert_to_lists
 	
 # -----------------------------------------------------------------------------------------
-from utilities.transaction_base import TransactionBase
+from controllers.stock import StockControllers
 
-class DocType(TransactionBase):
+class DocType(StockControllers):
 	def __init__(self, doc, doclist=[]):
 		self.doc = doc
 		self.doclist = doclist
@@ -46,9 +43,6 @@ class DocType(TransactionBase):
 	def autoname(self):
 		self.doc.name = make_autoname(self.doc.naming_series+'.#####')
 
-  
-	# get item details
-	# ----------------
 	def get_item_details(self, arg):
 		import json
 		arg, actual_qty, in_rate = json.loads(arg), 0, 0
@@ -129,7 +123,7 @@ class DocType(TransactionBase):
 			bom_obj = get_obj('BOM', bom_no)
 			in_rate = flt(bom_obj.doc.total_cost) / (flt(bom_obj.doc.quantity) or 1)
 		elif wh:
-			in_rate = get_obj('Valuation Control').get_incoming_rate(dt, tm, item, wh, qty, serial_no)
+			in_rate = self.get_valuation_rate(dt, tm, item, wh, qty, serial_no)
 		
 		return in_rate
 

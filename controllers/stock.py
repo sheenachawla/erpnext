@@ -23,10 +23,7 @@ from webnotes.model.code import get_obj
 from controllers.accounts import AccountsController
 
 class StockController(AccountsController):
-	def __init__(self, d, dl):
-		self.doc, self.doclist = d, dl
-
-	def get_incoming_rate(self, posting_date, posting_time, item, 
+	def get_valuation_rate(self, posting_date, posting_time, item, 
 			warehouse, qty = 0, serial_no = ''):
 		"""Get Incoming Rate based on valuation method"""
 		in_rate = 0

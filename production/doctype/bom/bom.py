@@ -131,13 +131,13 @@ class DocType:
 			as per valuation method (MAR/FIFO) 
 			as on costing date	
 		"""
-
+		from controllers.stock import StockControllers
 		dt = self.doc.costing_date or nowdate()
 		time = self.doc.costing_date == nowdate() and now().split()[1] or '23:59'
 		warehouse = sql("select warehouse from `tabBin` where item_code = %s", arg['item_code'])
 		rate = []
 		for wh in warehouse:
-			r = get_obj('Valuation Control').get_incoming_rate(dt, time, arg['item_code'], wh[0], qty = arg.get('qty', 0))
+			r = StockControllers().get_incoming_rate(dt, time, arg['item_code'], wh[0], qty = arg.get('qty', 0))
 			if r:
 				rate.append(r)
 

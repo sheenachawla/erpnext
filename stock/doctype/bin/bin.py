@@ -275,7 +275,7 @@ class DocType:
 			self.fcfs_bal = eval(prev_sle.get('fcfs_stack', '[]') or '[]')
 
 		# get valuation method
-		val_method = get_obj('Valuation Control').get_valuation_method(self.doc.item_code)
+		val_method = 'FIFO'
 
 		# allow negative stock (only for moving average method)
 		from webnotes.utils import get_defaults
