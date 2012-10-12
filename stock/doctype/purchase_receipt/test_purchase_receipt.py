@@ -88,7 +88,7 @@ base_purchase_receipt_item = {"doctype": "Purchase Receipt Item",
 	
 shipping_charges = {"doctype": "Purchase Taxes and Charges", "charge_type": "Actual",
 	"account_head": "Shipping Charges - %s" % abbr, "rate": 100, "tax_amount": 100,
-	"category": "Valuation and Total", "parentfield": "purchase_tax_details",
+	"category": "Valuation and Taxesotal", "parentfield": "purchase_tax_details",
 	"cost_center": "Default Cost Center - %s" % abbr}
 
 vat = {"doctype": "Purchase Taxes and Charges", "charge_type": "Actual",

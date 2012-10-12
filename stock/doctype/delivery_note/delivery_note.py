@@ -17,25 +17,16 @@
 # Please edit this list and import only required elements
 from __future__ import unicode_literals
 import webnotes
-
-from webnotes.utils import add_days, add_months, add_years, cint, cstr, date_diff, default_fields, flt, fmt_money, formatdate, getTraceback, get_defaults, get_first_day, get_last_day, getdate, has_common, month_name, now, nowdate, replace_newlines, sendmail, set_default, str_esc_quote, user_format, validate_email_add
-from webnotes.model import db_exists
-from webnotes.model.doc import Document, addchild, getchildren, make_autoname
+from webnotes.utils import cint, cstr, flt, getdate
+from webnotes.model.doc import make_autoname
 from webnotes.model.utils import getlist
-from webnotes.model.code import get_obj, get_server_obj, run_server_obj, updatedb, check_syntax
-from webnotes import session, form, msgprint, errprint
-
-set = webnotes.conn.set
+from webnotes.model.code import get_obj
+from webnotes import msgprint, errprint
 sql = webnotes.conn.sql
-get_value = webnotes.conn.get_value
-in_transaction = webnotes.conn.in_transaction
-convert_to_lists = webnotes.conn.convert_to_lists
 
-# -----------------------------------------------------------------------------------------
+from controllers.accounts import AccountsController
 
-from utilities.transaction_base import TransactionBase
-
-class DocType(TransactionBase):
+class DocType(AccountsController):
 	def __init__(self, doc, doclist=[]):
 		self.doc = doc
 		self.doclist = doclist
@@ -165,7 +156,7 @@ class DocType(TransactionBase):
 		sales_com_obj.check_conversion_rate(self)
 		
 		# Get total in Words
-		dcc = TransactionBase().get_company_currency(self.doc.company)
+		dcc = super(DocType, self).get_company_currency(self.doc.company)
 		self.doc.in_words = sales_com_obj.get_total_in_words(dcc, self.doc.rounded_total)
 		self.doc.in_words_export = sales_com_obj.get_total_in_words(self.doc.currency, self.doc.rounded_total_export)
 
@@ -244,7 +235,7 @@ class DocType(TransactionBase):
 
 	def on_submit(self):
 		self.validate_packed_qty()
-		set(self.doc, 'message', 'Items against your Order #%s have been delivered. Delivery #%s: ' % (self.doc.po_no, self.doc.name))
+		webnotes.conn.set(self.doc, 'message', 'Items against your Order #%s have been delivered. Delivery #%s: ' % (self.doc.po_no, self.doc.name))
 		# Check for Approving Authority
 		get_obj('Authorization Control').validate_approving_authority(self.doc.doctype, self.doc.company, self.doc.grand_total, self)
 		
@@ -267,8 +258,47 @@ class DocType(TransactionBase):
 
 		self.credit_limit()
 
+		# make gl entry for stock in hand
+		self.make_gl_entries()
+
 		# set DN status
-		set(self.doc, 'status', 'Submitted')
+		webnotes.conn.set(self.doc, 'status', 'Submitted')
+	
+		
+	def make_gl_entries(self, cancel=False):
+		abbr, stock_in_hand = webnotes.conn.get_value("Company", self.doc.company,
+			["abbr", "stock_in_hand"])
+			
+		if not stock_in_hand:
+			webnotes.msgprint("""Please specify "Stock In Hand" account 
+				for company: %s""" % (self.doc.company,), raise_exception=1)
+
+		item_gl_entries = []
+			
+		for item in getlist(self.doclist, 'purchase_receipt_details'):
+			incoming_rate = self.get_incoming_rate(d.item_code)
+			# debit stock in hand 
+			item_gl_entries.append(
+				self.get_gl_dict({
+					"account": stock_in_hand,
+					"against": "Stock Delivered But Not Billed - %s" % abbr,
+					"credit": ,
+					"remarks": self.doc.remarks or "Accounting Entry for Stock"
+				})
+			)
+
+			# credit stock received but not billed
+			item_gl_entries.append(
+				self.get_gl_dict({
+					"account": "Stock Delivered But Not Billed - %s" % abbr,
+					"against": stock_in_hand,
+					"debit": ,
+					"remarks": self.doc.remarks or "Accounting Entry for Stock"
+				})
+			)
+
+		super(DocType, self).make_gl_entries(cancel=cancel, gl_map=item_gl_entries)
+
 
 
 	def validate_packed_qty(self):
@@ -306,7 +336,7 @@ class DocType(TransactionBase):
 		
 		sales_com_obj.update_prevdoc_detail(0,self)
 		self.update_stock_ledger(update_stock = -1)
-		set(self.doc, 'status', 'Cancelled')
+		webnotes.conn.set(self.doc, 'status', 'Cancelled')
 		self.cancel_packing_slips()
 
 

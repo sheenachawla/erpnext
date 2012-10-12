@@ -166,3 +166,20 @@ class AccountsController(TransactionBase):
 			
 				if acc_details[0]=="Yes" and acc_details[1]=="Debit":
 					get_obj('Budget Control').check_budget(gle, cancel)
+		
+	def get_gl_dict(self, args):			
+		gl_dict = {
+			'company': self.doc.company, 
+			'posting_date': self.doc.posting_date,
+			'voucher_type': self.doc.doctype,
+			'voucher_no': self.doc.name,
+			'aging_date': self.doc.posting_date,
+			'remarks': self.doc.remarks,
+			'is_cancelled': cancel and "Yes" or "No",
+			'fiscal_year': self.doc.fiscal_year,
+			'debit': 0,
+			'credit': 0
+		}
+		gl_dict.update(args)
+		return gl_dict
+		
