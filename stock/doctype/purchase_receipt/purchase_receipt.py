@@ -298,7 +298,7 @@ class DocType(AccountsController):
 				self.get_gl_dict({
 					"account": stock_in_hand,
 					"against": "Stock Received But Not Billed - %s" % (abbr,),
-					"debit": item.valuation_rate * item.qty,
+					"debit": item.valuation_rate * item.conversion_factor * item.qty,
 					"remarks": self.doc.remarks or "Accounting Entry for Stock"
 				}, cancel)
 			)
@@ -308,7 +308,7 @@ class DocType(AccountsController):
 				self.get_gl_dict({
 					"account": "Stock Received But Not Billed - %s" % (abbr,),
 					"against": stock_in_hand,
-					"credit": item.valuation_rate * item.qty,
+					"credit": item.valuation_rate * item.conversion_factor * item.qty,
 					"remarks": self.doc.remarks or "Accounting Entry for Stock"
 				}, cancel)
 			)

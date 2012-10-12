@@ -198,7 +198,7 @@ class DocType(AccountsController):
 					raise Exception
 						
 	def check_conversion_rate(self):
-		default_currency = TransactionBase().get_company_currency(self.doc.company)		
+		default_currency = super(DocType, self).get_company_currency(self.doc.company)		
 		if not default_currency:
 			msgprint('Message: Please enter default currency in Company Master')
 			raise Exception
@@ -435,7 +435,7 @@ class DocType(AccountsController):
 		pc_obj = get_obj(dt='Purchase Common')
 		
 		 # get total in words
-		dcc = TransactionBase().get_company_currency(self.doc.company)
+		dcc = super(DocType, self).get_company_currency(self.doc.company)
 		self.doc.in_words = pc_obj.get_total_in_words(dcc, self.doc.grand_total)
 		self.doc.in_words_import = pc_obj.get_total_in_words(self.doc.currency, self.doc.grand_total_import)
 
@@ -548,7 +548,7 @@ class DocType(AccountsController):
 						"account": "Stock Received But Not Billed - %s" % (abbr,),
 						"against": self.doc.credit_to,
 						# TODO!!
-						"debit": item.valuation_rate * item.qty,
+						"debit": item.valuation_rate * item.conversion_factor * item.qty,
 						"remarks": self.doc.remarks or "Accounting Entry for Stock"
 					}, is_cancel)
 				)

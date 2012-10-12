@@ -26,8 +26,8 @@ from utilities.transaction_base import TransactionBase
 
 
 class AccountsController(TransactionBase):
-	def make_gl_entries(self, cancel=False, adv_adj=False, mapper=None, merge_entries=True,
-			update_outstanding='Yes', gl_map=None):
+	def make_gl_entries(self, cancel=False, adv_adj=False, mapper=None,
+			merge_entries=True,	update_outstanding='Yes', gl_map=None):
 		"""make gl entries based on jv, invoice or stock valuation"""
 		self.entries = []
 		self.merged_entries = []
@@ -99,7 +99,8 @@ class AccountsController(TransactionBase):
 	def merge_similar_entries(self, merge_entries):
 		if merge_entries:
 			for entry in self.entries:
-				# if there is already an entry in this account then just add it to that entry
+				# if there is already an entry in this account then just add it 
+				# to that entry
 				same_head = self.check_if_in_list(entry)
 				if same_head:
 					same_head['debit']	= flt(same_head['debit']) + flt(entry['debit'])
@@ -121,7 +122,8 @@ class AccountsController(TransactionBase):
 			if flt(gle.debit) < 0 or flt(gle.credit) < 0:
 				_swap(gle)
 
-			# toggled debit/credit in two separate condition because both should be executed at the 
+			# toggled debit/credit in two separate condition because 
+			# both should be executed at the 
 			# time of cancellation when there is negative amount (tax discount)
 			if cancel:
 				_swap(gle)
@@ -144,8 +146,8 @@ class AccountsController(TransactionBase):
 		for e in self.merged_entries:
 			if e['account'] == gle['account'] and \
 					cstr(e['against_voucher']) == cstr(gle['against_voucher']) and \
-					cstr(e['against_voucher_type']) == cstr(gle['against_voucher_type']) and \
-					cstr(e['cost_center']) == cstr(gle['cost_center']):
+					cstr(e['against_voucher_type']) == cstr(gle['against_voucher_type']) \
+					and cstr(e['cost_center']) == cstr(gle['cost_center']):
 				return e
 			
 	def validate_total_debit_credit(self):
@@ -194,3 +196,78 @@ class AccountsController(TransactionBase):
 				for company: %s""" % (self.doc.company,), raise_exception=1)
 				
 		return abbr, stock_in_hand
+		
+	def calculate_item_tax_amount(self):
+		"""
+			Calculates item_tax_amount for each item
+			
+			This function assumes that the following values are correct:
+			* net total
+			* amount of each item
+		"""
+		# get item doclist and calculate net total
+		item_doclist = self.doclist.get({"parentfield": self.fname})
+		self.doc.net_total = sum([item.amount for item in item_doclist])
+
+		# get tax doclist and initialize totals to 0
+		tax_doclist = self.doclist.get({"parentfield": "purchase_tax_details"})
+		for tax in tax_doclist:
+			tax.tax_amount = tax.tax_total = 0
+			# without any tax amount, total is same as net total
+			tax.total = self.doc.net_total	
+		
+		def _eval_item_tax_rate(item_tax_rate):
+			try:
+				import json
+				return json.loads(item_tax_rate)
+			except ValueError, e:
+				# the sins of the old code
+				return eval(item_tax_rate)
+		
+		def _get_tax_rate(item_tax_map, tax):
+			if hasattr(item_tax_map, tax.account_head):
+				return flt(item_tax_map.get(tax.account_head))
+			else:
+				return flt(tax.rate)
+				
+		def _get_tax_amount(item, tax, item_tax_map):
+			tax_rate = _get_tax_rate(item_tax_map, tax)
+			
+			if tax.charge_type == "Actual":
+				# distribute the tax amount proportionally to each item row
+				tax_amount = (self.doc.net_total
+					and ((item.amount / self.doc.net_total) * tax_rate)
+					or 0)
+			elif tax.charge_type == "On Net Total":
+				tax_amount = (tax_rate / 100.0) * item.amount
+			elif tax.charge_type == "On Previous Row Amount":
+				tax_amount = (tax.rate / 100.0 ) * tax_doclist[tax.row_id - 1].tax_amount
+			elif tax.charge_type == "On Previous Row Total":
+				tax_amount = (tax.rate / 100.0) * tax_doclist[tax.row_id - 1].total
+			return tax_amount
+		
+		# loop through items and set item tax amount
+		for item in item_doclist:
+			if not item.amount:
+				# if there is no item amount, no tax is applied on it
+				continue
+				
+			item_tax_map = _eval_item_tax_rate(item.item_tax_rate)
+			if not item.item_tax_amount:
+				item.item_tax_amount = 0
+			
+			for i, tax in enumerate(tax_doclist):
+				tax_amount = _get_tax_amount(item, tax, item_tax_map)
+				tax_amount = (tax.add_deduct_tax == "Add" and 1 or -1) * tax_amount
+				tax.tax_amount += tax_amount
+				
+				if tax.category in ["Valuation", "Valuation and Total"]:
+					item.item_tax_amount += tax_amount
+				
+				if tax.category in ["Total", "Valuation and Total"]:
+					if i==0:
+						tax.total = self.doc.net_total + tax.tax_amount
+					else:
+						tax.total = tax[i-1].total + tax.tax_amount
+				
+		# todo - case when net total is 0 but there is an actual cost
