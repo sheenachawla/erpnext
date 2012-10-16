@@ -438,7 +438,9 @@ def manage_recurring_invoices():
 		
 		
 def notify_errors(inv, owner):
-	from webnotes.utils import get_request_site_address
+	import webnotes
+	import website
+		
 	exception_msg = """
 		Dear User,
 
@@ -459,11 +461,15 @@ def notify_errors(inv, owner):
 		Regards,
 		Administrator
 		
-	""" % (inv, get_request_site_address(), inv)
+	""" % (inv, website.get_site_address(), inv)
 	subj = "[Urgent] Error while creating recurring invoice from %s" % inv
-	import webnotes.utils
-	recipients = webnotes.utils.get_system_managers_list()
-	recipients += [webnotes.conn.get_value("Profile", owner, "email")]
+
+	from webnotes.profile import get_system_managers
+	recipients = get_system_managers()
+	owner_email = webnotes.conn.get_value("Profile", owner, "email")
+	if not owner_email in recipients:
+		recipients.append(owner_email)
+
 	assign_task_to_owner(inv, exception_msg, recipients)
 	sendmail(recipients, subject=subj, msg = exception_msg)
 	
