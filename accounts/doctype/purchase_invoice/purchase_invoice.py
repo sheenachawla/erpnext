@@ -404,6 +404,9 @@ class DocType(AccountsController):
 		self.validate_credit_acc()
 		self.check_for_acc_head_of_supplier()
 		self.check_for_stopped_status()
+		
+		# calculate
+		self.calculate_item_tax_amount()
 
 		self.po_list, self.pr_list = [], []
 		for d in getlist(self.doclist, 'entries'):
@@ -624,15 +627,15 @@ class DocType(AccountsController):
 		self.update_raw_material_cost()
 		
 		# update item valuation rate
-		pc_obj.update_item_valuation_rate(self)
+		get_obj("Purchase Common").update_item_valuation_rate(self)
 		
 		
 	def update_raw_material_cost(self):
 		for d in getlist(self.doclist, 'entries'):
 			rm_cost = webnotes.conn.sql("""
 				select raw_material_cost / quantity from `tabBOM` 
-				where item = %s and ifnull(is_default, 'No') = 'Yes' and docstatus != 2
-			""")
+				where item = %s and is_default = 1 and docstatus != 2
+			""", (d.item_code,))
 			rm_cost = rm_cost and flt(rm_cost[0][0]) or 0
 			
 			d.conversion_factor = d.conversion_factor or webnotes.conn.get_value(

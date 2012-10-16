@@ -74,18 +74,13 @@ def load_data():
 		
 	# create BOM
 	webnotes.model.insert([
-		{
-			"doctype": "BOM", "item": "Nebula 7", "quantity": 1, "is_active": "Yes", 
-			"is_default": "Yes", "uom": "Nos"
-		},
-		{
-			"doctype": "BOM Operation", "operation_no": 1, "parentfield": "bom_operations",
-			"opn_description": "Development"
-		}, 
-		{
-			"doctype": "BOM Item", "item_code": "Android Jack D", "operation_no": 1, "qty": 5,
-			"rate": 20, "amount": 100, "stock_uom": "Nos", "parentfield": "bom_materials"
-		}
+		{"doctype": "BOM", "item": "Nebula 7", "quantity": 1,
+			"is_active": "Yes", "is_default": 1, "uom": "Nos"},
+		{"doctype": "BOM Operation", "operation_no": 1, "parentfield": "bom_operations",
+			"opn_description": "Development"}, 
+		{"doctype": "BOM Item", "item_code": "Android Jack D", "operation_no": 1, 
+			"qty": 5, "rate": 20, "amount": 100, "stock_uom": "Nos", 
+			"parentfield": "bom_materials"}
 	])
 
 
@@ -104,7 +99,7 @@ base_purchase_receipt_item = {"doctype": "Purchase Receipt Item",
 	
 shipping_charges = {"doctype": "Purchase Taxes and Charges", "charge_type": "Actual",
 	"account_head": "Shipping Charges - %s" % abbr, "rate": 100, "tax_amount": 100,
-	"category": "Valuation and Taxesotal", "parentfield": "purchase_tax_details",
+	"category": "Valuation and Total", "parentfield": "purchase_tax_details",
 	"cost_center": "Default Cost Center - %s" % abbr}
 
 vat = {"doctype": "Purchase Taxes and Charges", "charge_type": "Actual",

@@ -31,17 +31,108 @@ abbr = webnotes.conn.get_value("Company", company, "abbr")
 def load_data():
 	test_purchase_receipt.load_data()
 	
-base_purchase_invoice = {"doctype": "Purchase Invoice", 
-	"credit_to": "East Wind Inc. - %s" % abbr,
-	"naming_series": "BILL", "posting_date": nowdate(),
-	"company": company, "fiscal_year": webnotes.conn.get_default("fiscal_year"), 
-	"currency": webnotes.conn.get_default("currency"), "conversion_rate": 1
-}
+	webnotes.model.insert({"doctype": "Account", "account_name": "Excise Duty",
+		"parent_account": "Tax Assets - %s" % abbr, "company": company,
+		"group_or_ledger": "Ledger"})
+	
+	webnotes.model.insert({"doctype": "Account", "account_name": "Education Cess",
+		"parent_account": "Tax Assets - %s" % abbr, "company": company,
+		"group_or_ledger": "Ledger"})
+	
+	webnotes.model.insert({"doctype": "Account", "account_name": "S&H Education Cess",
+		"parent_account": "Tax Assets - %s" % abbr, "company": company,
+		"group_or_ledger": "Ledger"})
+		
+	webnotes.model.insert({"doctype": "Account", "account_name": "CST",
+		"parent_account": "Direct Expenses - %s" % abbr, "company": company,
+		"group_or_ledger": "Ledger"})
+		
+	webnotes.model.insert({"doctype": "Account", "account_name": "Discount",
+		"parent_account": "Direct Expenses - %s" % abbr, "company": company,
+		"group_or_ledger": "Ledger"})
+		
+	from webnotes.model.doc import Document
+	item = Document("Item", "Home Desktop 100")
+	
+	# excise duty
+	item_tax = item.addchild("item_tax", "Item Tax")
+	item_tax.tax_type = "Excise Duty - %s" % abbr
+	item_tax.tax_rate = 10
+	item_tax.save()
 
-base_purchase_invoice_item = {"doctype": "Purchase Invoice Item", 
-	"item_code": "Home Desktop 100", "qty": 10, "rate": 50, 
-	"amount": 500, "item_tax_amount": 250,
-	"parentfield": "entries", "conversion_factor": 1, "uom": "Nos", "stock_uom": "Nos"}
+import json	
+purchase_invoice_doclist = [
+	# parent
+	{
+		"doctype": "Purchase Invoice", 
+		"credit_to": "East Wind Inc. - %s" % abbr,
+		"supplier_name": "East Wind Inc.",
+		"naming_series": "BILL", "posting_date": nowdate(),
+		"company": company, "fiscal_year": webnotes.conn.get_default("fiscal_year"), 
+		"currency": webnotes.conn.get_default("currency"), "conversion_rate": 1,
+		"grand_total_import": 0
+	},
+	# items
+	{
+		"doctype": "Purchase Invoice Item", 
+		"item_code": "Home Desktop 100", "qty": 10, "rate": 50,
+		"amount": 500, "parentfield": "entries", "conversion_factor": 1, 
+		"uom": "Nos", "item_tax_rate": json.dumps({"Excise Duty - %s" % abbr: 10})
+	},
+	{
+		"doctype": "Purchase Invoice Item", 
+		"item_code": "Home Desktop 200", "qty": 5, "rate": 150,
+		"amount": 750, "parentfield": "entries", "conversion_factor": 1, 
+		"uom": "Nos"
+	},
+	# taxes
+	{
+		"doctype": "Purchase Taxes and Charges", "charge_type": "Actual",
+		"account_head": "Shipping Charges - %s" % abbr, "rate": 100, 
+		"category": "Valuation and Total", "parentfield": "purchase_tax_details",
+		"cost_center": "Default Cost Center - %s" % abbr, "add_deduct_tax": "Add"
+	},
+	{
+		"doctype": "Purchase Taxes and Charges", "charge_type": "On Net Total",
+		"account_head": "Customs Duty - %s" % abbr, "rate": 10,
+		"category": "Valuation", "parentfield": "purchase_tax_details",
+		"cost_center": "Default Cost Center - %s" % abbr, "add_deduct_tax": "Add"
+	},
+	{
+		"doctype": "Purchase Taxes and Charges", "charge_type": "On Net Total",
+		"account_head": "Excise Duty - %s" % abbr, "rate": 12,
+		"category": "Total", "parentfield": "purchase_tax_details", "add_deduct_tax": "Add"
+	},
+	{
+		"doctype": "Purchase Taxes and Charges", "charge_type": "On Previous Row Amount",
+		"account_head": "Education Cess - %s" % abbr, "rate": 2, "row_id": 3,
+		"category": "Total", "parentfield": "purchase_tax_details", "add_deduct_tax": "Add"
+	},
+	{
+		"doctype": "Purchase Taxes and Charges", "charge_type": "On Previous Row Amount",
+		"account_head": "S&H Education Cess - %s" % abbr, "rate": 1, "row_id": 3,
+		"category": "Total", "parentfield": "purchase_tax_details", "add_deduct_tax": "Add"
+	},
+	{
+		"doctype": "Purchase Taxes and Charges", "charge_type": "On Previous Row Total",
+		"account_head": "CST - %s" % abbr, "rate": 2, "row_id": 5,
+		"category": "Total", "parentfield": "purchase_tax_details",
+		"cost_center": "Default Cost Center - %s" % abbr, "add_deduct_tax": "Add"
+	},
+	{
+		"doctype": "Purchase Taxes and Charges", "charge_type": "On Net Total",
+		"account_head": "VAT - Test - %s" % abbr, "rate": 12.5,
+		"category": "Total", "parentfield": "purchase_tax_details", 
+		"add_deduct_tax": "Add"
+	},
+	{
+		"doctype": "Purchase Taxes and Charges", "charge_type": "On Previous Row Total",
+		"account_head": "Discount - %s" % abbr, "rate": 10,
+		"category": "Total", "parentfield": "purchase_tax_details",
+		"cost_center": "Default Cost Center - %s" % abbr, "add_deduct_tax": "Deduct",
+		"row_id": 7
+	},
+]
 
 class TestPurchaseReceipt(unittest.TestCase):
 	def setUp(self):
@@ -49,21 +140,39 @@ class TestPurchaseReceipt(unittest.TestCase):
 		load_data()
 		
 	def test_purchase_invoice(self):
-		dl = webnotes.model.insert([
-			base_purchase_invoice.copy(), base_purchase_invoice_item.copy(),
-			test_purchase_receipt.shipping_charges.copy(),
-			test_purchase_receipt.vat.copy(), test_purchase_receipt.customs_duty.copy()
-		])		
-		dl.submit()
-		dl.load_from_db()
-						
-		# gle = webnotes.conn.sql("""select account, ifnull(debit, 0), ifnull(credit, 0)
-		# 	from `tabGL Entry` where voucher_no = %s""", dl.doclist[0].name)
-		# 
-		# gle_map = dict(((entry[0], entry) for entry in gle))
-		# 
-		# self.assertEquals(gle_map[debit_account], (debit_account, 750.0, 0.0))
-		# self.assertEquals(gle_map[credit_account], (credit_account, 0.0, 750.0))
+		from webnotes.model.doclist import DocList
+		controller = webnotes.model.insert(DocList(purchase_invoice_doclist))
+		controller.load_from_db()
+		dl = controller.doclist
+		
+		# test net total
+		self.assertEqual(dl[0].net_total, 1250)
+		
+		# test tax amounts and totals
+		expected_values = [
+			["Shipping Charges - %s" % abbr, 100, 1350],
+			["Customs Duty - %s" % abbr, 125, 1350],
+			["Excise Duty - %s" % abbr, 140, 1490],
+			["Education Cess - %s" % abbr, 2.8, 1492.8],
+			["S&H Education Cess - %s" % abbr, 1.4, 1494.2],
+			["CST - %s" % abbr, 29.884, 1524.084],
+			["VAT - Test - %s" % abbr, 156.25, 1680.334],
+			["Discount - %s" % abbr, 168.0334, 1512.3006],
+		]		
+		for i, tax in enumerate(dl.get({"parentfield": "purchase_tax_details"})):
+			# print tax.account_head, tax.tax_amount, tax.total
+			self.assertEqual(tax.account_head, expected_values[i][0])
+			self.assertEqual(tax.tax_amount, expected_values[i][1])
+			self.assertEqual(tax.total, expected_values[i][2])
+		
+		# test item tax amount
+		expected_values = [
+			["Home Desktop 100", 90],
+			["Home Desktop 200", 135]
+		]
+		for i, item in enumerate(dl.get({"parentfield": "entries"})):
+			self.assertEqual(item.item_code, expected_values[i][0])
+			self.assertEqual(item.item_tax_amount, expected_values[i][1])
 		
 	def tearDown(self):
 		webnotes.conn.rollback()

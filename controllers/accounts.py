@@ -17,7 +17,7 @@
 from __future__ import unicode_literals
 
 import webnotes
-from webnotes.utils import nowdate, flt, cstr
+from webnotes.utils import nowdate, flt, cstr, cint
 import webnotes.model.doctype
 from webnotes.model.code import get_obj
 from webnotes.model.utils import getlist
@@ -212,11 +212,11 @@ class AccountsController(TransactionBase):
 		# get tax doclist and initialize totals to 0
 		tax_doclist = self.doclist.get({"parentfield": "purchase_tax_details"})
 		for tax in tax_doclist:
-			tax.tax_amount = tax.tax_total = 0
-			# without any tax amount, total is same as net total
-			tax.total = self.doc.net_total	
+			tax.tax_amount = tax.total = tax.current_item_total = 0
 		
 		def _eval_item_tax_rate(item_tax_rate):
+			if not item_tax_rate:
+				return {}
 			try:
 				import json
 				return json.loads(item_tax_rate)
@@ -225,49 +225,66 @@ class AccountsController(TransactionBase):
 				return eval(item_tax_rate)
 		
 		def _get_tax_rate(item_tax_map, tax):
-			if hasattr(item_tax_map, tax.account_head):
+			if item_tax_map.has_key(tax.account_head):
 				return flt(item_tax_map.get(tax.account_head))
 			else:
 				return flt(tax.rate)
 				
 		def _get_tax_amount(item, tax, item_tax_map):
 			tax_rate = _get_tax_rate(item_tax_map, tax)
-			
+	
 			if tax.charge_type == "Actual":
 				# distribute the tax amount proportionally to each item row
 				tax_amount = (self.doc.net_total
-					and ((item.amount / self.doc.net_total) * tax_rate)
+					and ((flt(item.amount) / flt(self.doc.net_total)) * flt(tax.rate))
 					or 0)
 			elif tax.charge_type == "On Net Total":
 				tax_amount = (tax_rate / 100.0) * item.amount
 			elif tax.charge_type == "On Previous Row Amount":
-				tax_amount = (tax.rate / 100.0 ) * tax_doclist[tax.row_id - 1].tax_amount
+				prev_rate = _get_tax_rate(item_tax_map, tax_doclist[cint(tax.row_id) - 1])
+				tax_amount = item.amount * (tax_rate * prev_rate / 10000.0)
 			elif tax.charge_type == "On Previous Row Total":
-				tax_amount = (tax.rate / 100.0) * tax_doclist[tax.row_id - 1].total
+				tax_amount = (tax_rate / 100.0) * \
+					tax_doclist[cint(tax.row_id) - 1].current_item_total
+	
 			return tax_amount
-		
+			
 		# loop through items and set item tax amount
 		for item in item_doclist:
 			if not item.amount:
 				# if there is no item amount, no tax is applied on it
 				continue
-				
+			
 			item_tax_map = _eval_item_tax_rate(item.item_tax_rate)
 			if not item.item_tax_amount:
 				item.item_tax_amount = 0
 			
 			for i, tax in enumerate(tax_doclist):
+				# tax_amount represents the amount of tax for the current step
 				tax_amount = _get_tax_amount(item, tax, item_tax_map)
-				tax_amount = (tax.add_deduct_tax == "Add" and 1 or -1) * tax_amount
 				tax.tax_amount += tax_amount
+				tax_amount = (tax.add_deduct_tax == "Add" and 1 or -1) * tax_amount
 				
 				if tax.category in ["Valuation", "Valuation and Total"]:
 					item.item_tax_amount += tax_amount
 				
-				if tax.category in ["Total", "Valuation and Total"]:
-					if i==0:
-						tax.total = self.doc.net_total + tax.tax_amount
-					else:
-						tax.total = tax[i-1].total + tax.tax_amount
+				if tax.category not in ["Total", "Valuation and Total"]:
+					tax_amount = 0
+
+				# note: current_item_total contains the contribution of item's amount
+				# and the current tax on that item
+				# in tax.total, accumulate net total + tax_amount of each item
+				if i==0:
+					tax.current_item_total = item.amount + tax_amount
+					tax.total += tax.current_item_total
+				else:
+					tax.current_item_total = tax_doclist[i-1].current_item_total + \
+						tax_amount
+					tax.total += tax.current_item_total					
 				
 		# todo - case when net total is 0 but there is an actual cost
+		
+		# TODO: remove this once new doc.py and controller.py are implemented
+		# remove current_item_total
+		for tax in tax_doclist:
+			del tax.fields["current_item_total"]
