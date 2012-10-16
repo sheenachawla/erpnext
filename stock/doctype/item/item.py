@@ -19,10 +19,9 @@ from __future__ import unicode_literals
 import webnotes
 
 from webnotes.utils import add_days, add_months, add_years, cint, cstr, date_diff, default_fields, flt, fmt_money, formatdate, getTraceback, get_defaults, get_first_day, get_last_day, getdate, has_common, month_name, now, nowdate, replace_newlines, sendmail, set_default, str_esc_quote, user_format, validate_email_add
-from webnotes.model import db_exists
 from webnotes.model.doc import Document, addchild, getchildren, make_autoname
 from webnotes.model.utils import getlist
-from webnotes.model.code import get_obj, get_server_obj, run_server_obj, updatedb, check_syntax
+from webnotes.model.code import get_obj
 from webnotes import session, form, msgprint, errprint
 
 set = webnotes.conn.set
@@ -30,8 +29,6 @@ sql = webnotes.conn.sql
 get_value = webnotes.conn.get_value
 in_transaction = webnotes.conn.in_transaction
 convert_to_lists = webnotes.conn.convert_to_lists
-
-# -----------------------------------------------------------------------------------------
 
 
 class DocType:
@@ -162,9 +159,6 @@ class DocType:
 
 		if self.doc.is_pro_applicable == 'Yes' and self.doc.is_stock_item == 'No':
 			msgprint("As Production Order can be made for this Item, then Is Stock Item Should be 'Yes' as we maintain it's stock. Refer Manufacturing and Inventory section.", raise_exception=1)
-
-		if self.doc.is_stock_item == "Yes" and not self.doc.default_warehouse:
-			msgprint("As we maintain stock of this item, its better to maintain default warehouse. To add default warehouse please go to 'Inventory' section. It will be fetched automatically while making Sales Order, Delivery Note, etc.. ", 1)
 
 		if self.doc.has_serial_no == 'Yes' and self.doc.is_stock_item == 'No':
 			msgprint("'Has Serial No' can not be 'Yes' for non-stock item", raise_exception=1)

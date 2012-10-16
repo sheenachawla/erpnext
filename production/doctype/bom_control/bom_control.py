@@ -19,10 +19,10 @@ from __future__ import unicode_literals
 import webnotes
 
 from webnotes.utils import cint, flt
-from webnotes.model import db_exists
+
 from webnotes.model.doc import Document, addchild, getchildren, make_autoname
 from webnotes.model.utils import getlist
-from webnotes.model.code import get_obj, get_server_obj, run_server_obj, updatedb, check_syntax
+from webnotes.model.code import get_obj
 from webnotes import session, form, msgprint, errprint
 
 set = webnotes.conn.set

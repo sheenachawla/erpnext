@@ -1,0 +1,83 @@
+# DocType, Item Parameter
+[
+
+	# These values are common in all dictionaries
+	{
+		u'creation': '2012-10-16 16:31:17',
+		u'docstatus': 0,
+		u'modified': '2012-10-16 16:37:29',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
+	},
+
+	# These values are common for all DocType
+	{
+		'autoname': u'field:parameter_name',
+		'description': u'Parameter (e.g. Size, Color) to be set on Item Variants',
+		u'doctype': u'DocType',
+		'document_type': u'Master',
+		'istable': 0,
+		'module': u'Stock',
+		u'name': u'__common__',
+		'version': 1
+	},
+
+	# These values are common for all DocField
+	{
+		u'doctype': u'DocField',
+		u'name': u'__common__',
+		'parent': u'Item Parameter',
+		'parentfield': u'fields',
+		'parenttype': u'DocType',
+		'permlevel': 0
+	},
+
+	# These values are common for all DocPerm
+	{
+		'create': 1,
+		u'doctype': u'DocPerm',
+		u'name': u'__common__',
+		'parent': u'Item Parameter',
+		'parentfield': u'permissions',
+		'parenttype': u'DocType',
+		'permlevel': 0,
+		'read': 1,
+		'write': 1
+	},
+
+	# DocType, Item Parameter
+	{
+		u'doctype': u'DocType',
+		u'name': u'Item Parameter'
+	},
+
+	# DocField
+	{
+		'description': u'e.g. Size',
+		u'doctype': u'DocField',
+		'fieldname': u'parameter_name',
+		'fieldtype': u'Data',
+		'label': u'Parameter Name'
+	},
+
+	# DocField
+	{
+		'description': u'e.g. Small, Medium, Large (each on a new line)',
+		u'doctype': u'DocField',
+		'fieldname': u'parameter_options',
+		'fieldtype': u'Text',
+		'label': u'Parameter Options'
+	},
+
+	# DocPerm
+	{
+		u'doctype': u'DocPerm',
+		'role': u'Material Manager'
+	},
+
+	# DocPerm
+	{
+		u'doctype': u'DocPerm',
+		'role': u'System Manager'
+	}
+]

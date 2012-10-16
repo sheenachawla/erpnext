@@ -19,10 +19,9 @@ from __future__ import unicode_literals
 import webnotes
 
 from webnotes.utils import add_days, add_months, add_years, cint, cstr, date_diff, default_fields, flt, fmt_money, formatdate, getTraceback, get_defaults, get_first_day, get_last_day, getdate, has_common, month_name, now, nowdate, replace_newlines, sendmail, set_default, str_esc_quote, user_format, validate_email_add
-from webnotes.model import db_exists, delete_doc
 from webnotes.model.doc import Document, addchild, getchildren, make_autoname
 from webnotes.model.utils import getlist
-from webnotes.model.code import get_obj, get_server_obj, run_server_obj, updatedb, check_syntax
+from webnotes.model.code import get_obj
 from webnotes import session, form, msgprint, errprint
 
 set = webnotes.conn.set
@@ -467,7 +466,6 @@ class DocType(StockControllers):
 						sl_obj.update_serial_purchase_details(self, d, serial_no, is_submit, self.doc.purpose)
 					
 					if self.doc.purpose == 'Purchase Return':
-						#delete_doc("Serial No", serial_no)
 						serial_doc = Document("Serial No", serial_no)
 						serial_doc.status = is_submit and 'Purchase Returned' or 'In Store'
 						serial_doc.docstatus = is_submit and 2 or 0

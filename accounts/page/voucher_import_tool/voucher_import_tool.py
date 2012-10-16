@@ -5,9 +5,10 @@ from webnotes.utils import formatdate
 @webnotes.whitelist()
 def get_template_multiple():
 	"""download single template"""
-	from webnotes.model.doctype import get_field_property
-	naming_options = get_field_property("Journal Voucher", "naming_series", "options")
-	voucher_type = get_field_property("Journal Voucher", "voucher_type", "options")
+	import webnotes.model.doctype
+	doctypelist = webnotes.model.doctype.get("Journal Voucher")
+	naming_options = doctypelist.get_field("naming_series").options
+	voucher_type = doctypelist.get_field("voucher_type").options
 	
 	webnotes.response['result'] = '''"Voucher Import :Multiple"
 "Each entry below will be a separate Journal Voucher."

@@ -98,8 +98,8 @@ erpnext.Messages = Class.extend({
 	},
 	// check for updates every 5 seconds if page is active
 	refresh: function() {
-		setTimeout("erpnext.messages.refresh()", 17000);
-		if(wn.container.page.label != 'Messages') return;
+		setTimeout("erpnext.messages.refresh()", 5000);
+		if(wn.container.page.label != 'Messages' || !wn.session_alive) return;
 		this.show();
 	},
 	get_contact: function() {

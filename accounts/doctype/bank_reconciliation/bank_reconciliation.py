@@ -19,10 +19,10 @@ from __future__ import unicode_literals
 import webnotes
 
 from webnotes.utils import add_days, add_months, add_years, cint, cstr, date_diff, default_fields, flt, fmt_money, formatdate, getTraceback, get_defaults, get_first_day, get_last_day, getdate, has_common, month_name, now, nowdate, replace_newlines, sendmail, set_default, str_esc_quote, user_format, validate_email_add
-from webnotes.model import db_exists
+
 from webnotes.model.doc import Document, addchild, getchildren, make_autoname
 from webnotes.model.utils import getlist
-from webnotes.model.code import get_obj, get_server_obj, run_server_obj, updatedb, check_syntax
+from webnotes.model.code import get_obj
 from webnotes import session, form, msgprint, errprint
 
 set = webnotes.conn.set
@@ -62,12 +62,14 @@ class DocType:
 	def update_details(self):
 		vouchers = []
 		for d in getlist(self.doclist, 'entries'):
-			if d.clearance_date and d.cheque_date:
-				if getdate(d.clearance_date) < getdate(d.cheque_date):
+			if d.clearance_date:
+				if d.cheque_date and getdate(d.clearance_date) < getdate(d.cheque_date):
 					msgprint("Clearance Date can not be before Cheque Date (Row #%s)" % 
 						d.idx, raise_exception=1)
 					
-				sql("update `tabJournal Voucher` set clearance_date = %s, modified = %s where name=%s", (d.clearance_date, nowdate(), d.voucher_id))
+				sql("""update `tabJournal Voucher` 
+					set clearance_date = %s, modified = %s where name=%s""",
+					(d.clearance_date, nowdate(), d.voucher_id))
 				vouchers.append(d.voucher_id)
 
 		if vouchers:

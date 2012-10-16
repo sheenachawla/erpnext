@@ -1,0 +1,56 @@
+# DocType, Item Parameter Value
+[
+
+	# These values are common in all dictionaries
+	{
+		u'creation': '2012-10-16 16:36:12',
+		u'docstatus': 0,
+		u'modified': '2012-10-16 16:36:12',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
+	},
+
+	# These values are common for all DocType
+	{
+		'description': u'Child table in Item to store Item Parameter value',
+		u'doctype': u'DocType',
+		'document_type': u'Transaction',
+		'istable': 1,
+		'module': u'Stock',
+		u'name': u'__common__',
+		'version': 1
+	},
+
+	# These values are common for all DocField
+	{
+		u'doctype': u'DocField',
+		u'name': u'__common__',
+		'parent': u'Item Parameter Value',
+		'parentfield': u'fields',
+		'parenttype': u'DocType',
+		'permlevel': 0
+	},
+
+	# DocType, Item Parameter Value
+	{
+		u'doctype': u'DocType',
+		u'name': u'Item Parameter Value'
+	},
+
+	# DocField
+	{
+		u'doctype': u'DocField',
+		'fieldname': u'item_parameter',
+		'fieldtype': u'Link',
+		'label': u'Item Parameter',
+		'options': u'Item Parameter'
+	},
+
+	# DocField
+	{
+		u'doctype': u'DocField',
+		'fieldname': u'value',
+		'fieldtype': u'Data',
+		'label': u'Value'
+	}
+]
