@@ -17,7 +17,7 @@
 from __future__ import unicode_literals
 
 import webnotes
-from webnotes.utils import nowdate, flt
+from webnotes.utils import nowdate
 
 class FiscalYearError(webnotes.ValidationError): pass
 

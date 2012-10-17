@@ -53,7 +53,6 @@ def map_fields(field_list, source, target):
 def import_multiple(common_values, data, start_idx):
 	from webnotes.model.doc import Document
 	from webnotes.model.doclist import DocList
-	from webnotes.model.code import get_obj
 	from accounts.utils import get_fiscal_year
 	from webnotes.utils.dateutils import parse_date
 

@@ -17,7 +17,7 @@
 from __future__ import unicode_literals
 
 import webnotes
-from webnotes.utils import nowdate, flt, cstr, cint
+from webnotes.utils import flt, cstr, cint
 import webnotes.model.doctype
 from webnotes.model.code import get_obj
 from webnotes.model.utils import getlist

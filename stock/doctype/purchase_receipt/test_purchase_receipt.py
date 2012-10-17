@@ -14,13 +14,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Please edit this list and import only required elements
 
 from __future__ import unicode_literals
 import unittest
 import webnotes
 import webnotes.model
-from webnotes.utils import nowdate, flt
+from webnotes.utils import nowdate
 from accounts.utils import get_fiscal_year
 
 company = webnotes.conn.get_default("company")

@@ -14,14 +14,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Please edit this list and import only required elements
 from __future__ import unicode_literals
 import webnotes
-from webnotes.utils import add_days, cint, cstr, flt, get_defaults, getdate
-from webnotes.model.doc import addchild, make_autoname
+from webnotes.utils import cstr, flt, get_defaults, getdate
+from webnotes.model.doc import make_autoname
 from webnotes.model.utils import getlist
 from webnotes.model.code import get_obj
-from webnotes import msgprint, errprint
+from webnotes import msgprint
 sql = webnotes.conn.sql
 from controllers.stock import StockController
 

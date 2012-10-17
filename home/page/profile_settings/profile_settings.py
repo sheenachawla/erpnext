@@ -17,7 +17,7 @@
 from __future__ import unicode_literals
 import webnotes
 
-from webnotes.utils import load_json, cint, nowdate
+from webnotes.utils import load_json
 
 
 def check_demo():
