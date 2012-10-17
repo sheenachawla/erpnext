@@ -26,7 +26,7 @@ from webnotes.model.code import get_obj
 from webnotes import session, form, msgprint, errprint
 from webnotes.utils.email_lib import sendmail
 
-in_transaction = webnotes.conn.in_transaction
+
 convert_to_lists = webnotes.conn.convert_to_lists
 
 # -----------------------------------------------------------------------------------------

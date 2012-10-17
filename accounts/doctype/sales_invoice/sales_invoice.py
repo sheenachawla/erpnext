@@ -25,7 +25,7 @@ from webnotes.model.utils import getlist
 from webnotes.model.code import get_obj
 from webnotes import session, form, msgprint, errprint
 
-in_transaction = webnotes.conn.in_transaction
+
 convert_to_lists = webnotes.conn.convert_to_lists
 session = webnotes.session
 

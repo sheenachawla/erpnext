@@ -24,10 +24,9 @@ from webnotes.model.utils import getlist
 from webnotes.model.code import get_obj
 from webnotes import session, form, msgprint, errprint
 
-set = webnotes.conn.set
 sql = webnotes.conn.sql
 get_value = webnotes.conn.get_value
-in_transaction = webnotes.conn.in_transaction
+
 convert_to_lists = webnotes.conn.convert_to_lists
 
 
@@ -166,6 +165,8 @@ class DocType:
 		if self.doc.name:
 			self.old_page_name = webnotes.conn.get_value('Item', self.doc.name, 'page_name')
 		
+		self.check_variant_rules()
+		
 	def check_non_asset_warehouse(self):
 		if self.doc.is_asset_item == "Yes":
 			existing_qty = sql("select t1.warehouse, t1.actual_qty from tabBin t1, tabWarehouse t2 where t1.item_code=%s and (t2.warehouse_type!='Fixed Asset' or t2.warehouse_type is null) and t1.warehouse=t2.name and t1.actual_qty > 0", self.doc.name)
@@ -232,3 +233,67 @@ class DocType:
 		import markdown2
 		self.doc.web_description_html = markdown2.markdown(self.doc.description or '',
 										extras=["wiki-tables"])
+	
+	def check_variant_rules(self):
+		if not self.doc.variant_of:
+			return
+		
+		self.check_if_item_is_either_main_or_variant_but_not_both()
+		properties = self.get_item_properties()
+		self.check_variant_has_properites(properties)
+		self.check_properties_have_valid_values(properties)
+		variants = self.get_item_variants()
+		self.check_if_variant_is_unique(properties, variants)
+		
+	def get_item_properties(self):
+		return self.doclist.get({"parentfield":"item_parameter_values"})
+	
+	def get_item_variants(self):
+		return webnotes.conn.sql("""select name from tabItem 
+			where variant_of=%s and name!=%s""",
+			(self.doc.variant_of, self.doc.name))
+				
+	def check_variant_has_properites(self, properties):
+		if self.doc.variant_of and not properties:
+			webnotes.msgprint("""As this item is a Variant, please set some Item Properties (in Variants) 
+				before saving!""", raise_exception=True)
+				
+	def check_properties_have_valid_values(self, properties):
+		if len(set([i.item_parameter for i in properties]))!=len(properties):
+			webnotes.msgprint("""Duplicate Item Parameter: All Item Properties must be unique.""",
+				raise_exception =1)
+			
+		for p in properties:
+			options = webnotes.conn.sql("""select parameter_options from 
+				`tabItem Parameter` where
+				name =%s""", p.item_parameter)[0][0].split('\n')
+			if not p.value in options:
+				webnotes.msgprint("Value for Parameter %s must be one of: %s" \
+					% (p.item_parameter, ', '.join(options)), raise_exception=True)
+			
+	def check_if_item_is_either_main_or_variant_but_not_both(self):
+		if self.doc.variant_of and self.doc.has_variants=="Yes":
+			webnotes.msgprint("""This Item can either have variants or be a variant of 
+				another Item, not both (set "Has Variants" to "No")""", raise_exception=True)
+
+		if webnotes.conn.sql("""select ifnull(has_variants,"No") from tabItem where name=%s""",
+			self.doc.variant_of)[0][0]=="No":
+			webnotes.msgprint("""Item %s is not set to have variants.
+				Set "Has Variants" to "Yes" in %s to allow variants""" \
+				% (self.doc.variant_of, self.doc.variant_of), raise_exception=True)
+
+	def check_if_variant_is_unique(self, properties, variants):
+		properties = map(lambda x: x.item_parameter + ":" + x.value, properties)
+		
+		for variant in variants:
+			variant_properties = webnotes.conn.sql("""select item_parameter, value
+				from `tabItem Parameter Value` where parent=%s""", variant[0], as_dict=1)
+			
+			variant_properties = map(lambda x: x.item_parameter + ":" + x.value, 
+				variant_properties)
+				
+			if set(variant_properties)==set(properties):
+				webnotes.msgprint("""Duplicate Variant: Item %s is also a variant of %s and 
+					has the same Properties as this Item""" % (variant[0], self.doc.variant_of),
+					raise_exception=True)
+

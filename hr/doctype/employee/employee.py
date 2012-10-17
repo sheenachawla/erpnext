@@ -26,7 +26,7 @@ from webnotes import session, form, msgprint, errprint
 
 sql = webnotes.conn.sql
 get_value = webnotes.conn.get_value
-in_transaction = webnotes.conn.in_transaction
+
 convert_to_lists = webnotes.conn.convert_to_lists
 
 # -----------------------------------------------------------------------------------------
