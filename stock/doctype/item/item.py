@@ -254,6 +254,9 @@ class DocType:
 			(self.doc.variant_of, self.doc.name))
 				
 	def check_variant_has_properites(self, properties):
+		if properties and not self.doc.variant_of:
+			webnotes.msgprint("""Please set "Variant Of" to add Item Properties""",
+				raise_exception=True)
 		if self.doc.variant_of and not properties:
 			webnotes.msgprint("""As this item is a Variant, please set some Item Properties (in Variants) 
 				before saving!""", raise_exception=True)
