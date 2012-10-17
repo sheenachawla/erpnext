@@ -90,47 +90,45 @@ purchase_invoice_doclist = [
 		"doctype": "Purchase Taxes and Charges", "charge_type": "Actual",
 		"account_head": "Shipping Charges - %s" % abbr, "rate": 100, 
 		"category": "Valuation and Total", "parentfield": "purchase_tax_details",
-		"cost_center": "Default Cost Center - %s" % abbr, "add_deduct_tax": "Add"
+		"cost_center": "Default Cost Center - %s" % abbr
 	},
 	{
 		"doctype": "Purchase Taxes and Charges", "charge_type": "On Net Total",
 		"account_head": "Customs Duty - %s" % abbr, "rate": 10,
 		"category": "Valuation", "parentfield": "purchase_tax_details",
-		"cost_center": "Default Cost Center - %s" % abbr, "add_deduct_tax": "Add"
+		"cost_center": "Default Cost Center - %s" % abbr
 	},
 	{
 		"doctype": "Purchase Taxes and Charges", "charge_type": "On Net Total",
 		"account_head": "Excise Duty - %s" % abbr, "rate": 12,
-		"category": "Total", "parentfield": "purchase_tax_details", "add_deduct_tax": "Add"
+		"category": "Total", "parentfield": "purchase_tax_details"
 	},
 	{
 		"doctype": "Purchase Taxes and Charges", "charge_type": "On Previous Row Amount",
 		"account_head": "Education Cess - %s" % abbr, "rate": 2, "row_id": 3,
-		"category": "Total", "parentfield": "purchase_tax_details", "add_deduct_tax": "Add"
+		"category": "Total", "parentfield": "purchase_tax_details"
 	},
 	{
 		"doctype": "Purchase Taxes and Charges", "charge_type": "On Previous Row Amount",
 		"account_head": "S&H Education Cess - %s" % abbr, "rate": 1, "row_id": 3,
-		"category": "Total", "parentfield": "purchase_tax_details", "add_deduct_tax": "Add"
+		"category": "Total", "parentfield": "purchase_tax_details"
 	},
 	{
 		"doctype": "Purchase Taxes and Charges", "charge_type": "On Previous Row Total",
 		"account_head": "CST - %s" % abbr, "rate": 2, "row_id": 5,
 		"category": "Total", "parentfield": "purchase_tax_details",
-		"cost_center": "Default Cost Center - %s" % abbr, "add_deduct_tax": "Add"
+		"cost_center": "Default Cost Center - %s" % abbr
 	},
 	{
 		"doctype": "Purchase Taxes and Charges", "charge_type": "On Net Total",
 		"account_head": "VAT - Test - %s" % abbr, "rate": 12.5,
-		"category": "Total", "parentfield": "purchase_tax_details", 
-		"add_deduct_tax": "Add"
+		"category": "Total", "parentfield": "purchase_tax_details"
 	},
 	{
 		"doctype": "Purchase Taxes and Charges", "charge_type": "On Previous Row Total",
-		"account_head": "Discount - %s" % abbr, "rate": 10,
+		"account_head": "Discount - %s" % abbr, "rate": -10, "row_id": 7,
 		"category": "Total", "parentfield": "purchase_tax_details",
-		"cost_center": "Default Cost Center - %s" % abbr, "add_deduct_tax": "Deduct",
-		"row_id": 7
+		"cost_center": "Default Cost Center - %s" % abbr
 	},
 ]
 
@@ -157,7 +155,7 @@ class TestPurchaseReceipt(unittest.TestCase):
 			["S&H Education Cess - %s" % abbr, 1.4, 1494.2],
 			["CST - %s" % abbr, 29.884, 1524.084],
 			["VAT - Test - %s" % abbr, 156.25, 1680.334],
-			["Discount - %s" % abbr, 168.0334, 1512.3006],
+			["Discount - %s" % abbr, -168.0334, 1512.3006],
 		]		
 		for i, tax in enumerate(dl.get({"parentfield": "purchase_tax_details"})):
 			# print tax.account_head, tax.tax_amount, tax.total
@@ -169,6 +167,50 @@ class TestPurchaseReceipt(unittest.TestCase):
 		expected_values = [
 			["Home Desktop 100", 90],
 			["Home Desktop 200", 135]
+		]
+		for i, item in enumerate(dl.get({"parentfield": "entries"})):
+			self.assertEqual(item.item_code, expected_values[i][0])
+			self.assertEqual(item.item_tax_amount, expected_values[i][1])
+			
+	def test_purchase_invoice_having_zero_amount_items(self):
+		from webnotes.model.doclist import DocList
+		sample_purchase_invoice_doclist = [] + purchase_invoice_doclist
+		
+		# set rate and amount as 0
+		sample_purchase_invoice_doclist[1]["rate"] = 0
+		sample_purchase_invoice_doclist[1]["amount"] = 0
+		sample_purchase_invoice_doclist[2]["rate"] = 0
+		sample_purchase_invoice_doclist[2]["amount"] = 0
+		
+		
+		controller = webnotes.model.insert(DocList(sample_purchase_invoice_doclist))
+		controller.load_from_db()
+		dl = controller.doclist
+		
+		# test net total
+		self.assertEqual(dl[0].net_total, 0)
+		
+		# test tax amounts and totals
+		expected_values = [
+			["Shipping Charges - %s" % abbr, 100, 100],
+			["Customs Duty - %s" % abbr, 0, 100],
+			["Excise Duty - %s" % abbr, 0, 100],
+			["Education Cess - %s" % abbr, 0, 100],
+			["S&H Education Cess - %s" % abbr, 0, 100],
+			["CST - %s" % abbr, 2, 102],
+			["VAT - Test - %s" % abbr, 0, 102],
+			["Discount - %s" % abbr, -10.2, 91.8],
+		]
+		for i, tax in enumerate(dl.get({"parentfield": "purchase_tax_details"})):
+			# print tax.account_head, tax.tax_amount, tax.total
+			self.assertEqual(tax.account_head, expected_values[i][0])
+			self.assertEqual(tax.tax_amount, expected_values[i][1])
+			self.assertEqual(tax.total, expected_values[i][2])
+		
+		# test item tax amount
+		expected_values = [
+			["Home Desktop 100", 0],
+			["Home Desktop 200", 0]
 		]
 		for i, item in enumerate(dl.get({"parentfield": "entries"})):
 			self.assertEqual(item.item_code, expected_values[i][0])

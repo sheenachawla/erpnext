@@ -647,4 +647,8 @@ patch_list = [
 		'patch_module': 'patches.october_2012',
 		'patch_file': 'account_inventory_integration'
 	},
+	{
+		'patch_module': 'patches.october_2012',
+		'patch_file': 'patch_item_tax_rate'
+	},
 ]

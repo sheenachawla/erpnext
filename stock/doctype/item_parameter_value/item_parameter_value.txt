@@ -5,7 +5,7 @@
 	{
 		u'creation': '2012-10-16 16:36:12',
 		u'docstatus': 0,
-		u'modified': '2012-10-16 16:36:12',
+		u'modified': '2012-10-17 11:36:17',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -28,7 +28,8 @@
 		'parent': u'Item Parameter Value',
 		'parentfield': u'fields',
 		'parenttype': u'DocType',
-		'permlevel': 0
+		'permlevel': 0,
+		'reqd': 1
 	},
 
 	# DocType, Item Parameter Value

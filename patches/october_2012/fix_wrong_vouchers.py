@@ -4,6 +4,11 @@ def execute():
 	from webnotes.model.code import get_obj
 	from webnotes.utils import money_in_words
 	
+	webnotes.conn.commit()
+	from webnotes.model.sync import sync
+	sync("setup", "company")	
+	webnotes.conn.begin()
+	
 	vouchers = webnotes.conn.sql("""
 		select 
 			parent, parenttype, modified, docstatus, 

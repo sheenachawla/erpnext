@@ -56,7 +56,9 @@ class DocType(TransactionBase):
 			msg=response)
 
 		self.doc.new_response = None
-		webnotes.conn.set(self.doc,'status','Waiting for Customer')
+		self.doc.status = 'Waiting for Customer'
+		self.doc.save()
+				
 		self.make_response_record(response)
 	
 	def last_response(self):

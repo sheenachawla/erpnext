@@ -141,13 +141,13 @@ class AccountsController(TransactionBase):
 			self.total_debit += flt(gle.debit)
 			self.total_credit += flt(gle.credit)
 
-
 	def check_if_in_list(self, gle):
 		for e in self.merged_entries:
 			if e['account'] == gle['account'] and \
-					cstr(e['against_voucher']) == cstr(gle['against_voucher']) and \
-					cstr(e['against_voucher_type']) == cstr(gle['against_voucher_type']) \
-					and cstr(e['cost_center']) == cstr(gle['cost_center']):
+					cstr(e.get('against_voucher'))==cstr(gle.get('against_voucher')) \
+					and cstr(e.get('against_voucher_type')) == \
+						cstr(gle.get('against_voucher_type')) \
+					and cstr(e.get('cost_center')) == cstr(gle.get('cost_center')):
 				return e
 			
 	def validate_total_debit_credit(self):
@@ -197,14 +197,19 @@ class AccountsController(TransactionBase):
 				
 		return abbr, stock_in_hand
 		
-	def calculate_item_tax_amount(self):
+	def calculate(self):
 		"""
-			Calculates item_tax_amount for each item
+			Calculates:
+				* item_tax_amount for each item, 
+				* tax amount and tax total for each tax
+				* net total
+				* total taxes
+				* grand total
 			
-			This function assumes that the following values are correct:
-			* net total
-			* amount of each item
+			This function assumes that the amount of each item is correct
 		"""
+		import json
+		
 		# get item doclist and calculate net total
 		item_doclist = self.doclist.get({"parentfield": self.fname})
 		self.doc.net_total = sum([item.amount for item in item_doclist])
@@ -212,24 +217,21 @@ class AccountsController(TransactionBase):
 		# get tax doclist and initialize totals to 0
 		tax_doclist = self.doclist.get({"parentfield": "purchase_tax_details"})
 		for tax in tax_doclist:
-			tax.tax_amount = tax.total = tax.current_item_total = 0
+			tax.tax_amount = tax.total = tax.grand_total_for_current_item = 0
+			tax.tax_amount_for_current_item = 0
 		
-		def _eval_item_tax_rate(item_tax_rate):
+		def _load_item_tax_rate(item_tax_rate):
 			if not item_tax_rate:
 				return {}
-			try:
-				import json
-				return json.loads(item_tax_rate)
-			except ValueError, e:
-				# the sins of the old code
-				return eval(item_tax_rate)
+			
+			return json.loads(item_tax_rate)
 		
 		def _get_tax_rate(item_tax_map, tax):
 			if item_tax_map.has_key(tax.account_head):
 				return flt(item_tax_map.get(tax.account_head))
 			else:
 				return flt(tax.rate)
-				
+		
 		def _get_tax_amount(item, tax, item_tax_map):
 			tax_rate = _get_tax_rate(item_tax_map, tax)
 	
@@ -241,50 +243,64 @@ class AccountsController(TransactionBase):
 			elif tax.charge_type == "On Net Total":
 				tax_amount = (tax_rate / 100.0) * item.amount
 			elif tax.charge_type == "On Previous Row Amount":
-				prev_rate = _get_tax_rate(item_tax_map, tax_doclist[cint(tax.row_id) - 1])
-				tax_amount = item.amount * (tax_rate * prev_rate / 10000.0)
+				tax_amount = (tax_rate / 100.0) * \
+					tax_doclist[cint(tax.row_id) - 1].tax_amount_for_current_item
 			elif tax.charge_type == "On Previous Row Total":
 				tax_amount = (tax_rate / 100.0) * \
-					tax_doclist[cint(tax.row_id) - 1].current_item_total
+					tax_doclist[cint(tax.row_id) - 1].grand_total_for_current_item
 	
 			return tax_amount
 			
 		# loop through items and set item tax amount
 		for item in item_doclist:
-			if not item.amount:
-				# if there is no item amount, no tax is applied on it
-				continue
-			
-			item_tax_map = _eval_item_tax_rate(item.item_tax_rate)
+			item_tax_map = _load_item_tax_rate(item.item_tax_rate)
 			if not item.item_tax_amount:
 				item.item_tax_amount = 0
 			
 			for i, tax in enumerate(tax_doclist):
 				# tax_amount represents the amount of tax for the current step
-				tax_amount = _get_tax_amount(item, tax, item_tax_map)
-				tax.tax_amount += tax_amount
-				tax_amount = (tax.add_deduct_tax == "Add" and 1 or -1) * tax_amount
+				current_tax_amount = _get_tax_amount(item, tax, item_tax_map)
 				
 				if tax.category in ["Valuation", "Valuation and Total"]:
-					item.item_tax_amount += tax_amount
+					item.item_tax_amount += current_tax_amount
 				
-				if tax.category not in ["Total", "Valuation and Total"]:
-					tax_amount = 0
-
-				# note: current_item_total contains the contribution of item's amount
-				# and the current tax on that item
-				# in tax.total, accumulate net total + tax_amount of each item
+				# case when net total is 0 but there is an actual type charge
+				# in this case add the actual amount to tax.tax_amount
+				# and tax.grand_total_for_current_item for the first such iteration
+				zero_net_total_adjustment = 0
+				if not (current_tax_amount or self.doc.net_total or tax.tax_amount) and \
+						tax.charge_type=="Actual":
+					zero_net_total_adjustment = tax.rate
+				
+				# store tax_amount for current item as it will be used for
+				# charge type = 'On Previous Row Amount'
+				tax.tax_amount_for_current_item = current_tax_amount + \
+					zero_net_total_adjustment
+				
+				# accumulate tax amount into tax.tax_amount
+				tax.tax_amount += tax.tax_amount_for_current_item
+				
+				if tax.category == "Valuation":
+					# if just for valuation, do not add the tax amount in total
+					# hence, setting it as 0 for further steps
+					current_tax_amount = zero_net_total_adjustment = 0
+				
+				# Calculate tax.total viz. grand total till that step
+				# note: grand_total_for_current_item contains the contribution of 
+				# item's amount, previously applied tax and the current tax on that item
 				if i==0:
-					tax.current_item_total = item.amount + tax_amount
-					tax.total += tax.current_item_total
+					tax.grand_total_for_current_item = item.amount + current_tax_amount \
+						+ zero_net_total_adjustment
 				else:
-					tax.current_item_total = tax_doclist[i-1].current_item_total + \
-						tax_amount
-					tax.total += tax.current_item_total					
+					tax.grand_total_for_current_item = \
+						tax_doclist[i-1].grand_total_for_current_item + \
+						current_tax_amount + zero_net_total_adjustment
 				
-		# todo - case when net total is 0 but there is an actual cost
-		
+				# in tax.total, accumulate grand total of each item
+				tax.total += tax.grand_total_for_current_item
+				
 		# TODO: remove this once new doc.py and controller.py are implemented
-		# remove current_item_total
+		# remove grand_total_for_current_item
 		for tax in tax_doclist:
-			del tax.fields["current_item_total"]
+			del tax.fields["grand_total_for_current_item"]
+			del tax.fields["tax_amount_for_current_item"]

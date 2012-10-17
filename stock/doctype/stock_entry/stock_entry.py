@@ -25,9 +25,7 @@ from webnotes.model.code import get_obj
 from webnotes import session, form, msgprint, errprint
 
 set = webnotes.conn.set
-sql = webnotes.conn.sql
-	
-# -----------------------------------------------------------------------------------------
+sql = webnotes.conn.sql	
 from controllers.stock import StockControllers
 
 class DocType(StockControllers):

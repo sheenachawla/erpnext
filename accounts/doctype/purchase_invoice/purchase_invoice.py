@@ -405,8 +405,7 @@ class DocType(AccountsController):
 		self.check_for_acc_head_of_supplier()
 		self.check_for_stopped_status()
 		
-		# calculate
-		self.calculate_item_tax_amount()
+		self.calculate()
 
 		self.po_list, self.pr_list = [], []
 		for d in getlist(self.doclist, 'entries'):
@@ -552,7 +551,8 @@ class DocType(AccountsController):
 						"account": "Stock Received But Not Billed - %s" % (abbr,),
 						"against": self.doc.credit_to,
 						# TODO!!
-						"debit": item.valuation_rate * item.conversion_factor * item.qty,
+						"debit": flt(item.valuation_rate) * flt(item.conversion_factor) \
+							*  item.qty,
 						"remarks": self.doc.remarks or "Accounting Entry for Stock"
 					}, is_cancel)
 				)
