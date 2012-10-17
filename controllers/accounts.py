@@ -197,7 +197,7 @@ class AccountsController(TransactionBase):
 				
 		return abbr, stock_in_hand
 		
-	def calculate(self):
+	def calculate_taxes_and_totals(self):
 		"""
 			Calculates:
 				* item_tax_amount for each item, 
@@ -299,6 +299,13 @@ class AccountsController(TransactionBase):
 				# in tax.total, accumulate grand total of each item
 				tax.total += tax.grand_total_for_current_item
 				
+				self.doc.grand_total = tax.total
+				
+		self.doc.taxes_and_charges_total = self.doc.grand_total - self.doc.net_total
+		self.doc.rounded_total = round(self.doc.grand_total)
+		
+		# TODO: calculate import / export values
+		
 		# TODO: remove this once new doc.py and controller.py are implemented
 		# remove grand_total_for_current_item
 		for tax in tax_doclist:

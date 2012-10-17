@@ -392,6 +392,18 @@ class DocType(AccountsController):
 
 	# VALIDATE
 	# ====================================================================================
+	def calculate_taxes_and_totals(self):
+		super(DocType, self).calculate_taxes_and_totals()
+		
+		self.doc.total_tds_on_voucher = flt(self.doc.ded_amount)
+		self.doc.total_amount_to_pay = self.doc.grand_total - \
+			self.doc.total_tds_on_voucher
+		
+		if self.doc.docstatus = 0:
+			self.doc.outstanding_amount = self.doc.total_amount_to_pay - \
+				flt(self.doc.total_advance)
+	
+	
 	def validate(self):
 		self.po_required()
 		self.pr_required()
