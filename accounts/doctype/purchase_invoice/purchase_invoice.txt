@@ -5,7 +5,7 @@
 	{
 		u'creation': '2012-10-12 20:20:32',
 		u'docstatus': 0,
-		u'modified': '2012-10-17 18:38:17',
+		u'modified': '2012-10-18 12:15:27',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -817,28 +817,6 @@
 		'fieldname': u'taxes_and_charges_total',
 		'fieldtype': u'Currency',
 		'label': u'Taxes and Charges Total',
-		'print_hide': 1
-	},
-
-	# DocField
-	{
-		u'doctype': u'DocField',
-		'fieldname': u'other_charges_added',
-		'fieldtype': u'Currency',
-		'label': u'Taxes and Charges Added',
-		'oldfieldname': u'other_charges_added',
-		'oldfieldtype': u'Currency',
-		'print_hide': 1
-	},
-
-	# DocField
-	{
-		u'doctype': u'DocField',
-		'fieldname': u'other_charges_deducted',
-		'fieldtype': u'Currency',
-		'label': u'Taxes and Charges Deducted',
-		'oldfieldname': u'other_charges_deducted',
-		'oldfieldtype': u'Currency',
 		'print_hide': 1
 	},
 
