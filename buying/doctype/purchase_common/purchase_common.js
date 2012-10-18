@@ -545,9 +545,7 @@ cur_frm.cscript.calc_other_charges = function(doc , tname , fname , other_fname)
 				if (tax[t].category != "Total"){
 					item_tax -= tax[t].total_amount;
 				}
-			}			
-			
-			
+			}	
 		}
 		set_multiple(tname, cl[i].name, {'item_tax_amount': item_tax }, fname);
 	}
