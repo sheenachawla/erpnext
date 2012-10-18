@@ -3,30 +3,31 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-03-27 14:35:40',
-		'docstatus': 0,
-		'modified': '2012-03-27 14:35:40',
-		'modified_by': u'Administrator',
-		'owner': u'Administrator'
+		u'creation': '2012-07-03 13:29:54',
+		u'docstatus': 0,
+		u'modified': '2012-10-18 14:38:26',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
 	},
 
 	# These values are common for all DocType
 	{
 		'colour': u'White:FFF',
-		'doctype': 'DocType',
+		u'doctype': u'DocType',
 		'istable': 1,
 		'module': u'Accounts',
-		'name': '__common__',
+		u'name': u'__common__',
 		'section_style': u'Tray',
 		'server_code_error': u' ',
 		'show_in_menu': 0,
-		'version': 20
+		'version': 1
 	},
 
 	# These values are common for all DocField
 	{
-		'doctype': u'DocField',
-		'name': '__common__',
+		u'doctype': u'DocField',
+		u'name': u'__common__',
+		'no_copy': 1,
 		'parent': u'Purchase Invoice Advance',
 		'parentfield': u'fields',
 		'parenttype': u'DocType'
@@ -34,17 +35,16 @@
 
 	# DocType, Purchase Invoice Advance
 	{
-		'doctype': 'DocType',
-		'name': u'Purchase Invoice Advance'
+		u'doctype': u'DocType',
+		u'name': u'Purchase Invoice Advance'
 	},
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'journal_voucher',
 		'fieldtype': u'Link',
 		'label': u'Journal Voucher',
-		'no_copy': 1,
 		'oldfieldname': u'journal_voucher',
 		'oldfieldtype': u'Link',
 		'options': u'Journal Voucher',
@@ -54,12 +54,11 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'jv_detail_no',
 		'fieldtype': u'Date',
 		'hidden': 1,
 		'label': u'Journal Voucher Detail No',
-		'no_copy': 1,
 		'oldfieldname': u'jv_detail_no',
 		'oldfieldtype': u'Date',
 		'permlevel': 1,
@@ -69,11 +68,10 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'advance_amount',
 		'fieldtype': u'Currency',
 		'label': u'Advance Amount',
-		'no_copy': 1,
 		'oldfieldname': u'advance_amount',
 		'oldfieldtype': u'Currency',
 		'permlevel': 1,
@@ -83,11 +81,10 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'allocated_amount',
 		'fieldtype': u'Currency',
 		'label': u'Allocated Amount',
-		'no_copy': 1,
 		'oldfieldname': u'allocated_amount',
 		'oldfieldtype': u'Currency',
 		'permlevel': 0,
@@ -97,35 +94,10 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
-		'fieldname': u'tds_amount',
-		'fieldtype': u'Currency',
-		'label': u'TDS Amount',
-		'oldfieldname': u'tds_amount',
-		'oldfieldtype': u'Currency',
-		'permlevel': 1,
-		'width': u'80px'
-	},
-
-	# DocField
-	{
-		'doctype': u'DocField',
-		'fieldname': u'tds_allocated',
-		'fieldtype': u'Currency',
-		'label': u'TDS Allocated',
-		'oldfieldname': u'tds_allocated',
-		'oldfieldtype': u'Currency',
-		'permlevel': 1,
-		'width': u'80px'
-	},
-
-	# DocField
-	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'remarks',
 		'fieldtype': u'Small Text',
 		'label': u'Remarks',
-		'no_copy': 1,
 		'oldfieldname': u'remarks',
 		'oldfieldtype': u'Small Text',
 		'permlevel': 1,

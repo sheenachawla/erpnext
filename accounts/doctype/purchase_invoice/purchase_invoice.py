@@ -214,8 +214,6 @@ class DocType(AccountsController):
 				raise Exception , "Validation Error"
 			if not self.doc.remarks:
 				self.doc.remarks = (self.doc.remarks or '') + "\n" + ("Against Bill %s dated %s" % (self.doc.bill_no, formatdate(self.doc.bill_date)))
-				if self.doc.ded_amount:
-					self.doc.remarks = (self.doc.remarks or '') + "\n" + ("Grand Total: %s, Tax Deduction Amount: %s" %(self.doc.grand_total, self.doc.ded_amount))
 		else:
 			if not self.doc.remarks:
 				self.doc.remarks = "No Remarks"
@@ -315,38 +313,6 @@ class DocType(AccountsController):
 			if not flt(data[0]['conversion_rate']) == flt(self.doc.conversion_rate):
 				msgprint("Purchase Receipt: " + cstr(d.purchase_receipt) + " conversion_rate : " + cstr(data[0]['conversion_rate']) + " does not match with conversion_rate of current document.")
 				raise Exception
-					
-	# Build tds table if applicable
-	#------------------------------
-	def get_tds(self):
-		if cstr(self.doc.is_opening) != 'Yes':
-			if not self.doc.credit_to:
-				msgprint("Please Enter Credit To account first")
-				raise Exception
-			else:
-				tds_applicable = sql("select tds_applicable from tabAccount where name = '%s'" % self.doc.credit_to)
-				if tds_applicable and cstr(tds_applicable[0][0]) == 'Yes':
-					if not self.doc.tds_applicable:
-						msgprint("Please enter whether TDS Applicable or not")
-						raise Exception
-					if self.doc.tds_applicable == 'Yes':
-						if not self.doc.tds_category:
-							msgprint("Please select TDS Category")
-							raise Exception
-						else:
-							get_obj('TDS Control').get_tds_amount(self)
-							self.doc.total_tds_on_voucher = self.doc.ded_amount
-							self.doc.total_amount_to_pay=flt(self.doc.grand_total) - flt(self.doc.ded_amount) - self.doc.write_off_amount
-							self.doc.outstanding_amount = self.doc.total_amount_to_pay - flt(self.doc.total_advance)
-					elif self.doc.tds_applicable == 'No':
-						self.doc.tds_category = ''
-						self.doc.tax_code = ''
-						self.doc.rate = 0
-						self.doc.ded_amount = 0
-						self.doc.total_tds_on_voucher = 0
-
-	def get_tds_rate(self):
-		return {'rate' : flt(get_value('Account', self.doc.tax_code, 'tax_rate'))}
 
 	def set_aging_date(self):
 		if self.doc.is_opening != 'Yes':
@@ -387,18 +353,10 @@ class DocType(AccountsController):
 		if self.doc.write_off_amount and not self.doc.write_off_account:
 			msgprint("Please enter Write Off Account", raise_exception=1)
 
-	# VALIDATE
-	# ====================================================================================
 	def calculate_taxes_and_totals(self):
 		super(DocType, self).calculate_taxes_and_totals()
-		
-		self.doc.total_tds_on_voucher = flt(self.doc.ded_amount)
-		self.doc.total_amount_to_pay = self.doc.grand_total - \
-			self.doc.total_tds_on_voucher
-		
 		if self.doc.docstatus = 0:
-			self.doc.outstanding_amount = self.doc.total_amount_to_pay - \
-				flt(self.doc.total_advance)
+			self.doc.outstanding_amount = self.doc.grand_total - flt(self.doc.total_advance)
 	
 	
 	def validate(self):
@@ -424,11 +382,6 @@ class DocType(AccountsController):
 				self.po_list.append(d.purchase_order)
 			if not d.purhcase_receipt in self.pr_list:
 				self.pr_list.append(d.purchase_receipt)
-		# tds
-		get_obj('TDS Control').validate_first_entry(self)
-		if not flt(self.doc.ded_amount):
-			self.get_tds()
-			self.doc.save()
 
 		if not self.doc.is_opening:
 			self.doc.is_opening = 'No'
@@ -615,22 +568,10 @@ class DocType(AccountsController):
 			raise Exception, "Validation Error."
 		
 	def on_cancel(self):
-		self.check_next_docstatus()
-
-		# Check whether tds payment voucher has been created against this voucher
-		self.check_tds_payment_voucher()
-		
+		self.check_next_docstatus()		
 		self.make_gl_entries(is_cancel=1)
 		get_obj(dt = 'Purchase Common').update_prevdoc_detail(self, is_submit = 0)
 
-
-	# Check whether tds payment voucher has been created against this voucher
-	#---------------------------------------------------------------------------
-	def check_tds_payment_voucher(self):
-		tdsp =	sql("select parent from `tabTDS Payment Detail` where voucher_no = '%s' and docstatus = 1 and parent not like 'old%'")
-		if tdsp:
-			msgprint("TDS Payment voucher '%s' has been made against this voucher. Please cancel the payment voucher to proceed." % (tdsp and tdsp[0][0] or ''))
-			raise Exception
 
 	def on_update(self):
 		self.update_raw_material_cost()

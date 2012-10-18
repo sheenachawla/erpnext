@@ -91,7 +91,7 @@ class DocType:
 	def get_advances(self, obj, account_head, table_name,table_field_name, dr_or_cr):
 		jv_detail = webnotes.conn.sql("""
 			select 
-				t1.name, t1.remark, t2.%s, t2.name, t1.ded_amount 
+				t1.name, t1.remark, t2.%s, t2.name
 			from 
 				`tabJournal Voucher` t1, `tabJournal Voucher Detail` t2 
 			where 
@@ -112,8 +112,6 @@ class DocType:
 			add.remarks = d[1]
 			add.advance_amount = flt(d[2])
 			add.allocate_amount = 0
-			if table_name == 'Purchase Invoice Advance':
-				add.tds_amount = flt(d[4])
 				
 		return obj.doclist
 

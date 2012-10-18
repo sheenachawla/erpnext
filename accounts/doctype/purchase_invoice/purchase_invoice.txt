@@ -3,9 +3,9 @@
 
 	# These values are common in all dictionaries
 	{
-		u'creation': '2012-10-12 20:20:32',
+		u'creation': '2012-10-18 12:43:57',
 		u'docstatus': 0,
-		u'modified': '2012-10-18 12:15:27',
+		u'modified': '2012-10-18 15:01:58',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -697,104 +697,6 @@
 	# DocField
 	{
 		u'doctype': u'DocField',
-		'fieldname': u'tds',
-		'fieldtype': u'Section Break',
-		'label': u'TDS',
-		'oldfieldtype': u'Section Break',
-		'print_hide': 1
-	},
-
-	# DocField
-	{
-		u'doctype': u'DocField',
-		'fieldname': u'column_break5',
-		'fieldtype': u'Column Break',
-		'print_hide': 1,
-		'width': u'50%'
-	},
-
-	# DocField
-	{
-		u'doctype': u'DocField',
-		'fieldname': u'tds_applicable',
-		'fieldtype': u'Select',
-		'label': u'TDS Applicable',
-		'oldfieldname': u'tds_applicable',
-		'oldfieldtype': u'Select',
-		'options': u'\nYes\nNo',
-		'print_hide': 1
-	},
-
-	# DocField
-	{
-		u'doctype': u'DocField',
-		'fieldname': u'tds_category',
-		'fieldtype': u'Select',
-		'label': u'TDS Category',
-		'oldfieldname': u'tds_category',
-		'oldfieldtype': u'Select',
-		'options': u'link:TDS Category',
-		'print_hide': 1
-	},
-
-	# DocField
-	{
-		'colour': u'White:FFF',
-		u'doctype': u'DocField',
-		'fieldname': u'get_tds',
-		'fieldtype': u'Button',
-		'label': u'Get TDS',
-		'oldfieldtype': u'Button',
-		'print_hide': 1,
-		'trigger': u'Client'
-	},
-
-	# DocField
-	{
-		u'doctype': u'DocField',
-		'fieldname': u'column_break6',
-		'fieldtype': u'Column Break',
-		'print_hide': 1,
-		'width': u'50%'
-	},
-
-	# DocField
-	{
-		u'doctype': u'DocField',
-		'fieldname': u'tax_code',
-		'fieldtype': u'Link',
-		'label': u'TDS Account Head',
-		'oldfieldname': u'tax_code',
-		'oldfieldtype': u'Link',
-		'options': u'Account',
-		'print_hide': 1
-	},
-
-	# DocField
-	{
-		u'doctype': u'DocField',
-		'fieldname': u'rate',
-		'fieldtype': u'Currency',
-		'label': u'Rate',
-		'oldfieldname': u'rate',
-		'oldfieldtype': u'Currency',
-		'print_hide': 1
-	},
-
-	# DocField
-	{
-		u'doctype': u'DocField',
-		'fieldname': u'ded_amount',
-		'fieldtype': u'Currency',
-		'label': u'TDS Amount',
-		'oldfieldname': u'ded_amount',
-		'oldfieldtype': u'Currency',
-		'print_hide': 1
-	},
-
-	# DocField
-	{
-		u'doctype': u'DocField',
 		'fieldname': u'totals',
 		'fieldtype': u'Section Break',
 		'label': u'Totals',
@@ -847,31 +749,6 @@
 	# DocField
 	{
 		u'doctype': u'DocField',
-		'fieldname': u'total_tds_on_voucher',
-		'fieldtype': u'Currency',
-		'label': u'Total TDS On Voucher',
-		'no_copy': 1,
-		'oldfieldname': u'total_tds_on_voucher',
-		'oldfieldtype': u'Currency',
-		'print_hide': 1
-	},
-
-	# DocField
-	{
-		'colour': u'White:FFF',
-		u'doctype': u'DocField',
-		'fieldname': u'tds_amount_on_advance',
-		'fieldtype': u'Currency',
-		'label': u'TDS Amount On Advance',
-		'no_copy': 1,
-		'oldfieldname': u'tds_amount_on_advance',
-		'oldfieldtype': u'Currency',
-		'print_hide': 1
-	},
-
-	# DocField
-	{
-		u'doctype': u'DocField',
 		'fieldname': u'column_break8',
 		'fieldtype': u'Column Break',
 		'oldfieldtype': u'Column Break',
@@ -882,22 +759,9 @@
 	# DocField
 	{
 		u'doctype': u'DocField',
-		'fieldname': u'total_amount_to_pay',
-		'fieldtype': u'Currency',
-		'hidden': 0,
-		'label': u'Total Amount To Pay',
-		'no_copy': 1,
-		'oldfieldname': u'total_amount_to_pay',
-		'oldfieldtype': u'Currency',
-		'print_hide': 1
-	},
-
-	# DocField
-	{
-		u'doctype': u'DocField',
 		'fieldname': u'total_advance',
 		'fieldtype': u'Currency',
-		'label': u'Total Advance (Incl. TDS)',
+		'label': u'Total Advance',
 		'no_copy': 1,
 		'oldfieldname': u'total_advance',
 		'oldfieldtype': u'Currency',
