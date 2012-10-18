@@ -16,7 +16,7 @@
 
 // define defaults for purchase common
 cur_frm.cscript.tname = "Supplier Quotation Item";
-cur_frm.cscript.fname = "quotation_items";
+cur_frm.cscript.fname = "supplier_quotation_items";
 cur_frm.cscript.other_fname = "purchase_tax_details";
 
 // attach required files
@@ -74,7 +74,7 @@ cur_frm.cscript.uom = function(doc, cdt, cdn) {
 	// no need to trigger updation of stock uom, as this field doesn't exist in supplier quotation
 }
 
-cur_frm.fields_dict['quotation_items'].grid.get_field('project_name').get_query = 
+cur_frm.fields_dict['supplier_quotation_items'].grid.get_field('project_name').get_query = 
 	function(doc, cdt, cdn) {
 		return "select `tabProject`.name from `tabProject` \
 			where `tabProject`.status = \"Open\" and `tabProject`.name like \"%s\" \
