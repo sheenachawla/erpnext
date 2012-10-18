@@ -17,13 +17,13 @@
 from __future__ import unicode_literals
 
 import webnotes
-from webnotes.utils import flt, cstr, cint
+from webnotes.utils import flt, cstr, cint, round_doc
 import webnotes.model.doctype
 from webnotes.model.code import get_obj
 from webnotes.model.utils import getlist
 from webnotes.model.doc import Document
 from utilities.transaction_base import TransactionBase
-
+import json
 
 class AccountsController(TransactionBase):
 	def make_gl_entries(self, cancel=False, adv_adj=False, mapper=None,
@@ -200,68 +200,90 @@ class AccountsController(TransactionBase):
 	def calculate_taxes_and_totals(self):
 		"""
 			Calculates:
+				* amount for each item
 				* item_tax_amount for each item, 
 				* tax amount and tax total for each tax
 				* net total
 				* total taxes
 				* grand total
-			
-			This function assumes that the amount of each item is correct
 		"""
-		import json
-		
-		# get item doclist and calculate net total
-		item_doclist = self.doclist.get({"parentfield": self.fname})
-		self.doc.net_total = sum([item.amount for item in item_doclist])
+		self.prepare_precision_maps()
+		self.item_doclist = self.doclist.get({"parentfield": self.fname})
+		self.tax_doclist = self.doclist.get({"parentfield": self.taxes_and_charges})
 
-		# get tax doclist and initialize totals to 0
-		tax_doclist = self.doclist.get({"parentfield": "purchase_tax_details"})
-		for tax in tax_doclist:
-			tax.tax_amount = tax.total = tax.grand_total_for_current_item = 0
-			tax.tax_amount_for_current_item = 0
+		self.calculate_net_total()
+		self.initialize_taxes()
+			
+		self.calculate_taxes()
+		self.calculate_totals()
+			
+	def calculate_net_total(self):
+		self.doc.net_total = 0
+		for item in self.item_doclist:
+			# round relevant values
+			round_doc(item, self.item_precision)
+			
+			# calculate amount and net total
+			item.amount = flt((item.qty * item.rate) - \
+				((item.discount_rate / 100.0) * item.rate), self.item_precision["amount"])
+			self.doc.net_total += item.amount
+			
+		self.doc.net_total = flt(self.doc.net_total, self.main_precision["net_total"])
 		
+	def initialize_taxes(self):
+		for tax in self.tax_doclist:
+			# initialize totals to 0
+			tax.tax_amount = tax.total = 0
+			tax.grand_total_for_current_item = tax.tax_amount_for_current_item = 0
+			tax.item_wise_tax_detail = {}
+			
+			# round relevant values
+			round_doc(tax, self.tax_precision)
+			
+	def calculate_taxes(self):
 		def _load_item_tax_rate(item_tax_rate):
 			if not item_tax_rate:
 				return {}
-			
+
 			return json.loads(item_tax_rate)
-		
+
 		def _get_tax_rate(item_tax_map, tax):
 			if item_tax_map.has_key(tax.account_head):
-				return flt(item_tax_map.get(tax.account_head))
+				return flt(item_tax_map.get(tax.account_head), self.tax_precision["rate"])
 			else:
-				return flt(tax.rate)
+				return tax.rate
 		
-		def _get_tax_amount(item, tax, item_tax_map):
+		def _get_current_tax_amount(item, tax, item_tax_map):
 			tax_rate = _get_tax_rate(item_tax_map, tax)
 	
 			if tax.charge_type == "Actual":
 				# distribute the tax amount proportionally to each item row
-				tax_amount = (self.doc.net_total
-					and ((flt(item.amount) / flt(self.doc.net_total)) * flt(tax.rate))
+				current_tax_amount = (self.doc.net_total
+					and ((item.amount / self.doc.net_total) * tax.rate)
 					or 0)
 			elif tax.charge_type == "On Net Total":
-				tax_amount = (tax_rate / 100.0) * item.amount
+				current_tax_amount = (tax_rate / 100.0) * item.amount
 			elif tax.charge_type == "On Previous Row Amount":
-				tax_amount = (tax_rate / 100.0) * \
-					tax_doclist[cint(tax.row_id) - 1].tax_amount_for_current_item
+				current_tax_amount = (tax_rate / 100.0) * \
+					self.tax_doclist[cint(tax.row_id) - 1].tax_amount_for_current_item
 			elif tax.charge_type == "On Previous Row Total":
-				tax_amount = (tax_rate / 100.0) * \
-					tax_doclist[cint(tax.row_id) - 1].grand_total_for_current_item
+				current_tax_amount = (tax_rate / 100.0) * \
+					self.tax_doclist[cint(tax.row_id) - 1].grand_total_for_current_item
 	
-			return tax_amount
+			return flt(current_tax_amount, self.tax_precision["tax_amount"])
 			
 		# loop through items and set item tax amount
-		for item in item_doclist:
+		for item in self.item_doclist:
 			item_tax_map = _load_item_tax_rate(item.item_tax_rate)
 			if not item.item_tax_amount:
 				item.item_tax_amount = 0
 			
-			for i, tax in enumerate(tax_doclist):
+			for i, tax in enumerate(self.tax_doclist):
 				# tax_amount represents the amount of tax for the current step
-				current_tax_amount = _get_tax_amount(item, tax, item_tax_map)
+				current_tax_amount = _get_current_tax_amount(item, tax, item_tax_map)
 				
-				if tax.category in ["Valuation", "Valuation and Total"]:
+				if self.transaction_type == "Purchase" and \
+						tax.category in ["Valuation", "Valuation and Total"]:
 					item.item_tax_amount += current_tax_amount
 				
 				# case when net total is 0 but there is an actual type charge
@@ -270,7 +292,7 @@ class AccountsController(TransactionBase):
 				zero_net_total_adjustment = 0
 				if not (current_tax_amount or self.doc.net_total or tax.tax_amount) and \
 						tax.charge_type=="Actual":
-					zero_net_total_adjustment = tax.rate
+					zero_net_total_adjustment = flt(tax.rate, self.tax_precision["tax_amount"])
 				
 				# store tax_amount for current item as it will be used for
 				# charge type = 'On Previous Row Amount'
@@ -280,7 +302,7 @@ class AccountsController(TransactionBase):
 				# accumulate tax amount into tax.tax_amount
 				tax.tax_amount += tax.tax_amount_for_current_item
 				
-				if tax.category == "Valuation":
+				if self.transaction_type == "Purchase" and tax.category == "Valuation":
 					# if just for valuation, do not add the tax amount in total
 					# hence, setting it as 0 for further steps
 					current_tax_amount = zero_net_total_adjustment = 0
@@ -289,25 +311,53 @@ class AccountsController(TransactionBase):
 				# note: grand_total_for_current_item contains the contribution of 
 				# item's amount, previously applied tax and the current tax on that item
 				if i==0:
-					tax.grand_total_for_current_item = item.amount + current_tax_amount \
-						+ zero_net_total_adjustment
+					tax.grand_total_for_current_item = flt(item.amount +
+						current_tax_amount + zero_net_total_adjustment, 
+						self.tax_precision["total"])
 				else:
 					tax.grand_total_for_current_item = \
-						tax_doclist[i-1].grand_total_for_current_item + \
-						current_tax_amount + zero_net_total_adjustment
+						flt(self.tax_doclist[i-1].grand_total_for_current_item +
+							current_tax_amount + zero_net_total_adjustment,
+							self.tax_precision["total"])
+				
+				# prepare itemwise tax detail
+				tax.item_wise_tax_detail[item.item_code] = current_tax_amount
 				
 				# in tax.total, accumulate grand total of each item
 				tax.total += tax.grand_total_for_current_item
-				
-				self.doc.grand_total = tax.total
-				
-		self.doc.taxes_and_charges_total = self.doc.grand_total - self.doc.net_total
-		self.doc.rounded_total = round(self.doc.grand_total)
 		
-		# TODO: calculate import / export values
+		# QUESTION: is this necessary?
+		# store itemwise tax details as a json
+		for tax in self.tax_doclist:
+			tax.item_wise_tax_detail = json.dumps(tax.item_wise_tax_detail)
+			# print tax.item_wise_tax_detail
 		
 		# TODO: remove this once new doc.py and controller.py are implemented
 		# remove grand_total_for_current_item
-		for tax in tax_doclist:
+		for tax in self.tax_doclist:
 			del tax.fields["grand_total_for_current_item"]
 			del tax.fields["tax_amount_for_current_item"]
+			
+	def calculate_totals(self):
+		if self.tax_doclist:
+			self.doc.grand_total = self.tax_doclist[-1].total
+		else:
+			self.doc.grand_total = self.doc.net_total
+		
+		self.doc.grand_total = flt(self.doc.grand_total,
+			self.main_precision["grand_total"])
+		
+		self.doc.fields[self.taxes_and_charges_total] = \
+			flt(self.doc.grand_total - self.doc.net_total,
+			self.main_precision[self.taxes_and_charges_total])
+		
+		# self.doc.rounded_total = round(self.doc.grand_total)
+		
+		# TODO: calculate import / export values
+			
+	def prepare_precision_maps(self):
+		doctypelist = webnotes.model.doctype.get(self.doc.doctype)
+		self.main_precision = doctypelist.get_precision_map()
+		self.item_precision = doctypelist.get_precision_map(parentfield=self.fname)
+		self.tax_precision = \
+			doctypelist.get_precision_map(parentfield=self.taxes_and_charges)

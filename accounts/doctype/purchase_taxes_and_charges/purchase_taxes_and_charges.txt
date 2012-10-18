@@ -3,9 +3,9 @@
 
 	# These values are common in all dictionaries
 	{
-		u'creation': '2012-09-18 11:20:24',
+		u'creation': '2012-10-02 16:20:25',
 		u'docstatus': 0,
-		u'modified': '2012-09-28 12:27:43',
+		u'modified': '2012-10-18 15:02:28',
 		u'modified_by': u'Administrator',
 		u'owner': u'wasim@webnotestech.com'
 	},
@@ -139,7 +139,7 @@
 		'fieldname': u'row_id',
 		'fieldtype': u'Data',
 		'hidden': 0,
-		'label': u'Enter Row',
+		'label': u'Enter Row No.',
 		'oldfieldname': u'row_id',
 		'oldfieldtype': u'Data',
 		'permlevel': 0,
@@ -164,22 +164,6 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'default': u'Add',
-		u'doctype': u'DocField',
-		'fieldname': u'add_deduct_tax',
-		'fieldtype': u'Select',
-		'label': u'Add or Deduct',
-		'oldfieldname': u'add_deduct_tax',
-		'oldfieldtype': u'Select',
-		'options': u'Add\nDeduct',
-		'permlevel': 0,
-		'reqd': 1,
-		'trigger': u'Client'
-	},
-
-	# DocField
-	{
-		'colour': u'White:FFF',
 		u'doctype': u'DocField',
 		'fieldname': u'item_wise_tax_detail',
 		'fieldtype': u'Small Text',
@@ -198,43 +182,11 @@
 		'fieldtype': u'Data',
 		'hidden': 1,
 		'in_filter': 1,
-		'label': u'Parenttype',
+		'label': u'Parent Type',
 		'oldfieldname': u'parenttype',
 		'oldfieldtype': u'Data',
 		'permlevel': 0,
 		'print_hide': 1,
 		'search_index': 0
-	},
-
-	# DocField
-	{
-		'description': u'Cheating Field\nPlease do not delete ',
-		u'doctype': u'DocField',
-		'fieldname': u'total_tax_amount',
-		'fieldtype': u'Currency',
-		'hidden': 1,
-		'label': u'Total +Tax',
-		'no_copy': 1,
-		'oldfieldname': u'total_tax_amount',
-		'oldfieldtype': u'Currency',
-		'permlevel': 0,
-		'print_hide': 1,
-		'report_hide': 1
-	},
-
-	# DocField
-	{
-		'description': u'Cheating Field\nPlease do not delete ',
-		u'doctype': u'DocField',
-		'fieldname': u'total_amount',
-		'fieldtype': u'Currency',
-		'hidden': 1,
-		'label': u'Tax Amount',
-		'no_copy': 1,
-		'oldfieldname': u'total_amount',
-		'oldfieldtype': u'Currency',
-		'permlevel': 0,
-		'print_hide': 1,
-		'report_hide': 1
 	}
 ]

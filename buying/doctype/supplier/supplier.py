@@ -68,7 +68,7 @@ class DocType:
 		# create address
 		addr_flds = [self.doc.address_line1, self.doc.address_line2, self.doc.city, self.doc.state, self.doc.country, self.doc.pincode]
 		address_line = "\n".join(filter(lambda x : (x!='' and x!=None),addr_flds))
-		set(self.doc,'address', address_line)
+		webnotes.conn.set(self.doc,'address', address_line)
 
 		# create account head
 		self.create_account_head()

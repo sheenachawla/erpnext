@@ -152,9 +152,9 @@ class TestPurchaseReceipt(unittest.TestCase):
 			["Excise Duty - %s" % abbr, 140, 1490],
 			["Education Cess - %s" % abbr, 2.8, 1492.8],
 			["S&H Education Cess - %s" % abbr, 1.4, 1494.2],
-			["CST - %s" % abbr, 29.884, 1524.084],
-			["VAT - Test - %s" % abbr, 156.25, 1680.334],
-			["Discount - %s" % abbr, -168.0334, 1512.3006],
+			["CST - %s" % abbr, 29.88, 1524.08],
+			["VAT - Test - %s" % abbr, 156.25, 1680.33],
+			["Discount - %s" % abbr, -168.03, 1512.30],
 		]		
 		for i, tax in enumerate(dl.get({"parentfield": "purchase_tax_details"})):
 			# print tax.account_head, tax.tax_amount, tax.total

@@ -366,7 +366,7 @@ class DocType:
 		indent_details_child.save()
 		indent_obj = get_obj('Purchase Request',indent.name,with_children=1)
 		indent_obj.validate()
-		set(indent_obj.doc,'docstatus',1)
+		webnotes.conn.set(indent_obj.doc,'docstatus',1)
 		indent_obj.on_submit()
 		msgprint("""Item: %s is to be re-ordered. Purchase Request %s raised. 
 			It was generated from %s %s""" % 

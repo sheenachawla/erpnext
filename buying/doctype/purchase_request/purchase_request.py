@@ -148,7 +148,7 @@ class DocType:
 		self.validate_fiscal_year()
 		
 		# set status as "Draft"
-		set(self.doc, 'status', 'Draft')
+		webnotes.conn.set(self.doc, 'status', 'Draft')
 
 		# Get Purchase Common Obj
 		pc_obj = get_obj(dt='Purchase Common')
@@ -185,7 +185,7 @@ class DocType:
 	#---------------------------------------------------------------------------
 	def on_submit(self):
 		# Step 1:=> Set Status
-		set(self.doc,'status','Submitted')
+		webnotes.conn.set(self.doc,'status','Submitted')
 
 		# Step 2:=> Update Bin
 		self.update_bin(is_submit = 1, is_stopped = 0)
@@ -206,7 +206,7 @@ class DocType:
 		self.update_bin(is_submit = (status == 'Submitted') and 1 or 0, is_stopped = 1)
 
 		# Step 2:=> Set status 
-		set(self.doc,'status',cstr(status))
+		webnotes.conn.set(self.doc,'status',cstr(status))
 		
 		# Step 3:=> Acknowledge User
 		msgprint(self.doc.doctype + ": " + self.doc.name + " has been %s." % ((status == 'Submitted') and 'Unstopped' or cstr(status)) )
@@ -226,4 +226,4 @@ class DocType:
 		self.update_bin(is_submit = 0, is_stopped = (cstr(self.doc.status) == 'Stopped') and 1 or 0)
 		
 		# Step 5:=> Set Status
-		set(self.doc,'status','Cancelled')
+		webnotes.conn.set(self.doc,'status','Cancelled')

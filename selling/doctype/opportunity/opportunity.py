@@ -88,8 +88,8 @@ class DocType(TransactionBase):
 		if self.doc.contact_date and self.doc.contact_date_ref != self.doc.contact_date:
 			if self.doc.contact_by:
 				self.add_calendar_event()
-			set(self.doc, 'contact_date_ref',self.doc.contact_date)
-		set(self.doc, 'status', 'Draft')
+			webnotes.conn.set(self.doc, 'contact_date_ref',self.doc.contact_date)
+		webnotes.conn.set(self.doc, 'status', 'Draft')
 
 	def add_calendar_event(self):
 		desc=''
@@ -163,7 +163,7 @@ class DocType(TransactionBase):
 		self.validate_lead_cust()
 
 	def on_submit(self):
-		set(self.doc, 'status', 'Submitted')
+		webnotes.conn.set(self.doc, 'status', 'Submitted')
 	
 	def on_cancel(self):
 		chk = sql("select t1.name from `tabQuotation` t1, `tabQuotation Item` t2 where t2.parent = t1.name and t1.docstatus=1 and (t1.status!='Order Lost' and t1.status!='Cancelled') and t2.prevdoc_docname = %s",self.doc.name)
@@ -171,7 +171,7 @@ class DocType(TransactionBase):
 			msgprint("Quotation No. "+cstr(chk[0][0])+" is submitted against this Opportunity. Thus can not be cancelled.")
 			raise Exception
 		else:
-			set(self.doc, 'status', 'Cancelled')
+			webnotes.conn.set(self.doc, 'status', 'Cancelled')
 		
 	def declare_enquiry_lost(self,arg):
 		chk = sql("select t1.name from `tabQuotation` t1, `tabQuotation Item` t2 where t2.parent = t1.name and t1.docstatus=1 and (t1.status!='Order Lost' and t1.status!='Cancelled') and t2.prevdoc_docname = %s",self.doc.name)
@@ -179,6 +179,6 @@ class DocType(TransactionBase):
 			msgprint("Quotation No. "+cstr(chk[0][0])+" is submitted against this Opportunity. Thus 'Opportunity Lost' can not be declared against it.")
 			raise Exception
 		else:
-			set(self.doc, 'status', 'Opportunity Lost')
-			set(self.doc, 'order_lost_reason', arg)
+			webnotes.conn.set(self.doc, 'status', 'Opportunity Lost')
+			webnotes.conn.set(self.doc, 'order_lost_reason', arg)
 			return 'true'

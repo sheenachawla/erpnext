@@ -95,10 +95,10 @@ class DocType:
 			address_line = address_line + "\n" + "Phone: " + cstr(self.doc.phone_1)
 		if self.doc.email_id:
 			address_line = address_line + "\n" + "E-mail: " + cstr(self.doc.email_id)
-		set(self.doc,'address', address_line)
+		webnotes.conn.set(self.doc,'address', address_line)
 		
 		telephone = "(O): " + cstr(self.doc.phone_1) +"\n"+ cstr(self.doc.phone_2) + "\n" + "(M): " +	"\n" + "(fax): " + cstr(self.doc.fax_1)
-		set(self.doc,'telephone',telephone)
+		webnotes.conn.set(self.doc,'telephone',telephone)
 
 
 	# ------------------------------------

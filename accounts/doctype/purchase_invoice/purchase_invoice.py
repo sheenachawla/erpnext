@@ -30,9 +30,15 @@ from controllers.accounts import AccountsController
 
 class DocType(AccountsController):
 	def __init__(self,d,dl):
-		self.doc, self.doclist = d, dl 
+		self.doc, self.doclist = d, dl
+		
+		# temp fields for identification
 		self.tname = 'Purchase Invoice Item'
 		self.fname = 'entries'
+		self.transaction_type = "Purchase"
+		self.taxes_and_charges = "purchase_tax_details"
+		self.taxes_and_charges_total = "total_tax"
+		
 
 	def autoname(self):
 		self.doc.name = make_autoname(self.doc.naming_series+'.####')
@@ -396,7 +402,7 @@ class DocType(AccountsController):
 		self.doc.total_amount_to_pay = self.doc.grand_total - \
 			self.doc.total_tds_on_voucher
 		
-		if self.doc.docstatus = 0:
+		if self.doc.docstatus == 0:
 			self.doc.outstanding_amount = self.doc.total_amount_to_pay - \
 				flt(self.doc.total_advance)
 	
@@ -414,7 +420,7 @@ class DocType(AccountsController):
 		self.check_for_acc_head_of_supplier()
 		self.check_for_stopped_status()
 		
-		self.calculate()
+		self.calculate_taxes_and_totals()
 
 		self.po_list, self.pr_list = [], []
 		for d in getlist(self.doclist, 'entries'):

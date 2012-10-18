@@ -1,5 +1,9 @@
+import webnotes
+
 def execute():
-	import webnotes
+	insert_accounts()
+	
+def insert_accounts():
 	from webnotes.model import insert
 	for d in webnotes.conn.sql("""select name, abbr from tabCompany""", as_dict=1):
 		acc_list = [
@@ -21,7 +25,7 @@ def execute():
 				insert(acc)
 			else:
 				print "Account %s already exists" % acc_name
-		
+						
 def make_account_dict(account, parent, company_detail, group_or_ledger):
 	return {
 		"doctype": "Account",
@@ -30,4 +34,6 @@ def make_account_dict(account, parent, company_detail, group_or_ledger):
 		"company": company_detail['name'],
 		"group_or_ledger": group_or_ledger
 	}
+	
+
 	

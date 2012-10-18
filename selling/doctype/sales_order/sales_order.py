@@ -356,7 +356,7 @@ class DocType(TransactionBase):
 		#update prevdoc status
 		self.update_prevdoc_status('submit')
 		# set SO status
-		set(self.doc, 'status', 'Submitted')
+		webnotes.conn.set(self.doc, 'status', 'Submitted')
 	
  
 # ON CANCEL
@@ -374,7 +374,7 @@ class DocType(TransactionBase):
 		self.update_prevdoc_status('cancel')
 		
 		# ::::::::: SET SO STATUS ::::::::::
-		set(self.doc, 'status', 'Cancelled')
+		webnotes.conn.set(self.doc, 'status', 'Cancelled')
 		
 	# CHECK NEXT DOCSTATUS
 	# does not allow to cancel document if DN or RV made against it is SUBMITTED 
@@ -412,7 +412,7 @@ class DocType(TransactionBase):
 		self.check_modified_date()
 		self.update_stock_ledger(update_stock = -1,clear = 1)
 		# ::::::::: SET SO STATUS ::::::::::
-		set(self.doc, 'status', 'Stopped')
+		webnotes.conn.set(self.doc, 'status', 'Stopped')
 		msgprint(self.doc.doctype + ": " + self.doc.name + " has been Stopped. To make transactions against this Sales Order you need to Unstop it.")
 
 	# UNSTOP SALES ORDER
@@ -422,7 +422,7 @@ class DocType(TransactionBase):
 		self.check_modified_date()
 		self.update_stock_ledger(update_stock = 1,clear = 1)
 		# ::::::::: SET SO STATUS ::::::::::
-		set(self.doc, 'status', 'Submitted')
+		webnotes.conn.set(self.doc, 'status', 'Submitted')
 		msgprint(self.doc.doctype + ": " + self.doc.name + " has been Unstopped.")
 
 	# UPDATE STOCK LEDGER
@@ -450,13 +450,13 @@ class DocType(TransactionBase):
 		if is_submitted:
 			if not self.doc.amended_from:
 				msg = 'Sales Order: '+self.doc.name+' has been made against PO no: '+cstr(self.doc.po_no)
-				set(self.doc, 'message', msg)
+				webnotes.conn.set(self.doc, 'message', msg)
 			else:
 				msg = 'Sales Order has been amended. New SO no:'+self.doc.name
-				set(self.doc, 'message', msg)
+				webnotes.conn.set(self.doc, 'message', msg)
 		else:
 			msg = 'Sales Order: '+self.doc.name+' has been cancelled.'
-			set(self.doc, 'message', msg)
+			webnotes.conn.set(self.doc, 'message', msg)
 		
 	# SEND SMS
 	# =========
