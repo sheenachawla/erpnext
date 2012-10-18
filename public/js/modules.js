@@ -75,7 +75,14 @@ wn.module_css_map = {
 	'Knowledge Base': 'ultra-dark-green'
 }
 
-
+wn.get_module_color = function(module) {
+	try {
+		var color = wn.module_css_classes[wn.module_css_map[module]].middle;			
+	} catch(e) {
+		var color = "#000";
+	}
+	return color;
+}
 wn.provide('erpnext.module_page');
 
 erpnext.module_page.setup_page = function(module, wrapper) {
