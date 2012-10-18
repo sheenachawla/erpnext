@@ -355,7 +355,7 @@ class DocType(AccountsController):
 
 	def calculate_taxes_and_totals(self):
 		super(DocType, self).calculate_taxes_and_totals()
-		if self.doc.docstatus = 0:
+		if self.doc.docstatus == 0:
 			self.doc.outstanding_amount = self.doc.grand_total - flt(self.doc.total_advance)
 	
 	
