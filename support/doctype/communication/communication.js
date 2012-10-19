@@ -13,6 +13,7 @@ cur_frm.cscript.refresh = function(doc, dt, dn) {
 
 
 cur_frm.cscript.make_communication_body = function() {
+	return;
 	var communication_wrapper = cur_frm.fields_dict.communication_html.wrapper;
 	communication_wrapper.innerHTML = '';
 	cur_frm.communication_html = $a(communication_wrapper, 'div');
@@ -22,6 +23,7 @@ cur_frm.cscript.make_communication_body = function() {
 }
 
 cur_frm.cscript.render_communication_list = function(doc, dt, dn) {
+	return;
 	var ListView = wn.views.ListView.extend({
 		init: function(doclistview) {
 			this._super(doclistview);
