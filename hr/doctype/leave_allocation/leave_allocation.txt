@@ -3,9 +3,9 @@
 
 	# These values are common in all dictionaries
 	{
-		u'creation': '2012-10-02 18:51:49',
+		u'creation': '2012-10-18 15:07:22',
 		u'docstatus': 0,
-		u'modified': '2012-10-17 12:51:44',
+		u'modified': '2012-10-19 15:07:38',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -17,6 +17,7 @@
 		'colour': u'White:FFF',
 		'default_print_format': u'Standard',
 		u'doctype': u'DocType',
+		'document_type': u'Setup',
 		'is_submittable': 1,
 		'module': u'HR',
 		u'name': u'__common__',
@@ -24,7 +25,7 @@
 		'section_style': u'Simple',
 		'server_code_error': u' ',
 		'show_in_menu': 0,
-		'version': 1
+		'version': 2
 	},
 
 	# These values are common for all DocField

@@ -3,11 +3,11 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-06-11 12:10:15',
-		'docstatus': 0,
-		'modified': '2012-06-27 12:50:00',
-		'modified_by': u'Administrator',
-		'owner': u'ashwini@webnotestech.com'
+		u'creation': '2012-10-18 15:07:40',
+		u'docstatus': 0,
+		u'modified': '2012-10-19 16:20:48',
+		u'modified_by': u'Administrator',
+		u'owner': u'ashwini@webnotestech.com'
 	},
 
 	# These values are common for all DocType
@@ -16,23 +16,24 @@
 		'autoname': u'MV.#####',
 		'colour': u'White:FFF',
 		'default_print_format': u'Standard',
-		'doctype': 'DocType',
+		u'doctype': u'DocType',
+		'document_type': u'Transaction',
 		'is_submittable': 1,
 		'module': u'Support',
-		'name': '__common__',
+		u'name': u'__common__',
 		'search_fields': u'status,maintenance_type,customer,customer_name, address,mntc_date,company,fiscal_year',
 		'section_style': u'Simple',
 		'server_code_error': u' ',
 		'show_in_menu': 0,
 		'subject': u'To %(customer_name)s on %(mntc_date)s',
 		'tag_fields': u'completion_status,maintenance_type',
-		'version': 1
+		'version': 2
 	},
 
 	# These values are common for all DocField
 	{
-		'doctype': u'DocField',
-		'name': '__common__',
+		u'doctype': u'DocField',
+		u'name': u'__common__',
 		'parent': u'Maintenance Visit',
 		'parentfield': u'fields',
 		'parenttype': u'DocType'
@@ -40,8 +41,8 @@
 
 	# These values are common for all DocPerm
 	{
-		'doctype': u'DocPerm',
-		'name': '__common__',
+		u'doctype': u'DocPerm',
+		u'name': u'__common__',
 		'parent': u'Maintenance Visit',
 		'parentfield': u'permissions',
 		'parenttype': u'DocType',
@@ -50,70 +51,13 @@
 
 	# DocType, Maintenance Visit
 	{
-		'doctype': 'DocType',
-		'name': u'Maintenance Visit'
-	},
-
-	# DocPerm
-	{
-		'amend': 1,
-		'cancel': 1,
-		'create': 1,
-		'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'System Manager',
-		'submit': 1,
-		'write': 1
-	},
-
-	# DocPerm
-	{
-		'doctype': u'DocPerm',
-		'permlevel': 1,
-		'role': u'System Manager'
-	},
-
-	# DocPerm
-	{
-		'amend': 1,
-		'cancel': 1,
-		'create': 1,
-		'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'Maintenance Manager',
-		'submit': 1,
-		'write': 1
-	},
-
-	# DocPerm
-	{
-		'doctype': u'DocPerm',
-		'permlevel': 1,
-		'role': u'Maintenance Manager'
-	},
-
-	# DocPerm
-	{
-		'amend': 1,
-		'cancel': 1,
-		'create': 1,
-		'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'Maintenance User',
-		'submit': 1,
-		'write': 1
-	},
-
-	# DocPerm
-	{
-		'doctype': u'DocPerm',
-		'permlevel': 1,
-		'role': u'Maintenance User'
+		u'doctype': u'DocType',
+		u'name': u'Maintenance Visit'
 	},
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'customer_details',
 		'fieldtype': u'Section Break',
 		'label': u'Customer Details',
@@ -124,7 +68,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'column_break0',
 		'fieldtype': u'Column Break',
 		'oldfieldtype': u'Column Break',
@@ -133,7 +77,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'customer',
 		'fieldtype': u'Link',
 		'in_filter': 1,
@@ -150,7 +94,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'customer_name',
 		'fieldtype': u'Data',
 		'hidden': 1,
@@ -160,7 +104,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'address_display',
 		'fieldtype': u'Small Text',
 		'hidden': 1,
@@ -170,7 +114,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'contact_display',
 		'fieldtype': u'Small Text',
 		'hidden': 1,
@@ -180,7 +124,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'contact_mobile',
 		'fieldtype': u'Data',
 		'hidden': 1,
@@ -190,7 +134,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'contact_email',
 		'fieldtype': u'Data',
 		'hidden': 1,
@@ -200,7 +144,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'column_break1',
 		'fieldtype': u'Column Break',
 		'oldfieldtype': u'Column Break',
@@ -211,7 +155,7 @@
 	# DocField
 	{
 		'default': u'Today',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'mntc_date',
 		'fieldtype': u'Date',
 		'label': u'Maintenance Date',
@@ -224,7 +168,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'mntc_time',
 		'fieldtype': u'Time',
 		'label': u'Maintenance Time',
@@ -236,7 +180,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'maintenance_details',
 		'fieldtype': u'Section Break',
 		'label': u'Maintenance Details',
@@ -247,7 +191,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'completion_status',
 		'fieldtype': u'Select',
 		'label': u'Completion Status',
@@ -262,7 +206,7 @@
 	{
 		'colour': u'White:FFF',
 		'default': u'Unscheduled',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'maintenance_type',
 		'fieldtype': u'Select',
 		'in_filter': 1,
@@ -277,7 +221,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'column_break2',
 		'fieldtype': u'Column Break',
 		'oldfieldtype': u'Column Break',
@@ -288,7 +232,7 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'sales_order_no',
 		'fieldtype': u'Link',
 		'in_filter': 1,
@@ -304,7 +248,7 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'customer_issue_no',
 		'fieldtype': u'Link',
 		'in_filter': 1,
@@ -319,7 +263,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'maintenance_schedule',
 		'fieldtype': u'Link',
 		'in_filter': 1,
@@ -330,7 +274,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'get_items',
 		'fieldtype': u'Button',
 		'label': u'Get Items',
@@ -343,7 +287,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'section_break0',
 		'fieldtype': u'Section Break',
 		'oldfieldtype': u'Section Break',
@@ -353,7 +297,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'maintenance_visit_details',
 		'fieldtype': u'Table',
 		'label': u'Maintenance Visit Purpose',
@@ -365,7 +309,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'more_info',
 		'fieldtype': u'Section Break',
 		'label': u'More Info',
@@ -375,7 +319,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'customer_feedback',
 		'fieldtype': u'Small Text',
 		'label': u'Customer Feedback',
@@ -386,7 +330,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'col_break3',
 		'fieldtype': u'Column Break',
 		'permlevel': 0
@@ -396,7 +340,7 @@
 	{
 		'colour': u'White:FFF',
 		'default': u'Draft',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'status',
 		'fieldtype': u'Data',
 		'label': u'Status',
@@ -410,7 +354,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'amended_from',
 		'fieldtype': u'Data',
 		'label': u'Amended From',
@@ -424,7 +368,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'amendment_date',
 		'fieldtype': u'Date',
 		'label': u'Amendment Date',
@@ -438,7 +382,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'company',
 		'fieldtype': u'Select',
 		'in_filter': 1,
@@ -454,7 +398,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'fiscal_year',
 		'fieldtype': u'Select',
 		'in_filter': 1,
@@ -470,7 +414,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'contact_info_section',
 		'fieldtype': u'Section Break',
 		'label': u'Contact Info',
@@ -479,7 +423,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'customer_address',
 		'fieldtype': u'Link',
 		'label': u'Customer Address',
@@ -490,7 +434,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'contact_person',
 		'fieldtype': u'Link',
 		'label': u'Contact Person',
@@ -501,7 +445,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'col_break4',
 		'fieldtype': u'Column Break',
 		'permlevel': 0
@@ -509,7 +453,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'territory',
 		'fieldtype': u'Link',
 		'label': u'Territory',
@@ -520,12 +464,69 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'customer_group',
 		'fieldtype': u'Link',
 		'label': u'Customer Group',
 		'options': u'Customer Group',
 		'permlevel': 0,
 		'print_hide': 1
+	},
+
+	# DocPerm
+	{
+		'amend': 1,
+		'cancel': 1,
+		'create': 1,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'System Manager',
+		'submit': 1,
+		'write': 1
+	},
+
+	# DocPerm
+	{
+		u'doctype': u'DocPerm',
+		'permlevel': 1,
+		'role': u'System Manager'
+	},
+
+	# DocPerm
+	{
+		'amend': 1,
+		'cancel': 1,
+		'create': 1,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'Maintenance Manager',
+		'submit': 1,
+		'write': 1
+	},
+
+	# DocPerm
+	{
+		u'doctype': u'DocPerm',
+		'permlevel': 1,
+		'role': u'Maintenance Manager'
+	},
+
+	# DocPerm
+	{
+		'amend': 1,
+		'cancel': 1,
+		'create': 1,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'Maintenance User',
+		'submit': 1,
+		'write': 1
+	},
+
+	# DocPerm
+	{
+		u'doctype': u'DocPerm',
+		'permlevel': 1,
+		'role': u'Maintenance User'
 	}
 ]

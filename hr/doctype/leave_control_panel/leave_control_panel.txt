@@ -3,11 +3,11 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-03-27 14:35:59',
-		'docstatus': 0,
-		'modified': '2012-03-27 14:35:59',
-		'modified_by': u'Administrator',
-		'owner': u'Administrator'
+		u'creation': '2012-10-18 15:07:22',
+		u'docstatus': 0,
+		u'modified': '2012-10-19 15:13:57',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
 	},
 
 	# These values are common for all DocType
@@ -18,23 +18,24 @@
 		'allow_print': 1,
 		'colour': u'White:FFF',
 		'default_print_format': u'Standard',
-		'doctype': 'DocType',
+		u'doctype': u'DocType',
+		'document_type': u'Other',
 		'hide_heading': 0,
 		'hide_toolbar': 0,
 		'issingle': 1,
 		'module': u'HR',
-		'name': '__common__',
+		u'name': u'__common__',
 		'read_only': 1,
 		'section_style': u'Simple',
 		'server_code_error': u' ',
 		'show_in_menu': 0,
-		'version': 162
+		'version': 163
 	},
 
 	# These values are common for all DocField
 	{
-		'doctype': u'DocField',
-		'name': '__common__',
+		u'doctype': u'DocField',
+		u'name': u'__common__',
 		'parent': u'Leave Control Panel',
 		'parentfield': u'fields',
 		'parenttype': u'DocType',
@@ -43,8 +44,8 @@
 
 	# These values are common for all DocPerm
 	{
-		'doctype': u'DocPerm',
-		'name': '__common__',
+		u'doctype': u'DocPerm',
+		u'name': u'__common__',
 		'parent': u'Leave Control Panel',
 		'parentfield': u'permissions',
 		'parenttype': u'DocType',
@@ -53,61 +54,13 @@
 
 	# DocType, Leave Control Panel
 	{
-		'doctype': 'DocType',
-		'name': u'Leave Control Panel'
-	},
-
-	# DocPerm
-	{
-		'create': 1,
-		'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'System Manager',
-		'write': 1
-	},
-
-	# DocPerm
-	{
-		'doctype': u'DocPerm',
-		'permlevel': 1,
-		'role': u'System Manager'
-	},
-
-	# DocPerm
-	{
-		'create': 1,
-		'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'HR User',
-		'write': 1
-	},
-
-	# DocPerm
-	{
-		'create': 1,
-		'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'HR Manager',
-		'write': 1
-	},
-
-	# DocPerm
-	{
-		'doctype': u'DocPerm',
-		'permlevel': 1,
-		'role': u'HR User'
-	},
-
-	# DocPerm
-	{
-		'doctype': u'DocPerm',
-		'permlevel': 1,
-		'role': u'HR Manager'
+		u'doctype': u'DocType',
+		u'name': u'Leave Control Panel'
 	},
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'column_break0',
 		'fieldtype': u'Column Break',
 		'width': u'50%'
@@ -117,7 +70,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'Leave blank if considered for all employee types',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'employee_type',
 		'fieldtype': u'Select',
 		'label': u'Employee Type',
@@ -128,7 +81,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'Leave blank if considered for all branches',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'branch',
 		'fieldtype': u'Select',
 		'label': u'Branch',
@@ -139,7 +92,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'Leave blank if considered for all departments',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'department',
 		'fieldtype': u'Select',
 		'label': u'Department',
@@ -150,7 +103,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'Leave blank if considered for all designations',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'designation',
 		'fieldtype': u'Select',
 		'label': u'Designation',
@@ -161,7 +114,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'Leave blank if considered for all grades',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'grade',
 		'fieldtype': u'Select',
 		'label': u'Grade',
@@ -170,7 +123,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'column_break1',
 		'fieldtype': u'Column Break',
 		'width': u'50%'
@@ -178,7 +131,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'fiscal_year',
 		'fieldtype': u'Select',
 		'in_filter': 1,
@@ -189,7 +142,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'leave_type',
 		'fieldtype': u'Select',
 		'label': u'Leave Type',
@@ -201,7 +154,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u"Please select Carry Forward if you also want to include previous fiscal year's balance leaves to this fiscal year",
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'carry_forward',
 		'fieldtype': u'Check',
 		'label': u'Carry Forward'
@@ -209,7 +162,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'no_of_days',
 		'fieldtype': u'Currency',
 		'label': u'New Leaves Allocated (In Days)',
@@ -219,11 +172,59 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'allocate',
 		'fieldtype': u'Button',
 		'label': u'Allocate',
 		'options': u'allocate_leave',
 		'trigger': u'Server'
+	},
+
+	# DocPerm
+	{
+		'create': 1,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'System Manager',
+		'write': 1
+	},
+
+	# DocPerm
+	{
+		u'doctype': u'DocPerm',
+		'permlevel': 1,
+		'role': u'System Manager'
+	},
+
+	# DocPerm
+	{
+		'create': 1,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'HR User',
+		'write': 1
+	},
+
+	# DocPerm
+	{
+		'create': 1,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'HR Manager',
+		'write': 1
+	},
+
+	# DocPerm
+	{
+		u'doctype': u'DocPerm',
+		'permlevel': 1,
+		'role': u'HR User'
+	},
+
+	# DocPerm
+	{
+		u'doctype': u'DocPerm',
+		'permlevel': 1,
+		'role': u'HR Manager'
 	}
 ]

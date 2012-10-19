@@ -1,0 +1,80 @@
+# DocType, Books
+[
+
+	# These values are common in all dictionaries
+	{
+		u'creation': '2011-08-30 15:54:30',
+		u'docstatus': 0,
+		u'modified': '2012-10-19 15:10:46',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
+	},
+
+	# These values are common for all DocType
+	{
+		'autoname': u'field:book_name',
+		'colour': u'White:FFF',
+		u'doctype': u'DocType',
+		'module': u'HR',
+		u'name': u'__common__',
+		'name_case': u'Title Case',
+		'search_fields': u'book_name,author',
+		'section_style': u'Simple',
+		'show_in_menu': 0,
+		'version': 3
+	},
+
+	# These values are common for all DocField
+	{
+		u'doctype': u'DocField',
+		u'name': u'__common__',
+		'parent': u'Books',
+		'parentfield': u'fields',
+		'parenttype': u'DocType',
+		'permlevel': 0
+	},
+
+	# DocType, Books
+	{
+		u'doctype': u'DocType',
+		u'name': u'Books'
+	},
+
+	# DocField
+	{
+		u'doctype': u'DocField',
+		'fieldname': u'book_name',
+		'fieldtype': u'Data',
+		'label': u'Book Name',
+		'reqd': 1
+	},
+
+	# DocField
+	{
+		u'doctype': u'DocField',
+		'fieldname': u'author',
+		'fieldtype': u'Data',
+		'label': u'Author'
+	},
+
+	# DocField
+	{
+		u'doctype': u'DocField',
+		'fieldname': u'volume',
+		'fieldtype': u'Select',
+		'label': u'Vol.',
+		'options': u'1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11'
+	},
+
+	# DocField
+	{
+		'description': u'Will be hidden',
+		u'doctype': u'DocField',
+		'fieldname': u'status',
+		'fieldtype': u'Select',
+		'hidden': 0,
+		'label': u'Status',
+		'no_copy': 1,
+		'options': u'Issued In\nIssued Out'
+	}
+]

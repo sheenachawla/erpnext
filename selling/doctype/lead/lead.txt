@@ -3,9 +3,9 @@
 
 	# These values are common in all dictionaries
 	{
-		u'creation': '2012-06-05 20:03:20',
+		u'creation': '2012-10-18 15:07:26',
 		u'docstatus': 0,
-		u'modified': '2012-08-06 14:49:48',
+		u'modified': '2012-10-19 16:10:43',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -17,7 +17,7 @@
 		'colour': u'White:FFF',
 		'default_print_format': u'Standard',
 		u'doctype': u'DocType',
-		'document_type': u'Master',
+		'document_type': u'Transaction',
 		'module': u'Selling',
 		u'name': u'__common__',
 		'search_fields': u'lead_name,lead_owner,status',
@@ -26,7 +26,7 @@
 		'show_in_menu': 0,
 		'subject': u'%(lead_name)s from %(company_name)s | To Discuss: %(to_discuss)s',
 		'tag_fields': u'status,source',
-		'version': 1
+		'version': 2
 	},
 
 	# These values are common for all DocField

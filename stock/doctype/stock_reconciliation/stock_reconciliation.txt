@@ -3,11 +3,11 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-04-13 11:56:39',
-		'docstatus': 0,
-		'modified': '2012-05-10 11:54:52',
-		'modified_by': u'Administrator',
-		'owner': u'Administrator'
+		u'creation': '2012-10-18 15:07:39',
+		u'docstatus': 0,
+		u'modified': '2012-10-19 16:17:00',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
 	},
 
 	# These values are common for all DocType
@@ -17,23 +17,24 @@
 		'autoname': u'SR/.######',
 		'colour': u'White:FFF',
 		'default_print_format': u'Standard',
-		'doctype': 'DocType',
+		u'doctype': u'DocType',
+		'document_type': u'Other',
 		'is_submittable': 1,
 		'max_attachments': 1,
 		'module': u'Stock',
-		'name': '__common__',
+		u'name': u'__common__',
 		'search_fields': u'reconciliation_date',
 		'section_style': u'Tray',
 		'server_code_error': u' ',
 		'show_in_menu': 0,
 		'subject': u'Date: %(reconciliation_date)s, Time: %(reconciliation_time)s',
-		'version': 1
+		'version': 2
 	},
 
 	# These values are common for all DocField
 	{
-		'doctype': u'DocField',
-		'name': '__common__',
+		u'doctype': u'DocField',
+		u'name': u'__common__',
 		'parent': u'Stock Reconciliation',
 		'parentfield': u'fields',
 		'parenttype': u'DocType'
@@ -41,8 +42,8 @@
 
 	# These values are common for all DocPerm
 	{
-		'doctype': u'DocPerm',
-		'name': '__common__',
+		u'doctype': u'DocPerm',
+		u'name': u'__common__',
 		'parent': u'Stock Reconciliation',
 		'parentfield': u'permissions',
 		'parenttype': u'DocType',
@@ -51,48 +52,13 @@
 
 	# DocType, Stock Reconciliation
 	{
-		'doctype': 'DocType',
-		'name': u'Stock Reconciliation'
-	},
-
-	# DocPerm
-	{
-		'amend': 0,
-		'cancel': 1,
-		'create': 1,
-		'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'Material Manager',
-		'submit': 1,
-		'write': 1
-	},
-
-	# DocPerm
-	{
-		'amend': 0,
-		'cancel': 0,
-		'create': 0,
-		'doctype': u'DocPerm',
-		'permlevel': 1,
-		'role': u'Material Manager',
-		'submit': 0,
-		'write': 0
-	},
-
-	# DocPerm
-	{
-		'cancel': 1,
-		'create': 1,
-		'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'System Manager',
-		'submit': 1,
-		'write': 1
+		u'doctype': u'DocType',
+		u'name': u'Stock Reconciliation'
 	},
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'steps',
 		'fieldtype': u'HTML',
 		'label': u'Steps',
@@ -102,7 +68,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'reconciliation_date',
 		'fieldtype': u'Date',
 		'in_filter': 0,
@@ -115,7 +81,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'reconciliation_time',
 		'fieldtype': u'Time',
 		'in_filter': 0,
@@ -128,7 +94,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'remark',
 		'fieldtype': u'Text',
 		'label': u'Remark',
@@ -139,7 +105,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'download_template',
 		'fieldtype': u'Button',
 		'label': u'Download Template',
@@ -148,7 +114,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'file_list',
 		'fieldtype': u'Text',
 		'hidden': 1,
@@ -162,7 +128,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'diff_info',
 		'fieldtype': u'Text',
 		'hidden': 1,
@@ -175,7 +141,7 @@
 	{
 		'depends_on': u'eval:doc.amended_from',
 		'description': u'The date at which current entry is corrected in the system.',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'amendment_date',
 		'fieldtype': u'Date',
 		'label': u'Amendment Date',
@@ -186,7 +152,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'amended_from',
 		'fieldtype': u'Link',
 		'label': u'Amended From',
@@ -194,5 +160,40 @@
 		'options': u'Sales Invoice',
 		'permlevel': 1,
 		'print_hide': 1
+	},
+
+	# DocPerm
+	{
+		'amend': 0,
+		'cancel': 1,
+		'create': 1,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'Material Manager',
+		'submit': 1,
+		'write': 1
+	},
+
+	# DocPerm
+	{
+		'amend': 0,
+		'cancel': 0,
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'permlevel': 1,
+		'role': u'Material Manager',
+		'submit': 0,
+		'write': 0
+	},
+
+	# DocPerm
+	{
+		'cancel': 1,
+		'create': 1,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'System Manager',
+		'submit': 1,
+		'write': 1
 	}
 ]

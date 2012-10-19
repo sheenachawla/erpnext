@@ -3,25 +3,47 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2010-12-14 10:23:31',
-		'docstatus': 0,
-		'modified': '2010-12-30 14:43:47',
-		'modified_by': 'Administrator',
-		'owner': 'Administrator'
+		u'creation': '2012-06-14 18:44:13',
+		u'docstatus': 0,
+		u'modified': '2012-10-19 16:05:27',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
 	},
 
 	# These values are common for all Page
 	{
-		'doctype': 'Page',
-		'module': 'Projects',
-		'name': '__common__',
-		'page_name': 'Projects',
-		'standard': 'Yes'
+		u'doctype': u'Page',
+		'module': u'Projects',
+		u'name': u'__common__',
+		'page_name': u'Projects',
+		'standard': u'Yes',
+		'title': u'Gantt Chart'
+	},
+
+	# These values are common for all Page Role
+	{
+		u'doctype': u'Page Role',
+		u'name': u'__common__',
+		'parent': u'Projects',
+		'parentfield': u'roles',
+		'parenttype': u'Page'
 	},
 
 	# Page, Projects
 	{
-		'doctype': 'Page',
-		'name': 'Projects'
+		u'doctype': u'Page',
+		u'name': u'Projects'
+	},
+
+	# Page Role
+	{
+		u'doctype': u'Page Role',
+		'role': u'Projects User'
+	},
+
+	# Page Role
+	{
+		u'doctype': u'Page Role',
+		'role': u'System Manager'
 	}
 ]

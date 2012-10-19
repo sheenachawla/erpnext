@@ -3,9 +3,9 @@
 
 	# These values are common in all dictionaries
 	{
-		u'creation': '2012-09-19 12:24:41',
+		u'creation': '2012-10-18 15:07:38',
 		u'docstatus': 0,
-		u'modified': '2012-10-02 10:40:14',
+		u'modified': '2012-10-19 16:16:27',
 		u'modified_by': u'Administrator',
 		u'owner': u'wasim@webnotestech.com'
 	},
@@ -14,6 +14,7 @@
 	{
 		'colour': u'White:FFF',
 		u'doctype': u'DocType',
+		'document_type': u'Other',
 		'is_transaction_doc': 0,
 		'issingle': 1,
 		'istable': 0,
@@ -24,7 +25,7 @@
 		'section_style': u'Simple',
 		'server_code_error': u' ',
 		'show_in_menu': 1,
-		'version': 1
+		'version': 2
 	},
 
 	# These values are common for all DocField

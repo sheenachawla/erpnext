@@ -3,9 +3,9 @@
 
 	# These values are common in all dictionaries
 	{
-		u'creation': '2012-10-16 16:31:17',
+		u'creation': '2012-10-18 15:07:36',
 		u'docstatus': 0,
-		u'modified': '2012-10-16 16:37:29',
+		u'modified': '2012-10-19 16:16:21',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -15,11 +15,11 @@
 		'autoname': u'field:parameter_name',
 		'description': u'Parameter (e.g. Size, Color) to be set on Item Variants',
 		u'doctype': u'DocType',
-		'document_type': u'Master',
+		'document_type': u'Setup',
 		'istable': 0,
 		'module': u'Stock',
 		u'name': u'__common__',
-		'version': 1
+		'version': 2
 	},
 
 	# These values are common for all DocField
