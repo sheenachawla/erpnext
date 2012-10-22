@@ -5,7 +5,7 @@
 	{
 		u'creation': '2012-10-18 15:07:25',
 		u'docstatus': 0,
-		u'modified': '2012-10-19 16:11:08',
+		u'modified': '2012-10-22 17:05:54',
 		u'modified_by': u'Administrator',
 		u'owner': u'harshada@webnotestech.com'
 	},
@@ -14,13 +14,14 @@
 	{
 		'autoname': u'field:industry',
 		'colour': u'White:FFF',
+		'description': u'Type of industry. e.g. Manufacturing, Retail',
 		u'doctype': u'DocType',
 		'document_type': u'Setup',
 		'module': u'Selling',
 		u'name': u'__common__',
 		'section_style': u'Simple',
 		'server_code_error': u' ',
-		'version': 5
+		'version': 6
 	},
 
 	# These values are common for all DocField

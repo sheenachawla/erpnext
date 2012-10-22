@@ -5,7 +5,7 @@
 	{
 		u'creation': '2012-10-18 15:07:20',
 		u'docstatus': 0,
-		u'modified': '2012-10-19 15:07:51',
+		u'modified': '2012-10-22 12:55:24',
 		u'modified_by': u'Administrator',
 		u'owner': u'ashwini@webnotestech.com'
 	},
@@ -16,6 +16,7 @@
 		'autoname': u'APRSL.#####',
 		'colour': u'White:FFF',
 		'default_print_format': u'Standard',
+		'description': u'Employee performance review.',
 		u'doctype': u'DocType',
 		'document_type': u'Transaction',
 		'is_submittable': 1,
@@ -25,7 +26,7 @@
 		'section_style': u'Simple',
 		'server_code_error': u' ',
 		'show_in_menu': 0,
-		'version': 162
+		'version': 163
 	},
 
 	# These values are common for all DocField

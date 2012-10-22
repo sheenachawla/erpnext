@@ -5,7 +5,7 @@
 	{
 		u'creation': '2012-10-18 15:07:41',
 		u'docstatus': 0,
-		u'modified': '2012-10-18 18:03:25',
+		u'modified': '2012-10-22 14:23:29',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -17,6 +17,7 @@
 		'allow_trash': 1,
 		'colour': u'White:FFF',
 		'default_print_format': u'Standard',
+		'description': u'Request for support (via email or website).',
 		u'doctype': u'DocType',
 		'document_type': u'Transaction',
 		'module': u'Support',
@@ -29,7 +30,7 @@
 		'show_in_menu': 0,
 		'subject': u'%(subject)s',
 		'tag_fields': u'status,allocated_to',
-		'version': 1
+		'version': 2
 	},
 
 	# These values are common for all DocField

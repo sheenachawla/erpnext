@@ -3,11 +3,11 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-06-11 12:10:11',
-		'docstatus': 0,
-		'modified': '2012-07-16 16:26:24',
-		'modified_by': u'Administrator',
-		'owner': u'Administrator'
+		u'creation': '2012-10-18 15:07:37',
+		u'docstatus': 0,
+		u'modified': '2012-10-22 14:16:30',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
 	},
 
 	# These values are common for all DocType
@@ -16,25 +16,26 @@
 		'allow_attach': 1,
 		'colour': u'White:FFF',
 		'default_print_format': u'Standard',
-		'doctype': 'DocType',
+		'description': u'Record of receipt of Items from Supplier.',
+		u'doctype': u'DocType',
 		'document_type': u'Transaction',
 		'is_submittable': 1,
 		'is_transaction_doc': 1,
 		'module': u'Stock',
-		'name': '__common__',
+		u'name': u'__common__',
 		'read_only_onload': 1,
 		'search_fields': u'status, posting_date, supplier',
 		'section_style': u'Tabbed',
 		'server_code_error': u' ',
 		'show_in_menu': 0,
 		'subject': u'From %(supplier_name)s against %(purchase_order)s on %(posting_date)s',
-		'version': 1
+		'version': 3
 	},
 
 	# These values are common for all DocField
 	{
-		'doctype': u'DocField',
-		'name': '__common__',
+		u'doctype': u'DocField',
+		u'name': u'__common__',
 		'parent': u'Purchase Receipt',
 		'parentfield': u'fields',
 		'parenttype': u'DocType'
@@ -42,8 +43,8 @@
 
 	# These values are common for all DocPerm
 	{
-		'doctype': u'DocPerm',
-		'name': '__common__',
+		u'doctype': u'DocPerm',
+		u'name': u'__common__',
 		'parent': u'Purchase Receipt',
 		'parentfield': u'permissions',
 		'parenttype': u'DocType',
@@ -52,14 +53,14 @@
 
 	# DocType, Purchase Receipt
 	{
-		'doctype': 'DocType',
-		'name': u'Purchase Receipt'
+		u'doctype': u'DocType',
+		u'name': u'Purchase Receipt'
 	},
 
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'basic_info',
 		'fieldtype': u'Section Break',
 		'label': u'Basic Info',
@@ -69,7 +70,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'column_break0',
 		'fieldtype': u'Column Break',
 		'oldfieldtype': u'Column Break',
@@ -81,7 +82,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'To manage multiple series please go to Setup > Manage Series',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'naming_series',
 		'fieldtype': u'Select',
 		'label': u'Series',
@@ -98,7 +99,7 @@
 	{
 		'allow_on_submit': 0,
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'supplier',
 		'fieldtype': u'Link',
 		'in_filter': 1,
@@ -116,7 +117,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'supplier_name',
 		'fieldtype': u'Data',
 		'hidden': 1,
@@ -126,7 +127,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'address_display',
 		'fieldtype': u'Small Text',
 		'hidden': 1,
@@ -136,7 +137,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'contact_display',
 		'fieldtype': u'Small Text',
 		'hidden': 1,
@@ -146,7 +147,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'contact_mobile',
 		'fieldtype': u'Text',
 		'hidden': 1,
@@ -156,7 +157,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'contact_email',
 		'fieldtype': u'Text',
 		'hidden': 1,
@@ -167,7 +168,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'column_break1',
 		'fieldtype': u'Column Break',
 		'oldfieldtype': u'Column Break',
@@ -179,7 +180,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'The date at which current entry will get or has actually executed.',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'posting_date',
 		'fieldtype': u'Date',
 		'in_filter': 1,
@@ -198,7 +199,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'Time at which materials were received',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'posting_time',
 		'fieldtype': u'Time',
 		'in_filter': 0,
@@ -216,7 +217,7 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'challan_no',
 		'fieldtype': u'Data',
 		'hidden': 1,
@@ -233,7 +234,7 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'challan_date',
 		'fieldtype': u'Date',
 		'hidden': 1,
@@ -250,7 +251,7 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'items',
 		'fieldtype': u'Section Break',
 		'label': u'Items',
@@ -261,7 +262,7 @@
 	# DocField
 	{
 		'allow_on_submit': 1,
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'purchase_receipt_details',
 		'fieldtype': u'Table',
 		'label': u'Purchase Receipt Items',
@@ -276,7 +277,7 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'section_break0',
 		'fieldtype': u'Section Break',
 		'oldfieldtype': u'Section Break',
@@ -286,7 +287,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'net_total',
 		'fieldtype': u'Currency',
 		'label': u'Net Total',
@@ -300,7 +301,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'net_total_import',
 		'fieldtype': u'Currency',
 		'label': u'Net Total (Import)',
@@ -312,7 +313,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'recalculate_values',
 		'fieldtype': u'Button',
 		'label': u'Re-Calculate Values',
@@ -323,7 +324,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'get_current_stock',
 		'fieldtype': u'Button',
 		'label': u'Get Current Stock',
@@ -335,7 +336,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'column_break2',
 		'fieldtype': u'Column Break',
 		'oldfieldtype': u'Column Break',
@@ -347,7 +348,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u"Supplier's currency",
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'currency',
 		'fieldtype': u'Select',
 		'label': u'Currency',
@@ -364,7 +365,7 @@
 		'colour': u'White:FFF',
 		'default': u'1.00',
 		'description': u"Rate at which supplier's currency is converted to company's base currency",
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'conversion_rate',
 		'fieldtype': u'Float',
 		'label': u'Conversion Rate',
@@ -380,7 +381,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'You can make a purchase receipt from multiple purchase orders. Select purchase orders one by one and click on the button below.',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'purchase_order_no',
 		'fieldtype': u'Link',
 		'label': u'Purchase Order',
@@ -395,7 +396,7 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'pull_purchase_order_details',
 		'fieldtype': u'Button',
 		'label': u'Pull Purchase Order Details',
@@ -409,7 +410,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'Add / Edit Taxes and Charges',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'taxes',
 		'fieldtype': u'Section Break',
 		'label': u'Taxes',
@@ -421,7 +422,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'If you have created a standard template in Purchase Taxes and Charges Master, select one and click on the button below.',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'purchase_other_charges',
 		'fieldtype': u'Link',
 		'label': u'Purchase Taxes and Charges',
@@ -434,7 +435,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'get_tax_detail',
 		'fieldtype': u'Button',
 		'label': u'Get Tax Detail',
@@ -446,7 +447,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'purchase_tax_details',
 		'fieldtype': u'Table',
 		'label': u'Purchase Taxes and Charges',
@@ -458,7 +459,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'calculate_tax',
 		'fieldtype': u'Button',
 		'label': u'Calculate Tax',
@@ -470,7 +471,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'total_tax',
 		'fieldtype': u'Currency',
 		'label': u'Total Tax',
@@ -482,7 +483,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'tax_calculation',
 		'fieldtype': u'HTML',
 		'label': u'Tax Calculation',
@@ -495,7 +496,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'Detailed Breakup of the totals',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'totals',
 		'fieldtype': u'Section Break',
 		'label': u'Totals',
@@ -505,7 +506,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'grand_total',
 		'fieldtype': u'Currency',
 		'label': u'Grand Total',
@@ -518,7 +519,7 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'rounded_total',
 		'fieldtype': u'Currency',
 		'label': u'Rounded Total',
@@ -532,7 +533,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'In Words will be visible once you save the Purchase Receipt.',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'in_words',
 		'fieldtype': u'Data',
 		'label': u'In Words',
@@ -544,7 +545,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'other_charges_added',
 		'fieldtype': u'Currency',
 		'label': u'Taxes and Charges Added',
@@ -556,7 +557,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'other_charges_deducted',
 		'fieldtype': u'Currency',
 		'label': u'Taxes and Charges Deducted',
@@ -568,7 +569,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'column_break3',
 		'fieldtype': u'Column Break',
 		'permlevel': 0,
@@ -577,7 +578,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'grand_total_import',
 		'fieldtype': u'Currency',
 		'label': u'Grand Total (Import)',
@@ -590,7 +591,7 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'in_words_import',
 		'fieldtype': u'Data',
 		'label': u'In Words (Import)',
@@ -602,7 +603,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'other_charges_added_import',
 		'fieldtype': u'Currency',
 		'label': u'Taxes and Charges Added (Import)',
@@ -614,7 +615,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'other_charges_deducted_import',
 		'fieldtype': u'Currency',
 		'label': u'Taxes and Charges Deducted (Import)',
@@ -628,7 +629,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'Add Terms and Conditions for the Purchase Receipt. You can also prepare a Terms and Conditions Master and use the Template.',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'terms_section_break',
 		'fieldtype': u'Section Break',
 		'label': u'Terms and Conditions',
@@ -638,7 +639,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'tc_name',
 		'fieldtype': u'Link',
 		'label': u'Select Terms and Conditions',
@@ -651,7 +652,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'get_terms',
 		'fieldtype': u'Button',
 		'label': u'Get Terms and Conditions',
@@ -662,7 +663,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'terms_html',
 		'fieldtype': u'HTML',
 		'label': u'Terms and Conditions HTML',
@@ -674,7 +675,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'terms',
 		'fieldtype': u'Text Editor',
 		'label': u'Terms and Conditions1',
@@ -685,7 +686,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'contact_section',
 		'fieldtype': u'Section Break',
 		'label': u'Contact Info',
@@ -694,7 +695,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'supplier_address',
 		'fieldtype': u'Link',
 		'label': u'Supplier Address',
@@ -705,7 +706,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'contact_person',
 		'fieldtype': u'Link',
 		'label': u'Contact Person',
@@ -718,7 +719,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'Filing in Additional Information about the Purchase Receipt will help you analyze your data better.',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'more_info',
 		'fieldtype': u'Section Break',
 		'label': u'More Info',
@@ -729,7 +730,7 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'status',
 		'fieldtype': u'Select',
 		'in_filter': 1,
@@ -750,7 +751,7 @@
 		'colour': u'White:FFF',
 		'depends_on': u'eval:!doc.__islocal',
 		'description': u'% of materials billed against this Purchase Receipt',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'per_billed',
 		'fieldtype': u'Currency',
 		'label': u'% Billed',
@@ -766,7 +767,7 @@
 		'colour': u'White:FFF',
 		'default': u'No',
 		'description': u'Select "Yes" for sub - contracting items',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'is_subcontracted',
 		'fieldtype': u'Select',
 		'label': u'Is Subcontracted',
@@ -779,7 +780,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'amended_from',
 		'fieldtype': u'Data',
 		'hidden': 1,
@@ -795,7 +796,7 @@
 	# DocField
 	{
 		'description': u'The date at which current entry is corrected in the system.',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'amendment_date',
 		'fieldtype': u'Date',
 		'hidden': 1,
@@ -811,7 +812,7 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'range',
 		'fieldtype': u'Data',
 		'hidden': 1,
@@ -824,7 +825,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'bill_no',
 		'fieldtype': u'Data',
 		'hidden': 1,
@@ -837,7 +838,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'bill_date',
 		'fieldtype': u'Date',
 		'hidden': 1,
@@ -852,7 +853,7 @@
 	{
 		'allow_on_submit': 1,
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'select_print_heading',
 		'fieldtype': u'Link',
 		'label': u'Select Print Heading',
@@ -870,7 +871,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'Select the relevant company name if you have multiple companies',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'company',
 		'fieldtype': u'Link',
 		'hidden': 0,
@@ -889,7 +890,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'fiscal_year',
 		'fieldtype': u'Select',
 		'in_filter': 1,
@@ -906,7 +907,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'column_break4',
 		'fieldtype': u'Column Break',
 		'oldfieldtype': u'Column Break',
@@ -918,7 +919,7 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'other_details',
 		'fieldtype': u'HTML',
 		'hidden': 1,
@@ -935,7 +936,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'Warehouse where you are maintaining stock of rejected items',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'rejected_warehouse',
 		'fieldtype': u'Link',
 		'label': u'Rejected Warehouse',
@@ -952,7 +953,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'Supplier warehouse where you have issued raw materials for sub - contracting',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'supplier_warehouse',
 		'fieldtype': u'Link',
 		'label': u'Supplier Warehouse',
@@ -969,7 +970,7 @@
 	{
 		'colour': u'White:FFF',
 		'depends_on': u'eval:!doc.__islocal',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'cancel_reason',
 		'fieldtype': u'Data',
 		'hidden': 0,
@@ -983,7 +984,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'instructions',
 		'fieldtype': u'Small Text',
 		'label': u'Instructions',
@@ -994,7 +995,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'remarks',
 		'fieldtype': u'Small Text',
 		'label': u'Remarks',
@@ -1004,7 +1005,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'transporter_info',
 		'fieldtype': u'Section Break',
 		'label': u'Transporter Info',
@@ -1013,7 +1014,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'transporter_name',
 		'fieldtype': u'Data',
 		'label': u'Transporter Name',
@@ -1026,7 +1027,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'Transporter lorry number',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'lr_no',
 		'fieldtype': u'Data',
 		'label': u'LR No',
@@ -1042,7 +1043,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'Date on which lorry started from supplier warehouse',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'lr_date',
 		'fieldtype': u'Date',
 		'label': u'LR Date',
@@ -1056,7 +1057,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'column_break5',
 		'fieldtype': u'Column Break',
 		'permlevel': 0,
@@ -1067,7 +1068,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'Following table will show values if items are sub - contracted. These values will be fetched from the master of "Bill of Materials" of sub - contracted items.',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'raw_material_details',
 		'fieldtype': u'Section Break',
 		'label': u'Raw Material Details',
@@ -1078,7 +1079,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'pr_raw_material_details',
 		'fieldtype': u'Table',
 		'label': u'Purchase Receipt Item Supplieds',
@@ -1092,7 +1093,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'file_list',
 		'fieldtype': u'Text',
 		'hidden': 1,
@@ -1107,7 +1108,7 @@
 		'amend': 0,
 		'cancel': 0,
 		'create': 0,
-		'doctype': u'DocPerm',
+		u'doctype': u'DocPerm',
 		'permlevel': 1,
 		'role': u'Material Manager',
 		'submit': 0,
@@ -1119,7 +1120,7 @@
 		'amend': 1,
 		'cancel': 1,
 		'create': 1,
-		'doctype': u'DocPerm',
+		u'doctype': u'DocPerm',
 		'permlevel': 0,
 		'role': u'Material Manager',
 		'submit': 1,
@@ -1131,7 +1132,7 @@
 		'amend': 0,
 		'cancel': 0,
 		'create': 0,
-		'doctype': u'DocPerm',
+		u'doctype': u'DocPerm',
 		'permlevel': 1,
 		'role': u'Material User',
 		'submit': 0,
@@ -1143,7 +1144,7 @@
 		'amend': 1,
 		'cancel': 1,
 		'create': 1,
-		'doctype': u'DocPerm',
+		u'doctype': u'DocPerm',
 		'permlevel': 0,
 		'role': u'Material User',
 		'submit': 1,
@@ -1155,7 +1156,7 @@
 		'amend': 1,
 		'cancel': 1,
 		'create': 1,
-		'doctype': u'DocPerm',
+		u'doctype': u'DocPerm',
 		'permlevel': 0,
 		'role': u'Purchase User',
 		'submit': 1,
@@ -1164,14 +1165,14 @@
 
 	# DocPerm
 	{
-		'doctype': u'DocPerm',
+		u'doctype': u'DocPerm',
 		'permlevel': 1,
 		'role': u'Purchase User'
 	},
 
 	# DocPerm
 	{
-		'doctype': u'DocPerm',
+		u'doctype': u'DocPerm',
 		'match': u'supplier',
 		'permlevel': 0,
 		'role': u'Supplier'
@@ -1179,7 +1180,7 @@
 
 	# DocPerm
 	{
-		'doctype': u'DocPerm',
+		u'doctype': u'DocPerm',
 		'permlevel': 2,
 		'role': u'All',
 		'write': 1

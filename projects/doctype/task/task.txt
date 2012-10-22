@@ -5,7 +5,7 @@
 	{
 		u'creation': '2012-10-18 15:07:25',
 		u'docstatus': 0,
-		u'modified': '2012-10-19 16:00:36',
+		u'modified': '2012-10-22 15:55:01',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -17,16 +17,18 @@
 		'autoname': u'TASK.#####',
 		'colour': u'White:FFF',
 		'default_print_format': u'Standard',
+		'description': u'Task required for a project.',
 		u'doctype': u'DocType',
 		'document_type': u'Transaction',
 		'module': u'Projects',
 		u'name': u'__common__',
+		'open_count': u'status="Open"',
 		'section_style': u'Tray',
 		'server_code_error': u' ',
 		'show_in_menu': 0,
 		'subject': u'%(subject)s',
 		'tag_fields': u'status',
-		'version': 2
+		'version': 4
 	},
 
 	# These values are common for all DocField

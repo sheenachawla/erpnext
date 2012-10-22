@@ -5,7 +5,7 @@
 	{
 		u'creation': '2012-10-18 15:07:11',
 		u'docstatus': 0,
-		u'modified': '2012-10-19 12:48:33',
+		u'modified': '2012-10-22 13:34:00',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -17,6 +17,7 @@
 		'allow_email': 1,
 		'allow_print': 1,
 		'colour': u'White:FFF',
+		'description': u'Update clearance dates on bank entries.',
 		u'doctype': u'DocType',
 		'document_type': u'Other',
 		'hide_heading': 1,
@@ -28,7 +29,7 @@
 		'section_style': u'Simple',
 		'server_code_error': u' ',
 		'show_in_menu': 0,
-		'version': 13
+		'version': 2
 	},
 
 	# These values are common for all DocField
@@ -54,15 +55,6 @@
 	{
 		u'doctype': u'DocType',
 		u'name': u'Bank Reconciliation'
-	},
-
-	# DocField
-	{
-		u'doctype': u'DocField',
-		'fieldname': u'head_html',
-		'fieldtype': u'HTML',
-		'label': u'Head HTML',
-		'permlevel': 0
 	},
 
 	# DocField

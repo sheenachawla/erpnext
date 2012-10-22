@@ -5,7 +5,7 @@
 	{
 		u'creation': '2012-10-18 15:07:21',
 		u'docstatus': 0,
-		u'modified': '2012-10-19 15:13:49',
+		u'modified': '2012-10-22 12:47:48',
 		u'modified_by': u'Administrator',
 		u'owner': u'harshada@webnotestech.com'
 	},
@@ -15,6 +15,7 @@
 		'_last_update': u'1294312182',
 		'allow_attach': 1,
 		'colour': u'White:FFF',
+		'description': u'Upload attendance data.',
 		u'doctype': u'DocType',
 		'document_type': u'Other',
 		'issingle': 1,
@@ -23,7 +24,7 @@
 		u'name': u'__common__',
 		'section_style': u'Simple',
 		'server_code_error': u' ',
-		'version': 123
+		'version': 124
 	},
 
 	# These values are common for all DocField

@@ -5,7 +5,7 @@
 	{
 		u'creation': '2012-10-18 15:07:24',
 		u'docstatus': 0,
-		u'modified': '2012-10-19 15:59:53',
+		u'modified': '2012-10-22 14:11:32',
 		u'modified_by': u'Administrator',
 		u'owner': u'jai@webnotestech.com'
 	},
@@ -15,6 +15,7 @@
 		'_last_update': u'1326188323',
 		'colour': u'White:FFF',
 		'default_print_format': u'Standard',
+		'description': u'Generate Purchase Requests and Production Orders from open Sales Orders (MRP).',
 		u'doctype': u'DocType',
 		'document_type': u'Other',
 		'in_create': 1,
@@ -25,7 +26,7 @@
 		'section_style': u'Tabbed',
 		'server_code_error': u' ',
 		'show_in_menu': 1,
-		'version': 107
+		'version': 108
 	},
 
 	# These values are common for all DocField

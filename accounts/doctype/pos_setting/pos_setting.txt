@@ -5,7 +5,7 @@
 	{
 		u'creation': '2012-10-18 15:07:13',
 		u'docstatus': 0,
-		u'modified': '2012-10-19 12:21:30',
+		u'modified': '2012-10-22 13:34:51',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -16,6 +16,7 @@
 		'autoname': u'POS/.####',
 		'colour': u'White:FFF',
 		'default_print_format': u'Standard',
+		'description': u'Settings for Point-of-Sales (POS) Invoice.',
 		u'doctype': u'DocType',
 		'document_type': u'Setup',
 		'module': u'Accounts',
@@ -23,7 +24,7 @@
 		'section_style': u'Simple',
 		'server_code_error': u' ',
 		'show_in_menu': 0,
-		'version': 3
+		'version': 4
 	},
 
 	# These values are common for all DocField

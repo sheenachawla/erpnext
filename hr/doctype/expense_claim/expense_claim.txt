@@ -5,7 +5,7 @@
 	{
 		u'creation': '2012-10-18 15:07:22',
 		u'docstatus': 0,
-		u'modified': '2012-10-19 15:07:47',
+		u'modified': '2012-10-22 12:55:55',
 		u'modified_by': u'Administrator',
 		u'owner': u'harshada@webnotestech.com'
 	},
@@ -16,6 +16,7 @@
 		'autoname': u'EXP.######',
 		'colour': u'White:FFF',
 		'default_print_format': u'Standard',
+		'description': u'Expenses made on behalf of the organization.',
 		u'doctype': u'DocType',
 		'document_type': u'Transaction',
 		'is_submittable': 1,
@@ -27,7 +28,7 @@
 		'show_in_menu': 0,
 		'subject': u'From %(employee_name)s for %(total_claimed_amount)s (claimed)',
 		'tag_fields': u'approval_status',
-		'version': 136
+		'version': 137
 	},
 
 	# These values are common for all DocField

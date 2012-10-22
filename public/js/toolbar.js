@@ -68,11 +68,11 @@ erpnext.toolbar.add_modules = function() {
 		if(m!='Setup' && wn.boot.profile.allow_modules.indexOf(m)!=-1) {
 			args = {
 				module: m,
-				module_page: erpnext.modules[m],
+				module_page: erpnext.modules[m] || ("Module/" + m),
 				module_label: m=='HR' ? 'Human Resources' : m
 			}
 
-			$('.navbar .modules').append(repl('<li><a href="#!%(module_page)s" \
+			$('.navbar .modules').append(repl('<li><a href="#%(module_page)s" \
 				data-module="%(module)s">%(module_label)s</a></li>', args));			
 		}
 	}

@@ -5,7 +5,7 @@
 	{
 		u'creation': '2012-10-18 15:07:39',
 		u'docstatus': 0,
-		u'modified': '2012-10-19 16:17:17',
+		u'modified': '2012-10-22 14:12:40',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -13,6 +13,7 @@
 	# These values are common for all DocType
 	{
 		'colour': u'White:FFF',
+		'description': u'Replace Unit of Measure (UOM) for multiple items.',
 		u'doctype': u'DocType',
 		'document_type': u'Other',
 		'in_create': 0,
@@ -22,7 +23,7 @@
 		'read_only': 0,
 		'section_style': u'Simple',
 		'server_code_error': u' ',
-		'version': 26
+		'version': 27
 	},
 
 	# These values are common for all DocField

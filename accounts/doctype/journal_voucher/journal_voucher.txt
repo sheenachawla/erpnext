@@ -5,7 +5,7 @@
 	{
 		u'creation': '2012-10-18 15:07:12',
 		u'docstatus': 0,
-		u'modified': '2012-10-19 12:13:22',
+		u'modified': '2012-10-22 13:36:50',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -15,6 +15,7 @@
 		'_last_update': u'1311251040',
 		'colour': u'White:FFF',
 		'default_print_format': u'Standard',
+		'description': u'Journal (accounting) entries.',
 		u'doctype': u'DocType',
 		'document_type': u'Transaction',
 		'is_submittable': 1,
@@ -27,7 +28,7 @@
 		'show_in_menu': 0,
 		'subject': u' ',
 		'tag_fields': u'voucher_type',
-		'version': 2
+		'version': 3
 	},
 
 	# These values are common for all DocField

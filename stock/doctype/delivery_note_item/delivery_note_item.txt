@@ -5,7 +5,7 @@
 	{
 		u'creation': '2012-10-18 15:07:34',
 		u'docstatus': 0,
-		u'modified': '2012-10-19 16:16:50',
+		u'modified': '2012-10-22 14:13:25',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -17,14 +17,13 @@
 		'colour': u'White:FFF',
 		'default_print_format': u'Standard',
 		u'doctype': u'DocType',
-		'document_type': u'Transaction',
 		'istable': 1,
 		'module': u'Stock',
 		u'name': u'__common__',
 		'section_style': u'Tray',
 		'server_code_error': u' ',
 		'show_in_menu': 0,
-		'version': 2
+		'version': 3
 	},
 
 	# These values are common for all DocField

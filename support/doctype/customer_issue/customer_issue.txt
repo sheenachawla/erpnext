@@ -5,7 +5,7 @@
 	{
 		u'creation': '2012-10-18 15:07:40',
 		u'docstatus': 0,
-		u'modified': '2012-10-19 16:20:53',
+		u'modified': '2012-10-22 14:22:53',
 		u'modified_by': u'Administrator',
 		u'owner': u'harshada@webnotestech.com'
 	},
@@ -15,6 +15,7 @@
 		'_last_update': u'1325570647',
 		'colour': u'White:FFF',
 		'default_print_format': u'Standard',
+		'description': u'Issue raised by a Customer.',
 		u'doctype': u'DocType',
 		'document_type': u'Transaction',
 		'is_submittable': 1,
@@ -26,7 +27,7 @@
 		'show_in_menu': 0,
 		'subject': u'%(complaint)s By %(complaint_raised_by)s on %(issue_date)s',
 		'tag_fields': u'status',
-		'version': 2
+		'version': 3
 	},
 
 	# These values are common for all DocField

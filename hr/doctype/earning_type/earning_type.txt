@@ -5,7 +5,7 @@
 	{
 		u'creation': '2012-10-18 15:07:21',
 		u'docstatus': 0,
-		u'modified': '2012-10-19 15:09:24',
+		u'modified': '2012-10-22 12:48:46',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -15,6 +15,7 @@
 		'allow_trash': 1,
 		'autoname': u'field:earning_name',
 		'colour': u'White:FFF',
+		'description': u'Type of salary earning e.g. Bonus',
 		u'doctype': u'DocType',
 		'document_type': u'Setup',
 		'module': u'HR',
@@ -22,7 +23,7 @@
 		'section_style': u'Simple',
 		'server_code_error': u' ',
 		'show_in_menu': 0,
-		'version': 14
+		'version': 15
 	},
 
 	# These values are common for all DocField

@@ -5,7 +5,7 @@
 	{
 		u'creation': '2012-10-18 15:07:13',
 		u'docstatus': 0,
-		u'modified': '2012-10-19 12:20:14',
+		u'modified': '2012-10-22 13:35:34',
 		u'modified_by': u'Administrator',
 		u'owner': u'jai@webnotestech.com'
 	},
@@ -16,6 +16,7 @@
 		'autoname': u'PCE/.###',
 		'colour': u'White:FFF',
 		'default_print_format': u'Standard',
+		'description': u'Clear Profit & Loss balance and update Balance Sheet.',
 		u'doctype': u'DocType',
 		'document_type': u'Other',
 		'is_submittable': 1,
@@ -25,7 +26,7 @@
 		'section_style': u'Simple',
 		'server_code_error': u' ',
 		'show_in_menu': 0,
-		'version': 2
+		'version': 3
 	},
 
 	# These values are common for all DocField

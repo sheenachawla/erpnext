@@ -5,13 +5,14 @@
 	{
 		u'creation': '2012-10-05 11:10:46',
 		u'docstatus': 0,
-		u'modified': '2012-10-19 14:33:02',
+		u'modified': '2012-10-22 13:59:17',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
 
 	# These values are common for all Page
 	{
+		'description': u'View / Edit Accounts and Cost Centers in a tree.',
 		u'doctype': u'Page',
 		'module': u'Accounts',
 		u'name': u'__common__',

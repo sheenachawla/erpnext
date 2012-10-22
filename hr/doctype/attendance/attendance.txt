@@ -5,7 +5,7 @@
 	{
 		u'creation': '2012-10-18 15:07:21',
 		u'docstatus': 0,
-		u'modified': '2012-10-19 15:07:58',
+		u'modified': '2012-10-22 12:54:47',
 		u'modified_by': u'Administrator',
 		u'owner': u'ashwini@webnotestech.com'
 	},
@@ -15,6 +15,7 @@
 		'_last_update': u'1317365120',
 		'colour': u'White:FFF',
 		'default_print_format': u'Standard',
+		'description': u'Attendance Mark (Present, Absent etc)',
 		u'doctype': u'DocType',
 		'document_type': u'Transaction',
 		'is_submittable': 1,
@@ -24,7 +25,7 @@
 		'section_style': u'Simple',
 		'server_code_error': u' ',
 		'show_in_menu': 0,
-		'version': 76
+		'version': 77
 	},
 
 	# These values are common for all DocField

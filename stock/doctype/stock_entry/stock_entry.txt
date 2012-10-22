@@ -5,7 +5,7 @@
 	{
 		u'creation': '2012-10-18 15:07:39',
 		u'docstatus': 0,
-		u'modified': '2012-10-19 16:16:40',
+		u'modified': '2012-10-22 14:13:33',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -21,6 +21,7 @@
 		'allow_trash': 0,
 		'colour': u'White:FFF',
 		'default_print_format': u'Standard',
+		'description': u'Material movement entry.',
 		u'doctype': u'DocType',
 		'document_type': u'Transaction',
 		'hide_heading': 0,
@@ -43,7 +44,7 @@
 		'subject': u'%(remarks)s',
 		'tag_fields': u'purpose',
 		'use_template': 0,
-		'version': 2
+		'version': 3
 	},
 
 	# These values are common for all DocField

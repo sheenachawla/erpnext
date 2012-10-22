@@ -5,7 +5,7 @@
 	{
 		u'creation': '2012-10-18 15:07:22',
 		u'docstatus': 0,
-		u'modified': '2012-10-19 15:09:10',
+		u'modified': '2012-10-22 12:50:00',
 		u'modified_by': u'Administrator',
 		u'owner': u'harshada@webnotestech.com'
 	},
@@ -14,13 +14,14 @@
 	{
 		'autoname': u'field:expense_type',
 		'colour': u'White:FFF',
+		'description': u'Type of Expense Claim. e.g. Travel, Food',
 		u'doctype': u'DocType',
 		'document_type': u'Setup',
 		'module': u'HR',
 		u'name': u'__common__',
 		'section_style': u'Simple',
 		'server_code_error': u' ',
-		'version': 6
+		'version': 7
 	},
 
 	# These values are common for all DocField

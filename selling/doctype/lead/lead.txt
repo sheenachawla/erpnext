@@ -5,7 +5,7 @@
 	{
 		u'creation': '2012-10-18 15:07:26',
 		u'docstatus': 0,
-		u'modified': '2012-10-19 16:10:43',
+		u'modified': '2012-10-22 17:09:11',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -16,17 +16,19 @@
 		'allow_trash': 1,
 		'colour': u'White:FFF',
 		'default_print_format': u'Standard',
+		'description': u'A contact who may lead to business.',
 		u'doctype': u'DocType',
 		'document_type': u'Transaction',
 		'module': u'Selling',
 		u'name': u'__common__',
+		'open_count': u'status="Open"',
 		'search_fields': u'lead_name,lead_owner,status',
 		'section_style': u'Tabbed',
 		'server_code_error': u' ',
 		'show_in_menu': 0,
 		'subject': u'%(lead_name)s from %(company_name)s | To Discuss: %(to_discuss)s',
 		'tag_fields': u'status,source',
-		'version': 2
+		'version': 4
 	},
 
 	# These values are common for all DocField

@@ -5,7 +5,7 @@
 	{
 		u'creation': '2012-10-18 15:07:23',
 		u'docstatus': 0,
-		u'modified': '2012-10-19 15:07:42',
+		u'modified': '2012-10-22 12:56:25',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -14,6 +14,7 @@
 	{
 		'_last_update': u'1310019491',
 		'colour': u'White:FFF',
+		'description': u'Monthly salary statement given to Employees.',
 		u'doctype': u'DocType',
 		'document_type': u'Transaction',
 		'is_submittable': 1,
@@ -23,7 +24,7 @@
 		'server_code_error': u' ',
 		'show_in_menu': 0,
 		'subject': u'For %(employee_name)s, %(designation)s',
-		'version': 394
+		'version': 395
 	},
 
 	# These values are common for all DocField

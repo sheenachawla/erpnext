@@ -3,9 +3,9 @@
 
 	# These values are common in all dictionaries
 	{
-		u'creation': '2012-10-18 15:07:14',
+		u'creation': '2012-10-19 16:39:09',
 		u'docstatus': 0,
-		u'modified': '2012-10-19 12:14:18',
+		u'modified': '2012-10-22 16:34:14',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -17,18 +17,20 @@
 		'change_log': u'1. Change in pull_details method dt.-26-06-2009',
 		'colour': u'White:FFF',
 		'default_print_format': u'Standard',
+		'description': u'Invoice (Bill) sent to Customer.',
 		u'doctype': u'DocType',
 		'document_type': u'Transaction',
 		'is_submittable': 1,
 		'module': u'Accounts',
 		u'name': u'__common__',
+		'open_count': u'outstanding_amount>0.01',
 		'read_only_onload': 1,
 		'search_fields': u'posting_date, due_date, debit_to, fiscal_year, grand_total, outstanding_amount',
 		'section_style': u'Tabbed',
 		'server_code_error': u' ',
 		'show_in_menu': 0,
 		'subject': u'To %(customer_name)s worth %(currency)s %(grand_total_export)s due on %(due_date)s | %(outstanding_amount)s outstanding',
-		'version': 2
+		'version': 5
 	},
 
 	# These values are common for all DocField

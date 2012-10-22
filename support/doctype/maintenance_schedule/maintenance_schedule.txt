@@ -5,7 +5,7 @@
 	{
 		u'creation': '2012-10-18 15:07:40',
 		u'docstatus': 0,
-		u'modified': '2012-10-19 16:21:30',
+		u'modified': '2012-10-22 14:22:42',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -16,6 +16,7 @@
 		'autoname': u'MS.#####',
 		'colour': u'White:FFF',
 		'default_print_format': u'Standard',
+		'description': u'Schedule for planned maintenance of an Item.',
 		u'doctype': u'DocType',
 		'document_type': u'Other',
 		'is_submittable': 1,
@@ -25,7 +26,7 @@
 		'section_style': u'Simple',
 		'server_code_error': u' ',
 		'show_in_menu': 0,
-		'version': 158
+		'version': 159
 	},
 
 	# These values are common for all DocField

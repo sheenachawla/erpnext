@@ -5,7 +5,7 @@
 	{
 		u'creation': '2012-10-18 15:07:22',
 		u'docstatus': 0,
-		u'modified': '2012-10-19 15:07:38',
+		u'modified': '2012-10-22 12:56:39',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -16,6 +16,7 @@
 		'autoname': u'LAL/.#####',
 		'colour': u'White:FFF',
 		'default_print_format': u'Standard',
+		'description': u'Leaves allocated in a year.',
 		u'doctype': u'DocType',
 		'document_type': u'Setup',
 		'is_submittable': 1,
@@ -25,7 +26,7 @@
 		'section_style': u'Simple',
 		'server_code_error': u' ',
 		'show_in_menu': 0,
-		'version': 2
+		'version': 3
 	},
 
 	# These values are common for all DocField

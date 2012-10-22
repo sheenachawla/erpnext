@@ -3,11 +3,11 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-05-15 12:14:32',
-		'docstatus': 0,
-		'modified': '2012-08-17 09:57:04',
-		'modified_by': u'Administrator',
-		'owner': u'wasim@webnotestech.com'
+		u'creation': '2012-10-18 15:07:14',
+		u'docstatus': 0,
+		u'modified': '2012-10-22 13:37:45',
+		u'modified_by': u'Administrator',
+		u'owner': u'wasim@webnotestech.com'
 	},
 
 	# These values are common for all DocType
@@ -18,10 +18,10 @@
 		'colour': u'White:FFF',
 		'default_print_format': u'Standard',
 		'description': u'Standard tax template that can be applied to all Purchase Transactions. This template can contain list of tax heads and also other expense heads like "Shipping", "Insurance", "Handling" etc.\n\n#### Note\n\nThe tax rate you define here will be the standard tax rate for all **Items**. If there are **Items** that have different rates, they must be added in the **Item Tax** table in the **Item** master.\n\n#### Description of Columns\n\n1. Calculation Type: \n    - This can be on **Net Total** (that is the sum of basic amount).\n    - **On Previous Row Total / Amount** (for cumulative taxes or charges). If you select this option, the tax will be applied as a percentage of the previous row (in the tax table) amount or total.\n    - **Actual** (as mentioned).\n2. Account Head: The Account ledger under which this tax will be booked\n3. Cost Center: If the tax / charge is an income (like shipping) or expense it needs to be booked against a Cost Center.\n4. Description: Description of the tax (that will be printed in invoices / quotes).\n5. Rate: Tax rate.\n6. Amount: Tax amount.\n7. Total: Cumulative total to this point.\n8. Enter Row: If based on "Previous Row Total" you can select the row number which will be taken as a base for this calculation (default is the previous row).\n9. Consider Tax or Charge for: In this section you can specify if the tax / charge is only for valuation (not a part of total) or only for total (does not add value to the item) or for both.\n10. Add or Deduct: Whether you want to add or deduct the tax.',
-		'doctype': 'DocType',
+		u'doctype': u'DocType',
 		'document_type': u'Master',
 		'module': u'Accounts',
-		'name': '__common__',
+		u'name': u'__common__',
 		'section_style': u'Simple',
 		'server_code_error': u' ',
 		'show_in_menu': 0,
@@ -30,8 +30,8 @@
 
 	# These values are common for all DocField
 	{
-		'doctype': u'DocField',
-		'name': '__common__',
+		u'doctype': u'DocField',
+		u'name': u'__common__',
 		'parent': u'Purchase Taxes and Charges Master',
 		'parentfield': u'fields',
 		'parenttype': u'DocType',
@@ -40,8 +40,8 @@
 
 	# These values are common for all DocPerm
 	{
-		'doctype': u'DocPerm',
-		'name': '__common__',
+		u'doctype': u'DocPerm',
+		u'name': u'__common__',
 		'parent': u'Purchase Taxes and Charges Master',
 		'parentfield': u'permissions',
 		'parenttype': u'DocType',
@@ -50,53 +50,13 @@
 
 	# DocType, Purchase Taxes and Charges Master
 	{
-		'doctype': 'DocType',
-		'name': u'Purchase Taxes and Charges Master'
-	},
-
-	# DocPerm
-	{
-		'doctype': u'DocPerm',
-		'permlevel': 1,
-		'role': u'All'
-	},
-
-	# DocPerm
-	{
-		'amend': 0,
-		'cancel': 0,
-		'create': 0,
-		'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'Purchase Manager',
-		'submit': 0,
-		'write': 0
-	},
-
-	# DocPerm
-	{
-		'cancel': 1,
-		'create': 1,
-		'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'System Manager',
-		'write': 1
-	},
-
-	# DocPerm
-	{
-		'cancel': 1,
-		'create': 1,
-		'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'Purchase Master Manager',
-		'submit': 0,
-		'write': 1
+		u'doctype': u'DocType',
+		u'name': u'Purchase Taxes and Charges Master'
 	},
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'title',
 		'fieldtype': u'Data',
 		'in_filter': 1,
@@ -109,7 +69,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'is_default',
 		'fieldtype': u'Check',
 		'label': u'Default'
@@ -117,7 +77,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'company',
 		'fieldtype': u'Link',
 		'in_filter': 1,
@@ -128,7 +88,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'purchase_tax_details',
 		'fieldtype': u'Table',
 		'label': u'Purchase Taxes and Charges',
@@ -137,14 +97,43 @@
 		'options': u'Purchase Taxes and Charges'
 	},
 
-	# DocField
+	# DocPerm
 	{
-		'doctype': u'DocField',
-		'fieldname': u'company',
-		'fieldtype': u'Link',
-		'in_filter': 1,
-		'label': u'Company',
-		'options': u'Company',
-		'reqd': 1
+		u'doctype': u'DocPerm',
+		'permlevel': 1,
+		'role': u'All'
+	},
+
+	# DocPerm
+	{
+		'amend': 0,
+		'cancel': 0,
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'Purchase Manager',
+		'submit': 0,
+		'write': 0
+	},
+
+	# DocPerm
+	{
+		'cancel': 1,
+		'create': 1,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'System Manager',
+		'write': 1
+	},
+
+	# DocPerm
+	{
+		'cancel': 1,
+		'create': 1,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'Purchase Master Manager',
+		'submit': 0,
+		'write': 1
 	}
 ]

@@ -5,7 +5,7 @@
 	{
 		u'creation': '2012-10-18 15:07:19',
 		u'docstatus': 0,
-		u'modified': '2012-10-19 14:41:21',
+		u'modified': '2012-10-22 13:55:35',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -16,6 +16,7 @@
 		'autoname': u'QAI/.######',
 		'colour': u'White:FFF',
 		'default_print_format': u'Standard',
+		'description': u'Record of quality checks on incoming goods.',
 		u'doctype': u'DocType',
 		'document_type': u'Transaction',
 		'is_submittable': 1,
@@ -26,7 +27,7 @@
 		'section_style': u'Simple',
 		'server_code_error': u' ',
 		'show_in_menu': 0,
-		'version': 39
+		'version': 40
 	},
 
 	# These values are common for all DocField

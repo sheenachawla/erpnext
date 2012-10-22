@@ -5,7 +5,7 @@
 	{
 		u'creation': '2012-05-03 18:41:41',
 		u'docstatus': 0,
-		u'modified': '2012-10-19 16:00:46',
+		u'modified': '2012-10-22 14:08:43',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -14,6 +14,7 @@
 	{
 		'autoname': u'field:activity_type',
 		'colour': u'White:FFF',
+		'description': u'Project activity category.',
 		u'doctype': u'DocType',
 		'document_type': u'Setup',
 		'in_dialog': 1,
@@ -21,7 +22,7 @@
 		u'name': u'__common__',
 		'section_style': u'Simple',
 		'server_code_error': u' ',
-		'version': 13
+		'version': 14
 	},
 
 	# These values are common for all DocField

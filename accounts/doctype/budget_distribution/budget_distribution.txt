@@ -5,7 +5,7 @@
 	{
 		u'creation': '2012-10-18 15:07:11',
 		u'docstatus': 0,
-		u'modified': '2012-10-19 12:18:15',
+		u'modified': '2012-10-22 13:36:02',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -15,7 +15,7 @@
 		'allow_trash': 1,
 		'autoname': u'field:distribution_id',
 		'colour': u'White:FFF',
-		'description': u'**Budget Distribution** helps you distribute your budget across months if you have seasonality in your business.\n\nTo distribute a budget using this distribution, set this **Budget Distribution** in the **Cost Center**',
+		'description': u'Distribute budget unevenly to match seasonality.',
 		u'doctype': u'DocType',
 		'document_type': u'Master',
 		'module': u'Accounts',
@@ -24,7 +24,7 @@
 		'section_style': u'Simple',
 		'server_code_error': u' ',
 		'show_in_menu': 0,
-		'version': 2
+		'version': 3
 	},
 
 	# These values are common for all DocField
