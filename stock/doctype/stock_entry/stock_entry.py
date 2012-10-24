@@ -270,7 +270,6 @@ class DocType(StockControllers):
 		self.values.append({
 				'item_code'			    : d.item_code,
 				'warehouse'			    : wh,
-				'transaction_date'	: self.doc.transfer_date,
 				'posting_date'		  : self.doc.posting_date,
 				'posting_time'		  : self.doc.posting_time,
 				'voucher_type'		  : 'Stock Entry',

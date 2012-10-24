@@ -24,11 +24,11 @@
 		'module': u'Selling',
 		u'name': u'__common__',
 		'read_only_onload': 1,
-		'search_fields': u'status,transaction_date,customer,customer_name, territory,order_type,company',
+		'search_fields': u'status,posting_date,customer,customer_name, territory,order_type,company',
 		'section_style': u'Tabbed',
 		'server_code_error': u' ',
 		'show_in_menu': 0,
-		'subject': u'From %(customer_name)s on %(transaction_date)s worth %(currency)s %(grand_total_export)s | %(per_delivered)s% delivered | %(per_billed)s% billed',
+		'subject': u'From %(customer_name)s on %(posting_date)s worth %(currency)s %(grand_total_print)s | %(per_delivered)s% delivered | %(per_billed)s% billed',
 		'tag_fields': u'delivery_status,billing_status',
 		'version': 1
 	},
@@ -199,7 +199,7 @@
 		'default': u'Today',
 		'description': u'The date at which current entry is made in system.',
 		u'doctype': u'DocField',
-		'fieldname': u'transaction_date',
+		'fieldname': u'posting_date',
 		'fieldtype': u'Date',
 		'in_filter': 1,
 		'label': u'Sales Order Date',
@@ -309,7 +309,7 @@
 		'allow_on_submit': 1,
 		'colour': u'White:FFF',
 		u'doctype': u'DocField',
-		'fieldname': u'sales_order_details',
+		'fieldname': u'sales_order_items',
 		'fieldtype': u'Table',
 		'label': u'Sales Order Items',
 		'oldfieldname': u'sales_order_details',
@@ -377,12 +377,12 @@
 		'colour': u'White:FFF',
 		'description': u'Quotation no against which this Sales Order is made ',
 		u'doctype': u'DocField',
-		'fieldname': u'quotation_no',
+		'fieldname': u'quotation',
 		'fieldtype': u'Link',
 		'in_filter': 1,
 		'label': u'Quotation No',
 		'no_copy': 0,
-		'oldfieldname': u'quotation_no',
+		'oldfieldname': u'quotation',
 		'oldfieldtype': u'Link',
 		'options': u'Quotation',
 		'permlevel': 0,
@@ -395,7 +395,7 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'depends_on': u'eval:doc.quotation_no',
+		'depends_on': u'eval:doc.quotation',
 		u'doctype': u'DocField',
 		'fieldname': u'quotation_date',
 		'fieldtype': u'Date',
@@ -413,11 +413,11 @@
 	# DocField
 	{
 		u'doctype': u'DocField',
-		'fieldname': u'pull_quotation_details',
+		'fieldname': u'pull_quotation_items',
 		'fieldtype': u'Button',
 		'label': u'Pull Quotation Items',
 		'oldfieldtype': u'Button',
-		'options': u'pull_quotation_details',
+		'options': u'pull_quotation_items',
 		'permlevel': 0,
 		'print_hide': 1
 	},
@@ -467,7 +467,7 @@
 		'colour': u'White:FFF',
 		'description': u"Rate at which Price list currency is converted to company's base currency",
 		u'doctype': u'DocField',
-		'fieldname': u'plc_conversion_rate',
+		'fieldname': u'plc_exchange_rate',
 		'fieldtype': u'Float',
 		'label': u'Price List Currency Conversion Rate',
 		'permlevel': 0,
@@ -507,7 +507,7 @@
 		'default': u'1.00',
 		'description': u"Rate at which customer's currency is converted to company's base currency",
 		u'doctype': u'DocField',
-		'fieldname': u'conversion_rate',
+		'fieldname': u'exchange_rate',
 		'fieldtype': u'Float',
 		'label': u'Conversion Rate',
 		'oldfieldname': u'conversion_rate',
@@ -534,7 +534,7 @@
 	# DocField
 	{
 		u'doctype': u'DocField',
-		'fieldname': u'charge',
+		'fieldname': u'sales_taxes_and_charges_master',
 		'fieldtype': u'Link',
 		'label': u'Sales Taxes and Charges',
 		'oldfieldname': u'charge',
@@ -558,7 +558,7 @@
 	# DocField
 	{
 		u'doctype': u'DocField',
-		'fieldname': u'other_charges',
+		'fieldname': u'taxes_and_charges',
 		'fieldtype': u'Table',
 		'label': u'Sales Taxes and Charges',
 		'oldfieldname': u'other_charges',
@@ -582,10 +582,10 @@
 	# DocField
 	{
 		u'doctype': u'DocField',
-		'fieldname': u'other_charges_total',
+		'fieldname': u'taxes_and_charges_total',
 		'fieldtype': u'Currency',
 		'label': u'Taxes and Charges Total*',
-		'oldfieldname': u'other_charges_total',
+		'oldfieldname': u'taxes_and_charges_total',
 		'oldfieldtype': u'Currency',
 		'permlevel': 1,
 		'print_hide': 1,
@@ -595,7 +595,7 @@
 	# DocField
 	{
 		u'doctype': u'DocField',
-		'fieldname': u'other_charges_calculation',
+		'fieldname': u'tax_calculation',
 		'fieldtype': u'HTML',
 		'label': u'Taxes and Charges Calculation',
 		'oldfieldtype': u'HTML',
@@ -647,7 +647,7 @@
 		'colour': u'White:FFF',
 		'description': u'In Words will be visible once you save the Sales Order.',
 		u'doctype': u'DocField',
-		'fieldname': u'in_words',
+		'fieldname': u'rounded_total_in_words',
 		'fieldtype': u'Data',
 		'label': u'In Words',
 		'oldfieldname': u'in_words',
@@ -671,7 +671,7 @@
 	# DocField
 	{
 		u'doctype': u'DocField',
-		'fieldname': u'grand_total_export',
+		'fieldname': u'grand_total_print',
 		'fieldtype': u'Currency',
 		'label': u'Grand Total (Export)',
 		'oldfieldname': u'grand_total_export',
@@ -685,10 +685,10 @@
 	# DocField
 	{
 		u'doctype': u'DocField',
-		'fieldname': u'rounded_total_export',
+		'fieldname': u'rounded_total_print',
 		'fieldtype': u'Currency',
 		'label': u'Rounded Total (Export)',
-		'oldfieldname': u'rounded_total_export',
+		'oldfieldname': u'rounded_total_print',
 		'oldfieldtype': u'Currency',
 		'permlevel': 1,
 		'print_hide': 0,
@@ -699,7 +699,7 @@
 	{
 		'colour': u'White:FFF',
 		u'doctype': u'DocField',
-		'fieldname': u'in_words_export',
+		'fieldname': u'rounded_total_in_words_print',
 		'fieldtype': u'Data',
 		'label': u'In Words (Export)',
 		'oldfieldname': u'in_words_export',
@@ -1139,7 +1139,7 @@
 	{
 		'colour': u'White:FFF',
 		u'doctype': u'DocField',
-		'fieldname': u'packing_details',
+		'fieldname': u'delivery_note_packing_items',
 		'fieldtype': u'Table',
 		'label': u'Packing Details',
 		'oldfieldname': u'packing_details',

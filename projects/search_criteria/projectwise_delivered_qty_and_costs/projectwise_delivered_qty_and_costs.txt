@@ -3,11 +3,11 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-04-03 12:49:52',
-		'docstatus': 0,
-		'modified': '2012-04-03 12:49:52',
-		'modified_by': u'Administrator',
-		'owner': u'harshada@webnotestech.com'
+		u'creation': '2012-10-24 14:33:50',
+		u'docstatus': 0,
+		u'modified': '2012-10-24 14:33:50',
+		u'modified_by': u'Administrator',
+		u'owner': u'harshada@webnotestech.com'
 	},
 
 	# These values are common for all Search Criteria
@@ -16,10 +16,10 @@
 		'columns': u'Delivery Note\x01ID,Delivery Note\x01Project Name,Delivery Note\x01Customer,Delivery Note\x01Customer Name,Delivery Note Item\x01Item Code,Delivery Note Item\x01Item Name,Delivery Note Item\x01Quantity,Delivery Note\x01Posting Date,Delivery Note\x01% Billed,Delivery Note Item\x01Amount*',
 		'criteria_name': u'Projectwise Delivered Qty and Costs',
 		'doc_type': u'Delivery Note Item',
-		'doctype': 'Search Criteria',
+		u'doctype': u'Search Criteria',
 		'filters': u"{'Delivery Note\x01Submitted':1,'Delivery Note\x01Status':'Submitted','Delivery Note\x01Fiscal Year':''}",
 		'module': u'Projects',
-		'name': '__common__',
+		u'name': u'__common__',
 		'page_len': 50,
 		'parent_doc_type': u'Delivery Note',
 		'sort_by': u'`tabDelivery Note`.`name`',
@@ -29,7 +29,7 @@
 
 	# Search Criteria, projectwise_delivered_qty_and_costs
 	{
-		'doctype': 'Search Criteria',
-		'name': u'projectwise_delivered_qty_and_costs'
+		u'doctype': u'Search Criteria',
+		u'name': u'projectwise_delivered_qty_and_costs'
 	}
 ]

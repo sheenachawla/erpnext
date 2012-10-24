@@ -35,7 +35,7 @@ cur_frm.cscript.onload = function(doc, cdt, cdn) {
 
 	if(!doc.enquiry_from) hide_field(['customer', 'customer_address', 'contact_person', 'customer_name','lead', 'lead_name', 'address_display', 'contact_display', 'contact_mobile', 'contact_email', 'territory', 'customer_group']);
 	if(!doc.status) set_multiple(cdt,cdn,{status:'Draft'});
-	if(!doc.date) doc.transaction_date = date.obj_to_str(new Date());
+	if(!doc.date) doc.posting_date = date.obj_to_str(new Date());
 	if(!doc.company && sys_defaults.company) set_multiple(cdt,cdn,{company:sys_defaults.company});
 	if(!doc.fiscal_year && sys_defaults.fiscal_year) set_multiple(cdt,cdn,{fiscal_year:sys_defaults.fiscal_year});		
 	
@@ -60,7 +60,7 @@ cur_frm.cscript.onload_post_render = function(doc, cdt, cdn) {
 cur_frm.cscript.item_code = function(doc, cdt, cdn) {
 	var d = locals[cdt][cdn];
 	if (d.item_code) {
-		get_server_fields('get_item_details',d.item_code, 'enquiry_details',doc, cdt,cdn,1);
+		get_server_fields('get_item_details',d.item_code, 'opportunity_items',doc, cdt,cdn,1);
 	}
 }
 
@@ -124,7 +124,7 @@ cur_frm.cscript.lead = function(doc, cdt, cdn) {
 
 //item getquery
 //=======================================
-cur_frm.fields_dict['enquiry_details'].grid.get_field('item_code').get_query = function(doc, cdt, cdn) {
+cur_frm.fields_dict['opportunity_items'].grid.get_field('item_code').get_query = function(doc, cdt, cdn) {
 	if (doc.enquiry_type == 'Maintenance')
 		return 'SELECT tabItem.name,tabItem.item_name,tabItem.description FROM tabItem WHERE tabItem.is_service_item="Yes" AND (ifnull(`tabItem`.`end_of_life`,"") = "" OR `tabItem`.`end_of_life` > NOW() OR `tabItem`.`end_of_life`="0000-00-00") AND tabItem.%(key)s LIKE "%s" LIMIT 50';
 	else 

@@ -3,11 +3,11 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-04-03 12:49:50',
-		'docstatus': 0,
-		'modified': '2012-04-03 12:49:50',
-		'modified_by': u'Administrator',
-		'owner': u'saumil@webnotestech.com'
+		u'creation': '2012-10-24 14:33:41',
+		u'docstatus': 0,
+		u'modified': '2012-10-24 14:33:41',
+		u'modified_by': u'Administrator',
+		u'owner': u'saumil@webnotestech.com'
 	},
 
 	# These values are common for all Search Criteria
@@ -18,11 +18,11 @@
 		'criteria_name': u'Business Associate Commission Report',
 		'description': u'Track total commission given to your Business Associate',
 		'doc_type': u'Sales Invoice',
-		'doctype': 'Search Criteria',
+		u'doctype': u'Search Criteria',
 		'filters': u"{'Sales Invoice\x01Submitted':1}",
 		'group_by': u'`tabSales Invoice`.sales_partner',
 		'module': u'Accounts',
-		'name': '__common__',
+		u'name': u'__common__',
 		'page_len': 50,
 		'sort_order': u'DESC',
 		'standard': u'Yes'
@@ -30,7 +30,7 @@
 
 	# Search Criteria, business_associate_commission_report
 	{
-		'doctype': 'Search Criteria',
-		'name': u'business_associate_commission_report'
+		u'doctype': u'Search Criteria',
+		u'name': u'business_associate_commission_report'
 	}
 ]

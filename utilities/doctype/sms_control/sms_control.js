@@ -85,7 +85,7 @@ cur_frm.cscript.send_sms = function(doc,dt,dn) {
 		'Opportunity'			: 'Your enquiry has been logged into the system. Ref No: ' + doc.name,
 		'Quotation'			: 'Quotation ' + doc.name + ' has been sent via email. Thanks!',
 		'Sales Order'		: 'Sales Order ' + doc.name + ' has been created against ' 
-					+ (doc.quotation_no ? ('Quote No:' + doc.quotation_no) : '')
+					+ (doc.quotation ? ('Quote No:' + doc.quotation) : '')
 					+ (doc.po_no ? (' for your PO: ' + doc.po_no) : ''),
 		'Delivery Note'		: 'Items has been delivered against delivery note: ' + doc.name
 					+ (doc.po_no ? (' for your PO: ' + doc.po_no) : ''),		

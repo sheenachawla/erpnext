@@ -30,7 +30,7 @@ class DocType(StockController):
 		self.doc = doc
 		self.doclist = doclist
 		self.tname = 'Delivery Note Item'
-		self.fname = 'delivery_note_details'
+		self.fname = 'delivery_note_items'
 
 
 	def autoname(self):
@@ -50,28 +50,28 @@ class DocType(StockController):
 		return get_obj('Sales Common').get_comm_rate(sales_partner, self)
 
 
-	def pull_sales_order_details(self):
+	def pull_sales_order_items(self):
 		self.validate_prev_docname()
-		self.doclist = self.doc.clear_table(self.doclist,'other_charges')
+		self.doclist = self.doc.clear_table(self.doclist,'taxes_and_charges')
 
-		if self.doc.sales_order_no:
-			get_obj('DocType Mapper', 'Sales Order-Delivery Note').dt_map('Sales Order', 'Delivery Note', self.doc.sales_order_no, self.doc, self.doclist, "[['Sales Order', 'Delivery Note'],['Sales Order Item', 'Delivery Note Item'],['Sales Taxes and Charges','Sales Taxes and Charges'],['Sales Team','Sales Team']]")
+		if self.doc.sales_order:
+			get_obj('DocType Mapper', 'Sales Order-Delivery Note').dt_map('Sales Order', 'Delivery Note', self.doc.sales_order, self.doc, self.doclist, "[['Sales Order', 'Delivery Note'],['Sales Order Item', 'Delivery Note Item'],['Sales Taxes and Charges','Sales Taxes and Charges'],['Sales Team','Sales Team']]")
 		else:
 			msgprint("Please select Sales Order No. whose details need to be pulled")
 
-		return cstr(self.doc.sales_order_no)
+		return cstr(self.doc.sales_order)
 
 
 	def validate_prev_docname(self):
 		"""Validates that Sales Order is not pulled twice"""
-		for d in getlist(self.doclist, 'delivery_note_details'):
-			if self.doc.sales_order_no == d.prevdoc_docname:
-				msgprint(cstr(self.doc.sales_order_no) + " sales order details have already been pulled. ")
+		for d in getlist(self.doclist, 'delivery_note_items'):
+			if self.doc.sales_order == d.prevdoc_docname:
+				msgprint(cstr(self.doc.sales_order) + " sales order details have already been pulled. ")
 				raise Exception, "Validation Error. "
 
 
 	def set_actual_qty(self):
-		for d in getlist(self.doclist, 'delivery_note_details'):
+		for d in getlist(self.doclist, 'delivery_note_items'):
 			if d.item_code and d.warehouse:
 				actual_qty = sql("select actual_qty from `tabBin` where item_code = '%s' and warehouse = '%s'" % (d.item_code, d.warehouse))
 				d.actual_qty = actual_qty and flt(actual_qty[0][0]) or 0
@@ -125,15 +125,15 @@ class DocType(StockController):
 		self.doclist = get_obj('Sales Common').load_default_taxes(self)
 
 
-	def get_other_charges(self):
+	def get_taxes_and_charges(self):
 		"""Pull details from Sales Taxes and Charges Master"""
-		self.doclist = get_obj('Sales Common').get_other_charges(self)
+		self.doclist = get_obj('Sales Common').get_taxes_and_charges(self)
 
 
 	def so_required(self):
 		"""check in manage account if sales order required or not"""
 		if webnotes.conn.get_value('Global Defaults', 'Global Defaults', 'so_required') == 'Yes':
-			 for d in getlist(self.doclist,'delivery_note_details'):
+			 for d in getlist(self.doclist,'delivery_note_items'):
 				 if not d.prevdoc_docname:
 					 msgprint("Sales Order No. required against item %s"%d.item_code)
 					 raise Exception
@@ -150,14 +150,14 @@ class DocType(StockController):
 		self.validate_mandatory()
 		self.validate_reference_value()
 		self.validate_for_items()
-		sales_com_obj.validate_max_discount(self, 'delivery_note_details')						 #verify whether rate is not greater than max discount
+		sales_com_obj.validate_max_discount(self, 'delivery_note_items')						 #verify whether rate is not greater than max discount
 		sales_com_obj.get_allocated_sum(self)	# this is to verify that the allocated % of sales persons is 100%
-		sales_com_obj.check_conversion_rate(self)
+		sales_com_obj.check_exchange_rate(self)
 		
 		# Get total in Words
 		dcc = super(DocType, self).get_company_currency(self.doc.company)
-		self.doc.in_words = sales_com_obj.get_total_in_words(dcc, self.doc.rounded_total)
-		self.doc.in_words_export = sales_com_obj.get_total_in_words(self.doc.currency, self.doc.rounded_total_export)
+		self.doc.rounded_total_in_words = sales_com_obj.get_total_in_words(dcc, self.doc.rounded_total)
+		self.doc.rounded_total_in_words_print = sales_com_obj.get_total_in_words(self.doc.currency, self.doc.rounded_total_print)
 
 		# Set actual qty for each item in selected warehouse
 		self.update_current_stock()
@@ -189,7 +189,7 @@ class DocType(StockController):
 
 	def validate_for_items(self):
 		check_list, chk_dupl_itm = [], []
-		for d in getlist(self.doclist,'delivery_note_details'):
+		for d in getlist(self.doclist,'delivery_note_items'):
 			ch = sql("select is_stock_item from `tabItem` where name = '%s'"%d.item_code)
 			if d.prevdoc_doctype and d.prevdoc_detail_docname and ch and ch[0][0]=='Yes':
 				self.validate_items_with_prevdoc(d)
@@ -222,11 +222,11 @@ class DocType(StockController):
 
 
 	def update_current_stock(self):
-		for d in getlist(self.doclist, 'delivery_note_details'):
+		for d in getlist(self.doclist, 'delivery_note_items'):
 			bin = sql("select actual_qty from `tabBin` where item_code = %s and warehouse = %s", (d.item_code, d.warehouse), as_dict = 1)
 			d.actual_qty = bin and flt(bin[0]['actual_qty']) or 0
 
-		for d in getlist(self.doclist, 'packing_details'):
+		for d in getlist(self.doclist, 'delivery_note_packing_items'):
 			bin = sql("select actual_qty, projected_qty from `tabBin` where item_code =	%s and warehouse = %s", (d.item_code, d.warehouse), as_dict = 1)
 			d.actual_qty = bin and flt(bin[0]['actual_qty']) or 0
 			d.projected_qty = bin and flt(bin[0]['projected_qty']) or 0
@@ -240,14 +240,14 @@ class DocType(StockController):
 		
 		# validate serial no for item table (non-sales-bom item) and packing list (sales-bom item)
 		sl_obj = get_obj("Stock Ledger")
-		sl_obj.validate_serial_no(self, 'delivery_note_details')
-		sl_obj.validate_serial_no_warehouse(self, 'delivery_note_details')
-		sl_obj.validate_serial_no(self, 'packing_details')
-		sl_obj.validate_serial_no_warehouse(self, 'packing_details')
+		sl_obj.validate_serial_no(self, 'delivery_note_items')
+		sl_obj.validate_serial_no_warehouse(self, 'delivery_note_items')
+		sl_obj.validate_serial_no(self, 'delivery_note_packing_items')
+		sl_obj.validate_serial_no_warehouse(self, 'delivery_note_packing_items')
 		
 		# update delivery details in serial no
-		sl_obj.update_serial_record(self, 'delivery_note_details', is_submit = 1, is_incoming = 0)
-		sl_obj.update_serial_record(self, 'packing_details', is_submit = 1, is_incoming = 0)
+		sl_obj.update_serial_record(self, 'delivery_note_items', is_submit = 1, is_incoming = 0)
+		sl_obj.update_serial_record(self, 'delivery_note_packing_items', is_submit = 1, is_incoming = 0)
 		
 		# update delivered qty in sales order
 		get_obj("Sales Common").update_prevdoc_detail(1,self)
@@ -268,7 +268,7 @@ class DocType(StockController):
 		abbr, stock_in_hand = self.get_company_details()
 		gl_entries = []
 			
-		for item in getlist(self.doclist, 'delivery_note_details'):
+		for item in getlist(self.doclist, 'delivery_note_items'):
 			# get valuation rate as per FIFO
 			valuation_rate = self.get_valuation_rate(self.doc.posting_date, self.doc.posting_time, 	
 				d.item_code, d.warehouse, d.qty, d.serial_no)
@@ -326,8 +326,8 @@ class DocType(StockController):
 		
 		# remove delivery details from serial no
 		sl = get_obj('Stock Ledger')		
-		sl.update_serial_record(self, 'delivery_note_details', is_submit = 0, is_incoming = 0)
-		sl.update_serial_record(self, 'packing_details', is_submit = 0, is_incoming = 0)
+		sl.update_serial_record(self, 'delivery_note_items', is_submit = 0, is_incoming = 0)
+		sl.update_serial_record(self, 'delivery_note_packing_items', is_submit = 0, is_incoming = 0)
 		
 		sales_com_obj.update_prevdoc_detail(0,self)
 		self.update_stock_ledger(update_stock = -1)
@@ -375,7 +375,7 @@ class DocType(StockController):
 				if d['reserved_qty'] < 0 :
 					# Reduce reserved qty from reserved warehouse mentioned in so
 					bin = get_obj('Warehouse', d['reserved_warehouse']).update_bin(0, flt(update_stock) * flt(d['reserved_qty']), \
-						0, 0, 0, d['item_code'], self.doc.transaction_date,doc_type=self.doc.doctype, \
+						0, 0, 0, d['item_code'], self.doc.posting_date,doc_type=self.doc.doctype, \
 						doc_name=self.doc.name, is_amended = (self.doc.amended_from and 'Yes' or 'No'))
 						
 				# Reduce actual qty from warehouse
@@ -391,7 +391,7 @@ class DocType(StockController):
 		self.values.append({
 			'item_code'					: d['item_code'],
 			'warehouse'					: wh,
-			'transaction_date'			: getdate(self.doc.modified).strftime('%Y-%m-%d'),
+			'posting_date'			: getdate(self.doc.modified).strftime('%Y-%m-%d'),
 			'posting_date'				: self.doc.posting_date,
 			'posting_time'				: self.doc.posting_time,
 			'voucher_type'				: 'Delivery Note',
@@ -420,7 +420,7 @@ class DocType(StockController):
 	def credit_limit(self):
 		"""check credit limit of items in DN Detail which are not fetched from sales order"""
 		amount, total = 0, 0
-		for d in getlist(self.doclist, 'delivery_note_details'):
+		for d in getlist(self.doclist, 'delivery_note_items'):
 			if not d.prevdoc_docname:
 				amount += d.amount
 		if amount != 0:
@@ -429,8 +429,8 @@ class DocType(StockController):
 
 
 	def on_update(self):
-		self.doclist = get_obj('Sales Common').make_packing_list(self,'delivery_note_details')
+		self.doclist = get_obj('Sales Common').make_packing_list(self,'delivery_note_items')
 		sl = get_obj('Stock Ledger')
 		sl.scrub_serial_nos(self)
-		sl.scrub_serial_nos(self, 'packing_details')
+		sl.scrub_serial_nos(self, 'delivery_note_packing_items')
 

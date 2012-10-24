@@ -25,13 +25,13 @@
 cur_frm.cscript.load_taxes = function(doc, cdt, cdn, callback) {
 	// run if this is not executed from dt_map...
 	doc = locals[doc.doctype][doc.name];
-	if(doc.customer || getchildren('Sales Taxes and Charges', doc.name, 'other_charges', doc.doctype).length) {
+	if(doc.customer || getchildren('Sales Taxes and Charges', doc.name, 'taxes_and_charges', doc.doctype).length) {
 		if(callback) {
 			callback(doc, cdt, cdn);
 		}
 	} else {
 		$c_obj(make_doclist(doc.doctype, doc.name),'load_default_taxes','',function(r,rt){
-			refresh_field('other_charges');
+			refresh_field('taxes_and_charges');
 			if(callback) callback(doc, cdt, cdn);
 		});
 	}
@@ -80,14 +80,14 @@ cur_frm.cscript.update_item_details = function(doc, dt, dn, callback) {
 
 var set_dynamic_label_par = function(doc, cdt, cdn, base_curr) {
 	//parent flds
-	par_cols_base = {'net_total': 'Net Total', 'other_charges_total': 'Taxes and Charges Total', 
-		'grand_total':	'Grand Total', 'rounded_total': 'Rounded Total', 'in_words': 'In Words'}
-	par_cols_export = {'grand_total_export': 'Grand Total', 'rounded_total_export':	'Rounded Total', 'in_words_export':	'In Words'};
+	par_cols_base = {'net_total': 'Net Total', 'taxes_and_charges_total': 'Taxes and Charges Total', 
+		'grand_total':	'Grand Total', 'rounded_total': 'Rounded Total', 'rounded_total_in_words': 'In Words'}
+	par_cols_export = {'grand_total_print': 'Grand Total', 'rounded_total_print':	'Rounded Total', 'rounded_total_in_words_print':	'In Words'};
 
 	for (d in par_cols_base) cur_frm.fields_dict[d].label_span.innerHTML = par_cols_base[d]+' (' + base_curr + ')';
 	for (d in par_cols_export) cur_frm.fields_dict[d].label_span.innerHTML = par_cols_export[d]+' (' + doc.currency + ')';
-	cur_frm.fields_dict['conversion_rate'].label_span.innerHTML = "Conversion Rate (" + doc.currency +' -> '+ base_curr + ')';
-	cur_frm.fields_dict['plc_conversion_rate'].label_span.innerHTML = 'Price List Currency Conversion Rate (' + doc.price_list_currency +' -> '+ base_curr + ')';
+	cur_frm.fields_dict['exchange_rate'].label_span.innerHTML = "Conversion Rate (" + doc.currency +' -> '+ base_curr + ')';
+	cur_frm.fields_dict['plc_exchange_rate'].label_span.innerHTML = 'Price List Currency Conversion Rate (' + doc.price_list_currency +' -> '+ base_curr + ')';
 
 	if (doc.doctype == 'Sales Invoice') {
 		si_cols = {'total_advance': 'Total Advance', 'outstanding_amount': 'Outstanding Amount', 'paid_amount': 'Paid Amount', 'write_off_amount': 'Write Off Amount'}
@@ -98,8 +98,8 @@ var set_dynamic_label_par = function(doc, cdt, cdn, base_curr) {
 
 var set_dynamic_label_child = function(doc, cdt, cdn, base_curr) {
 	// item table flds
-	item_cols_base = {'basic_rate': 'Basic Rate', 'base_ref_rate': 'Price List Rate', 'amount': 'Amount'};
-	item_cols_export = {'export_rate': 'Basic Rate', 'ref_rate': 'Price List Rate', 'export_amount': 'Amount'};
+	item_cols_base = {'rate': 'Basic Rate', 'ref_rate': 'Price List Rate', 'amount': 'Amount'};
+	item_cols_export = {'print_rate': 'Basic Rate', 'print_ref_rate': 'Price List Rate', 'print_amount': 'Amount'};
 		
 	for (d in item_cols_base) $('[data-grid-fieldname="'+cur_frm.cscript.tname+'-'+d+'"]').html(item_cols_base[d]+' ('+base_curr+')');
 	for (d in item_cols_export) $('[data-grid-fieldname="'+cur_frm.cscript.tname+'-'+d+'"]').html(item_cols_export[d]+' ('+doc.currency+')');	
@@ -135,7 +135,7 @@ cur_frm.cscript.dynamic_label = function(doc, cdt, cdn, base_curr, callback) {
 // Help for Sales BOM items
 var set_sales_bom_help = function(doc) {
 	if(!cur_frm.fields_dict.packing_list) return;
-	if (getchildren('Delivery Note Packing Item', doc.name, 'packing_details').length) {
+	if (getchildren('Delivery Note Packing Item', doc.name, 'delivery_note_packing_items').length) {
 		$(cur_frm.fields_dict.packing_list.row.wrapper).toggle(true);
 		
 		if (inList(['Delivery Note', 'Sales Invoice'], doc.doctype)) {
@@ -167,28 +167,28 @@ cur_frm.cscript.hide_price_list_currency = function(doc, cdt, cdn, callback1) {
 			args: {'price_list':doc.price_list_name, 'company': doc.company},
 			callback: function(r, rt) {
 				pl_currency = r.message[0]?r.message[0]:[];
-				unhide_field(['price_list_currency', 'plc_conversion_rate']);
+				unhide_field(['price_list_currency', 'plc_exchange_rate']);
 				
 				if (pl_currency.length==1) {
 					if (doc.price_list_currency != pl_currency[0]) set_multiple(cdt, cdn, {price_list_currency:pl_currency[0]});
 					if (pl_currency[0] == doc.currency) {
-						if(doc.plc_conversion_rate != doc.conversion_rate) set_multiple(cdt, cdn, {plc_conversion_rate:doc.conversion_rate});
-						hide_field(['price_list_currency', 'plc_conversion_rate']);
+						if(doc.plc_exchange_rate != doc.exchange_rate) set_multiple(cdt, cdn, {plc_exchange_rate:doc.exchange_rate});
+						hide_field(['price_list_currency', 'plc_exchange_rate']);
 					} else if (pl_currency[0] == r.message[1]) {
-						if (doc.plc_conversion_rate != 1) set_multiple(cdt, cdn, {plc_conversion_rate:1})
-						hide_field(['price_list_currency', 'plc_conversion_rate']);
+						if (doc.plc_exchange_rate != 1) set_multiple(cdt, cdn, {plc_exchange_rate:1})
+						hide_field(['price_list_currency', 'plc_exchange_rate']);
 					}					
 				}
 
 				if (r.message[1] == doc.currency) {
-					if (doc.conversion_rate != 1) set_multiple(cdt, cdn, {conversion_rate:1});
-					hide_field(['conversion_rate', 'grand_total_export', 'in_words_export', 'rounded_total_export']);
-				} else unhide_field(['conversion_rate', 'grand_total_export', 'in_words_export', 'rounded_total_export']);
+					if (doc.exchange_rate != 1) set_multiple(cdt, cdn, {exchange_rate:1});
+					hide_field(['exchange_rate', 'grand_total_print', 'rounded_total_in_words_print', 'rounded_total_print']);
+				} else unhide_field(['exchange_rate', 'grand_total_print', 'rounded_total_in_words_print', 'rounded_total_print']);
 
 				if (r.message[1] == doc.price_list_currency) {
-					if (doc.plc_conversion_rate != 1) set_multiple(cdt, cdn, {plc_conversion_rate:1});
-					hide_field('plc_conversion_rate');
-				} else unhide_field('plc_conversion_rate');
+					if (doc.plc_exchange_rate != 1) set_multiple(cdt, cdn, {plc_exchange_rate:1});
+					hide_field('plc_exchange_rate');
+				} else unhide_field('plc_exchange_rate');
 				
 				cur_frm.cscript.dynamic_label(doc, cdt, cdn, r.message[1], callback1);	
 			}
@@ -205,8 +205,8 @@ cur_frm.cscript.currency = function(doc, cdt, cdn) {
 }
 
 cur_frm.cscript.price_list_currency = cur_frm.cscript.currency;
-cur_frm.cscript.conversion_rate = cur_frm.cscript.currency;
-cur_frm.cscript.plc_conversion_rate = cur_frm.cscript.currency;
+cur_frm.cscript.exchange_rate = cur_frm.cscript.currency;
+cur_frm.cscript.plc_exchange_rate = cur_frm.cscript.currency;
 
 cur_frm.cscript.company = function(doc, cdt, cdn) {
 	wn.call({
@@ -230,7 +230,7 @@ cur_frm.cscript.price_list_name = function(doc, cdt, cdn) {
 	var callback = function() {
 		var fname = cur_frm.cscript.fname;
 		var cl = getchildren(cur_frm.cscript.tname, doc.name, cur_frm.cscript.fname);
-		if(doc.price_list_name && doc.currency && doc.price_list_currency && doc.conversion_rate && doc.plc_conversion_rate) {
+		if(doc.price_list_name && doc.currency && doc.price_list_currency && doc.exchange_rate && doc.plc_exchange_rate) {
 			$c_obj(make_doclist(doc.doctype, doc.name), 'get_adj_percent', '',
 				function(r, rt) {
 					refresh_field(fname);
@@ -307,20 +307,20 @@ cur_frm.cscript.barcode = function(doc, cdt, cdn) {
 cur_frm.cscript.qty = function(doc, cdt, cdn) { cur_frm.cscript.recalc(doc, 1); }
 	
 // ************************ DISCOUNT (%) ***********************
-cur_frm.cscript.adj_rate = function(doc, cdt, cdn) { cur_frm.cscript.recalc(doc, 1); }
+cur_frm.cscript.discount = function(doc, cdt, cdn) { cur_frm.cscript.recalc(doc, 1); }
 
 // ************************ REF RATE ****************************
-cur_frm.cscript.ref_rate = function(doc, cdt, cdn){
+cur_frm.cscript.print_ref_rate = function(doc, cdt, cdn){
 	var d = locals[cdt][cdn];
 	var consider_incl_rate = cur_frm.cscript.consider_incl_rate(doc, cur_frm.cscript.other_fname);
 	if(!consider_incl_rate) {
-		set_multiple(cur_frm.cscript.tname, d.name, {'export_rate': flt(d.ref_rate) * (100 - flt(d.adj_rate)) / 100}, cur_frm.cscript.fname);
+		set_multiple(cur_frm.cscript.tname, d.name, {'print_rate': flt(d.print_ref_rate) * (100 - flt(d.discount)) / 100}, cur_frm.cscript.fname);
 	}
 	cur_frm.cscript.recalc(doc, 1);
 }
 
 // *********************** BASIC RATE **************************
-cur_frm.cscript.basic_rate = function(doc, cdt, cdn) { 
+cur_frm.cscript.rate = function(doc, cdt, cdn) { 
 	var fname = cur_frm.cscript.fname;
 	var d = locals[cdt][cdn];
 	if(!d.qty) {
@@ -331,13 +331,13 @@ cur_frm.cscript.basic_rate = function(doc, cdt, cdn) {
 	if(!consider_incl_rate) {
 		cur_frm.cscript.recalc(doc, 2);
 	} else {
-		var basic_rate = cur_frm.cscript.back_calc_basic_rate(
+		var rate = cur_frm.cscript.back_calc_rate(
 			doc, cur_frm.cscript.tname, fname, d, cur_frm.cscript.other_fname
 		);
-		// TODO: remove roundNumber for basic_rate comparison
-		if (d.basic_rate != roundNumber(basic_rate, 2)) { 
-			d.basic_rate = basic_rate;
-			refresh_field('basic_rate', d.name, fname); 
+		// TODO: remove roundNumber for rate comparison
+		if (d.rate != roundNumber(rate, 2)) { 
+			d.rate = rate;
+			refresh_field('rate', d.name, fname); 
 			msgprint("You cannot change Basic Rate* (Base Currency) when \
 				considering rates inclusive of taxes.<br /> \
 				Please either <br /> \
@@ -349,13 +349,13 @@ cur_frm.cscript.basic_rate = function(doc, cdt, cdn) {
 }
 
 // ************************ EXPORT RATE *************************
-cur_frm.cscript.export_rate = function(doc,cdt,cdn) {
+cur_frm.cscript.print_rate = function(doc,cdt,cdn) {
 	var cur_rec = locals[cdt][cdn];
 	var fname = cur_frm.cscript.fname;
 	var tname = cur_frm.cscript.tname;
-	if(flt(cur_rec.ref_rate)>0 && flt(cur_rec.export_rate)>0) {
-		var adj_rate = 100 * (1 - (flt(cur_rec.export_rate) / flt(cur_rec.ref_rate)));
-		set_multiple(tname, cur_rec.name, { 'adj_rate': adj_rate }, fname);
+	if(flt(cur_rec.print_ref_rate)>0 && flt(cur_rec.print_rate)>0) {
+		var discount = 100 * (1 - (flt(cur_rec.print_rate) / flt(cur_rec.print_ref_rate)));
+		set_multiple(tname, cur_rec.name, { 'discount': discount }, fname);
 	}
 	doc = locals[doc.doctype][doc.name];
 	cur_frm.cscript.recalc(doc, 1);
@@ -376,7 +376,7 @@ cur_frm.fields_dict.charge.get_query = function(doc) {
 // ********************* Get Charges ****************************
 cur_frm.cscript.get_charges = function(doc, cdt, cdn) {
 	$c_obj(make_doclist(doc.doctype,doc.name),
-		'get_other_charges',
+		'get_taxes_and_charges',
 		'', 
 		function(r, rt) { cur_frm.cscript.calculate_charges(doc, cdt, cdn);}
 		,null,null,cur_frm.fields_dict.get_charges.input);
@@ -393,13 +393,13 @@ cur_frm.cscript.recalc = function(doc, n) {
 	var sales_team = cur_frm.cscript.sales_team_fname;
 	var other_fname	= cur_frm.cscript.other_fname;
 	
-	if(!flt(doc.conversion_rate)) { 
-		doc.conversion_rate = 1; 
-		refresh_field('conversion_rate'); 
+	if(!flt(doc.exchange_rate)) { 
+		doc.exchange_rate = 1; 
+		refresh_field('exchange_rate'); 
 	}
-	if(!flt(doc.plc_conversion_rate)) { 
-		doc.plc_conversion_rate = 1; 
-		refresh_field('plc_conversion_rate'); 
+	if(!flt(doc.plc_exchange_rate)) { 
+		doc.plc_exchange_rate = 1; 
+		refresh_field('plc_exchange_rate'); 
 	}
 
 	if(n > 0) cur_frm.cscript.update_fname_table(doc , tname , fname , n, other_fname); // updates all values in table (i.e. amount, export amount, net total etc.)
@@ -417,7 +417,7 @@ cur_frm.cscript.recalc = function(doc, n) {
 				validated = false;
 			}
 		}
-		cur_frm.cscript.calc_other_charges(doc , tname , fname , other_fname); // calculate other charges
+		cur_frm.cscript.calc_taxes_and_charges(doc , tname , fname , other_fname); // calculate other charges
 	}
 	cur_frm.cscript.calc_doc_values(doc, null, null, tname, fname, other_fname); // calculates total amounts
 
@@ -429,43 +429,43 @@ cur_frm.cscript.recalc = function(doc, n) {
 			refresh_field('allocated_amount', cl[i].name, sales_team);
 		}
 	}
-	doc.in_words = '';
-	doc.in_words_export = '';
-	refresh_many(['total_discount_rate','total_discount','net_total','total_commission','grand_total','rounded_total','grand_total_export','rounded_total_export','in_words','in_words_export','other_charges','other_charges_total']);
+	doc.rounded_total_in_words = '';
+	doc.rounded_total_in_words_print = '';
+	refresh_many(['total_discount','total_discount','net_total','total_commission','grand_total','rounded_total','grand_total_print','rounded_total_print','rounded_total_in_words','rounded_total_in_words_print','taxes_and_charges','taxes_and_charges_total']);
 	if(cur_frm.cscript.custom_recalc)cur_frm.cscript.custom_recalc(doc);
 }
 
 // ******* Calculation of total amounts of document (item amount + other charges)****************
 cur_frm.cscript.calc_doc_values = function(doc, cdt, cdn, tname, fname, other_fname) {
 	doc = locals[doc.doctype][doc.name];
-	var net_total = 0; var other_charges_total = 0;
+	var net_total = 0; var taxes_and_charges_total = 0;
 	var net_total_incl = 0
 	var cl = getchildren(tname, doc.name, fname);
 	for(var i = 0; i<cl.length; i++){
-		//net_total += flt(cl[i].basic_rate) * flt(cl[i].qty);
+		//net_total += flt(cl[i].rate) * flt(cl[i].qty);
 		net_total += flt(cl[i].amount);
-		net_total_incl += flt(cl[i].export_amount);
+		net_total_incl += flt(cl[i].print_amount);
 	}
 
 	var inclusive_rate = 0
 	var d = getchildren('Sales Taxes and Charges', doc.name, other_fname,doc.doctype);
 	for(var j = 0; j<d.length; j++){
-		other_charges_total += flt(d[j].tax_amount);
+		taxes_and_charges_total += flt(d[j].tax_amount);
 		if(d[j].included_in_print_rate) {
 			inclusive_rate = 1;
 		}
 	}
 
-	if(flt(doc.conversion_rate)>1) {
-		net_total_incl *= flt(doc.conversion_rate);
+	if(flt(doc.exchange_rate)>1) {
+		net_total_incl *= flt(doc.exchange_rate);
 	}
 
 	doc.net_total = inclusive_rate ? flt(net_total_incl) : flt(net_total);
-	doc.other_charges_total = roundNumber(flt(other_charges_total), 2);
-	doc.grand_total = roundNumber((flt(net_total) + flt(other_charges_total)), 2);
+	doc.taxes_and_charges_total = roundNumber(flt(taxes_and_charges_total), 2);
+	doc.grand_total = roundNumber((flt(net_total) + flt(taxes_and_charges_total)), 2);
 	doc.rounded_total = Math.round(doc.grand_total);
-	doc.grand_total_export = roundNumber((flt(doc.grand_total) / flt(doc.conversion_rate)), 2);
-	doc.rounded_total_export = Math.round(doc.grand_total_export);
+	doc.grand_total_print = roundNumber((flt(doc.grand_total) / flt(doc.exchange_rate)), 2);
+	doc.rounded_total_print = Math.round(doc.grand_total_print);
 	doc.total_commission = flt(flt(net_total) * flt(doc.commission_rate) / 100);
 }
 
@@ -474,21 +474,21 @@ cur_frm.cscript.calc_other_charges = function(doc , tname , fname , other_fname)
 	doc = locals[doc.doctype][doc.name];
 
 	// Make Display Area
-	cur_frm.fields_dict['other_charges_calculation'].disp_area.innerHTML =
+	cur_frm.fields_dict['tax_calculation'].disp_area.innerHTML =
 		'<b style="padding: 8px 0px;">Calculation Details for Taxes and Charges:</b>';
 
 	var cl = getchildren(tname, doc.name, fname);
 	var tax = getchildren('Sales Taxes and Charges', doc.name, other_fname,doc.doctype);
 	
 	// Make display table
-	var otc = make_table(cur_frm.fields_dict['other_charges_calculation'].disp_area,
+	var otc = make_table(cur_frm.fields_dict['tax_calculation'].disp_area,
 		cl.length + 1, tax.length + 1, '90%', [], { border:'1px solid #AAA', padding:'2px' });
 	$y(otc,{marginTop:'8px'});
 
 	var tax_desc = {}; var tax_desc_rates = []; var net_total = 0;
 	
 	for(var i=0;i<cl.length;i++) {
-		net_total += flt(flt(cl[i].qty) * flt(cl[i].basic_rate));
+		net_total += flt(flt(cl[i].qty) * flt(cl[i].rate));
 		var prev_total = flt(cl[i].amount);
 		if(cl[i].item_tax_rate) {
 			try {
@@ -606,7 +606,7 @@ cur_frm.cscript.consider_incl_rate = function(doc, other_fname) {
 	return false;
 }
 
-cur_frm.cscript.back_calc_basic_rate = function(doc, tname, fname, child, other_fname) {	
+cur_frm.cscript.back_calc_rate = function(doc, tname, fname, child, other_fname) {	
 	var get_item_tax_rate = function(item, tax) {
 		if(item.item_tax_rate) {
 			try {
@@ -645,11 +645,11 @@ cur_frm.cscript.back_calc_basic_rate = function(doc, tname, fname, child, other_
 			total: total
 		};
 	}
-	var basic_rate = (child.export_rate * flt(doc.conversion_rate)) / total;
+	var rate = (child.print_rate * flt(doc.exchange_rate)) / total;
 	//console.log(temp_tax_list);
 	//console.log('in basic rate back calc');
-	//console.log(basic_rate);
-	return basic_rate;
+	//console.log(rate);
+	return rate;
 }
 
 cur_frm.cscript.included_in_print_rate = function(doc, cdt, cdn) {
@@ -677,57 +677,57 @@ cur_frm.cscript.update_fname_table = function(doc , tname , fname , n, other_fna
 	for(var i=0;i<cl.length;i++) {
 		if(n == 1){
 			if(!consider_incl_rate) {
-				if(flt(cl[i].ref_rate) > 0) {
+				if(flt(cl[i].print_ref_rate) > 0) {
 					set_multiple(tname, cl[i].name, {
-						'export_rate': flt(flt(cl[i].ref_rate) * (100 - flt(cl[i].adj_rate)) / 100)
+						'print_rate': flt(flt(cl[i].print_ref_rate) * (100 - flt(cl[i].discount)) / 100)
 					}, fname);
 				}
 				set_multiple(tname, cl[i].name, {
-					'export_amount': flt(flt(cl[i].qty) * flt(cl[i].export_rate)),
-					'basic_rate': flt(flt(cl[i].export_rate) * flt(doc.conversion_rate)),
-					'amount': roundNumber(flt((flt(cl[i].export_rate) * flt(doc.conversion_rate)) * flt(cl[i].qty)), 2)
+					'print_amount': flt(flt(cl[i].qty) * flt(cl[i].print_rate)),
+					'rate': flt(flt(cl[i].print_rate) * flt(doc.exchange_rate)),
+					'amount': roundNumber(flt((flt(cl[i].print_rate) * flt(doc.exchange_rate)) * flt(cl[i].qty)), 2)
 				}, fname);
-				//var base_ref_rate = flt(cl[i].basic_rate) + flt(flt(cl[i].basic_rate) * flt(cl[i].adj_rate) / 100);
+				//var ref_rate = flt(cl[i].rate) + flt(flt(cl[i].rate) * flt(cl[i].discount) / 100);
 				//set_multiple(tname, cl[i].name, {
-				//	'base_ref_rate': flt(base_ref_rate)
+				//	'ref_rate': flt(ref_rate)
 				//}, fname);
 
 		} else if(consider_incl_rate) {
-			if(flt(cl[i].export_rate) > 0) {
+			if(flt(cl[i].print_rate) > 0) {
 				// calculate basic rate based on taxes
-				// then calculate and set basic_rate, base_ref_rate, ref_rate, amount, export_amount
-				var ref_rate = flt(cl[i].adj_rate)!=flt(100) ?
-					flt((100 * flt(cl[i].export_rate))/flt(100 - flt(cl[i].adj_rate))) :
+				// then calculate and set rate, ref_rate, print_ref_rate, amount, print_amount
+				var print_ref_rate = flt(cl[i].discount)!=flt(100) ?
+					flt((100 * flt(cl[i].print_rate))/flt(100 - flt(cl[i].discount))) :
 					flt(0)
-				set_multiple(tname, cl[i].name, { 'ref_rate': ref_rate }, fname);
-			} else if((flt(cl[i].ref_rate) > 0) && (flt(cl[i].adj_rate) > 0)) {
-				var export_rate = flt(cl[i].ref_rate) * flt(1 - flt(cl[i].adj_rate / 100));
-				set_multiple(tname, cl[i].name, { 'export_rate': flt(export_rate) }, fname);
+				set_multiple(tname, cl[i].name, { 'print_ref_rate': print_ref_rate }, fname);
+			} else if((flt(cl[i].print_ref_rate) > 0) && (flt(cl[i].discount) > 0)) {
+				var print_rate = flt(cl[i].print_ref_rate) * flt(1 - flt(cl[i].discount / 100));
+				set_multiple(tname, cl[i].name, { 'print_rate': flt(print_rate) }, fname);
 			}
-			//console.log("export_rate: " + cl[i].export_rate);
+			//console.log("print_rate: " + cl[i].print_rate);
 
-			var basic_rate = cur_frm.cscript.back_calc_basic_rate(doc, tname, fname, cl[i], other_fname);
-			var base_ref_rate = basic_rate + flt(basic_rate * flt(cl[i].adj_rate) / 100);
+			var rate = cur_frm.cscript.back_calc_rate(doc, tname, fname, cl[i], other_fname);
+			var ref_rate = rate + flt(rate * flt(cl[i].discount) / 100);
 			set_multiple(tname, cl[i].name, {
-				'basic_rate': flt(basic_rate),
-				'amount': roundNumber(flt(basic_rate * flt(cl[i].qty)), 2),
-				'export_amount': flt(flt(cl[i].qty) * flt(cl[i].export_rate)),
-				'base_ref_rate': flt(base_ref_rate)
+				'rate': flt(rate),
+				'amount': roundNumber(flt(rate * flt(cl[i].qty)), 2),
+				'print_amount': flt(flt(cl[i].qty) * flt(cl[i].print_rate)),
+				'ref_rate': flt(ref_rate)
 			}, fname);
 		}
 		}
 		else if(n == 2){
-			if(flt(cl[i].ref_rate) > 0)
-				set_multiple(tname, cl[i].name, {'adj_rate': 100 - flt(flt(cl[i].basic_rate)	* 100 / (flt(cl[i].ref_rate) * flt(doc.conversion_rate)))}, fname);
-			set_multiple(tname, cl[i].name, {'amount': flt(flt(cl[i].qty) * flt(cl[i].basic_rate)), 'export_rate': flt(flt(cl[i].basic_rate) / flt(doc.conversion_rate)), 'export_amount': flt((flt(cl[i].basic_rate) / flt(doc.conversion_rate)) * flt(cl[i].qty)) }, fname);
+			if(flt(cl[i].print_ref_rate) > 0)
+				set_multiple(tname, cl[i].name, {'discount': 100 - flt(flt(cl[i].rate)	* 100 / (flt(cl[i].print_ref_rate) * flt(doc.exchange_rate)))}, fname);
+			set_multiple(tname, cl[i].name, {'amount': flt(flt(cl[i].qty) * flt(cl[i].rate)), 'print_rate': flt(flt(cl[i].rate) / flt(doc.exchange_rate)), 'print_amount': flt((flt(cl[i].rate) / flt(doc.exchange_rate)) * flt(cl[i].qty)) }, fname);
 		}
 		/*else if(n == 3){
-			set_multiple(tname, cl[i].name, {'basic_rate': flt(flt(cl[i].export_rate) * flt(doc.conversion_rate))}, fname);
-			set_multiple(tname, cl[i].name, {'amount' : flt(flt(cl[i].basic_rate) * flt(cl[i].qty)), 'export_amount': flt(flt(cl[i].export_rate) * flt(cl[i].qty))}, fname);
-			if(cl[i].ref_rate > 0)
-		set_multiple(tname, cl[i].name, {'adj_rate': 100 - flt(flt(cl[i].export_rate) * 100 / flt(cl[i].ref_rate)), 'base_ref_rate': flt(flt(cl[i].ref_rate) * flt(doc.conversion_rate)) }, fname);
+			set_multiple(tname, cl[i].name, {'rate': flt(flt(cl[i].print_rate) * flt(doc.exchange_rate))}, fname);
+			set_multiple(tname, cl[i].name, {'amount' : flt(flt(cl[i].rate) * flt(cl[i].qty)), 'print_amount': flt(flt(cl[i].print_rate) * flt(cl[i].qty))}, fname);
+			if(cl[i].print_ref_rate > 0)
+		set_multiple(tname, cl[i].name, {'discount': 100 - flt(flt(cl[i].print_rate) * 100 / flt(cl[i].print_ref_rate)), 'ref_rate': flt(flt(cl[i].print_ref_rate) * flt(doc.exchange_rate)) }, fname);
 		}*/
-		net_total += flt(flt(cl[i].qty) * flt(cl[i].basic_rate));
+		net_total += flt(flt(cl[i].qty) * flt(cl[i].rate));
 	}
 	doc.net_total = net_total;
 	refresh_field('net_total');
@@ -836,7 +836,7 @@ cur_frm.cscript.allocated_percentage = function(doc, cdt, cdn) {
 // =================================================================================
 cur_frm.cscript.validate = function(doc, cdt, cdn) {
 	cur_frm.cscript.validate_items(doc);
-	var cl = getchildren('Sales Taxes and Charges Master', doc.name, 'other_charges');
+	var cl = getchildren('Sales Taxes and Charges Master', doc.name, 'taxes_and_charges');
 	for(var i =0;i<cl.length;i++) {
 		if(!cl[i].amount) {
 			alert("Please Enter Amount in Row no. "+cl[i].idx+" in Taxes and Charges table");

@@ -35,7 +35,7 @@ class DocType:
 		self.doclist = doclist
 		self.defaults = get_defaults()
 		self.tname = 'Purchase Request Item'
-		self.fname = 'indent_details'
+		self.fname = 'purchase_request_items'
 
 	# Autoname
 	# ---------
@@ -52,23 +52,23 @@ class DocType:
 
 	# Pull Sales Order Items
 	# -------------------------
-	def pull_so_details(self):
+	def pull_sales_order_items(self):
 		self.check_if_already_pulled()
-		if self.doc.sales_order_no:
-			get_obj('DocType Mapper', 'Sales Order-Purchase Request', with_children=1).dt_map('Sales Order', 'Purchase Request', self.doc.sales_order_no, self.doc, self.doclist, "[['Sales Order', 'Purchase Request'],['Sales Order Item', 'Purchase Request Item']]")
+		if self.doc.sales_order:
+			get_obj('DocType Mapper', 'Sales Order-Purchase Request', with_children=1).dt_map('Sales Order', 'Purchase Request', self.doc.sales_order, self.doc, self.doclist, "[['Sales Order', 'Purchase Request'],['Sales Order Item', 'Purchase Request Item']]")
 			self.get_item_defaults()
 		else:
 			msgprint("Please select Sales Order whose details need to pull")
 
 	def check_if_already_pulled(self):
-		pass#if self.[d.sales_order_no for d in getlist(self.doclist, 'indent_details')]
+		pass#if self.[d.sales_order for d in getlist(self.doclist, 'purchase_request_items')]
 
 
 	# Get item's other details
 	#- ------------------------
 	def get_item_defaults(self):
 		self.get_default_schedule_date()
-		for d in getlist(self.doclist, 'indent_details'):
+		for d in getlist(self.doclist, 'purchase_request_items'):
 			det = sql("select min_order_qty from tabItem where name = '%s'" % d.item_code)
 			d.min_order_qty = det and flt(det[0][0]) or 0
 
@@ -76,19 +76,19 @@ class DocType:
 	# ----------------------------
 	def validate_qty_against_so(self):
 		so_items = {} # Format --> {'SO/00001': {'Item/001': 120, 'Item/002': 24}}
-		for d in getlist(self.doclist, 'indent_details'):
-			if d.sales_order_no:
-				if not so_items.has_key(d.sales_order_no):
-					so_items[d.sales_order_no] = {d.item_code: flt(d.qty)}
+		for d in getlist(self.doclist, 'purchase_request_items'):
+			if d.sales_order:
+				if not so_items.has_key(d.sales_order):
+					so_items[d.sales_order] = {d.item_code: flt(d.qty)}
 				else:
-					if not so_items[d.sales_order_no].has_key(d.item_code):
-						so_items[d.sales_order_no][d.item_code] = flt(d.qty)
+					if not so_items[d.sales_order].has_key(d.item_code):
+						so_items[d.sales_order][d.item_code] = flt(d.qty)
 					else:
-						so_items[d.sales_order_no][d.item_code] += flt(d.qty)
+						so_items[d.sales_order][d.item_code] += flt(d.qty)
 		
 		for so_no in so_items.keys():
 			for item in so_items[so_no].keys():
-				already_indented = sql("select sum(qty) from `tabPurchase Request Item` where item_code = '%s' and sales_order_no = '%s' and docstatus = 1 and parent != '%s'" % (item, so_no, self.doc.name))
+				already_indented = sql("select sum(qty) from `tabPurchase Request Item` where item_code = '%s' and sales_order = '%s' and docstatus = 1 and parent != '%s'" % (item, so_no, self.doc.name))
 				already_indented = already_indented and flt(already_indented[0][0]) or 0
 				
 				actual_so_qty = sql("select sum(qty) from `tabSales Order Item` where parent = '%s' and item_code = '%s' and docstatus = 1 group by parent" % (so_no, item))
@@ -101,7 +101,7 @@ class DocType:
 	# Validate fiscal year
 	# ----------------------------
 	def validate_fiscal_year(self):
-		get_obj(dt = 'Purchase Common').validate_fiscal_year(self.doc.fiscal_year,self.doc.transaction_date,'Purchase Request Date')
+		get_obj(dt = 'Purchase Common').validate_fiscal_year(self.doc.fiscal_year,self.doc.posting_date,'Purchase Request Date')
 
 	# get item details
 	# ---------------------------------
@@ -136,8 +136,8 @@ class DocType:
 	#--------------------------------
 	def validate_schedule_date(self):
 		 #:::::::: validate schedule date v/s indent date ::::::::::::
-		for d in getlist(self.doclist, 'indent_details'):
-			if d.schedule_date < self.doc.transaction_date:
+		for d in getlist(self.doclist, 'purchase_request_items'):
+			if d.schedule_date < self.doc.posting_date:
 				msgprint("Expected Schedule Date cannot be before Purchase Request Date")
 				raise Exception
 				
@@ -168,7 +168,7 @@ class DocType:
 	
 	# Update Quantity Requested for Purchase in Bin
 	def update_bin(self, is_submit, is_stopped):
-		for d in getlist(self.doclist, 'indent_details'):
+		for d in getlist(self.doclist, 'purchase_request_items'):
 			# Step 1:=> Check if is_stock_item == 'Yes'
 			if cstr(sql("select is_stock_item from `tabItem` where name = '%s'" % cstr(d.item_code))[0][0]) == 'Yes':
 				if not d.warehouse:
@@ -179,7 +179,7 @@ class DocType:
 				if is_stopped:
 					qty = (d.qty > d.ordered_qty) and flt(flt(d.qty) - flt(d.ordered_qty)) or 0 
 				# Step 3 :=> Update Bin's Purchase Request Qty by +- qty 
-				get_obj('Warehouse', d.warehouse).update_bin(0, 0, 0, (is_submit and 1 or -1) * flt(qty), 0, d.item_code, self.doc.transaction_date)		
+				get_obj('Warehouse', d.warehouse).update_bin(0, 0, 0, (is_submit and 1 or -1) * flt(qty), 0, d.item_code, self.doc.posting_date)		
 		
 	# On Submit			
 	#---------------------------------------------------------------------------

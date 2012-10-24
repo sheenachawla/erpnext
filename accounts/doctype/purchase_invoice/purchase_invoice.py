@@ -34,10 +34,10 @@ class DocType(AccountsController):
 		
 		# temp fields for identification
 		self.tname = 'Purchase Invoice Item'
-		self.fname = 'entries'
+		self.fname = 'purchase_invoice_items'
 		self.transaction_type = "Purchase"
-		self.taxes_and_charges = "purchase_tax_details"
-		self.taxes_and_charges_total = "total_tax"
+		self.taxes_and_charges = "taxes_and_charges"
+		self.taxes_and_charges_total = "taxes_and_charges_total"
 		
 
 	def autoname(self):
@@ -79,15 +79,15 @@ class DocType(AccountsController):
 		 
 		
 	def pull_details(self):
-		if self.doc.purchase_receipt_main:
+		if self.doc.purchase_receipt:
 			self.validate_duplicate_docname('purchase_receipt')
-			self.doclist = get_obj('DocType Mapper', 'Purchase Receipt-Purchase Invoice').dt_map('Purchase Receipt', 'Purchase Invoice', self.doc.purchase_receipt_main, self.doc, self.doclist, "[['Purchase Receipt', 'Purchase Invoice'], ['Purchase Receipt Item', 'Purchase Invoice Item'], ['Purchase Taxes and Charges','Purchase Taxes and Charges']]")
+			self.doclist = get_obj('DocType Mapper', 'Purchase Receipt-Purchase Invoice').dt_map('Purchase Receipt', 'Purchase Invoice', self.doc.purchase_receipt, self.doc, self.doclist, "[['Purchase Receipt', 'Purchase Invoice'], ['Purchase Receipt Item', 'Purchase Invoice Item'], ['Purchase Taxes and Charges','Purchase Taxes and Charges']]")
 
-		elif self.doc.purchase_order_main:
+		elif self.doc.purchase_order:
 			self.validate_duplicate_docname('purchase_order')
-			self.doclist = get_obj('DocType Mapper', 'Purchase Order-Purchase Invoice').dt_map('Purchase Order', 'Purchase Invoice', self.doc.purchase_order_main, self.doc, self.doclist, "[['Purchase Order', 'Purchase Invoice'],['Purchase Order Item', 'Purchase Invoice Item'], ['Purchase Taxes and Charges','Purchase Taxes and Charges']]")
+			self.doclist = get_obj('DocType Mapper', 'Purchase Order-Purchase Invoice').dt_map('Purchase Order', 'Purchase Invoice', self.doc.purchase_order, self.doc, self.doclist, "[['Purchase Order', 'Purchase Invoice'],['Purchase Order Item', 'Purchase Invoice Item'], ['Purchase Taxes and Charges','Purchase Taxes and Charges']]")
 		
-		self.get_expense_account('entries')
+		self.get_expense_account('purchase_invoice_items')
 
 		ret = self.get_credit_to()
 		if ret.has_key('credit_to'):
@@ -126,12 +126,12 @@ class DocType(AccountsController):
 			'description': item_det and item_det[0]['description'] or '',
 			'item_group': item_det and item_det[0]['item_group'] or '',
 			'rate': 0.00,
-			'purchase_ref_rate': 0.00,
-			'import_ref_rate': 0.00,
-			'import_rate': 0.00,
+			'ref_rate': 0.00,
+			'print_ref_rate': 0.00,
+			'print_rate': 0.00,
 			'qty': 0.00,
 			'amount': 0.00,
-			'discount_rate': 0.00,
+			'discount': 0.00,
 			'expense_head': item_det and item_det[0]['purchase_account'] or '',
 			'cost_center': item_det and item_det[0]['cost_center'] or '',
 			'item_tax_rate': json.dumps(t),
@@ -142,15 +142,15 @@ class DocType(AccountsController):
 		# get last purchase rate
 		last_purchase_details, last_purchase_date = get_obj('Purchase Common').get_last_purchase_details(arg, self.doc.name)
 		if last_purchase_details:
-			purchase_ref_rate = last_purchase_details['purchase_ref_rate']
-			purchase_rate = last_purchase_details['purchase_rate']
-			conversion_rate = self.doc.conversion_rate or 1.0
+			ref_rate = last_purchase_details['ref_rate']
+			rate = last_purchase_details['rate']
+			exchange_rate = self.doc.exchange_rate or 1.0
 			ret.update({
-				'purchase_ref_rate': purchase_ref_rate,
-				'discount_rate': last_purchase_details['discount_rate'],
-				'rate': purchase_rate,
-				'import_ref_rate': purchase_ref_rate / conversion_rate,
-				'import_rate': purchase_rate / conversion_rate,
+				'ref_rate': ref_rate,
+				'discount': last_purchase_details['discount'],
+				'rate': rate,
+				'print_ref_rate': ref_rate / exchange_rate,
+				'print_rate': rate / exchange_rate,
 			})	
 
 		return ret
@@ -181,17 +181,17 @@ class DocType(AccountsController):
 		return webnotes.conn.get_value("Company", self.doc.company, "abbr")
 
 	def validate_duplicate_docname(self,doctype):
-		for d in getlist(self.doclist, 'entries'): 
-			if doctype == 'purchase_receipt' and cstr(self.doc.purchase_receipt_main) == cstr(d.purchase_receipt):
-				msgprint(cstr(self.doc.purchase_receipt_main) + " purchase receipt details have already been pulled.")
+		for d in getlist(self.doclist, 'purchase_invoice_items'): 
+			if doctype == 'purchase_receipt' and cstr(self.doc.purchase_receipt) == cstr(d.purchase_receipt):
+				msgprint(cstr(self.doc.purchase_receipt) + " purchase receipt details have already been pulled.")
 				raise Exception , " Validation Error. "
 
-			if doctype == 'purchase_order' and cstr(self.doc.purchase_order_main) == cstr(d.purchase_order) and not d.purchase_receipt:
-				msgprint(cstr(self.doc.purchase_order_main) + " purchase order details have already been pulled.")
+			if doctype == 'purchase_order' and cstr(self.doc.purchase_order) == cstr(d.purchase_order) and not d.purchase_receipt:
+				msgprint(cstr(self.doc.purchase_order) + " purchase order details have already been pulled.")
 				raise Exception , " Validation Error. "
 
 	def check_active_purchase_items(self):
-		for d in getlist(self.doclist, 'entries'):
+		for d in getlist(self.doclist, 'purchase_invoice_items'):
 			if d.item_code:		# extra condn coz item_code is not mandatory in PV
 				valid_item = sql("select docstatus,is_purchase_item from tabItem where name = %s",d.item_code)
 				if valid_item[0][0] == 2:
@@ -201,12 +201,12 @@ class DocType(AccountsController):
 					msgprint("Item : '%s' is not Purchase Item"%(d.item_code))
 					raise Exception
 						
-	def check_conversion_rate(self):
+	def check_exchange_rate(self):
 		default_currency = super(DocType, self).get_company_currency(self.doc.company)		
 		if not default_currency:
 			msgprint('Message: Please enter default currency in Company Master')
 			raise Exception
-		if (self.doc.currency == default_currency and flt(self.doc.conversion_rate) != 1.00) or not self.doc.conversion_rate or (self.doc.currency != default_currency and flt(self.doc.conversion_rate) == 1.00):
+		if (self.doc.currency == default_currency and flt(self.doc.exchange_rate) != 1.00) or not self.doc.exchange_rate or (self.doc.currency != default_currency and flt(self.doc.exchange_rate) == 1.00):
 			msgprint("Message: Please Enter Appropriate Conversion Rate.")
 			raise Exception				
 
@@ -262,7 +262,7 @@ class DocType(AccountsController):
 	# ---------------------
 	def check_for_stopped_status(self):
 		check_list = []
-		for d in getlist(self.doclist,'entries'):
+		for d in getlist(self.doclist,'purchase_invoice_items'):
 			if d.purchase_order and not d.purchase_order in check_list and not d.purchase_receipt:
 				check_list.append(d.purhcase_order)
 				stopped = sql("select name from `tabPurchase Order` where status = 'Stopped' and name = '%s'" % d.purchase_order)
@@ -297,27 +297,27 @@ class DocType(AccountsController):
 	def validate_po_pr(self, d):
 		# check po / pr for qty and rates and currency and conversion rate
 
-		# currency, import_rate must be equal to currency, import_rate of purchase order
+		# currency, print_rate must be equal to currency, print_rate of purchase order
 		if d.purchase_order and not d.purchase_order in self.po_list:
 			# currency
 			currency = cstr(sql("select currency from `tabPurchase Order` where name = '%s'" % d.purchase_order)[0][0])
 			if not cstr(currency) == cstr(self.doc.currency):
 				msgprint("Purchase Order: " + cstr(d.purchase_order) + " currency : " + cstr(currency) + " does not match with currency of current document.")
 				raise Exception
-			# import_rate
-			rate = flt(sql('select import_rate from `tabPurchase Order Item` where item_code=%s and parent=%s and name = %s', (d.item_code, d.purchase_order, d.po_detail))[0][0])
-			if abs(rate - flt(d.import_rate)) > 1 and cint(get_defaults('maintain_same_rate')):
+			# print_rate
+			rate = flt(sql('select print_rate from `tabPurchase Order Item` where item_code=%s and parent=%s and name = %s', (d.item_code, d.purchase_order, d.purchase_order_item))[0][0])
+			if abs(rate - flt(d.print_rate)) > 1 and cint(get_defaults('maintain_same_rate')):
 				msgprint("Import Rate for %s in the Purchase Order is %s. Rate must be same as Purchase Order Rate" % (d.item_code,rate))
 				raise Exception
 									
 		if d.purchase_receipt and not d.purchase_receipt in self.pr_list:
-			# currency , conversion_rate
-			data = sql("select currency, conversion_rate from `tabPurchase Receipt` where name = '%s'" % d.purchase_receipt, as_dict = 1)
+			# currency , exchange_rate
+			data = sql("select currency, exchange_rate from `tabPurchase Receipt` where name = '%s'" % d.purchase_receipt, as_dict = 1)
 			if not cstr(data[0]['currency']) == cstr(self.doc.currency):
 				msgprint("Purchase Receipt: " + cstr(d.purchase_receipt) + " currency : " + cstr(data[0]['currency']) + " does not match with currency of current document.")
 				raise Exception
-			if not flt(data[0]['conversion_rate']) == flt(self.doc.conversion_rate):
-				msgprint("Purchase Receipt: " + cstr(d.purchase_receipt) + " conversion_rate : " + cstr(data[0]['conversion_rate']) + " does not match with conversion_rate of current document.")
+			if not flt(data[0]['exchange_rate']) == flt(self.doc.exchange_rate):
+				msgprint("Purchase Receipt: " + cstr(d.purchase_receipt) + " exchange_rate : " + cstr(data[0]['exchange_rate']) + " does not match with exchange_rate of current document.")
 				raise Exception
 
 	def set_aging_date(self):
@@ -330,7 +330,7 @@ class DocType(AccountsController):
 
 	def set_against_expense_account(self):
 		against_acc = []
-		for d in getlist(self.doclist, 'entries'):
+		for d in getlist(self.doclist, 'purchase_invoice_items'):
 			if d.expense_account not in against_acc:
 				against_acc.append(d.expense_account)
 		self.doc.against_expense_account = ','.join(against_acc)
@@ -340,7 +340,7 @@ class DocType(AccountsController):
 	def po_required(self):
 		res = sql("select value from `tabSingles` where doctype = 'Global Defaults' and field = 'po_required'")
 		if res and res[0][0] == 'Yes':
-			 for d in getlist(self.doclist,'entries'):
+			 for d in getlist(self.doclist,'purchase_invoice_items'):
 				 if not d.purchase_order:
 					 msgprint("Purchse Order No. required against item %s"%d.item_code)
 					 raise Exception
@@ -350,7 +350,7 @@ class DocType(AccountsController):
 	def pr_required(self):
 		res = sql("select value from `tabSingles` where doctype = 'Global Defaults' and field = 'pr_required'")
 		if res and res[0][0] == 'Yes':
-			 for d in getlist(self.doclist,'entries'):
+			 for d in getlist(self.doclist,'purchase_invoice_items'):
 				 if not d.purchase_receipt:
 					 msgprint("Purchase Receipt No. required against item %s"%d.item_code)
 					 raise Exception
@@ -370,7 +370,7 @@ class DocType(AccountsController):
 		self.po_required()
 		self.pr_required()
 		self.check_active_purchase_items()
-		self.check_conversion_rate()
+		self.check_exchange_rate()
 		self.validate_bill_no_date()
 		self.validate_bill_no()
 		self.validate_reference_value()
@@ -382,7 +382,7 @@ class DocType(AccountsController):
 		self.calculate_taxes_and_totals()
 
 		self.po_list, self.pr_list = [], []
-		for d in getlist(self.doclist, 'entries'):
+		for d in getlist(self.doclist, 'purchase_invoice_items'):
 			self.validate_supplier(d)
 			self.validate_po_pr(d)
 			if not d.purchase_order in self.po_list:
@@ -408,13 +408,13 @@ class DocType(AccountsController):
 		
 		 # get total in words
 		dcc = super(DocType, self).get_company_currency(self.doc.company)
-		self.doc.in_words = pc_obj.get_total_in_words(dcc, self.doc.grand_total)
-		self.doc.in_words_import = pc_obj.get_total_in_words(self.doc.currency, self.doc.grand_total_import)
+		self.doc.grand_total_in_words = pc_obj.get_total_in_words(dcc, self.doc.grand_total)
+		self.doc.grand_total_in_words_print = pc_obj.get_total_in_words(self.doc.currency, self.doc.grand_total_print)
 
 	# Check Ref Document docstatus
 	# -----------------------------
 	def check_prev_docstatus(self):
-		for d in getlist(self.doclist,'entries'):
+		for d in getlist(self.doclist,'purchase_invoice_items'):
 			if d.purchase_order:
 				submitted = sql("select name from `tabPurchase Order` where docstatus = 1 and name = '%s'" % d.purchase_order)
 				if not submitted:
@@ -490,7 +490,7 @@ class DocType(AccountsController):
 		valuation_tax = 0
 		
 		# tax table gl entries
-		for tax in getlist(self.doclist, "purchase_tax_details"):
+		for tax in getlist(self.doclist, "taxes_and_charges"):
 			if tax.category in ("Total", "Valuation and Total"):
 				gl_entries.append(
 					self.get_gl_dict({
@@ -508,7 +508,7 @@ class DocType(AccountsController):
 				
 		# item gl entries
 		stock_item_exists = False
-		for item in getlist(self.doclist, 'entries'):
+		for item in getlist(self.doclist, 'purchase_invoice_items'):
 			if webnotes.conn.get_value("Item", item.item_code, "is_stock_item")=="Yes":
 				# if it is a stock item, then do stock related gl entries
 				# accounting gl entries will be made when making sales invoice
@@ -588,7 +588,7 @@ class DocType(AccountsController):
 		
 		
 	def update_raw_material_cost(self):
-		for d in getlist(self.doclist, 'entries'):
+		for d in getlist(self.doclist, 'purchase_invoice_items'):
 			rm_cost = webnotes.conn.sql("""
 				select raw_material_cost / quantity from `tabBOM` 
 				where item = %s and is_default = 1 and docstatus != 2

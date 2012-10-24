@@ -40,7 +40,7 @@ class DocType(TransactionBase):
   def pull_sales_order_detail(self):
     self.doclist = self.doc.clear_table(self.doclist, 'item_maintenance_detail')
     self.doclist = self.doc.clear_table(self.doclist, 'maintenance_schedule_detail')
-    self.doclist = get_obj('DocType Mapper', 'Sales Order-Maintenance Schedule').dt_map('Sales Order', 'Maintenance Schedule', self.doc.sales_order_no, self.doc, self.doclist, "[['Sales Order', 'Maintenance Schedule'],['Sales Order Item', 'Maintenance Schedule Item']]")
+    self.doclist = get_obj('DocType Mapper', 'Sales Order-Maintenance Schedule').dt_map('Sales Order', 'Maintenance Schedule', self.doc.sales_order, self.doc, self.doclist, "[['Sales Order', 'Maintenance Schedule'],['Sales Order Item', 'Maintenance Schedule Item']]")
   
   #pull item details 
   #-------------------
@@ -242,7 +242,7 @@ class DocType(TransactionBase):
   def validate(self):
     self.validate_maintenance_detail()
     self.validate_sales_order()
-    if self.doc.sales_order_no:
+    if self.doc.sales_order:
       self.validate_reference_value()
     self.validate_serial_no()
     self.validate_start_date()

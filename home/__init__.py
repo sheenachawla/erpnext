@@ -24,12 +24,12 @@ feed_dict = {
 
 	# Sales
 	'Lead':			 ['%(lead_name)s', '#000080'],
-	'Quotation':	    ['[%(status)s] To %(customer_name)s worth %(currency)s %(grand_total_export)s', '#4169E1'],
-	'Sales Order':	  ['[%(status)s] To %(customer_name)s worth %(currency)s %(grand_total_export)s', '#4169E1'],
+	'Quotation':	    ['[%(status)s] To %(customer_name)s worth %(currency)s %(grand_total_print)s', '#4169E1'],
+	'Sales Order':	  ['[%(status)s] To %(customer_name)s worth %(currency)s %(grand_total_print)s', '#4169E1'],
 
 	# Purchase
 	'Supplier':		     ['%(supplier_name)s, %(supplier_type)s', '#6495ED'],
-	'Purchase Order':       ['[%(status)s] %(name)s To %(supplier_name)s for %(currency)s  %(grand_total_import)s', '#4169E1'],
+	'Purchase Order':       ['[%(status)s] %(name)s To %(supplier_name)s for %(currency)s  %(grand_total_print)s', '#4169E1'],
 
 	# Stock
 	'Delivery Note':	['[%(status)s] To %(customer_name)s', '#4169E1'],
@@ -37,8 +37,8 @@ feed_dict = {
 
 	# Accounts
 	'Journal Voucher':      ['[%(voucher_type)s] %(name)s', '#4169E1'],
-	'Purchase Invoice':      ['To %(supplier_name)s for %(currency)s %(grand_total_import)s', '#4169E1'],
-	'Sales Invoice':['To %(customer_name)s for %(currency)s %(grand_total_export)s', '#4169E1'],
+	'Purchase Invoice':      ['To %(supplier_name)s for %(currency)s %(grand_total_print)s', '#4169E1'],
+	'Sales Invoice':['To %(customer_name)s for %(currency)s %(grand_total_print)s', '#4169E1'],
 
 	# HR
 	'Expense Claim':      ['[%(approval_status)s] %(name)s by %(employee_name)s', '#4169E1'],

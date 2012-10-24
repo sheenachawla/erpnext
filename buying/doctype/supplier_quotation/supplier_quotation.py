@@ -22,7 +22,7 @@ from utilities.transaction_base import TransactionBase
 class DocType(TransactionBase):
 	def __init__(self, doc, doclist=None):
 		self.doc, self.doclist = doc, doclist or []
-		self.tname, self.fname = "Supplier Quotation Item", "quotation_items"
+		self.tname, self.fname = "Supplier Quotation Item", "supplier_quotation_items"
 
 	def autoname(self):
 		"""autoname based on naming series value"""
@@ -61,17 +61,17 @@ class DocType(TransactionBase):
 							doc.fields[r] = ret[r]
 
 	def get_indent_details(self):
-		if self.doc.indent_no:
+		if self.doc.purchase_request:
 			mapper = get_obj("DocType Mapper", "Purchase Request-Supplier Quotation")
-			mapper.dt_map("Purchase Request", "Supplier Quotation", self.doc.indent_no,
+			mapper.dt_map("Purchase Request", "Supplier Quotation", self.doc.purchase_request,
 				self.doc, self.doclist, """[['Purchase Request', 'Supplier Quotation'],
 				['Purchase Request Item', 'Supplier Quotation Item']]""")
 			
 			from webnotes.model.utils import getlist
 			for d in getlist(self.doclist, self.fname):
-				if d.item_code and not d.purchase_rate:
-					d.purchase_ref_rate = d.discount_rate = d.purchase_rate = 0.0
-					d.import_ref_rate = d.import_rate = 0.0
+				if d.item_code and not d.rate:
+					d.ref_rate = d.discount = d.rate = 0.0
+					d.print_ref_rate = d.print_rate = 0.0
 	
 	def load_default_taxes(self):
 		self.doclist = get_obj('Purchase Common').load_default_taxes(self)
@@ -81,18 +81,18 @@ class DocType(TransactionBase):
 
 	def validate_fiscal_year(self):
 		get_obj(dt = 'Purchase Common').validate_fiscal_year( \
-			self.doc.fiscal_year, self.doc.transaction_date, 'Quotation Date')
+			self.doc.fiscal_year, self.doc.posting_date, 'Quotation Date')
 			
 	def validate_common(self):
 		pc = get_obj('Purchase Common')
 		pc.validate_mandatory(self)
 		pc.validate_for_items(self)
-		pc.validate_conversion_rate(self)
+		pc.validate_exchange_rate(self)
 		pc.get_prevdoc_date(self)
 		pc.validate_reference_value(self)
 		
 	def set_in_words(self):
 		pc = get_obj('Purchase Common')
 		company_currency = TransactionBase().get_company_currency(self.doc.company)
-		self.doc.in_words = pc.get_total_in_words(company_currency, self.doc.grand_total)
-		self.doc.in_words_import = pc.get_total_in_words(self.doc.currency, self.doc.grand_total_import)
+		self.doc.grand_total_in_words = pc.get_total_in_words(company_currency, self.doc.grand_total)
+		self.doc.grand_total_in_words_print = pc.get_total_in_words(self.doc.currency, self.doc.grand_total_print)

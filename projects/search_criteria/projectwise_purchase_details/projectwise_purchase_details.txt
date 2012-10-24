@@ -3,21 +3,21 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-04-03 12:49:52',
-		'docstatus': 0,
-		'modified': '2012-04-03 12:49:52',
-		'modified_by': u'Administrator',
-		'owner': u'ashwini@webnotestech.com'
+		u'creation': '2012-10-24 14:33:50',
+		u'docstatus': 0,
+		u'modified': '2012-10-24 14:33:50',
+		u'modified_by': u'Administrator',
+		u'owner': u'ashwini@webnotestech.com'
 	},
 
 	# These values are common for all Search Criteria
 	{
 		'criteria_name': u'Projectwise Purchase Details',
 		'doc_type': u'Purchase Order',
-		'doctype': 'Search Criteria',
+		u'doctype': u'Search Criteria',
 		'filters': u"{'Purchase Order\x01Status':'','Purchase Order\x01Fiscal Year':''}",
 		'module': u'Projects',
-		'name': '__common__',
+		u'name': u'__common__',
 		'page_len': 50,
 		'sort_order': u'DESC',
 		'standard': u'Yes'
@@ -25,7 +25,7 @@
 
 	# Search Criteria, projectwise_purchase_details
 	{
-		'doctype': 'Search Criteria',
-		'name': u'projectwise_purchase_details'
+		u'doctype': u'Search Criteria',
+		u'name': u'projectwise_purchase_details'
 	}
 ]

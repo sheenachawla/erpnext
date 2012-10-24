@@ -59,19 +59,19 @@
 	{
 		'checking_operator': u'>=',
 		'doctype': u'Field Mapper Detail',
-		'from_field': u'transaction_date',
+		'from_field': u'posting_date',
 		'map': u'No',
 		'match_id': 0,
-		'to_field': u'transaction_date'
+		'to_field': u'posting_date'
 	},
 
 	# Field Mapper Detail
 	{
 		'doctype': u'Field Mapper Detail',
-		'from_field': u'conversion_rate',
+		'from_field': u'exchange_rate',
 		'map': u'Yes',
 		'match_id': 0,
-		'to_field': u'conversion_rate'
+		'to_field': u'exchange_rate'
 	},
 
 	# Field Mapper Detail
@@ -86,10 +86,10 @@
 	# Field Mapper Detail
 	{
 		'doctype': u'Field Mapper Detail',
-		'from_field': u'total_tax',
+		'from_field': u'taxes_and_charges_total',
 		'map': u'Yes',
 		'match_id': 0,
-		'to_field': u'total_tax'
+		'to_field': u'taxes_and_charges_total'
 	},
 
 	# Field Mapper Detail
@@ -149,21 +149,21 @@
 	# Table Mapper Detail
 	{
 		'doctype': u'Table Mapper Detail',
-		'from_field': u'quotation_details',
+		'from_field': u'quotation_items',
 		'from_table': u'Supplier Quotation Item',
 		'match_id': 1,
 		'reference_doctype_key': u'prevdoc_doctype',
-		'to_field': u'po_details',
+		'to_field': u'purchase_order_items',
 		'to_table': u'Purchase Order Item'
 	},
 
 	# Table Mapper Detail
 	{
 		'doctype': u'Table Mapper Detail',
-		'from_field': u'purchase_tax_details',
+		'from_field': u'taxes_and_charges',
 		'from_table': u'Purchase Taxes and Charges',
 		'match_id': 2,
-		'to_field': u'purchase_tax_details',
+		'to_field': u'taxes_and_charges',
 		'to_table': u'Purchase Taxes and Charges'
 	}
 ]

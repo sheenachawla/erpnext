@@ -74,8 +74,8 @@ class AccountsController(TransactionBase):
 			
 			if table_field:
 				for d in getlist(self.doclist, table_field):
-					# purchase_tax_details is the table of other charges in purchase cycle
-					if table_field == "purchase_tax_details" and \
+					# taxes_and_charges is the table of other charges in purchase cycle
+					if table_field == "taxes_and_charges" and \
 							d.fields.get("category") == "Valuation":
 						# don't create gl entry for only valuation type charges
 						continue
@@ -225,7 +225,7 @@ class AccountsController(TransactionBase):
 			
 			# calculate amount and net total
 			item.amount = flt((item.qty * item.rate) - \
-				((item.discount_rate / 100.0) * item.rate), self.item_precision["amount"])
+				((item.discount / 100.0) * item.rate), self.item_precision["amount"])
 			self.doc.net_total += item.amount
 			
 		self.doc.net_total = flt(self.doc.net_total, self.main_precision["net_total"])
@@ -271,7 +271,14 @@ class AccountsController(TransactionBase):
 					self.tax_doclist[cint(tax.row_id) - 1].grand_total_for_current_item
 	
 			return flt(current_tax_amount, self.tax_precision["tax_amount"])
-			
+		
+		# build is_stock_item_map
+		item_codes = list(set(item.item_code for item in self.item_doclist))
+		is_stock_item_map = dict(webnotes.conn.sql("""select name, 
+			ifnull(is_stock_item, "No") from `tabItem` where name in (%s)""" % \
+			(", ".join((["%s"]*len(item_codes))),),
+			item_codes))
+		
 		# loop through items and set item tax amount
 		for item in self.item_doclist:
 			item_tax_map = _load_item_tax_rate(item.item_tax_rate)
@@ -283,7 +290,8 @@ class AccountsController(TransactionBase):
 				current_tax_amount = _get_current_tax_amount(item, tax, item_tax_map)
 				
 				if self.transaction_type == "Purchase" and \
-						tax.category in ["Valuation", "Valuation and Total"]:
+						tax.category in ["Valuation", "Valuation and Total"] and \
+						is_stock_item_map.get(item.item_code)=="Yes":
 					item.item_tax_amount += current_tax_amount
 				
 				# case when net total is 0 but there is an actual type charge

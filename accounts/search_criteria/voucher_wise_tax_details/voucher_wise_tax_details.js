@@ -42,15 +42,9 @@ report.get_query = function() {
   vid = this.get_filter('Sales Taxes and Charges', 'Voucher Id').get_value();
   acc = this.get_filter('Sales Taxes and Charges', 'Tax Account').get_value();
 
-  date_fld = 'transaction_date';
-  if(based_on == 'Sales Invoice') {
-  	based_on = 'Sales Invoice';
-  	date_fld = 'voucher_date';
-  }
-
   sp_cond = '';
-  if (from_date) sp_cond += repl(' AND t1.%(dt)s >= "%(from_date)s"', {dt:date_fld, from_date:from_date});
-  if (to_date) sp_cond += repl(' AND t1.%(dt)s <= "%(to_date)s"', {dt:date_fld, to_date:to_date});
+  if (from_date) sp_cond += repl(' AND t1.%(dt)s >= "%(from_date)s"', {dt:"posting_date", from_date:from_date});
+  if (to_date) sp_cond += repl(' AND t1.%(dt)s <= "%(to_date)s"', {dt:"posting_date", to_date:to_date});
   if (vid) sp_cond += repl(' AND t1.name LIKE "%%(voucher)s%"', {voucher:vid});
   if (acc) sp_cond += repl(' AND t2.account_head = "%(acc)s"', {acc:acc});
 
@@ -58,6 +52,6 @@ report.get_query = function() {
   	FROM `tab%(parent)s` t1, `tabSales Taxes and Charges` t2 \
   	WHERE t1.docstatus=1 AND t2.`parenttype` = "%(parent)s" \
   	AND t2.`parent` = t1.`name`  \
-  	%(cond)s ORDER BY t1.`name` DESC, t1.%(dt)s DESC', {parent:based_on, cond:sp_cond, dt:date_fld});
+  	%(cond)s ORDER BY t1.`name` DESC, t1.%(dt)s DESC', {parent:based_on, cond:sp_cond, dt:"posting_date"});
 }
 

@@ -131,8 +131,8 @@ class DocType:
 
 			# if Opportunity
 			elif d=='Opportunity':
-				args['Quotations to be sent'] = sql("select count(distinct(t2.name)) from `tabQuotation`t1, `tabOpportunity`t2 where t1.enq_no!=t2.name and t2.docstatus=1")
-				args['To follow up'] = sql("select count(distinct(t2.name)) from `tabQuotation`t1, `tabOpportunity`t2 where t1.enq_no=t2.name and t2.docstatus=1 and t1.docstatus=1")
+				args['Quotations to be sent'] = sql("select count(distinct(t2.name)) from `tabQuotation`t1, `tabOpportunity`t2 where t1.opportunity!=t2.name and t2.docstatus=1")
+				args['To follow up'] = sql("select count(distinct(t2.name)) from `tabQuotation`t1, `tabOpportunity`t2 where t1.opportunity=t2.name and t2.docstatus=1 and t1.docstatus=1")
 
 			# if Sales Order
 			elif d=='Sales Order':

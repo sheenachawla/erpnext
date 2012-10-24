@@ -17,8 +17,8 @@
 // Module CRM
 
 cur_frm.cscript.tname = "Sales Order Item";
-cur_frm.cscript.fname = "sales_order_details";
-cur_frm.cscript.other_fname = "other_charges";
+cur_frm.cscript.fname = "sales_order_items";
+cur_frm.cscript.other_fname = "taxes_and_charges";
 cur_frm.cscript.sales_team_fname = "sales_team";
 
 
@@ -32,8 +32,8 @@ wn.require('app/setup/doctype/notification_control/notification_control.js');
 // ================================================================================================
 cur_frm.cscript.onload = function(doc, cdt, cdn) {
 	if(!doc.status) set_multiple(cdt,cdn,{status:'Draft'});
-	if(!doc.transaction_date) set_multiple(cdt,cdn,{transaction_date:get_today()});
-	if(!doc.price_list_currency) set_multiple(cdt, cdn, {price_list_currency: doc.currency, plc_conversion_rate: 1});
+	if(!doc.posting_date) set_multiple(cdt,cdn,{posting_date:get_today()});
+	if(!doc.price_list_currency) set_multiple(cdt, cdn, {price_list_currency: doc.currency, plc_exchange_rate: 1});
 	// load default charges
 	
 	if(doc.__islocal && !doc.customer){
@@ -135,12 +135,12 @@ cur_frm.fields_dict['contact_person'].get_query = function(doc, cdt, cdn) {
 	return 'SELECT name,CONCAT(first_name," ",ifnull(last_name,"")) As FullName,department,designation FROM tabContact WHERE customer = "'+ doc.customer +'" AND docstatus != 2 AND name LIKE "%s" ORDER BY name ASC LIMIT 50';
 }
 
-cur_frm.cscript.pull_quotation_details = function(doc,dt,dn) {
+cur_frm.cscript.pull_quotation_items = function(doc,dt,dn) {
 	var callback = function(r,rt){
 		var doc = locals[cur_frm.doctype][cur_frm.docname];					
 		if(r.message){							
-			doc.quotation_no = r.message;			
-			if(doc.quotation_no) {					
+			doc.quotation = r.message;			
+			if(doc.quotation) {					
 				unhide_field(['quotation_date', 'customer_address', 'contact_person', 'territory', 'customer_group']);
 				if(doc.customer) get_server_fields('get_shipping_address', doc.customer, '', doc, dt, dn, 0);
 			}			
@@ -148,7 +148,7 @@ cur_frm.cscript.pull_quotation_details = function(doc,dt,dn) {
 		}
 	} 
 
- $c_obj(make_doclist(doc.doctype, doc.name),'pull_quotation_details','',callback);
+ $c_obj(make_doclist(doc.doctype, doc.name),'pull_quotation_items','',callback);
 }
 
 
@@ -182,12 +182,12 @@ cur_frm.cscript.project_name = function(doc,cdt,cdn){
 
 
 // *************** Customized link query for QUOTATION ***************************** 
-cur_frm.fields_dict['quotation_no'].get_query = function(doc) {
+cur_frm.fields_dict['quotation'].get_query = function(doc) {
 	var cond='';
 	if(doc.order_type) cond = ' ifnull(`tabQuotation`.order_type, "") = "'+doc.order_type+'" and';
 	if(doc.customer) cond += ' ifnull(`tabQuotation`.customer, "") = "'+doc.customer+'" and';
 	
-	return repl('SELECT DISTINCT name, customer, transaction_date FROM `tabQuotation` WHERE `tabQuotation`.company = "' + doc.company + '" and `tabQuotation`.`docstatus` = 1 and `tabQuotation`.status != "Order Lost" and %(cond)s `tabQuotation`.%(key)s LIKE "%s" ORDER BY `tabQuotation`.`name` DESC LIMIT 50', {cond:cond});
+	return repl('SELECT DISTINCT name, customer, posting_date FROM `tabQuotation` WHERE `tabQuotation`.company = "' + doc.company + '" and `tabQuotation`.`docstatus` = 1 and `tabQuotation`.status != "Order Lost" and %(cond)s `tabQuotation`.%(key)s LIKE "%s" ORDER BY `tabQuotation`.`name` DESC LIMIT 50', {cond:cond});
 }
 
 
@@ -199,7 +199,7 @@ cur_frm.cscript.reserved_warehouse = function(doc, cdt , cdn) {
 	var d = locals[cdt][cdn];
 	if (d.reserved_warehouse) {
 		arg = "{'item_code':'" + d.item_code + "','warehouse':'" + d.reserved_warehouse +"'}";
-		get_server_fields('get_available_qty',arg,'sales_order_details',doc,cdt,cdn,1);
+		get_server_fields('get_available_qty',arg,'sales_order_items',doc,cdt,cdn,1);
 	}
 }
 

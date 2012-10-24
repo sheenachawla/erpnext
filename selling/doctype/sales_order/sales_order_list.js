@@ -9,8 +9,8 @@ wn.doclistviews['Sales Order'] = wn.views.ListView.extend({
 			"ifnull(`tabSales Order`.per_delivered,0) as per_delivered", 
 			"ifnull(`tabSales Order`.per_billed,0) as per_billed",
 			"`tabSales Order`.currency", 
-			"ifnull(`tabSales Order`.grand_total_export,0) as grand_total_export",
-			"`tabSales Order`.transaction_date",
+			"ifnull(`tabSales Order`.grand_total_print,0) as grand_total_print",
+			"`tabSales Order`.posting_date",
 		]);
 		this.stats = this.stats.concat(['status', 'order_type', 'company']);
 	},
@@ -24,7 +24,7 @@ wn.doclistviews['Sales Order'] = wn.views.ListView.extend({
 		{
 			width: '18%', 
 			content: function(parent, data) { 
-				$(parent).html(data.currency + ' ' + fmt_money(data.grand_total_export)) 
+				$(parent).html(data.currency + ' ' + fmt_money(data.grand_total_print)) 
 			},
 			css: {'text-align':'right'}
 		},
@@ -42,7 +42,7 @@ wn.doclistviews['Sales Order'] = wn.views.ListView.extend({
 			},
 		},
 		{width: '8%', content: 'per_billed', type:'bar-graph', label:'Billed'},
-		{width: '12%', content:'transaction_date',
+		{width: '12%', content:'posting_date',
 			css: {'text-align': 'right', 'color':'#777'},
 			title: "Sales Order Date", type: "date"}
 	]

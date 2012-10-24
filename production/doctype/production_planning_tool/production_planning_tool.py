@@ -47,9 +47,9 @@ class DocType:
 
 	def get_so_details(self, so):
 		"""Pull other details from so"""
-		so = sql("select transaction_date, customer, grand_total from `tabSales Order` where name = %s", so, as_dict = 1)
+		so = sql("select posting_date, customer, grand_total from `tabSales Order` where name = %s", so, as_dict = 1)
 		ret = {
-			'sales_order_date': so and so[0]['transaction_date'] or '',
+			'sales_order_date': so and so[0]['posting_date'] or '',
 			'customer' : so[0]['customer'] or '',
 			'grand_total': so[0]['grand_total']
 		}
@@ -73,7 +73,7 @@ class DocType:
 		cond = self.get_filter_condition()
 		open_so = sql("""
 			select 
-				distinct t1.name, t1.transaction_date, t1.customer, t1.grand_total 
+				distinct t1.name, t1.posting_date, t1.customer, t1.grand_total 
 			from 
 				`tabSales Order` t1, `tabSales Order Item` t2, `tabDelivery Note Packing Item` t3, tabItem t4
 			where 
@@ -98,9 +98,9 @@ class DocType:
 
 		cond = ''
 		if self.doc.from_date:
-			cond += ' and t1.transaction_date >= "' + self.doc.from_date + '"'
+			cond += ' and t1.posting_date >= "' + self.doc.from_date + '"'
 		if self.doc.to_date:
-			cond += ' and t1.transaction_date <= "' + self.doc.to_date + '"'
+			cond += ' and t1.posting_date <= "' + self.doc.to_date + '"'
 		if self.doc.customer:
 			cond += ' and t1.customer = "' + self.doc.customer + '"'
 		if self.doc.fg_item:
@@ -119,7 +119,7 @@ class DocType:
 			if cstr(r['name']) not in so_list:
 				pp_so = addchild(self.doc, 'pp_so_details', 'Production Plan Sales Order', 1, self.doclist)
 				pp_so.sales_order = r['name']
-				pp_so.sales_order_date = cstr(r['transaction_date'])
+				pp_so.sales_order_date = cstr(r['posting_date'])
 				pp_so.customer = cstr(r['customer'])
 				pp_so.grand_total = flt(r['grand_total'])
 

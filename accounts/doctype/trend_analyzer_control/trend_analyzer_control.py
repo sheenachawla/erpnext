@@ -34,10 +34,7 @@ class DocType:
         def define_globals(self, trans, fiscal_year):
                 self.month_name = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 
-                if trans == 'Purchase Receipt' or trans == 'Delivery Note' or trans == 'Purchase Invoice' or trans == 'Sales Invoice':
-                        self.trans_date = 'posting_date'
-                else:
-                        self.trans_date = 'transaction_date'
+				self.trans_date = "posting_date"
                 
                 ysd = sql("select year_start_date from `tabFiscal Year` where name = %s",fiscal_year)[0][0]
                 self.year_start_date = ysd.strftime('%Y-%m-%d')

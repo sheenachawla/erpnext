@@ -15,8 +15,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 cur_frm.cscript.tname = "Purchase Invoice Item";
-cur_frm.cscript.fname = "entries";
-cur_frm.cscript.other_fname = "purchase_tax_details";
+cur_frm.cscript.fname = "purchase_invoice_items";
+cur_frm.cscript.other_fname = "taxes_and_charges";
 wn.require('app/accounts/doctype/purchase_taxes_and_charges_master/purchase_taxes_and_charges_master.js');
 wn.require('app/buying/doctype/purchase_common/purchase_common.js');
 
@@ -61,7 +61,7 @@ cur_frm.cscript.supplier = function(doc,dt,dn) {
 	
 	var callback2 = function(r,rt){
 		var doc = locals[cur_frm.doctype][cur_frm.docname];
-		var el = getchildren('Purchase Invoice Item',doc.name,'entries');
+		var el = getchildren('Purchase Invoice Item',doc.name,'purchase_invoice_items');
 		for(var i in el){
 			if(el[i].item_code && (!el[i].expense_head || !el[i].cost_center)){
 				args = {
@@ -69,7 +69,7 @@ cur_frm.cscript.supplier = function(doc,dt,dn) {
 					expense_head: el[i].expense_head,
 					cost_center: el[i].cost_center
 				};
-				get_server_fields('get_default_values', JSON.stringify(args), 'entries', doc, el[i].doctype, el[i].name, 1);
+				get_server_fields('get_default_values', JSON.stringify(args), 'purchase_invoice_items', doc, el[i].doctype, el[i].name, 1);
 			}
 		}
 		cur_frm.cscript.calc_amount(doc, 1);
@@ -117,7 +117,7 @@ cur_frm.cscript.credit_to = function(doc,dt,dn) {
 
 //Set expense_head and cost center on adding new row
 //----------------------------------------------
-cur_frm.fields_dict['entries'].grid.onrowadd = function(doc, cdt, cdn){
+cur_frm.fields_dict['purchase_invoice_items'].grid.onrowadd = function(doc, cdt, cdn){
 	
 	cl = getchildren('Purchase Invoice Item', doc.name, cur_frm.cscript.fname, doc.doctype);
 	acc = '';
@@ -129,8 +129,8 @@ cur_frm.fields_dict['entries'].grid.onrowadd = function(doc, cdt, cdn){
 			cc = cl[i].cost_center;
 		}
 		else{
-			if (! cl[i].expense_head) { cl[i].expense_head = acc; refresh_field('expense_head', cl[i].name, 'entries');}
-			if (! cl[i].cost_center)	{cl[i].cost_center = cc; refresh_field('cost_center', cl[i].name, 'entries');}
+			if (! cl[i].expense_head) { cl[i].expense_head = acc; refresh_field('expense_head', cl[i].name, 'purchase_invoice_items');}
+			if (! cl[i].cost_center)	{cl[i].cost_center = cc; refresh_field('cost_center', cl[i].name, 'purchase_invoice_items');}
 		}
 	}
 }
@@ -154,7 +154,7 @@ cur_frm.cscript.recalculate = function(doc, cdt, cdn) {
 cur_frm.cscript.get_items = function(doc, dt, dn) {
 	var callback = function(r,rt) { 
 		unhide_field(['supplier_address', 'contact_person']);				
-		refresh_many(['credit_to','supplier','supplier_address','contact_person','supplier_name', 'address_display', 'contact_display','contact_mobile', 'contact_email','entries', 'purchase_receipt_main', 'purchase_order_main', 'purchase_tax_details']);
+		refresh_many(['credit_to','supplier','supplier_address','contact_person','supplier_name', 'address_display', 'contact_display','contact_mobile', 'contact_email','purchase_invoice_items', 'purchase_receipt', 'purchase_order', 'taxes_and_charges']);
 	}
 	$c_obj(make_doclist(dt,dn),'pull_details','',callback);
 }
@@ -162,7 +162,7 @@ cur_frm.cscript.get_items = function(doc, dt, dn) {
 cur_frm.cscript.item_code = function(doc,cdt,cdn){
 	var d = locals[cdt][cdn];
 	if(d.item_code){
-		get_server_fields('get_item_details',d.item_code,'entries',doc,cdt,cdn,1);
+		get_server_fields('get_item_details',d.item_code,'purchase_invoice_items',doc,cdt,cdn,1);
 	}
 }
 
@@ -186,7 +186,7 @@ cur_frm.fields_dict['contact_person'].get_query = function(doc, cdt, cdn) {
 	return 'SELECT name,CONCAT(first_name," ",ifnull(last_name,"")) As FullName,department,designation FROM tabContact WHERE supplier = "'+ doc.supplier +'" AND docstatus != 2 AND name LIKE "%s" ORDER BY name ASC LIMIT 50';
 }
 
-cur_frm.fields_dict['entries'].grid.get_field("item_code").get_query = function(doc, cdt, cdn) {
+cur_frm.fields_dict['purchase_invoice_items'].grid.get_field("item_code").get_query = function(doc, cdt, cdn) {
 	return 'SELECT tabItem.name, tabItem.description FROM tabItem WHERE tabItem.is_purchase_item="Yes" AND (IFNULL(`tabItem`.`end_of_life`,"") = "" OR `tabItem`.`end_of_life` ="0000-00-00" OR `tabItem`.`end_of_life` > NOW()) AND tabItem.docstatus != 2 AND tabItem.%(key)s LIKE "%s" LIMIT 50'
 }
 
@@ -194,7 +194,7 @@ cur_frm.fields_dict['credit_to'].get_query = function(doc) {
 	return 'SELECT tabAccount.name FROM tabAccount WHERE tabAccount.debit_or_credit="Credit" AND tabAccount.is_pl_account="No" AND tabAccount.group_or_ledger="Ledger" AND tabAccount.docstatus != 2 AND tabAccount.company="'+doc.company+'" AND tabAccount.%(key)s LIKE "%s"'
 }
 
-cur_frm.fields_dict['purchase_order_main'].get_query = function(doc) {
+cur_frm.fields_dict['purchase_order'].get_query = function(doc) {
 	if (doc.supplier){
 		return 'SELECT `tabPurchase Order`.`name` FROM `tabPurchase Order` WHERE `tabPurchase Order`.`docstatus` = 1 AND `tabPurchase Order`.supplier = "'+ doc.supplier +'" AND `tabPurchase Order`.`status` != "Stopped" AND ifnull(`tabPurchase Order`.`per_billed`,0) < 100 AND `tabPurchase Order`.`company` = "' + doc.company + '" AND `tabPurchase Order`.%(key)s LIKE "%s" ORDER BY `tabPurchase Order`.`name` DESC LIMIT 50'
 	} else {
@@ -202,7 +202,7 @@ cur_frm.fields_dict['purchase_order_main'].get_query = function(doc) {
 	}
 }
 
-cur_frm.fields_dict['purchase_receipt_main'].get_query = function(doc) {
+cur_frm.fields_dict['purchase_receipt'].get_query = function(doc) {
 	if (doc.supplier){
 		return 'SELECT `tabPurchase Receipt`.`name` FROM `tabPurchase Receipt` WHERE `tabPurchase Receipt`.`docstatus` = 1 AND `tabPurchase Receipt`.supplier = "'+ doc.supplier +'" AND `tabPurchase Receipt`.`status` != "Stopped" AND ifnull(`tabPurchase Receipt`.`per_billed`, 0) < 100 AND `tabPurchase Receipt`.`company` = "' + doc.company + '" AND `tabPurchase Receipt`.%(key)s LIKE "%s" ORDER BY `tabPurchase Receipt`.`name` DESC LIMIT 50'
 	} else {
@@ -214,36 +214,36 @@ cur_frm.fields_dict['select_print_heading'].get_query = function(doc, cdt, cdn) 
 	return 'SELECT `tabPrint Heading`.name FROM `tabPrint Heading` WHERE `tabPrint Heading`.docstatus !=2 AND `tabPrint Heading`.name LIKE "%s" ORDER BY `tabPrint Heading`.name ASC LIMIT 50';
 }
 
-cur_frm.fields_dict['entries'].grid.get_field("expense_head").get_query = function(doc) {
+cur_frm.fields_dict['purchase_invoice_items'].grid.get_field("expense_head").get_query = function(doc) {
 	return 'SELECT tabAccount.name FROM tabAccount WHERE (tabAccount.debit_or_credit="Debit" OR tabAccount.account_type = "Expense Account") AND tabAccount.group_or_ledger="Ledger" AND tabAccount.docstatus != 2 AND tabAccount.company="'+doc.company+'" AND tabAccount.%(key)s LIKE "%s"';
 }
 cur_frm.cscript.expense_head = function(doc, cdt, cdn){
 	var d = locals[cdt][cdn];
 	if(d.idx == 1 && d.expense_head){
-		var cl = getchildren('Purchase Invoice Item', doc.name, 'entries', doc.doctype);
+		var cl = getchildren('Purchase Invoice Item', doc.name, 'purchase_invoice_items', doc.doctype);
 		for(var i = 0; i < cl.length; i++){
 			if(!cl[i].expense_head) cl[i].expense_head = d.expense_head;
 		}
 	}
-	refresh_field('entries');
+	refresh_field('purchase_invoice_items');
 }
 
 
 // Cost Center
 //-------------
-cur_frm.fields_dict['entries'].grid.get_field("cost_center").get_query = function(doc) {
+cur_frm.fields_dict['purchase_invoice_items'].grid.get_field("cost_center").get_query = function(doc) {
 	return 'SELECT `tabCost Center`.`name` FROM `tabCost Center` WHERE `tabCost Center`.`company_name` = "' +doc.company+'" AND `tabCost Center`.%(key)s LIKE "%s" AND `tabCost Center`.`group_or_ledger` = "Ledger" AND `tabCost Center`.docstatus != 2 ORDER BY	`tabCost Center`.`name` ASC LIMIT 50';
 }
 
 cur_frm.cscript.cost_center = function(doc, cdt, cdn){
 	var d = locals[cdt][cdn];
 	if(d.idx == 1 && d.cost_center){
-		var cl = getchildren('Purchase Invoice Item', doc.name, 'entries', doc.doctype);
+		var cl = getchildren('Purchase Invoice Item', doc.name, 'purchase_invoice_items', doc.doctype);
 		for(var i = 0; i < cl.length; i++){
 			if(!cl[i].cost_center) cl[i].cost_center = d.cost_center;
 		}
 	}
-	refresh_field('entries');
+	refresh_field('purchase_invoice_items');
 }
 
 calc_total_advance = function(doc,cdt,cdn) {
@@ -284,7 +284,7 @@ cur_frm.cscript.make_jv = function(doc, dt, dn, bank_account) {
 	loaddoc('Journal Voucher', jv.name);
 }
 
-cur_frm.fields_dict['entries'].grid.get_field('project_name').get_query = function(doc, cdt, cdn) {
+cur_frm.fields_dict['purchase_invoice_items'].grid.get_field('project_name').get_query = function(doc, cdt, cdn) {
 	return 'SELECT `tabProject`.name FROM `tabProject` WHERE `tabProject`.status = "Open" AND `tabProject`.name LIKE "%s" ORDER BY `tabProject`.name ASC LIMIT 50';
 }
 

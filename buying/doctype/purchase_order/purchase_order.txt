@@ -3,9 +3,9 @@
 
 	# These values are common in all dictionaries
 	{
-		u'creation': '2012-10-12 20:20:34',
+		u'creation': '2012-10-18 17:18:07',
 		u'docstatus': 0,
-		u'modified': '2012-10-18 16:46:12',
+		u'modified': '2012-10-19 16:11:59',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -208,7 +208,7 @@
 	{
 		'allow_on_submit': 1,
 		u'doctype': u'DocField',
-		'fieldname': u'po_details',
+		'fieldname': u'purchase_order_items',
 		'fieldtype': u'Table',
 		'label': u'Purchase Order Items',
 		'no_copy': 0,
@@ -404,7 +404,7 @@
 		'colour': u'White:FFF',
 		'description': u'If you have created a standard template in Purchase Taxes and Charges Master, select one and click on the button below.',
 		u'doctype': u'DocField',
-		'fieldname': u'purchase_other_charges',
+		'fieldname': u'purchase_taxes_and_charges_master',
 		'fieldtype': u'Link',
 		'label': u'Purchase Taxes and Charges',
 		'no_copy': 1,
@@ -430,7 +430,7 @@
 	# DocField
 	{
 		u'doctype': u'DocField',
-		'fieldname': u'purchase_tax_details',
+		'fieldname': u'taxes_and_charges',
 		'fieldtype': u'Table',
 		'label': u'Purchase Taxes and Charges',
 		'no_copy': 0,

@@ -97,14 +97,14 @@ cur_frm.cscript.make_po_list = function(parent, doc) {
 			this.fields = this.fields.concat([
 				"`tabPurchase Order`.status",
 				"`tabPurchase Order`.currency",
-				"ifnull(`tabPurchase Order`.grand_total_import, 0) as grand_total_import",
+				"ifnull(`tabPurchase Order`.grand_total_print, 0) as grand_total_print",
 				
 			]);
 		},
 
 		prepare_data: function(data) {
 			this._super(data);
-			data.grand_total_import = data.currency + " " + fmt_money(data.grand_total_import);
+			data.grand_total_print = data.currency + " " + fmt_money(data.grand_total_print);
 		},
 
 		columns: [
@@ -112,7 +112,7 @@ cur_frm.cscript.make_po_list = function(parent, doc) {
 			{width: '20%', content: 'name'},
 			{width: '30%', content: 'status',
 				css: {'text-align': 'right', 'color': '#777'}},
-			{width: '35%', content: 'grand_total_import', css: {'text-align': 'right'}},
+			{width: '35%', content: 'grand_total_print', css: {'text-align': 'right'}},
 			{width: '12%', content:'modified', css: {'text-align': 'right'}}
 		],
 	});
@@ -127,14 +127,14 @@ cur_frm.cscript.make_pr_list = function(parent, doc) {
 			this.fields = this.fields.concat([
 				"`tabPurchase Receipt`.status",
 				"`tabPurchase Receipt`.currency",
-				"ifnull(`tabPurchase Receipt`.grand_total_import, 0) as grand_total_import",
+				"ifnull(`tabPurchase Receipt`.grand_total_print, 0) as grand_total_print",
 				"ifnull(`tabPurchase Receipt`.per_billed, 0) as per_billed",
 			]);
 		},
 
 		prepare_data: function(data) {
 			this._super(data);
-			data.grand_total_import = data.currency + " " + fmt_money(data.grand_total_import);
+			data.grand_total_print = data.currency + " " + fmt_money(data.grand_total_print);
 		},
 
 		columns: [
@@ -142,7 +142,7 @@ cur_frm.cscript.make_pr_list = function(parent, doc) {
 			{width: '20%', content: 'name'},
 			{width: '20%', content: 'status',
 				css: {'text-align': 'right', 'color': '#777'}},
-			{width: '35%', content: 'grand_total_import', css: {'text-align': 'right'}},
+			{width: '35%', content: 'grand_total_print', css: {'text-align': 'right'}},
 			{width: '10%', content: 'per_billed', type: 'bar-graph', label: 'Billed'},
 			{width: '12%', content:'modified', css: {'text-align': 'right'}}
 		],
@@ -157,19 +157,19 @@ cur_frm.cscript.make_pi_list = function(parent, doc) {
 			this._super(doclistview);
 			this.fields = this.fields.concat([
 				"`tabPurchase Invoice`.currency",
-				"ifnull(`tabPurchase Invoice`.grand_total_import, 0) as grand_total_import",
+				"ifnull(`tabPurchase Invoice`.grand_total_print, 0) as grand_total_print",
 			]);
 		},
 
 		prepare_data: function(data) {
 			this._super(data);
-			data.grand_total_import = data.currency + " " + fmt_money(data.grand_total_import);
+			data.grand_total_print = data.currency + " " + fmt_money(data.grand_total_print);
 		},
 
 		columns: [
 			{width: '3%', content: 'docstatus'},
 			{width: '30%', content: 'name'},
-			{width: '55%', content: 'grand_total_import', css: {'text-align': 'right'}},
+			{width: '55%', content: 'grand_total_print', css: {'text-align': 'right'}},
 			{width: '12%', content:'modified', css: {'text-align': 'right'}}
 		],
 	});

@@ -21,7 +21,7 @@
 		'module': u'Buying',
 		u'name': u'__common__',
 		'read_only_onload': 1,
-		'search_fields': u'status, transaction_date, supplier,grand_total',
+		'search_fields': u'status, posting_date, supplier,grand_total',
 		'version': 1
 	},
 
@@ -358,7 +358,7 @@
 		'colour': u'White:FFF',
 		'description': u'If you have created a standard template in Purchase Taxes and Charges Master, select one and click on the button below.',
 		u'doctype': u'DocField',
-		'fieldname': u'purchase_taxes_and_charges',
+		'fieldname': u'purchase_taxes_and_charges_master',
 		'fieldtype': u'Link',
 		'label': u'Purchase Taxes and Charges',
 		'no_copy': 1,

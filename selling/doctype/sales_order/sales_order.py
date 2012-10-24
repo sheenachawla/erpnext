@@ -36,7 +36,7 @@ class DocType(TransactionBase):
 		if not doclist: doclist = []
 		self.doclist = doclist
 		self.tname = 'Sales Order Item'
-		self.fname = 'sales_order_details'
+		self.fname = 'sales_order_items'
 		self.person_tname = 'Target Detail'
 		self.partner_tname = 'Partner Target Detail'
 		self.territory_tname = 'Territory Target Detail'
@@ -51,17 +51,17 @@ class DocType(TransactionBase):
 # =============================
 	# Pull Quotation Items
 	# -----------------------
-	def pull_quotation_details(self):
-		self.doclist = self.doc.clear_table(self.doclist, 'other_charges')
-		self.doclist = self.doc.clear_table(self.doclist, 'sales_order_details')
+	def pull_quotation_items(self):
+		self.doclist = self.doc.clear_table(self.doclist, 'taxes_and_charges')
+		self.doclist = self.doc.clear_table(self.doclist, 'sales_order_items')
 		self.doclist = self.doc.clear_table(self.doclist, 'sales_team')
 		self.doclist = self.doc.clear_table(self.doclist, 'tc_details')
-		if self.doc.quotation_no:				
-			get_obj('DocType Mapper', 'Quotation-Sales Order').dt_map('Quotation', 'Sales Order', self.doc.quotation_no, self.doc, self.doclist, "[['Quotation', 'Sales Order'],['Quotation Item', 'Sales Order Item'],['Sales Taxes and Charges','Sales Taxes and Charges'],['Sales Team','Sales Team'],['TC Detail','TC Detail']]")			
+		if self.doc.quotation:				
+			get_obj('DocType Mapper', 'Quotation-Sales Order').dt_map('Quotation', 'Sales Order', self.doc.quotation, self.doc, self.doclist, "[['Quotation', 'Sales Order'],['Quotation Item', 'Sales Order Item'],['Sales Taxes and Charges','Sales Taxes and Charges'],['Sales Team','Sales Team'],['TC Detail','TC Detail']]")			
 		else:
 			msgprint("Please select Quotation whose details need to pull")		
 
-		return cstr(self.doc.quotation_no)
+		return cstr(self.doc.quotation)
 	
 	#pull project customer
 	#-------------------------
@@ -130,8 +130,8 @@ class DocType(TransactionBase):
 
 	# Pull details from other charges master (Get Sales Taxes and Charges Master)
 	# ----------------------------------------------------------
-	def get_other_charges(self):
-		self.doclist = get_obj('Sales Common').get_other_charges(self)
+	def get_taxes_and_charges(self):
+		self.doclist = get_obj('Sales Common').get_taxes_and_charges(self)
  
  
 # GET TERMS & CONDITIONS
@@ -162,7 +162,7 @@ class DocType(TransactionBase):
 	# Fiscal Year Validation
 	# ----------------------
 	def validate_fiscal_year(self):
-		get_obj('Sales Common').validate_fiscal_year(self.doc.fiscal_year,self.doc.transaction_date,'Sales Order Date')
+		get_obj('Sales Common').validate_fiscal_year(self.doc.fiscal_year,self.doc.posting_date,'Sales Order Date')
 	
 	# Validate values with reference document
 	#----------------------------------------
@@ -174,7 +174,7 @@ class DocType(TransactionBase):
 	def validate_mandatory(self):
 		# validate transaction date v/s delivery date
 		if self.doc.delivery_date:
-			if getdate(self.doc.transaction_date) > getdate(self.doc.delivery_date):
+			if getdate(self.doc.posting_date) > getdate(self.doc.delivery_date):
 				msgprint("Expected Delivery Date cannot be before Sales Order Date")
 				raise Exception
 		# amendment date is necessary if document is amended
@@ -205,15 +205,15 @@ class DocType(TransactionBase):
 		check_list,flag = [],0
 		chk_dupl_itm = []
 		# Sales Order Items Validations
-		for d in getlist(self.doclist, 'sales_order_details'):
-			if cstr(self.doc.quotation_no) == cstr(d.prevdoc_docname):
+		for d in getlist(self.doclist, 'sales_order_items'):
+			if cstr(self.doc.quotation) == cstr(d.prevdoc_docname):
 				flag = 1
 			if d.prevdoc_docname:
-				if self.doc.quotation_date and getdate(self.doc.quotation_date) > getdate(self.doc.transaction_date):
+				if self.doc.quotation_date and getdate(self.doc.quotation_date) > getdate(self.doc.posting_date):
 					msgprint("Sales Order Date cannot be before Quotation Date")
 					raise Exception
 				# validates whether quotation no in doctype and in table is same
-				if not cstr(d.prevdoc_docname) == cstr(self.doc.quotation_no):
+				if not cstr(d.prevdoc_docname) == cstr(self.doc.quotation):
 					msgprint("Items in table does not belong to the Quotation No mentioned.")
 					raise Exception
 
@@ -236,7 +236,7 @@ class DocType(TransactionBase):
 					chk_dupl_itm.append(f)
 
 			# used for production plan
-			d.transaction_date = self.doc.transaction_date
+			d.posting_date = self.doc.posting_date
 			d.delivery_date = self.doc.delivery_date
 
 			# gets total projected qty of item in warehouse selected (this case arises when warehouse is selected b4 item)
@@ -250,7 +250,7 @@ class DocType(TransactionBase):
 	# validate sales/ maintenance quotation against order type
 	#------------------------------------------------------------------
 	def validate_sales_mntc_quotation(self):
-		for d in getlist(self.doclist, 'sales_order_details'):
+		for d in getlist(self.doclist, 'sales_order_items'):
 			if d.prevdoc_docname:
 				res = sql("select name from `tabQuotation` where name=%s and order_type = %s", (d.prevdoc_docname, self.doc.order_type))
 				if not res:
@@ -287,18 +287,18 @@ class DocType(TransactionBase):
 		self.validate_for_items()
 		sales_com_obj = get_obj(dt = 'Sales Common')
 		sales_com_obj.check_active_sales_items(self)
-		sales_com_obj.check_conversion_rate(self)
+		sales_com_obj.check_exchange_rate(self)
 
 				# verify whether rate is not greater than max_discount
-		sales_com_obj.validate_max_discount(self,'sales_order_details')
+		sales_com_obj.validate_max_discount(self,'sales_order_items')
 				# this is to verify that the allocated % of sales persons is 100%
 		sales_com_obj.get_allocated_sum(self)
-		self.doclist = sales_com_obj.make_packing_list(self,'sales_order_details')
+		self.doclist = sales_com_obj.make_packing_list(self,'sales_order_items')
 
 				# get total in words
 		dcc = TransactionBase().get_company_currency(self.doc.company)		
-		self.doc.in_words = sales_com_obj.get_total_in_words(dcc, self.doc.rounded_total)
-		self.doc.in_words_export = sales_com_obj.get_total_in_words(self.doc.currency, self.doc.rounded_total_export)
+		self.doc.rounded_total_in_words = sales_com_obj.get_total_in_words(dcc, self.doc.rounded_total)
+		self.doc.rounded_total_in_words_print = sales_com_obj.get_total_in_words(self.doc.currency, self.doc.rounded_total_print)
 		
 		# set SO status
 		self.doc.status='Draft'
@@ -311,7 +311,7 @@ class DocType(TransactionBase):
 	# Checks Quotation Status
 	# ------------------------
 	def check_prev_docstatus(self):
-		for d in getlist(self.doclist, 'sales_order_details'):
+		for d in getlist(self.doclist, 'sales_order_items'):
 			cancel_quo = sql("select name from `tabQuotation` where docstatus = 2 and name = '%s'" % d.prevdoc_docname)
 			if cancel_quo:
 				msgprint("Quotation :" + cstr(cancel_quo[0][0]) + " is already cancelled !")
@@ -325,7 +325,7 @@ class DocType(TransactionBase):
 	#update status of quotation, enquiry
 	#----------------------------------------
 	def update_prevdoc_status(self, flag):
-		for d in getlist(self.doclist, 'sales_order_details'):
+		for d in getlist(self.doclist, 'sales_order_items'):
 			if d.prevdoc_docname:
 				if flag=='submit':
 					sql("update `tabQuotation` set status = 'Order Confirmed' where name=%s",d.prevdoc_docname)
@@ -436,7 +436,7 @@ class DocType(TransactionBase):
 					msgprint("Message: Please enter Reserved Warehouse for item %s as it is stock item."% d['item_code'])
 					raise Exception
 				bin = get_obj('Warehouse', d['reserved_warehouse']).update_bin( 0, flt(update_stock) * flt(d['qty']), \
-					0, 0, 0, d['item_code'], self.doc.transaction_date,doc_type=self.doc.doctype,\
+					0, 0, 0, d['item_code'], self.doc.posting_date,doc_type=self.doc.doctype,\
 					doc_name=self.doc.name, is_amended = (self.doc.amended_from and 'Yes' or 'No'))
 	
 	# Gets Items from packing list

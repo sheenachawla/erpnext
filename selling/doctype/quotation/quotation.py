@@ -35,7 +35,7 @@ class DocType(TransactionBase):
 		self.doc = doc
 		self.doclist = doclist
 		self.tname = 'Quotation Item'
-		self.fname = 'quotation_details'
+		self.fname = 'quotation_items'
 		
 	# Autoname
 	# ---------
@@ -49,8 +49,8 @@ class DocType(TransactionBase):
 	# Pull Opportunity Details
 	# --------------------
 	def pull_enq_details(self):
-		self.doclist = self.doc.clear_table(self.doclist, 'quotation_details')
-		get_obj('DocType Mapper', 'Opportunity-Quotation').dt_map('Opportunity', 'Quotation', self.doc.enq_no, self.doc, self.doclist, "[['Opportunity', 'Quotation'],['Opportunity Item', 'Quotation Item']]")
+		self.doclist = self.doc.clear_table(self.doclist, 'quotation_items')
+		get_obj('DocType Mapper', 'Opportunity-Quotation').dt_map('Opportunity', 'Quotation', self.doc.opportunity, self.doc, self.doclist, "[['Opportunity', 'Quotation'],['Opportunity Item', 'Quotation Item']]")
 
 		self.get_adj_percent()
 
@@ -111,8 +111,8 @@ class DocType(TransactionBase):
 
 	# Pull details from other charges master (Get Sales Taxes and Charges Master)
 	# ----------------------------------------------------------
-	def get_other_charges(self):
-		self.doclist = get_obj('Sales Common').get_other_charges(self)	
+	def get_taxes_and_charges(self):
+		self.doclist = get_obj('Sales Common').get_taxes_and_charges(self)	
 	
 		 
 # GET TERMS AND CONDITIONS
@@ -134,13 +134,13 @@ class DocType(TransactionBase):
 	# Fiscal Year Validation
 	# ----------------------
 	def validate_fiscal_year(self):
-		get_obj('Sales Common').validate_fiscal_year(self.doc.fiscal_year,self.doc.transaction_date,'Quotation Date')
+		get_obj('Sales Common').validate_fiscal_year(self.doc.fiscal_year,self.doc.posting_date,'Quotation Date')
 	
 	# Does not allow same item code to be entered twice
 	# -------------------------------------------------
 	def validate_for_items(self):
 		chk_dupl_itm = []
-		for d in getlist(self.doclist,'quotation_details'):
+		for d in getlist(self.doclist,'quotation_items'):
 			if [cstr(d.item_code),cstr(d.description)] in chk_dupl_itm:
 				msgprint("Item %s has been entered twice. Please change description atleast to continue" % d.item_code)
 				raise Exception
@@ -152,7 +152,7 @@ class DocType(TransactionBase):
 	#-----------------------------------------------------------------------------------------------
 	def validate_order_type(self):
 		if self.doc.order_type in ['Maintenance', 'Service']:
-			for d in getlist(self.doclist, 'quotation_details'):
+			for d in getlist(self.doclist, 'quotation_items'):
 				is_service_item = sql("select is_service_item from `tabItem` where name=%s", d.item_code)
 				is_service_item = is_service_item and is_service_item[0][0] or 'No'
 				
@@ -160,7 +160,7 @@ class DocType(TransactionBase):
 					msgprint("You can not select non service item "+d.item_code+" in Maintenance Quotation")
 					raise Exception
 		else:
-			for d in getlist(self.doclist, 'quotation_details'):
+			for d in getlist(self.doclist, 'quotation_items'):
 				is_sales_item = sql("select is_sales_item from `tabItem` where name=%s", d.item_code)
 				is_sales_item = is_sales_item and is_sales_item[0][0] or 'No'
 				
@@ -193,13 +193,13 @@ class DocType(TransactionBase):
 		self.validate_for_items()
 		sales_com_obj = get_obj('Sales Common')
 		sales_com_obj.check_active_sales_items(self)
-		sales_com_obj.validate_max_discount(self,'quotation_details') #verify whether rate is not greater than max_discount
-		sales_com_obj.check_conversion_rate(self)
+		sales_com_obj.validate_max_discount(self,'quotation_items') #verify whether rate is not greater than max_discount
+		sales_com_obj.check_exchange_rate(self)
 		
 		# Get total in words
 		dcc = TransactionBase().get_company_currency(self.doc.company)
-		self.doc.in_words = sales_com_obj.get_total_in_words(dcc, self.doc.rounded_total)
-		self.doc.in_words_export = sales_com_obj.get_total_in_words(self.doc.currency, self.doc.rounded_total_export)
+		self.doc.rounded_total_in_words = sales_com_obj.get_total_in_words(dcc, self.doc.rounded_total)
+		self.doc.rounded_total_in_words_print = sales_com_obj.get_total_in_words(self.doc.currency, self.doc.rounded_total_print)
 
 	def on_update(self):
 		# Add to calendar
@@ -259,7 +259,7 @@ class DocType(TransactionBase):
 	#------------------
 	def update_enquiry(self, flag):
 		prevdoc=''
-		for d in getlist(self.doclist, 'quotation_details'):
+		for d in getlist(self.doclist, 'quotation_items'):
 			if d.prevdoc_docname:
 				prevdoc = d.prevdoc_docname
 		
@@ -289,7 +289,7 @@ class DocType(TransactionBase):
 	#check if value entered in item table
 	#--------------------------------------
 	def check_item_table(self):
-		if not getlist(self.doclist, 'quotation_details'):
+		if not getlist(self.doclist, 'quotation_items'):
 			msgprint("Please enter item details")
 			raise Exception
 		
@@ -335,9 +335,9 @@ class DocType(TransactionBase):
 	
 # Print other charges
 # ===========================================================================
-	def print_other_charges(self,docname):
+	def print_taxes_and_charges(self,docname):
 		print_lst = []
-		for d in getlist(self.doclist,'other_charges'):
+		for d in getlist(self.doclist,'taxes_and_charges'):
 			lst1 = []
 			lst1.append(d.description)
 			lst1.append(d.total)

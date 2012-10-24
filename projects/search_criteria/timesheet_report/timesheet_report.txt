@@ -3,11 +3,11 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-04-03 12:49:53',
-		'docstatus': 0,
-		'modified': '2012-04-03 12:49:53',
-		'modified_by': u'Administrator',
-		'owner': u'ashwini@webnotestech.com'
+		u'creation': '2012-10-24 14:33:50',
+		u'docstatus': 0,
+		u'modified': '2012-10-24 14:33:50',
+		u'modified_by': u'Administrator',
+		u'owner': u'ashwini@webnotestech.com'
 	},
 
 	# These values are common for all Search Criteria
@@ -15,10 +15,10 @@
 		'columns': u'Timesheet\x01ID,Timesheet\x01Timesheet Date,Timesheet\x01Timesheet by,Timesheet Detail\x01Project Name,Timesheet Detail\x01Task Id,Timesheet Detail\x01Task Name,Timesheet Detail\x01Actual Start Time,Timesheet Detail\x01Actual End Time,Timesheet Detail\x01Total Hours (Actual)',
 		'criteria_name': u'Timesheet Report',
 		'doc_type': u'Timesheet Detail',
-		'doctype': 'Search Criteria',
+		u'doctype': u'Search Criteria',
 		'filters': u"{'Timesheet\x01Saved':1,'Timesheet\x01Submitted':1}",
 		'module': u'Projects',
-		'name': '__common__',
+		u'name': u'__common__',
 		'page_len': 50,
 		'parent_doc_type': u'Timesheet',
 		'sort_by': u'`tabTimesheet`.`name`',
@@ -28,7 +28,7 @@
 
 	# Search Criteria, timesheet_report
 	{
-		'doctype': 'Search Criteria',
-		'name': u'timesheet_report'
+		u'doctype': u'Search Criteria',
+		u'name': u'timesheet_report'
 	}
 ]

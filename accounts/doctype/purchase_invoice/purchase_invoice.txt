@@ -388,7 +388,7 @@
 	# DocField
 	{
 		u'doctype': u'DocField',
-		'fieldname': u'purchase_taxes_and_charges',
+		'fieldname': u'purchase_taxes_and_charges_master',
 		'fieldtype': u'Link',
 		'label': u'Purchase Taxes and Charges',
 		'oldfieldname': u'purchase_other_charges',

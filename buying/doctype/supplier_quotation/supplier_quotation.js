@@ -17,7 +17,7 @@
 // define defaults for purchase common
 cur_frm.cscript.tname = "Supplier Quotation Item";
 cur_frm.cscript.fname = "supplier_quotation_items";
-cur_frm.cscript.other_fname = "purchase_tax_details";
+cur_frm.cscript.other_fname = "taxes_and_charges";
 
 // attach required files
 wn.require('app/accounts/doctype/purchase_taxes_and_charges_master/purchase_taxes_and_charges_master.js');
@@ -27,10 +27,10 @@ cur_frm.cscript.onload = function(doc, dt, dn) {
 	// set missing values in parent doc
 	set_missing_values(doc, {
 		fiscal_year: sys_defaults.fiscal_year,
-		conversion_rate: 1,
+		exchange_rate: 1,
 		currency: sys_defaults.currency,
 		status: "Draft",
-		transaction_date: get_today(),
+		posting_date: get_today(),
 		is_subcontracted: "No"
 	});
 }
@@ -81,7 +81,7 @@ cur_frm.fields_dict['supplier_quotation_items'].grid.get_field('project_name').g
 			order by `tabProject`.name ASC LIMIT 50";
 	}
 
-cur_frm.fields_dict['indent_no'].get_query = function(doc) {
+cur_frm.fields_dict['purchase_request'].get_query = function(doc) {
 	return "select distinct `tabPurchase Request`.`name` from `tabPurchase Request` \
 		where `tabPurchase Request`.company = \"" + doc.company +
 		"\" and `tabPurchase Request`.`docstatus` = 1 and \

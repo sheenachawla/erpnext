@@ -104,7 +104,7 @@
 		'colour': u'White:FFF',
 		'default': u'1',
 		'doctype': u'DocField',
-		'fieldname': u'conversion_rate',
+		'fieldname': u'exchange_rate',
 		'fieldtype': u'Float',
 		'label': u'Conversion Rate',
 		'oldfieldname': u'conversion_rate',
@@ -207,7 +207,7 @@
 	# DocField
 	{
 		'doctype': u'DocField',
-		'fieldname': u'charge',
+		'fieldname': u'sales_taxes_and_charges_master',
 		'fieldtype': u'Link',
 		'label': u'Charge',
 		'oldfieldname': u'charge',

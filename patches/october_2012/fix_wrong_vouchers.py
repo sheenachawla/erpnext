@@ -39,11 +39,11 @@ def execute():
 					set 
 						total_tax = %s, 
 						other_charges_added = %s, 
-						other_charges_added_import = other_charges_added / conversion_rate, 
+						other_charges_added_import = other_charges_added / exchange_rate, 
 						other_charges_deducted = %s, 
-						other_charges_deducted_import = other_charges_deducted / conversion_rate, 
+						other_charges_deducted_import = other_charges_deducted / exchange_rate, 
 						grand_total = net_total + other_charges_added - other_charges_deducted,
-						grand_total_import = grand_total / conversion_rate,
+						grand_total_import = grand_total / exchange_rate,
 						total_amount_to_pay = grand_total - total_tds_on_voucher,
 						outstanding_amount = total_amount_to_pay - total_advance
 					where 
@@ -57,11 +57,11 @@ def execute():
 					set 
 						total_tax = %s, 
 						other_charges_added = %s, 
-						other_charges_added_import = other_charges_added / conversion_rate, 
+						other_charges_added_import = other_charges_added / exchange_rate, 
 						other_charges_deducted = %s, 
-						other_charges_deducted_import = other_charges_deducted / conversion_rate,
+						other_charges_deducted_import = other_charges_deducted / exchange_rate,
 						grand_total = net_total + total_tax, 
-						grand_total_import = grand_total / conversion_rate,
+						grand_total_import = grand_total / exchange_rate,
 						rounded_total = round(grand_total)
 					where 
 						name = %s

@@ -3,11 +3,11 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-04-03 12:49:51',
-		'docstatus': 0,
-		'modified': '2012-04-03 12:49:51',
-		'modified_by': u'Administrator',
-		'owner': u'harshada@webnotestech.com'
+		u'creation': '2012-10-24 14:34:07',
+		u'docstatus': 0,
+		u'modified': '2012-10-24 14:34:07',
+		u'modified_by': u'Administrator',
+		u'owner': u'harshada@webnotestech.com'
 	},
 
 	# These values are common for all Search Criteria
@@ -15,10 +15,10 @@
 		'columns': u'Item\x01Item Name,Item\x01Item Group,Item Price\x01Price List Name,Item Price\x01Ref Rate,Item Price\x01Currency',
 		'criteria_name': u'Itemwise Price List',
 		'doc_type': u'Item Price',
-		'doctype': 'Search Criteria',
+		u'doctype': u'Search Criteria',
 		'filters': u"{'Item\x01Saved':1,'Item Price\x01Price List Name':'','Item Price\x01Currency':''}",
 		'module': u'Stock',
-		'name': '__common__',
+		u'name': u'__common__',
 		'page_len': 50,
 		'parent_doc_type': u'Item',
 		'sort_by': u'`tabItem`.`item_name`',
@@ -28,7 +28,7 @@
 
 	# Search Criteria, itemwise_price_list
 	{
-		'doctype': 'Search Criteria',
-		'name': u'itemwise_price_list'
+		u'doctype': u'Search Criteria',
+		u'name': u'itemwise_price_list'
 	}
 ]

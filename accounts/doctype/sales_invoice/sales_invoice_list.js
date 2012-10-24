@@ -8,7 +8,7 @@ wn.doclistviews['Sales Invoice'] = wn.views.ListView.extend({
 			"ifnull(`tabSales Invoice`.outstanding_amount,0) as outstanding_amount", 
 			"ifnull(`tabSales Invoice`.grand_total,0) as grand_total", 
 			"`tabSales Invoice`.currency", 
-			"ifnull(`tabSales Invoice`.grand_total_export,0) as grand_total_export",
+			"ifnull(`tabSales Invoice`.grand_total_print,0) as grand_total_print",
 			"`tabSales Invoice`.posting_date",
 		]);
 	},
@@ -32,7 +32,7 @@ wn.doclistviews['Sales Invoice'] = wn.views.ListView.extend({
 		{
 			width: '18%', 
 			content: function(parent, data) { 
-				$(parent).html(data.currency + ' ' + fmt_money(data.grand_total_export)) 
+				$(parent).html(data.currency + ' ' + fmt_money(data.grand_total_print)) 
 			},
 			css: {'text-align':'right'}
 		},

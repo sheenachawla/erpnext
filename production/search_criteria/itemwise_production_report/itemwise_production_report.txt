@@ -3,11 +3,11 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-04-03 12:49:51',
-		'docstatus': 0,
-		'modified': '2012-04-03 12:49:51',
-		'modified_by': u'Administrator',
-		'owner': u'jai@webnotestech.com'
+		u'creation': '2012-10-24 14:33:49',
+		u'docstatus': 0,
+		u'modified': '2012-10-24 14:33:49',
+		u'modified_by': u'Administrator',
+		u'owner': u'jai@webnotestech.com'
 	},
 
 	# These values are common for all Search Criteria
@@ -15,10 +15,10 @@
 		'columns': u'Stock Entry\x01ID,Stock Entry\x01Posting Date,Stock Entry\x01Production Order,Stock Entry\x01Process,Stock Entry\x01Company,Stock Entry Detail\x01Target Warehouse,Stock Entry Detail\x01Item Code,Stock Entry Detail\x01Description,Stock Entry Detail\x01Stock UOM,Stock Entry Detail\x01Transfer Quantity',
 		'criteria_name': u'Itemwise Production Report',
 		'doc_type': u'Stock Entry Detail',
-		'doctype': 'Search Criteria',
+		u'doctype': u'Search Criteria',
 		'filters': u"{'Stock Entry\x01Saved':1,'Stock Entry\x01Submitted':1,'Stock Entry\x01Purpose':'Production Order','Stock Entry\x01Process':'Backflush','Stock Entry Detail\x01FG Item':1}",
 		'module': u'Production',
-		'name': '__common__',
+		u'name': u'__common__',
 		'page_len': 50,
 		'parent_doc_type': u'Stock Entry',
 		'sort_by': u'`tabStock Entry`.`name`',
@@ -28,7 +28,7 @@
 
 	# Search Criteria, itemwise_production_report
 	{
-		'doctype': 'Search Criteria',
-		'name': u'itemwise_production_report'
+		u'doctype': u'Search Criteria',
+		u'name': u'itemwise_production_report'
 	}
 ]

@@ -68,65 +68,65 @@ purchase_invoice_doclist = [
 		"supplier_name": "East Wind Inc.",
 		"naming_series": "BILL", "posting_date": nowdate(),
 		"company": company, "fiscal_year": webnotes.conn.get_default("fiscal_year"), 
-		"currency": webnotes.conn.get_default("currency"), "conversion_rate": 1,
-		"grand_total_import": 0
+		"currency": webnotes.conn.get_default("currency"), "exchange_rate": 1,
+		"grand_total_print": 0
 	},
 	# items
 	{
 		"doctype": "Purchase Invoice Item", 
 		"item_code": "Home Desktop 100", "qty": 10, "rate": 50,
-		"amount": 500, "parentfield": "entries", "conversion_factor": 1, 
+		"amount": 500, "parentfield": "purchase_invoice_items", "conversion_factor": 1, 
 		"uom": "Nos", "item_tax_rate": json.dumps({"Excise Duty - %s" % abbr: 10})
 	},
 	{
 		"doctype": "Purchase Invoice Item", 
 		"item_code": "Home Desktop 200", "qty": 5, "rate": 150,
-		"amount": 750, "parentfield": "entries", "conversion_factor": 1, 
+		"amount": 750, "parentfield": "purchase_invoice_items", "conversion_factor": 1, 
 		"uom": "Nos"
 	},
 	# taxes
 	{
 		"doctype": "Purchase Taxes and Charges", "charge_type": "Actual",
 		"account_head": "Shipping Charges - %s" % abbr, "rate": 100, 
-		"category": "Valuation and Total", "parentfield": "purchase_tax_details",
+		"category": "Valuation and Total", "parentfield": "taxes_and_charges",
 		"cost_center": "Default Cost Center - %s" % abbr
 	},
 	{
 		"doctype": "Purchase Taxes and Charges", "charge_type": "On Net Total",
 		"account_head": "Customs Duty - %s" % abbr, "rate": 10,
-		"category": "Valuation", "parentfield": "purchase_tax_details",
+		"category": "Valuation", "parentfield": "taxes_and_charges",
 		"cost_center": "Default Cost Center - %s" % abbr
 	},
 	{
 		"doctype": "Purchase Taxes and Charges", "charge_type": "On Net Total",
 		"account_head": "Excise Duty - %s" % abbr, "rate": 12,
-		"category": "Total", "parentfield": "purchase_tax_details"
+		"category": "Total", "parentfield": "taxes_and_charges"
 	},
 	{
 		"doctype": "Purchase Taxes and Charges", "charge_type": "On Previous Row Amount",
 		"account_head": "Education Cess - %s" % abbr, "rate": 2, "row_id": 3,
-		"category": "Total", "parentfield": "purchase_tax_details"
+		"category": "Total", "parentfield": "taxes_and_charges"
 	},
 	{
 		"doctype": "Purchase Taxes and Charges", "charge_type": "On Previous Row Amount",
 		"account_head": "S&H Education Cess - %s" % abbr, "rate": 1, "row_id": 3,
-		"category": "Total", "parentfield": "purchase_tax_details"
+		"category": "Total", "parentfield": "taxes_and_charges"
 	},
 	{
 		"doctype": "Purchase Taxes and Charges", "charge_type": "On Previous Row Total",
 		"account_head": "CST - %s" % abbr, "rate": 2, "row_id": 5,
-		"category": "Total", "parentfield": "purchase_tax_details",
+		"category": "Total", "parentfield": "taxes_and_charges",
 		"cost_center": "Default Cost Center - %s" % abbr
 	},
 	{
 		"doctype": "Purchase Taxes and Charges", "charge_type": "On Net Total",
 		"account_head": "VAT - Test - %s" % abbr, "rate": 12.5,
-		"category": "Total", "parentfield": "purchase_tax_details"
+		"category": "Total", "parentfield": "taxes_and_charges"
 	},
 	{
 		"doctype": "Purchase Taxes and Charges", "charge_type": "On Previous Row Total",
 		"account_head": "Discount - %s" % abbr, "rate": -10, "row_id": 7,
-		"category": "Total", "parentfield": "purchase_tax_details",
+		"category": "Total", "parentfield": "taxes_and_charges",
 		"cost_center": "Default Cost Center - %s" % abbr
 	},
 ]
@@ -156,7 +156,7 @@ class TestPurchaseReceipt(unittest.TestCase):
 			["VAT - Test - %s" % abbr, 156.25, 1680.33],
 			["Discount - %s" % abbr, -168.03, 1512.30],
 		]		
-		for i, tax in enumerate(dl.get({"parentfield": "purchase_tax_details"})):
+		for i, tax in enumerate(dl.get({"parentfield": "taxes_and_charges"})):
 			# print tax.account_head, tax.tax_amount, tax.total
 			self.assertEqual(tax.account_head, expected_values[i][0])
 			self.assertEqual(tax.tax_amount, expected_values[i][1])
@@ -167,7 +167,7 @@ class TestPurchaseReceipt(unittest.TestCase):
 			["Home Desktop 100", 90],
 			["Home Desktop 200", 135]
 		]
-		for i, item in enumerate(dl.get({"parentfield": "entries"})):
+		for i, item in enumerate(dl.get({"parentfield": "purchase_invoice_items"})):
 			self.assertEqual(item.item_code, expected_values[i][0])
 			self.assertEqual(item.item_tax_amount, expected_values[i][1])
 			
@@ -200,7 +200,7 @@ class TestPurchaseReceipt(unittest.TestCase):
 			["VAT - Test - %s" % abbr, 0, 102],
 			["Discount - %s" % abbr, -10.2, 91.8],
 		]
-		for i, tax in enumerate(dl.get({"parentfield": "purchase_tax_details"})):
+		for i, tax in enumerate(dl.get({"parentfield": "taxes_and_charges"})):
 			# print tax.account_head, tax.tax_amount, tax.total
 			self.assertEqual(tax.account_head, expected_values[i][0])
 			self.assertEqual(tax.tax_amount, expected_values[i][1])
@@ -211,7 +211,7 @@ class TestPurchaseReceipt(unittest.TestCase):
 			["Home Desktop 100", 0],
 			["Home Desktop 200", 0]
 		]
-		for i, item in enumerate(dl.get({"parentfield": "entries"})):
+		for i, item in enumerate(dl.get({"parentfield": "purchase_invoice_items"})):
 			self.assertEqual(item.item_code, expected_values[i][0])
 			self.assertEqual(item.item_tax_amount, expected_values[i][1])
 		

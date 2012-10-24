@@ -15,6 +15,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # validate Filters
 from __future__ import unicode_literals
+from webnotes.model.code import get_obj
+
 flt_dict = {'fiscal_year': 'Fiscal Year', 'period': 'Period', 'under' : 'Under', 'sales_person':'Sales Person', 'target_on':'Target On'}
 for f in flt_dict:
   if not filter_values.get(f):
@@ -22,7 +24,7 @@ for f in flt_dict:
     raise Exception
 
 # Get Values from fliters
-fiscal_year = filter_values.get('fiscal_year')[0]
+fiscal_year = filter_values.get('fiscal_year')
 period = filter_values.get('period')
 under = filter_values.get('under')
 sales_person = filter_values.get('sales_person')
@@ -42,7 +44,7 @@ for d in ['Item Group', 'Total Target Allocated', 'Distribution Id']:
 # Set required field names 
 based_on_fn = 'sales_person'
 
-date_fn  = (under == 'Sales Order' ) and 'transaction_date' or 'posting_date' 
+date_fn  = 'posting_date' 
 
 mon_list = []
 

@@ -75,7 +75,7 @@ class DocType(StockController):
 		return get_obj(dt='Purchase Common').get_bin_details(arg)
 
 	# Pull Purchase Order
-	def get_po_details(self):
+	def get_purchase_order_items(self):
 		self.validate_prev_docname()
 		get_obj('DocType Mapper', 'Purchase Order-Purchase Receipt').dt_map('Purchase Order', 'Purchase Receipt', self.doc.purchase_order_no, self.doc, self.doclist, "[['Purchase Order','Purchase Receipt'],['Purchase Order Item', 'Purchase Receipt Item'],['Purchase Taxes and Charges','Purchase Taxes and Charges']]")
 
@@ -144,7 +144,7 @@ class DocType(StockController):
 		pc_obj = get_obj(dt='Purchase Common')
 		pc_obj.validate_for_items(self)
 		pc_obj.validate_mandatory(self)
-		pc_obj.validate_conversion_rate(self)
+		pc_obj.validate_exchange_rate(self)
 		pc_obj.get_prevdoc_date(self)
 		pc_obj.validate_reference_value(self)
 		# update item valuation rate
@@ -154,8 +154,8 @@ class DocType(StockController):
 		
 		# get total in words
 		dcc = super(DocType, self).get_company_currency(self.doc.company)
-		self.doc.in_words = pc_obj.get_total_in_words(dcc, self.doc.grand_total)
-		self.doc.in_words_import = pc_obj.get_total_in_words(self.doc.currency, self.doc.grand_total_import)
+		self.doc.grand_total_in_words = pc_obj.get_total_in_words(dcc, self.doc.grand_total)
+		self.doc.grand_total_in_words_print = pc_obj.get_total_in_words(self.doc.currency, self.doc.grand_total_print)
 
 	def on_update(self):
 		if self.doc.rejected_warehouse:
@@ -219,7 +219,7 @@ class DocType(StockController):
 		self.values.append({
 			'item_code'					: d.fields.has_key('item_code') and d.item_code or d.rm_item_code,
 			'warehouse'					: wh,
-			'transaction_date'			: getdate(self.doc.modified).strftime('%Y-%m-%d'),
+			'posting_date'			: getdate(self.doc.modified).strftime('%Y-%m-%d'),
 			'posting_date'				: self.doc.posting_date,
 			'posting_time'				: self.doc.posting_time,
 			'voucher_type'				: 'Purchase Receipt',

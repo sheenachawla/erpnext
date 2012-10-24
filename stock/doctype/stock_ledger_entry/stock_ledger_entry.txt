@@ -3,11 +3,11 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-03-27 14:36:38',
-		'docstatus': 0,
-		'modified': '2012-03-27 14:36:38',
-		'modified_by': u'Administrator',
-		'owner': u'Administrator'
+		u'creation': '2012-07-03 13:29:45',
+		u'docstatus': 0,
+		u'modified': '2012-10-19 13:52:16',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
 	},
 
 	# These values are common for all DocType
@@ -16,21 +16,21 @@
 		'autoname': u'SLE/.########',
 		'colour': u'White:FFF',
 		'default_print_format': u'Standard',
-		'doctype': 'DocType',
+		u'doctype': u'DocType',
 		'hide_toolbar': 1,
 		'in_create': 1,
 		'module': u'Stock',
-		'name': '__common__',
+		u'name': u'__common__',
 		'section_style': u'Simple',
 		'server_code_error': u' ',
 		'show_in_menu': 0,
-		'version': 53
+		'version': 1
 	},
 
 	# These values are common for all DocField
 	{
-		'doctype': u'DocField',
-		'name': '__common__',
+		u'doctype': u'DocField',
+		u'name': u'__common__',
 		'parent': u'Stock Ledger Entry',
 		'parentfield': u'fields',
 		'parenttype': u'DocType'
@@ -38,8 +38,8 @@
 
 	# These values are common for all DocPerm
 	{
-		'doctype': u'DocPerm',
-		'name': '__common__',
+		u'doctype': u'DocPerm',
+		u'name': u'__common__',
 		'parent': u'Stock Ledger Entry',
 		'parentfield': u'permissions',
 		'parenttype': u'DocType',
@@ -48,51 +48,13 @@
 
 	# DocType, Stock Ledger Entry
 	{
-		'doctype': 'DocType',
-		'name': u'Stock Ledger Entry'
-	},
-
-	# DocPerm
-	{
-		'doctype': u'DocPerm',
-		'permlevel': 1,
-		'role': u'All'
-	},
-
-	# DocPerm
-	{
-		'amend': 0,
-		'cancel': 0,
-		'create': 0,
-		'doctype': u'DocPerm',
-		'permlevel': 1,
-		'role': u'Material User',
-		'submit': 0,
-		'write': 0
-	},
-
-	# DocPerm
-	{
-		'amend': 0,
-		'cancel': 0,
-		'create': 0,
-		'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'Material User',
-		'submit': 0,
-		'write': 0
-	},
-
-	# DocPerm
-	{
-		'doctype': u'DocPerm',
-		'permlevel': 2,
-		'role': u'System Manager'
+		u'doctype': u'DocType',
+		u'name': u'Stock Ledger Entry'
 	},
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'item_code',
 		'fieldtype': u'Link',
 		'in_filter': 1,
@@ -108,7 +70,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'serial_no',
 		'fieldtype': u'Text',
 		'in_filter': 0,
@@ -120,7 +82,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'batch_no',
 		'fieldtype': u'Data',
 		'label': u'Batch No',
@@ -131,7 +93,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'warehouse',
 		'fieldtype': u'Link',
 		'in_filter': 1,
@@ -146,7 +108,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'warehouse_type',
 		'fieldtype': u'Select',
 		'in_filter': 1,
@@ -161,7 +123,7 @@
 	# DocField
 	{
 		'description': u'The date at which current entry will get or has actually executed.',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'posting_date',
 		'fieldtype': u'Date',
 		'in_filter': 1,
@@ -176,7 +138,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'posting_time',
 		'fieldtype': u'Time',
 		'in_filter': 0,
@@ -190,22 +152,7 @@
 
 	# DocField
 	{
-		'description': u'The date at which current entry is made in system.',
-		'doctype': u'DocField',
-		'fieldname': u'transaction_date',
-		'fieldtype': u'Date',
-		'in_filter': 1,
-		'label': u'Transaction Date',
-		'oldfieldname': u'transaction_date',
-		'oldfieldtype': u'Date',
-		'permlevel': 1,
-		'search_index': 0,
-		'width': u'100px'
-	},
-
-	# DocField
-	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'voucher_type',
 		'fieldtype': u'Data',
 		'in_filter': 1,
@@ -219,7 +166,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'voucher_no',
 		'fieldtype': u'Data',
 		'in_filter': 1,
@@ -233,7 +180,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'voucher_detail_no',
 		'fieldtype': u'Data',
 		'label': u'Voucher Detail No',
@@ -246,7 +193,7 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'actual_qty',
 		'fieldtype': u'Currency',
 		'in_filter': 1,
@@ -259,7 +206,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'incoming_rate',
 		'fieldtype': u'Currency',
 		'label': u'Incoming Rate',
@@ -270,7 +217,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'stock_uom',
 		'fieldtype': u'Data',
 		'label': u'Stock UOM',
@@ -282,7 +229,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'bin_aqat',
 		'fieldtype': u'Currency',
 		'in_filter': 1,
@@ -295,7 +242,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'ma_rate',
 		'fieldtype': u'Currency',
 		'hidden': 1,
@@ -309,7 +256,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'fcfs_rate',
 		'fieldtype': u'Currency',
 		'hidden': 1,
@@ -323,7 +270,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'valuation_rate',
 		'fieldtype': u'Currency',
 		'label': u'Valuation Rate',
@@ -335,7 +282,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'stock_value',
 		'fieldtype': u'Currency',
 		'label': u'Stock Value',
@@ -346,7 +293,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'fcfs_stack',
 		'fieldtype': u'Text',
 		'hidden': 1,
@@ -362,7 +309,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'company',
 		'fieldtype': u'Select',
 		'in_filter': 1,
@@ -377,7 +324,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'fiscal_year',
 		'fieldtype': u'Data',
 		'in_filter': 1,
@@ -391,7 +338,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'is_cancelled',
 		'fieldtype': u'Select',
 		'in_filter': 1,
@@ -406,7 +353,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'is_stock_entry',
 		'fieldtype': u'Select',
 		'in_filter': 1,
@@ -417,5 +364,50 @@
 		'permlevel': 1,
 		'search_index': 0,
 		'width': u'100px'
+	},
+
+	# DocPerm
+	{
+		u'doctype': u'DocPerm',
+		'permlevel': 1,
+		'role': u'All'
+	},
+
+	# DocPerm
+	{
+		'amend': 0,
+		'cancel': 0,
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'permlevel': 1,
+		'role': u'Material User',
+		'submit': 0,
+		'write': 0
+	},
+
+	# DocPerm
+	{
+		'amend': 0,
+		'cancel': 0,
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'Material User',
+		'submit': 0,
+		'write': 0
+	},
+
+	# DocPerm
+	{
+		u'doctype': u'DocPerm',
+		'permlevel': 2,
+		'role': u'System Manager'
+	},
+
+	# DocPerm
+	{
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'Accounts Manager'
 	}
 ]

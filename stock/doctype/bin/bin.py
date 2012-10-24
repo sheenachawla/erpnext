@@ -344,7 +344,7 @@ class DocType:
 	def create_auto_indent(self, i , doc_type, doc_name, cur_qty):
 		"""	Create indent on reaching reorder level	"""
 		indent = Document('Purchase Request')
-		indent.transaction_date = nowdate()
+		indent.posting_date = nowdate()
 		indent.naming_series = 'IDT'
 		indent.company = get_defaults()['company']
 		indent.fiscal_year = get_defaults()['fiscal_year']
@@ -353,7 +353,7 @@ class DocType:
 			reaches re-order level when %s %s was created""" % (doc_type,doc_name)
 		indent.save(1)
 		indent_obj = get_obj('Purchase Request',indent.name,with_children=1)
-		indent_details_child = addchild(indent_obj.doc,'indent_details','Purchase Request Item',0)
+		indent_details_child = addchild(indent_obj.doc,'purchase_request_items','Purchase Request Item',0)
 		indent_details_child.item_code = self.doc.item_code
 		indent_details_child.uom = self.doc.stock_uom
 		indent_details_child.warehouse = self.doc.warehouse

@@ -3,11 +3,11 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-03-30 14:50:44',
-		'docstatus': 0,
-		'modified': '2012-03-30 14:50:44',
-		'modified_by': u'Administrator',
-		'owner': u'wasim@webnotestech.com'
+		u'creation': '2012-10-24 14:34:07',
+		u'docstatus': 0,
+		u'modified': '2012-10-24 14:34:07',
+		u'modified_by': u'Administrator',
+		u'owner': u'wasim@webnotestech.com'
 	},
 
 	# These values are common for all Search Criteria
@@ -15,10 +15,10 @@
 		'columns': u'Item\x01ID,Item\x01Item Name,Item\x01Description,Item\x01Lead Time Days',
 		'criteria_name': u'Shortage To Purchase Request',
 		'doc_type': u'Item',
-		'doctype': 'Search Criteria',
+		u'doctype': u'Search Criteria',
 		'filters': u"{'Item\x01Saved':1}",
 		'module': u'Stock',
-		'name': '__common__',
+		u'name': u'__common__',
 		'page_len': 50,
 		'sort_by': u'`tabItem`.`name`',
 		'sort_order': u'DESC',
@@ -27,7 +27,7 @@
 
 	# Search Criteria, shortage_to_purchase_request
 	{
-		'doctype': 'Search Criteria',
-		'name': u'shortage_to_purchase_request'
+		u'doctype': u'Search Criteria',
+		u'name': u'shortage_to_purchase_request'
 	}
 ]

@@ -5,7 +5,7 @@
 	{
 		u'creation': '2012-07-03 13:29:57',
 		u'docstatus': 0,
-		u'modified': '2012-10-18 16:17:07',
+		u'modified': '2012-10-18 17:54:53',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -107,7 +107,7 @@
 		'default': u'0.00',
 		u'doctype': u'DocField',
 		'fieldname': u'qty',
-		'fieldtype': u'Currency',
+		'fieldtype': u'Float',
 		'label': u'Quantity',
 		'no_copy': 0,
 		'oldfieldname': u'qty',
@@ -197,7 +197,7 @@
 	{
 		u'doctype': u'DocField',
 		'fieldname': u'min_order_qty',
-		'fieldtype': u'Currency',
+		'fieldtype': u'Float',
 		'label': u'Min Order Qty',
 		'no_copy': 1,
 		'oldfieldname': u'min_order_qty',
@@ -212,7 +212,7 @@
 	{
 		u'doctype': u'DocField',
 		'fieldname': u'projected_qty',
-		'fieldtype': u'Currency',
+		'fieldtype': u'Float',
 		'label': u'Projected Qty',
 		'no_copy': 1,
 		'oldfieldname': u'projected_qty',
@@ -226,7 +226,7 @@
 	{
 		u'doctype': u'DocField',
 		'fieldname': u'ordered_qty',
-		'fieldtype': u'Currency',
+		'fieldtype': u'Float',
 		'label': u'Ordered Qty',
 		'no_copy': 1,
 		'oldfieldname': u'ordered_qty',

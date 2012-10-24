@@ -15,8 +15,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 cur_frm.cscript.tname = "Purchase Order Item";
-cur_frm.cscript.fname = "po_details";
-cur_frm.cscript.other_fname = "purchase_tax_details";
+cur_frm.cscript.fname = "purchase_order_items";
+cur_frm.cscript.other_fname = "taxes_and_charges";
 
 wn.require('app/accounts/doctype/purchase_taxes_and_charges_master/purchase_taxes_and_charges_master.js');
 wn.require('app/buying/doctype/purchase_common/purchase_common.js');
@@ -27,10 +27,10 @@ cur_frm.cscript.onload = function(doc, cdt, cdn) {
 	// set missing values in parent doc
 	set_missing_values(doc, {
 		fiscal_year: sys_defaults.fiscal_year,
-		conversion_rate: 1,
+		exchange_rate: 1,
 		currency: sys_defaults.currency,
 		status: "Draft",
-		transaction_date: get_today(),
+		posting_date: get_today(),
 		is_subcontracted: "No"
 	});
 }
@@ -94,15 +94,15 @@ cur_frm.fields_dict.contact_person.on_new = function(dn) {
 	locals['Contact'][dn].supplier_name = locals[cur_frm.doctype][cur_frm.docname].supplier_name;
 }
 
-cur_frm.cscript.transaction_date = function(doc,cdt,cdn){
+cur_frm.cscript.posting_date = function(doc,cdt,cdn){
 	if(doc.__islocal){ cur_frm.cscript.get_default_schedule_date(doc); }
 }
 
-cur_frm.fields_dict['po_details'].grid.get_field('project_name').get_query = function(doc, cdt, cdn) {
+cur_frm.fields_dict['purchase_order_items'].grid.get_field('project_name').get_query = function(doc, cdt, cdn) {
 	return 'SELECT `tabProject`.name FROM `tabProject` WHERE `tabProject`.status = "Open" AND `tabProject`.name LIKE "%s" ORDER BY `tabProject`.name ASC LIMIT 50';
 }
 
-cur_frm.fields_dict['indent_no'].get_query = function(doc) {
+cur_frm.fields_dict['purchase_request'].get_query = function(doc) {
 	return 'SELECT DISTINCT `tabPurchase Request`.`name` FROM `tabPurchase Request` WHERE `tabPurchase Request`.company = "' + doc.company + '" and `tabPurchase Request`.`docstatus` = 1 and `tabPurchase Request`.`status` != "Stopped" and ifnull(`tabPurchase Request`.`per_ordered`,0) < 100 and `tabPurchase Request`.%(key)s LIKE "%s" ORDER BY `tabPurchase Request`.`name` DESC LIMIT 50';
 }
 
@@ -177,7 +177,7 @@ cur_frm.cscript['Unstop Purchase Order'] = function() {
 }
 
 //****************** For print sales order no and date*************************
-cur_frm.pformat.indent_no = function(doc, cdt, cdn){
+cur_frm.pformat.purchase_request = function(doc, cdt, cdn){
 	//function to make row of table
 	
 	var make_row = function(title,val1, val2, bold){
@@ -190,7 +190,7 @@ cur_frm.pformat.indent_no = function(doc, cdt, cdn){
 
 	out ='';
 	
-	var cl = getchildren('Purchase Order Item',doc.name,'po_details');
+	var cl = getchildren('Purchase Order Item',doc.name,'purchase_order_items');
 
 	// outer table	
 	var out='<div><table class="noborder" style="width:100%"><tr><td style="width: 50%"></td><td>';

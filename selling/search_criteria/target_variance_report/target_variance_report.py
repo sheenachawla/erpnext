@@ -31,7 +31,7 @@ group_by = filter_values.get('group_by')
 
 # Set required field names 
 based_on_fn = (based_on == 'Cost Center') and 'cost_center' or (based_on == 'Sales Partner') and 'sales_partner' or (based_on == 'Sales Person') and 'sales_person'
-date_fn  = (under == 'Sales Order' ) and 'transaction_date' or 'posting_date' 
+date_fn  = 'posting_date' 
 
 mon_list = []
 data = {'start_date':0, 'end_date':1}

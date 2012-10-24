@@ -29,7 +29,7 @@ cur_frm.cscript.onload = function(doc, cdt, cdn) {
 	'fiscal_year', 'contact_by', 'contact_date', 'last_contact_date',
 	'contact_date_ref', 'to_discuss', 'more_info', 'follow_up',
 	'communication_history', 'cc_to', 'subject', 'message', 'lead_attachment_detail',
-	'Create Customer', 'Create Opportunity', 'transaction_date', 'type', 'source']);
+	'Create Customer', 'Create Opportunity', 'type', 'source']);
 		doc.source = 'Website';
 	}
 	if(!doc.status) set_multiple(dt,dn,{status:'Open'});

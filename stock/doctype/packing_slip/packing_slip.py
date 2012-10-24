@@ -165,7 +165,7 @@ class DocType:
 				(new_packed_qty, self.doc.delivery_note, item['item_code']))			
 
 
-	def update_item_details(self):
+	def update_packing_slip_items(self):
 		"""
 			Fill empty columns in Packing Slip Item
 		"""
@@ -174,7 +174,7 @@ class DocType:
 		from webnotes.model.code import get_obj
 		for d in self.doclist:
 			psd_obj = get_obj(doc=d)
-			psd_obj.get_item_details(self.doc.delivery_note)
+			psd_obj.get_packing_slip_items(self.doc.delivery_note)
 
 
 	def get_recommended_case_no(self):

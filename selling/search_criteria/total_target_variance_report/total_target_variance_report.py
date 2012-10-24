@@ -113,7 +113,7 @@ for r in res:
 # Set required field names 
 based_on_fn = (based_on == 'Territory') and 'territory' or 'sales_person'
 
-date_fn  = (under == 'Sales Order' ) and 'transaction_date' or 'posting_date' 
+date_fn  = 'posting_date' 
 
 mon_list = []
 

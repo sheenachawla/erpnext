@@ -3,11 +3,11 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-04-03 12:49:52',
-		'docstatus': 0,
-		'modified': '2012-04-03 12:49:52',
-		'modified_by': u'Administrator',
-		'owner': u'Administrator'
+		u'creation': '2012-10-24 14:33:56',
+		u'docstatus': 0,
+		u'modified': '2012-10-24 14:33:56',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
 	},
 
 	# These values are common for all Search Criteria
@@ -15,10 +15,10 @@
 		'columns': u'Sales Person\x01ID',
 		'criteria_name': u'Sales Personwise Transaction Summary',
 		'doc_type': u'Sales Person',
-		'doctype': 'Search Criteria',
+		u'doctype': u'Search Criteria',
 		'filters': u"{'Sales Person\x01Saved':1,'Sales Person\x01Submitted':1,'Sales Person\x01Country':'','Sales Person\x01State':''}",
 		'module': u'Selling',
-		'name': '__common__',
+		u'name': u'__common__',
 		'page_len': 50,
 		'sort_by': u'`tabSales Person`.`name`',
 		'sort_order': u'DESC',
@@ -27,7 +27,7 @@
 
 	# Search Criteria, sales_personwise_transaction_summary
 	{
-		'doctype': 'Search Criteria',
-		'name': u'sales_personwise_transaction_summary'
+		u'doctype': u'Search Criteria',
+		u'name': u'sales_personwise_transaction_summary'
 	}
 ]

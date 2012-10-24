@@ -3,11 +3,11 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-04-11 17:36:48',
-		'docstatus': 0,
-		'modified': '2012-04-18 17:41:46',
-		'modified_by': u'Administrator',
-		'owner': u'Administrator'
+		u'creation': '2012-10-24 14:33:41',
+		u'docstatus': 0,
+		u'modified': '2012-10-24 14:33:41',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
 	},
 
 	# These values are common for all Search Criteria
@@ -19,10 +19,10 @@
 		'criteria_name': u'Sales Register',
 		'dis_filters': u'fiscal_year',
 		'doc_type': u'Sales Invoice',
-		'doctype': 'Search Criteria',
+		u'doctype': u'Search Criteria',
 		'filters': u"{'Sales Invoice\x01Submitted':1,'Sales Invoice\x01Is Opening':''}",
 		'module': u'Accounts',
-		'name': '__common__',
+		u'name': u'__common__',
 		'page_len': 50,
 		'sort_by': u'`Parent Account`',
 		'sort_order': u'DESC',
@@ -31,7 +31,7 @@
 
 	# Search Criteria, sales_register
 	{
-		'doctype': 'Search Criteria',
-		'name': u'sales_register'
+		u'doctype': u'Search Criteria',
+		u'name': u'sales_register'
 	}
 ]

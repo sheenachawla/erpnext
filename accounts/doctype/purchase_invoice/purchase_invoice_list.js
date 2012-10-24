@@ -6,7 +6,7 @@ wn.doclistviews['Purchase Invoice'] = wn.views.ListView.extend({
 			'`tabPurchase Invoice`.supplier_name',
 			'`tabPurchase Invoice`.credit_to',
 			'`tabPurchase Invoice`.currency',
-			'IFNULL(`tabPurchase Invoice`.grand_total_import, 0) as grand_total_import',
+			'IFNULL(`tabPurchase Invoice`.grand_total_print, 0) as grand_total_print',
 			'IFNULL(`tabPurchase Invoice`.grand_total, 0) as grand_total',
 			'IFNULL(`tabPurchase Invoice`.outstanding_amount, 0) as outstanding_amount',
 			"`tabPurchase Invoice`.posting_date"
@@ -35,7 +35,7 @@ wn.doclistviews['Purchase Invoice'] = wn.views.ListView.extend({
 		{
 			width: '18%', 
 			content: function(parent, data) { 
-				$(parent).html(data.currency + ' ' + fmt_money(data.grand_total_import)) 
+				$(parent).html(data.currency + ' ' + fmt_money(data.grand_total_print)) 
 			},
 			css: {'text-align':'right'}
 		},

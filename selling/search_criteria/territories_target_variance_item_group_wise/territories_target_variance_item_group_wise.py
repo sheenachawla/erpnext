@@ -34,7 +34,7 @@ target_on = filter_values.get('target_on')
 # Set required field names 
 based_on_fn = 'territory'
 
-date_fn  = (under == 'Sales Order' ) and 'transaction_date' or 'posting_date' 
+date_fn  = 'posting_date' 
 
 mon_list = []
 

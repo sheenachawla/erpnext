@@ -16,8 +16,8 @@
 
 // Module Material Management
 cur_frm.cscript.tname = "Delivery Note Item";
-cur_frm.cscript.fname = "delivery_note_details";
-cur_frm.cscript.other_fname = "other_charges";
+cur_frm.cscript.fname = "delivery_note_items";
+cur_frm.cscript.other_fname = "taxes_and_charges";
 cur_frm.cscript.sales_team_fname = "sales_team";
 
 wn.require('app/selling/doctype/sales_common/sales_common.js');
@@ -29,12 +29,12 @@ wn.require('app/setup/doctype/notification_control/notification_control.js');
 // ================================================================================================
 cur_frm.cscript.onload = function(doc, dt, dn) {
 	if(!doc.status) set_multiple(dt,dn,{status:'Draft'});
-	if(!doc.transaction_date) set_multiple(dt,dn,{transaction_date:get_today()});
+	if(!doc.posting_date) set_multiple(dt,dn,{posting_date:get_today()});
 	if(!doc.posting_date) set_multiple(dt,dn,{posting_date:get_today()});
 	if(!doc.posting_time) set_multiple(dt,dn,{posting_time:dateutil.get_cur_time()});
 	if(doc.__islocal && doc.customer) cur_frm.cscript.customer(doc,dt,dn,onload=true);
 	if(!doc.price_list_currency) {
-		set_multiple(dt, dn, {price_list_currency: doc.currency, plc_conversion_rate:1});
+		set_multiple(dt, dn, {price_list_currency: doc.currency, plc_exchange_rate:1});
 	}
 	if(!doc.posting_time) doc.posting_time = wn.datetime.get_cur_time()
 		
@@ -117,14 +117,14 @@ cur_frm.cscript.get_items = function(doc,dt,dn) {
 	var callback = function(r,rt){
 		var doc = locals[cur_frm.doctype][cur_frm.docname];					
 		if(r.message){							
-			doc.sales_order_no = r.message;			
-			if(doc.sales_order_no) {					
+			doc.sales_order = r.message;			
+			if(doc.sales_order) {					
 					unhide_field(['customer_address','contact_person','territory','customer_group']);														
 			}			
-			refresh_many(['delivery_note_details','customer','customer_address','contact_person','customer_name','address_display','contact_display','contact_mobile','contact_email','territory','customer_group']);
+			refresh_many(['delivery_note_items','customer','customer_address','contact_person','customer_name','address_display','contact_display','contact_mobile','contact_email','territory','customer_group']);
 		}
 	} 
- $c_obj(make_doclist(doc.doctype, doc.name),'pull_sales_order_details','',callback); 
+ $c_obj(make_doclist(doc.doctype, doc.name),'pull_sales_order_items','',callback); 
 }
 
 
@@ -137,7 +137,7 @@ cur_frm.cscript.new_contact = function(){
 }
 
 //========================= Overloaded query for link batch_no =============================================================
-cur_frm.fields_dict['delivery_note_details'].grid.get_field('batch_no').get_query= function(doc, cdt, cdn) {
+cur_frm.fields_dict['delivery_note_items'].grid.get_field('batch_no').get_query= function(doc, cdt, cdn) {
 	var d = locals[cdt][cdn];
 	if(d.item_code){
 		return "SELECT tabBatch.name, tabBatch.description FROM tabBatch WHERE tabBatch.docstatus != 2 AND tabBatch.item = '"+ d.item_code +"' AND `tabBatch`.`name` like '%s' ORDER BY `tabBatch`.`name` DESC LIMIT 50"
@@ -156,7 +156,7 @@ cur_frm.fields_dict['project_name'].get_query = function(doc, cdt, cdn) {
 
 
 // *************** Customized link query for SALES ORDER based on customer and currency***************************** 
-cur_frm.fields_dict['sales_order_no'].get_query = function(doc) {
+cur_frm.fields_dict['sales_order'].get_query = function(doc) {
 	doc = locals[this.doctype][this.docname];
 	var cond = '';
 	
@@ -179,7 +179,7 @@ cur_frm.cscript.delivery_type = function(doc, cdt, cdn) {
 cur_frm.cscript.serial_no = function(doc, cdt, cdn) {
 	var d = locals[cdt][cdn];
 	if (d.serial_no) {
-		 get_server_fields('get_serial_details',d.serial_no,'delivery_note_details',doc,cdt,cdn,1);
+		 get_server_fields('get_serial_details',d.serial_no,'delivery_note_items',doc,cdt,cdn,1);
 	}
 }
 
@@ -189,7 +189,7 @@ cur_frm.cscript.warehouse = function(doc, cdt, cdn) {
 	if (! d.item_code) {alert("please enter item code first"); return};
 	if (d.warehouse) {
 		arg = "{'item_code':'" + d.item_code + "','warehouse':'" + d.warehouse +"'}";
-		get_server_fields('get_actual_qty',arg,'delivery_note_details',doc,cdt,cdn,1);
+		get_server_fields('get_actual_qty',arg,'delivery_note_items',doc,cdt,cdn,1);
 	}
 }
 
@@ -265,16 +265,16 @@ var set_print_hide= function(doc, cdt, cdn){
 	
 	if (doc.print_without_amount) {
 		dn_fields['currency'].print_hide = 1;
-		dn_item_fields['export_rate'].print_hide = 1;
-		dn_item_fields['adj_rate'].print_hide = 1;
-		dn_item_fields['ref_rate'].print_hide = 1;
-		dn_item_fields['export_amount'].print_hide = 1;
+		dn_item_fields['print_rate'].print_hide = 1;
+		dn_item_fields['discount'].print_hide = 1;
+		dn_item_fields['print_ref_rate'].print_hide = 1;
+		dn_item_fields['print_amount'].print_hide = 1;
 	} else {
 		dn_fields['currency'].print_hide = 0;
-		dn_item_fields['export_rate'].print_hide = 0;
-		dn_item_fields['adj_rate'].print_hide = 0;
-		dn_item_fields['ref_rate'].print_hide = 0;
-		dn_item_fields['export_amount'].print_hide = 0;
+		dn_item_fields['print_rate'].print_hide = 0;
+		dn_item_fields['discount'].print_hide = 0;
+		dn_item_fields['print_ref_rate'].print_hide = 0;
+		dn_item_fields['print_amount'].print_hide = 0;
 	}
 }
 
@@ -284,7 +284,7 @@ cur_frm.cscript.print_without_amount = function(doc, cdt, cdn) {
 
 
 //****************** For print sales order no and date*************************
-cur_frm.pformat.sales_order_no= function(doc, cdt, cdn){
+cur_frm.pformat.sales_order= function(doc, cdt, cdn){
 	//function to make row of table
 	
 	var make_row = function(title,val1, val2, bold){
@@ -297,7 +297,7 @@ cur_frm.pformat.sales_order_no= function(doc, cdt, cdn){
 
 	out ='';
 	
-	var cl = getchildren('Delivery Note Item',doc.name,'delivery_note_details');
+	var cl = getchildren('Delivery Note Item',doc.name,'delivery_note_items');
 
 	// outer table	
 	var out='<div><table class="noborder" style="width:100%"><tr><td style="width: 50%"></td><td>';

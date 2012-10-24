@@ -3,82 +3,82 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2010-08-08 17:09:34',
-		'docstatus': 0,
-		'modified': '2011-09-14 12:36:24',
-		'modified_by': 'Administrator',
-		'owner': 'Administrator'
+		u'creation': '2010-09-20 12:33:34',
+		u'docstatus': 0,
+		u'modified': '2012-10-24 14:33:55',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
 	},
 
 	# These values are common for all Table Mapper Detail
 	{
-		'doctype': 'Table Mapper Detail',
-		'from_table': 'Lead',
+		u'doctype': u'Table Mapper Detail',
+		'from_table': u'Lead',
 		'match_id': 0,
-		'name': '__common__',
-		'parent': 'Lead-Customer',
-		'parentfield': 'table_mapper_details',
-		'parenttype': 'DocType Mapper',
-		'to_table': 'Customer',
-		'validation_logic': 'name is not null'
+		u'name': u'__common__',
+		'parent': u'Lead-Customer',
+		'parentfield': u'table_mapper_details',
+		'parenttype': u'DocType Mapper',
+		'to_table': u'Customer',
+		'validation_logic': u'name is not null'
 	},
 
 	# These values are common for all Field Mapper Detail
 	{
-		'doctype': 'Field Mapper Detail',
-		'map': 'Yes',
+		u'doctype': u'Field Mapper Detail',
+		'map': u'Yes',
 		'match_id': 0,
-		'name': '__common__',
-		'parent': 'Lead-Customer',
-		'parentfield': 'field_mapper_details',
-		'parenttype': 'DocType Mapper'
+		u'name': u'__common__',
+		'parent': u'Lead-Customer',
+		'parentfield': u'field_mapper_details',
+		'parenttype': u'DocType Mapper'
 	},
 
 	# These values are common for all DocType Mapper
 	{
-		'doctype': u'DocType Mapper',
-		'from_doctype': 'Lead',
-		'module': 'Selling',
-		'name': '__common__',
-		'to_doctype': 'Customer'
+		u'doctype': u'DocType Mapper',
+		'from_doctype': u'Lead',
+		'module': u'Selling',
+		u'name': u'__common__',
+		'to_doctype': u'Customer'
 	},
 
 	# DocType Mapper, Lead-Customer
 	{
-		'doctype': u'DocType Mapper',
-		'name': 'Lead-Customer'
+		u'doctype': u'DocType Mapper',
+		u'name': u'Lead-Customer'
 	},
 
 	# Field Mapper Detail
 	{
-		'doctype': 'Field Mapper Detail',
-		'from_field': 'name',
-		'to_field': 'lead_name'
+		u'doctype': u'Field Mapper Detail',
+		'from_field': u'name',
+		'to_field': u'lead_name'
 	},
 
 	# Field Mapper Detail
 	{
-		'doctype': 'Field Mapper Detail',
-		'from_field': 'company_name',
-		'to_field': 'customer_name'
+		u'doctype': u'Field Mapper Detail',
+		'from_field': u'company_name',
+		'to_field': u'customer_name'
 	},
 
 	# Field Mapper Detail
 	{
-		'doctype': 'Field Mapper Detail',
-		'from_field': 'contact_no',
-		'to_field': 'phone_1'
+		u'doctype': u'Field Mapper Detail',
+		'from_field': u'contact_no',
+		'to_field': u'phone_1'
 	},
 
 	# Field Mapper Detail
 	{
-		'doctype': 'Field Mapper Detail',
-		'from_field': 'fax',
-		'to_field': 'fax_1'
+		u'doctype': u'Field Mapper Detail',
+		'from_field': u'fax',
+		'to_field': u'fax_1'
 	},
 
 	# Table Mapper Detail
 	{
-		'doctype': 'Table Mapper Detail'
+		u'doctype': u'Table Mapper Detail'
 	}
 ]

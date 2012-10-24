@@ -5,8 +5,8 @@ wn.doclistviews['Supplier Quotation'] = wn.views.ListView.extend({
 		this.fields = this.fields.concat([
 			"`tabSupplier Quotation`.supplier_name",
 			"`tabSupplier Quotation`.currency", 
-			"ifnull(`tabSupplier Quotation`.grand_total_import,0) as grand_total_import",
-			"`tabSupplier Quotation`.transaction_date",
+			"ifnull(`tabSupplier Quotation`.grand_total_print,0) as grand_total_print",
+			"`tabSupplier Quotation`.posting_date",
 		]);
 		this.stats = this.stats.concat(['status', 'company']);
 	},
@@ -20,11 +20,11 @@ wn.doclistviews['Supplier Quotation'] = wn.views.ListView.extend({
 		{
 			width: '18%', 
 			content: function(parent, data) { 
-				$(parent).html(data.currency + ' ' + fmt_money(data.grand_total_import)) 
+				$(parent).html(data.currency + ' ' + fmt_money(data.grand_total_print)) 
 			},
 			css: {'text-align':'right'}
 		},
-		{width: '12%', content:'transaction_date',
+		{width: '12%', content:'posting_date',
 			css: {'text-align': 'right', 'color':'#777'},
 			title: "Supplier Quotation Date", type: "date"}
 	]

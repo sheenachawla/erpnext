@@ -15,14 +15,14 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 cur_frm.cscript.tname = "Purchase Request Item";
-cur_frm.cscript.fname = "indent_details";
+cur_frm.cscript.fname = "purchase_request_items";
 
 wn.require('app/buying/doctype/purchase_common/purchase_common.js');
 wn.require('app/utilities/doctype/sms_control/sms_control.js');
 	
 //========================== On Load =================================================
 cur_frm.cscript.onload = function(doc, cdt, cdn) {
-	if (!doc.transaction_date) doc.transaction_date = dateutil.obj_to_str(new Date())
+	if (!doc.posting_date) doc.posting_date = dateutil.obj_to_str(new Date())
 	if (!doc.status) doc.status = 'Draft';
 
 	// defined in purchase_common.js
@@ -37,9 +37,9 @@ cur_frm.cscript.onload_post_render = function(doc, cdt, cdn) {
 }
 
 cur_frm.cscript.get_item_defaults = function(doc) {
-		var ch = getchildren( 'Purchase Request Item', doc.name, 'indent_details');
+		var ch = getchildren( 'Purchase Request Item', doc.name, 'purchase_request_items');
 		if (flt(ch.length) > 0){
-			$c_obj(make_doclist(doc.doctype, doc.name), 'get_item_defaults', '', function(r, rt) {refresh_field('indent_details'); });
+			$c_obj(make_doclist(doc.doctype, doc.name), 'get_item_defaults', '', function(r, rt) {refresh_field('purchase_request_items'); });
 		}
 }
 
@@ -67,7 +67,7 @@ cur_frm.cscript.validate = function(doc,cdt,cdn){
 	is_item_table(doc,cdt,cdn);
 }
 //======================= transaction date =============================
-cur_frm.cscript.transaction_date = function(doc,cdt,cdn){
+cur_frm.cscript.posting_date = function(doc,cdt,cdn){
 	if(doc.__islocal){ 
 		cur_frm.cscript.get_default_schedule_date(doc);
 	}

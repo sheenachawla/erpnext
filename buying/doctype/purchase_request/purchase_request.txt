@@ -22,7 +22,7 @@
 		'module': u'Buying',
 		u'name': u'__common__',
 		'read_only_onload': 1,
-		'search_fields': u'status,transaction_date,sales_order_no',
+		'search_fields': u'status,posting_date,sales_order',
 		'section_style': u'Tabbed',
 		'server_code_error': u' ',
 		'show_in_menu': 0,
@@ -154,11 +154,11 @@
 		'colour': u'White:FFF',
 		'description': u'One or multiple Sales Order no which generated this Purchase Requisition',
 		u'doctype': u'DocField',
-		'fieldname': u'sales_order_no',
+		'fieldname': u'sales_order',
 		'fieldtype': u'Link',
 		'label': u'Sales Order No',
 		'no_copy': 1,
-		'oldfieldname': u'sales_order_no',
+		'oldfieldname': u'sales_order',
 		'oldfieldtype': u'Data',
 		'options': u'Sales Order',
 		'permlevel': 0,
@@ -177,10 +177,10 @@
 	# DocField
 	{
 		u'doctype': u'DocField',
-		'fieldname': u'pull_sales_order_details',
+		'fieldname': u'pull_sales_order_items',
 		'fieldtype': u'Button',
 		'label': u'Pull Sales Order Items',
-		'options': u'pull_so_details',
+		'options': u'pull_sales_order_items',
 		'permlevel': 0
 	},
 

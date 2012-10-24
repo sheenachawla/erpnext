@@ -19,7 +19,7 @@ cur_frm.fields_dict['delivery_note'].get_query = function(doc, cdt, cdn) {
 }
 
 
-cur_frm.fields_dict['item_details'].grid.get_field('item_code').get_query = function(doc, cdt, cdn) {
+cur_frm.fields_dict['packing_slip_items'].grid.get_field('item_code').get_query = function(doc, cdt, cdn) {
 	console.log(doc.delivery_note);
 	var query = 'SELECT name, description FROM `tabItem` WHERE name IN ( \
 		SELECT item_code FROM `tabDelivery Note Item` dnd \
@@ -32,11 +32,11 @@ cur_frm.fields_dict['item_details'].grid.get_field('item_code').get_query = func
 // Fetch item details
 cur_frm.cscript.item_code = function(doc, cdt, cdn) {
 	if(locals[cdt][cdn].item_code) {
-		$c_obj(make_doclist(cdt, cdn), 'get_item_details', doc.delivery_note, function(r, rt) {
+		$c_obj(make_doclist(cdt, cdn), 'get_packing_slip_items', doc.delivery_note, function(r, rt) {
 			if(r.exc) {
 				msgprint(r.exc);
 			} else {
-				refresh_field('item_details');
+				refresh_field('packing_slip_items');
 			}
 		});
 	}
@@ -45,9 +45,9 @@ cur_frm.cscript.item_code = function(doc, cdt, cdn) {
 
 cur_frm.cscript.onload = function(doc, cdt, cdn) {
 	if(doc.delivery_note) {
-		var ps_detail = getchildren('Packing Slip Item', doc.name, 'item_details');
+		var ps_detail = getchildren('Packing Slip Item', doc.name, 'packing_slip_items');
 		if(!(flt(ps_detail[0].net_weight) && cstr(ps_detail[0].weight_uom))) {
-			cur_frm.cscript.update_item_details(doc);
+			cur_frm.cscript.update_packing_slip_items(doc);
 		}
 	}
 }
@@ -61,12 +61,12 @@ cur_frm.cscript.refresh = function(doc, dt, dn) {
 }
 
 
-cur_frm.cscript.update_item_details = function(doc) {
-	$c_obj(make_doclist(doc.doctype, doc.name), 'update_item_details', '', function(r, rt) {
+cur_frm.cscript.update_packing_slip_items = function(doc) {
+	$c_obj(make_doclist(doc.doctype, doc.name), 'update_packing_slip_items', '', function(r, rt) {
 		if(r.exc) {
 			msgprint(r.exc);
 		} else {
-			refresh_many(['item_details', 'naming_series', 'from_case_no', 'to_case_no'])
+			refresh_many(['packing_slip_items', 'naming_series', 'from_case_no', 'to_case_no'])
 		}
 	});
 }
@@ -74,7 +74,7 @@ cur_frm.cscript.update_item_details = function(doc) {
 
 cur_frm.cscript.validate = function(doc, cdt, cdn) {
 	cur_frm.cscript.validate_case_nos(doc);
-	cur_frm.cscript.validate_calculate_item_details(doc);
+	cur_frm.cscript.validate_calculate_packing_slip_items(doc);
 }
 
 
@@ -94,9 +94,9 @@ cur_frm.cscript.validate_case_nos = function(doc) {
 }
 
 
-cur_frm.cscript.validate_calculate_item_details = function(doc) {
+cur_frm.cscript.validate_calculate_packing_slip_items = function(doc) {
 	doc = locals[doc.doctype][doc.name];
-	var ps_detail = getchildren('Packing Slip Item', doc.name, 'item_details');
+	var ps_detail = getchildren('Packing Slip Item', doc.name, 'packing_slip_items');
 
 	cur_frm.cscript.validate_duplicate_items(doc, ps_detail);
 	cur_frm.cscript.calc_net_total_pkg(doc, ps_detail);

@@ -3,17 +3,17 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2010-12-14 17:56:41',
-		'docstatus': 0,
-		'modified': '2012-04-03 12:49:50',
-		'modified_by': u'Administrator',
-		'owner': u'Administrator'
+		u'creation': '2010-12-15 08:40:46',
+		u'docstatus': 0,
+		u'modified': '2012-10-24 14:34:07',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
 	},
 
 	# These values are common for all Table Mapper Detail
 	{
-		'doctype': u'Table Mapper Detail',
-		'name': '__common__',
+		u'doctype': u'Table Mapper Detail',
+		u'name': u'__common__',
 		'parent': u'Sales Invoice-Delivery Note',
 		'parentfield': u'table_mapper_details',
 		'parenttype': u'DocType Mapper'
@@ -21,8 +21,8 @@
 
 	# These values are common for all Field Mapper Detail
 	{
-		'doctype': u'Field Mapper Detail',
-		'name': '__common__',
+		u'doctype': u'Field Mapper Detail',
+		u'name': u'__common__',
 		'parent': u'Sales Invoice-Delivery Note',
 		'parentfield': u'field_mapper_details',
 		'parenttype': u'DocType Mapper'
@@ -30,23 +30,23 @@
 
 	# These values are common for all DocType Mapper
 	{
-		'doctype': u'DocType Mapper',
+		u'doctype': u'DocType Mapper',
 		'from_doctype': u'Sales Invoice',
 		'module': u'Stock',
-		'name': '__common__',
+		u'name': u'__common__',
 		'ref_doc_submitted': 1,
 		'to_doctype': u'Delivery Note'
 	},
 
 	# DocType Mapper, Sales Invoice-Delivery Note
 	{
-		'doctype': u'DocType Mapper',
-		'name': u'Sales Invoice-Delivery Note'
+		u'doctype': u'DocType Mapper',
+		u'name': u'Sales Invoice-Delivery Note'
 	},
 
 	# Field Mapper Detail
 	{
-		'doctype': u'Field Mapper Detail',
+		u'doctype': u'Field Mapper Detail',
 		'from_field': u'eval: flt(obj.qty) - flt(obj.delivered_qty)',
 		'map': u'Yes',
 		'match_id': 1,
@@ -55,7 +55,7 @@
 
 	# Field Mapper Detail
 	{
-		'doctype': u'Field Mapper Detail',
+		u'doctype': u'Field Mapper Detail',
 		'from_field': u'parent',
 		'map': u'Yes',
 		'match_id': 1,
@@ -64,7 +64,7 @@
 
 	# Field Mapper Detail
 	{
-		'doctype': u'Field Mapper Detail',
+		u'doctype': u'Field Mapper Detail',
 		'from_field': u'parenttype',
 		'map': u'Yes',
 		'match_id': 1,
@@ -73,7 +73,7 @@
 
 	# Field Mapper Detail
 	{
-		'doctype': u'Field Mapper Detail',
+		u'doctype': u'Field Mapper Detail',
 		'from_field': u'name',
 		'map': u'Yes',
 		'match_id': 1,
@@ -82,7 +82,7 @@
 
 	# Field Mapper Detail
 	{
-		'doctype': u'Field Mapper Detail',
+		u'doctype': u'Field Mapper Detail',
 		'from_field': u'eval: (flt(obj.qty) - flt(obj.delivered_qty)) * flt(obj.basic_rate)',
 		'map': u'Yes',
 		'match_id': 1,
@@ -91,7 +91,16 @@
 
 	# Field Mapper Detail
 	{
-		'doctype': u'Field Mapper Detail',
+		u'doctype': u'Field Mapper Detail',
+		'from_field': u'eval: (flt(obj.qty) - flt(obj.delivered_qty)) * flt(obj.rate)',
+		'map': u'Yes',
+		'match_id': 1,
+		'to_field': u'amount'
+	},
+
+	# Field Mapper Detail
+	{
+		u'doctype': u'Field Mapper Detail',
 		'from_field': u'eval: (flt(obj.qty) - flt(obj.delivered_qty)) * flt(obj.export_rate)',
 		'map': u'Yes',
 		'match_id': 1,
@@ -100,7 +109,16 @@
 
 	# Field Mapper Detail
 	{
-		'doctype': u'Field Mapper Detail',
+		u'doctype': u'Field Mapper Detail',
+		'from_field': u'eval: (flt(obj.qty) - flt(obj.delivered_qty)) * flt(obj.print_rate)',
+		'map': u'Yes',
+		'match_id': 1,
+		'to_field': u'print_amount'
+	},
+
+	# Field Mapper Detail
+	{
+		u'doctype': u'Field Mapper Detail',
 		'from_field': u'naming_series',
 		'map': u'No',
 		'match_id': 0,
@@ -109,7 +127,7 @@
 
 	# Field Mapper Detail
 	{
-		'doctype': u'Field Mapper Detail',
+		u'doctype': u'Field Mapper Detail',
 		'from_field': u'customer_address',
 		'map': u'Yes',
 		'match_id': 0,
@@ -118,7 +136,7 @@
 
 	# Field Mapper Detail
 	{
-		'doctype': u'Field Mapper Detail',
+		u'doctype': u'Field Mapper Detail',
 		'from_field': u'serial_no',
 		'map': u'Yes',
 		'match_id': 1,
@@ -127,7 +145,7 @@
 
 	# Table Mapper Detail
 	{
-		'doctype': u'Table Mapper Detail',
+		u'doctype': u'Table Mapper Detail',
 		'from_table': u'Sales Invoice',
 		'match_id': 0,
 		'to_table': u'Delivery Note',
@@ -136,29 +154,29 @@
 
 	# Table Mapper Detail
 	{
-		'doctype': u'Table Mapper Detail',
+		u'doctype': u'Table Mapper Detail',
 		'from_field': u'entries',
 		'from_table': u'Sales Invoice Item',
 		'match_id': 1,
-		'to_field': u'delivery_note_details',
+		'to_field': u'delivery_note_items',
 		'to_table': u'Delivery Note Item',
 		'validation_logic': u'docstatus = 1'
 	},
 
 	# Table Mapper Detail
 	{
-		'doctype': u'Table Mapper Detail',
-		'from_field': u'other_charges',
+		u'doctype': u'Table Mapper Detail',
+		'from_field': u'taxes_and_charges',
 		'from_table': u'Sales Taxes and Charges',
 		'match_id': 2,
-		'to_field': u'other_charges',
+		'to_field': u'taxes_and_charges',
 		'to_table': u'Sales Taxes and Charges',
 		'validation_logic': u'name is not null'
 	},
 
 	# Table Mapper Detail
 	{
-		'doctype': u'Table Mapper Detail',
+		u'doctype': u'Table Mapper Detail',
 		'from_field': u'sales_team',
 		'from_table': u'Sales Team',
 		'match_id': 3,

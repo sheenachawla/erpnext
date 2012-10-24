@@ -21,7 +21,7 @@ class DocType:
 	def __init__(self, d, dl):
 		self.doc, self.doclist = d, dl
 
-	def get_item_details(self, delivery_note):
+	def get_packing_slip_items(self, delivery_note):
 		res = webnotes.conn.sql("""\
 			SELECT item_name, SUM(IFNULL(qty, 0)) as total_qty,
 			IFNULL(packed_qty,	0) as packed_qty, stock_uom
