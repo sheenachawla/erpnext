@@ -15,15 +15,12 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
  
-cur_frm.cscript.set_breadcrumbs = function(barea) {
-	cur_frm.frm_head.appframe.add_breadcrumb(cur_frm.docname);
-	cur_frm.frm_head.appframe.add_breadcrumb(' in <a href="#!Sales Browser/Territory">\
-		Territory Tree</a>');
-	cur_frm.frm_head.appframe.add_breadcrumb(' in <a href="#!selling-home">Selling</a>');
-}
-
 cur_frm.cscript.refresh = function(doc, cdt, cdn) {
 	cur_frm.cscript.set_root_readonly(doc);
+
+	cur_frm.add_custom_button("Show Chart of Sales", function() {
+		wn.set_route("Sales Browser", "Territory");
+	});
 }
 
 cur_frm.cscript.set_root_readonly = function(doc) {

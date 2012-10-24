@@ -14,15 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-cur_frm.cscript.set_breadcrumbs = function(barea) {
-	cur_frm.frm_head.appframe.add_breadcrumb(cur_frm.docname);
-	cur_frm.frm_head.appframe.add_breadcrumb(' in <a href="#!Sales Browser/Sales Person">\
-		Sales Person Tree</a>');
-	cur_frm.frm_head.appframe.add_breadcrumb(' in <a href="#!selling-home">Selling</a>');
-}
-
 cur_frm.cscript.refresh = function(doc, cdt, cdn) {
 	cur_frm.cscript.set_root_readonly(doc);
+
+	cur_frm.add_custom_button("Show Chart of Sales", function() {
+		wn.set_route("Sales Browser", "Sales Person");
+	});
 }
 
 cur_frm.cscript.set_root_readonly = function(doc) {
@@ -37,17 +34,11 @@ cur_frm.cscript.set_root_readonly = function(doc) {
 
 
 cur_frm.cscript.onload = function(){
-
 }
 
 //get query select sales person
 cur_frm.fields_dict['parent_sales_person'].get_query = function(doc,cdt,cdn) {
   return 'SELECT `tabSales Person`.`name`,`tabSales Person`.`parent_sales_person` FROM `tabSales Person` WHERE `tabSales Person`.`is_group` = "Yes" AND `tabSales Person`.`docstatus`!= 2 AND `tabSales Person`.`name` !="'+doc.sales_person_name+'" AND `tabSales Person`.%(key)s LIKE "%s" ORDER BY  `tabSales Person`.`name` ASC LIMIT 50';
-}
-
-//get query select Territory
-cur_frm.fields_dict['territory'].get_query = function(doc,cdt,cdn) {
-  return 'SELECT `tabTerritory`.`name` FROM `tabTerritory` WHERE `tabTerritory`.`is_group` = "No" AND `tabTerritory`.`docstatus`!= 2 AND `tabTerritory`.%(key)s LIKE "%s" ORDER BY  `tabTerritory`.`name` ASC LIMIT 50';
 }
 
 // ******************** ITEM Group ******************************** 

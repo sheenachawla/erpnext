@@ -20,8 +20,14 @@
 // edit node
 // see ledger
 
+
 pscript['onload_Accounts Browser'] = function(wrapper){
+	var get_account_or_cost_center = function() {
+		return $('[name="chart-of-accounts"]:checked').attr('data-name');
+	}
+	
 	wrapper.appframe = new wn.ui.AppFrame($(wrapper).find('.appframe-area'));
+	wrapper.appframe.add_module_tab("Accounts");
 	
 	if (wn.boot.profile.can_create.indexOf("Company") !== -1) {
 		wrapper.appframe.add_button('New Company', function() { newdoc('Company'); },
@@ -35,7 +41,9 @@ pscript['onload_Accounts Browser'] = function(wrapper){
 	// company-select
 	wrapper.$company_select = $('<select class="accbrowser-company-select"></select>')
 		.change(function() {
-			var ctype = wn.get_route()[1] || 'Account';
+			var ctype = get_account_or_cost_center();
+			wrapper.appframe.set_title('Chart of '+ctype+'s');
+
 			erpnext.account_chart = new erpnext.AccountsChart(ctype, $(this).val(), wrapper);
 		})
 		.appendTo(wrapper.appframe.$w.find('.appframe-toolbar'));
@@ -51,19 +59,10 @@ pscript['onload_Accounts Browser'] = function(wrapper){
 			wrapper.$company_select.val(sys_defaults.company || r[0]).change();
 		}
 	});
-}
-
-pscript['onshow_Accounts Browser'] = function(wrapper){
-	// set route
-	var ctype = wn.get_route()[1] || 'Account';
-
-	wrapper.appframe.set_title('Chart of '+ctype+'s');
-	wrapper.appframe.add_module_tab("Accounts");
-
-	if(erpnext.account_chart && erpnext.account_chart.ctype != ctype) {
+	
+	$('[name="chart-of-accounts"]').click(function() {
 		wrapper.$company_select.change();
-	} 
-
+	})
 }
 
 erpnext.AccountsChart = Class.extend({

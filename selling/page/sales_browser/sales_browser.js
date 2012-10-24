@@ -20,25 +20,32 @@ pscript['onload_Sales Browser'] = function(wrapper){
 			wrapper.make_tree();
 		}, 'icon-refresh');
 
+	wrapper.appframe.add_module_tab("Selling");
+
 	wrapper.make_tree = function() {
-		var ctype = wn.get_route()[1] || 'Territory';
+		var ctype = get_sales_chart();
+		wrapper.appframe.set_title(ctype+' Tree');	
 		erpnext.sales_chart = new erpnext.SalesChart(ctype, wrapper);
 	}
-	
+
+	var get_sales_chart = function() {
+		return $('[name="chart-of-sales"]:checked').attr('data-name');
+	}
+
 	wrapper.make_tree();
+
+	$('[name="chart-of-sales"]').click(function() {
+		wrapper.make_tree();
+	})
+
 }
 
 pscript['onshow_Sales Browser'] = function(wrapper){
-	// set route
-	var ctype = wn.get_route()[1] || 'Territory';
-
-	wrapper.appframe.set_title(ctype+' Tree');	
-	wrapper.appframe.add_module_tab("Selling");
-
-	if(erpnext.sales_chart && erpnext.sales_chart.ctype != ctype) {
-		wrapper.make_tree();
+	if(wn.get_route()[1]) {
+		$('[name="chart-of-sales"][data-name="'+wn.get_route()[1]+'"]')
+			.attr("checked", "checked").click();
 	}
-};
+}
 
 erpnext.SalesChart = Class.extend({
 	init: function(ctype, wrapper) {
