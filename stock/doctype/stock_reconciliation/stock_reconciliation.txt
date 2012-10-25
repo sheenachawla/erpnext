@@ -5,7 +5,7 @@
 	{
 		u'creation': '2012-10-18 15:07:39',
 		u'docstatus': 0,
-		u'modified': '2012-10-22 14:13:18',
+		u'modified': '2012-10-25 12:45:10',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -29,7 +29,7 @@
 		'server_code_error': u' ',
 		'show_in_menu': 0,
 		'subject': u'Date: %(reconciliation_date)s, Time: %(reconciliation_time)s',
-		'version': 3
+		'version': 1
 	},
 
 	# These values are common for all DocField
@@ -63,7 +63,16 @@
 		'fieldname': u'steps',
 		'fieldtype': u'HTML',
 		'label': u'Steps',
-		'options': u'<div class="field_description"><b>Steps:</b><br>1. Enter Reconciliation Date and Time<br>2. Save the document<br>3. Attach csv file as per template.<br>4. Submit the document<br>5. Enter tilde (~) sign if no difference in qty or valuation rate</div>',
+		'options': u'<div class="well"><b>Steps:</b><br>1. Enter Reconciliation Date and Time<br>2. Save the document<br>3. Attach csv file as per template.<br>4. Submit the document<br><br><b>Note:</b> Enter tilde (~) sign if no difference in qty or valuation rate.<br></div>',
+		'permlevel': 0
+	},
+
+	# DocField
+	{
+		u'doctype': u'DocField',
+		'fieldname': u'download_template',
+		'fieldtype': u'Button',
+		'label': u'Download Template',
 		'permlevel': 0
 	},
 
@@ -101,15 +110,6 @@
 		'label': u'Remark',
 		'oldfieldname': u'remark',
 		'oldfieldtype': u'Text',
-		'permlevel': 0
-	},
-
-	# DocField
-	{
-		u'doctype': u'DocField',
-		'fieldname': u'download_template',
-		'fieldtype': u'Button',
-		'label': u'Download Template',
 		'permlevel': 0
 	},
 

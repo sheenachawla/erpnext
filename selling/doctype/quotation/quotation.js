@@ -32,7 +32,6 @@ wn.require('app/support/doctype/communication/communication.js');
 cur_frm.cscript.onload = function(doc, cdt, cdn) {
 	if(!doc.quotation_to) hide_field(['customer','customer_address','contact_person','customer_name','lead', 'lead_name', 'address_display', 'contact_display', 'contact_mobile', 'contact_email', 'territory', 'customer_group']);
 	if(!doc.price_list_name) set_multiple(cdt,cdn,{price_list_name:sys_defaults.price_list_name});
-	if(!doc.status) set_multiple(cdt,cdn,{status:'Draft'});
 	if(!doc.transaction_date) set_multiple(cdt,cdn,{transaction_date:get_today()});
 	if(!doc.conversion_rate) set_multiple(cdt,cdn,{conversion_rate:'1.00'});
 	if(!doc.currency && sys_defaults.currency) set_multiple(cdt,cdn,{currency:sys_defaults.currency});

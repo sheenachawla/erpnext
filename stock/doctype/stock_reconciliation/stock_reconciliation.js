@@ -16,6 +16,23 @@
 
 cur_frm.cscript.refresh = function(doc) {	
 	if (doc.docstatus) hide_field('steps');
+	
+	cur_frm.set_intro("");
+	
+	if(doc.__islocal) {
+		cur_frm.set_intro("Step 1: Set the date and time at which you want the balance be set and Save.");
+	} else {
+		if(!doc.file_list) {
+			cur_frm.set_intro("Step 2: Download the template and upload the stock balances.");
+			cur_frm.add_custom_button("Upload", function() {
+				cur_frm.attachments.new_attachment();
+			}, 'icon-upload');
+		} else {
+			if(doc.docstatus==0) {
+				cur_frm.set_intro("Step 3: Now submit the document.");
+			}
+		}
+	}
 }
 
 cur_frm.cscript.download_template = function(doc, cdt, cdn) {
