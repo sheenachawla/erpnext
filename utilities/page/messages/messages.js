@@ -156,6 +156,8 @@ erpnext.Messages = Class.extend({
 						<div class="help">by %(comment_by_fullname)s, %(creation)s</div>\
 					</div>\
 					<div style="clear: both;"></div>', data);
+					
+				$(wrapper).find(".avatar img").centerImage();
 			}
 		});
 	},
@@ -199,6 +201,7 @@ erpnext.Messages = Class.extend({
 						});			
 					}
 				}
+				$body.find(".avatar img").centerImage();
 			}
 		});
 	}

@@ -92,10 +92,7 @@ erpnext.update_messages = function(reset) {
 
 	if(!reset) {
 		var set_messages = function(r) {
-			if(!r.exc) {
-				// This function is defined in toolbar.js
-				erpnext.toolbar.set_new_comments(r.message.unread_messages);
-				
+			if(!r.exc) {				
 				var show_in_circle = function(parent_id, msg) {
 					var parent = $('#'+parent_id);
 					if(parent) {
@@ -126,7 +123,6 @@ erpnext.update_messages = function(reset) {
 		});
 	
 	} else {
-		erpnext.toolbar.set_new_comments(0);
 		$('#unread_messages').toggle(false);
 	}
 }

@@ -29,6 +29,8 @@ erpnext.ActivityFeed = Class.extend({
 			%(avatar)s \
 			<span %(onclick)s class="label %(add_class)s">%(feed_type)s</span>\
 			%(link)s %(subject)s <span class="user-info">%(by)s</span></div>', data));
+			
+		$(row).find(".avatar img").centerImage();
 	},
 	scrub_data: function(data) {
 		data.by = wn.user_info(data.owner).fullname;

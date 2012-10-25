@@ -84,24 +84,3 @@ erpnext.toolbar.add_modules = function() {
 	}
 	
 }
-
-erpnext.toolbar.set_new_comments = function(new_comments) {
-	var navbar_nc = $('.navbar-new-comments');
-	if(wn.container.page && wn.container.page.page_name=="messages") 
-		return;
-	if(new_comments && new_comments.length>0) {
-		navbar_nc.text(new_comments.length);
-		navbar_nc.addClass('navbar-new-comments-true')
-		$.each(new_comments, function(i, v) {
-			var msg = v[1];
-			var id = v[0].replace('/', '-');
-			if(!$('#' + id)[0]) { 
-				show_alert(msg).attr("id", id);
-			}
-		});
-	} else {
-		navbar_nc.removeClass('navbar-new-comments-true');
-		navbar_nc.text(0);
-	}
-}
-
