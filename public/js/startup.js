@@ -92,7 +92,9 @@ erpnext.update_messages = function(reset) {
 
 	if(!reset) {
 		var set_messages = function(r) {
-			if(!r.exc) {				
+			if(!r.exc) {
+				erpnext.toolbar.set_new_comments(r.message.unread_messages);
+				
 				var show_in_circle = function(parent_id, msg) {
 					var parent = $('#'+parent_id);
 					if(parent) {
@@ -123,6 +125,7 @@ erpnext.update_messages = function(reset) {
 		});
 	
 	} else {
+		erpnext.toolbar.set_new_comments();
 		$('#unread_messages').toggle(false);
 	}
 }

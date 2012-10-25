@@ -41,8 +41,8 @@ erpnext.toolbar.setup = function() {
 		Forum</a></li>')
 
 	$('#toolbar-help').append('<li><a href="http://www.providesupport.com?messenger=iwebnotes" target="_blank">\
-		Live Chat (Office Hours)</a></li>')
-
+		Live Chat (Office Hours)</a></li>');
+		
 	erpnext.toolbar.set_new_comments();
 }
 
@@ -83,4 +83,15 @@ erpnext.toolbar.add_modules = function() {
 		<li><a href="#!Setup" data-module="Setup">Setup</a></li>');
 	}
 	
+}
+
+erpnext.toolbar.set_new_comments = function(new_comments) {
+	var navbar_nc = $('.navbar-new-comments');
+	if(new_comments && new_comments.length>0) {
+		navbar_nc.text(new_comments.length);
+		navbar_nc.addClass('navbar-new-comments-true')
+	} else {
+		navbar_nc.text(0);
+		navbar_nc.removeClass('navbar-new-comments-true');
+	}
 }

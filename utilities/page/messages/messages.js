@@ -85,7 +85,7 @@ erpnext.Messages = Class.extend({
 		$('#message-title').html(contact==user ? "Everyone" :
 			wn.user_info(contact).fullname)
 
-		$('#avatar-area').html(wn.avatar(contact, true));
+		$('#avatar-area').html(wn.avatar(contact, true)).find("img").centerImage();
 
 		$("#show-everyone").toggle(contact!=user);
 		
