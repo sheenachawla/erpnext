@@ -14,20 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-// Preset
-// ------
-// cur_frm.cscript.tname - Details table name
-// cur_frm.cscript.fname - Details fieldname
+
+
+
 var tname = cur_frm.cscript.tname;
 var fname = cur_frm.cscript.fname;
 
-
-cur_frm.cscript.get_default_schedule_date = function(doc) {
-		var ch = getchildren( tname, doc.name, fname);
-		if (flt(ch.length) > 0){
-			$c_obj(make_doclist(doc.doctype, doc.name), 'get_default_schedule_date', '', function(r, rt) { refresh_field(fname); });
-		}
-}
 
 cur_frm.cscript.load_taxes = function(doc, cdt, cdn, callback) {
 	// run if this is not executed from dt_map...
@@ -167,16 +159,6 @@ cur_frm.cscript.exchange_rate = function(doc,cdt,cdn) {
 	cur_frm.cscript.calc_amount( doc, 1);
 }
 
-//==================== Item Code Get Query =======================================================
-// Only Is Purchase Item = 'Yes' and Items not moved to trash are allowed.
-cur_frm.fields_dict[fname].grid.get_field("item_code").get_query = function(doc, cdt, cdn) {
-	if (doc.is_subcontracted =="Yes") {
-		return 'SELECT tabItem.name, tabItem.description FROM tabItem WHERE ifnull(tabItem.is_sub_contracted_item, "No")="Yes" AND (IFNULL(`tabItem`.`end_of_life`,"") = "" OR `tabItem`.`end_of_life` ="0000-00-00" OR `tabItem`.`end_of_life` > NOW()) AND tabItem.docstatus != 2 AND tabItem.%(key)s LIKE "%s" LIMIT 50'
-	} else {
-		return 'SELECT tabItem.name, tabItem.description FROM tabItem WHERE ifnull(tabItem.is_purchase_item, "No")="Yes" AND (IFNULL(`tabItem`.`end_of_life`,"") = "" OR `tabItem`.`end_of_life` ="0000-00-00" OR `tabItem`.`end_of_life` > NOW()) AND tabItem.docstatus != 2 AND tabItem.%(key)s LIKE "%s" LIMIT 50'
-	}
-}
-
 //==================== Get Item Code Details =====================================================
 cur_frm.cscript.item_code = function(doc,cdt,cdn) {
 	var d = locals[cdt][cdn];
@@ -270,16 +252,6 @@ cur_frm.cscript.ref_rate = function(doc, cdt, cdn) {
 //==================== Import Ref Rate ================================================================
 cur_frm.cscript.print_ref_rate = function(doc, cdt, cdn) {
 	cur_frm.cscript.calc_amount(doc, 5);
-}
-
-//==================== check if item table is blank ==============================================
-var is_item_table = function(doc,cdt,cdn) {
-	// Step 1 :=>Get all childrens/ rows from Detail Table
-	var cl = getchildren(tname, doc.name, fname);
-	// Step 2 :=> If there are no rows then set validated = false, this will stop further execution of code.
-	if (cl.length == 0) {
-		alert("There is no item in table"); validated = false;
-	}
 }
 
 //==================== Validate ====================================================================

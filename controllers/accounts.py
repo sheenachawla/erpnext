@@ -339,13 +339,7 @@ class AccountsController(TransactionBase):
 		for tax in self.tax_doclist:
 			tax.item_wise_tax_detail = json.dumps(tax.item_wise_tax_detail)
 			# print tax.item_wise_tax_detail
-		
-		# TODO: remove this once new doc.py and controller.py are implemented
-		# remove grand_total_for_current_item
-		for tax in self.tax_doclist:
-			del tax.fields["grand_total_for_current_item"]
-			del tax.fields["tax_amount_for_current_item"]
-			
+				
 	def calculate_totals(self):
 		if self.tax_doclist:
 			self.doc.grand_total = self.tax_doclist[-1].total

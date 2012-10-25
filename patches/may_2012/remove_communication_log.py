@@ -90,7 +90,7 @@ def remove_communication_log():
 		d.communication_date = comm_log.get('date')
 		d.category = 'Miscellaneous'
 		d.action = 'No Action'
-		d.save(ignore_fields=1)
+		d.save()
 	
 	# delete records with parent type "Customer", "Lead", "Supplier"
 	webnotes.conn.sql("""\
