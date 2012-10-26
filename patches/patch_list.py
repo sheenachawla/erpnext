@@ -459,4 +459,8 @@ patch_list = [
 		'patch_module': 'patches.october_2012',
 		'patch_file': 'patch_item_tax_rate'
 	},
+	{
+		'patch_module': 'patches.october_2012',
+		'patch_file': 'custom_script_delete_permission',
+	},
 ]

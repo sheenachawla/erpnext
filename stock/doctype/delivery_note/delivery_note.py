@@ -234,7 +234,6 @@ class DocType(StockController):
 
 	def on_submit(self):
 		self.validate_packed_qty()
-		webnotes.conn.set(self.doc, 'message', 'Items against your Order #%s have been delivered. Delivery #%s: ' % (self.doc.po_no, self.doc.name))
 		# Check for Approving Authority
 		get_obj('Authorization Control').validate_approving_authority(self.doc.doctype, self.doc.company, self.doc.grand_total, self)
 		
@@ -374,16 +373,22 @@ class DocType(StockController):
 	def update_stock_ledger(self, update_stock, is_stopped = 0):
 		self.values = []
 		for d in self.get_item_list(is_stopped):
-			stock_item = sql("SELECT is_stock_item, is_sample_item FROM tabItem where name = '%s'"%(d['item_code']), as_dict = 1) # stock ledger will be updated only if it is a stock item
-			if stock_item[0]['is_stock_item'] == "Yes":
+			if webnotes.conn.get_value("Item", d['item_code'], "is_stock_item") == "Yes":
 				if not d['warehouse']:
-					msgprint("Message: Please enter Warehouse for item %s as it is stock item."% d['item_code'])
-					raise Exception
+					msgprint("Please enter Warehouse for item %s as it is stock item"
+						% d['item_code'], raise_exception=1)
+						
 				if d['reserved_qty'] < 0 :
 					# Reduce reserved qty from reserved warehouse mentioned in so
-					bin = get_obj('Warehouse', d['reserved_warehouse']).update_bin(0, flt(update_stock) * flt(d['reserved_qty']), \
-						0, 0, 0, d['item_code'], self.doc.posting_date,doc_type=self.doc.doctype, \
-						doc_name=self.doc.name, is_amended = (self.doc.amended_from and 'Yes' or 'No'))
+					args = {
+						"item_code": d['item_code'],
+						"doc_type": self.doc.doctype,
+						"doc_name": self.doc.name,
+						"reserved_qty": flt(update_stock) * flt(d['reserved_qty']),
+						"posting_date": self.doc.posting_date,
+						"is_amended": self.doc.amended_from and 'Yes' or 'No'
+					}
+					get_obj("Warehouse", d["reserved_warehouse"]).update_bin(args)
 						
 				# Reduce actual qty from warehouse
 				self.make_sl_entry(d, d['warehouse'], - flt(d['qty']) , 0, update_stock)
@@ -413,15 +418,6 @@ class DocType(StockController):
 			'batch_no'					: d['batch_no'],
 			'serial_no'					: d['serial_no']
 		})
-
-
-	def send_sms(self):
-		if not self.doc.customer_mobile_no:
-			msgprint("Please enter customer mobile no")
-		elif not self.doc.message:
-			msgprint("Please enter the message you want to send")
-		else:
-			msgprint(get_obj("SMS Control", "SMS Control").send_sms([self.doc.customer_mobile_no,], self.doc.message))
 
 
 	def credit_limit(self):

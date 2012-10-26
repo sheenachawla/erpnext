@@ -3,9 +3,9 @@
 
 	# These values are common in all dictionaries
 	{
-		u'creation': '2012-09-21 09:56:42',
+		u'creation': '2012-07-12 22:19:45',
 		u'docstatus': 0,
-		u'modified': '2012-10-17 12:33:01',
+		u'modified': '2012-10-23 11:02:09',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -282,18 +282,6 @@
 		'options': u'\nYes\nNo',
 		'permlevel': 0,
 		'reqd': 1
-	},
-
-	# DocField
-	{
-		u'doctype': u'DocField',
-		'fieldname': u'valuation_method',
-		'fieldtype': u'Select',
-		'label': u'Valuation Method',
-		'oldfieldname': u'valuation_method',
-		'oldfieldtype': u'Select',
-		'options': u'\nFIFO\nMoving Average',
-		'permlevel': 0
 	},
 
 	# DocField
