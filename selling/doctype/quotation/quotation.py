@@ -208,9 +208,6 @@ class DocType(TransactionBase):
 				self.add_calendar_event()
 			webnotes.conn.set(self.doc, 'contact_date_ref',self.doc.contact_date)
 		
-		# Set Quotation Status
-		webnotes.conn.set(self.doc, 'status', 'Draft')
-
 		# subject for follow
 		self.doc.subject = '[%(status)s] To %(customer)s worth %(currency)s %(grand_total)s' % self.doc.fields
 
@@ -281,7 +278,6 @@ class DocType(TransactionBase):
 			msgprint("Sales Order No. "+cstr(chk[0][0])+" is submitted against this Quotation. Thus 'Order Lost' can not be declared against it.")
 			raise Exception
 		else:
-			webnotes.conn.set(self.doc, 'status', 'Order Lost')
 			webnotes.conn.set(self.doc, 'order_lost_reason', arg)
 			self.update_enquiry('order lost')
 			return 'true'
@@ -304,9 +300,6 @@ class DocType(TransactionBase):
 		
 		# Check for Approving Authority
 		get_obj('Authorization Control').validate_approving_authority(self.doc.doctype, self.doc.company, self.doc.grand_total, self)
-
-		# Set Quotation Status
-		webnotes.conn.set(self.doc, 'status', 'Submitted')
 		
 		#update enquiry status
 		self.update_enquiry('submit')
@@ -319,9 +312,6 @@ class DocType(TransactionBase):
 		
 		#update enquiry status
 		self.update_enquiry('cancel')
-		
-		webnotes.conn.set(self.doc,'status','Cancelled')
-		
 	
 # SEND SMS
 # =============================================================================

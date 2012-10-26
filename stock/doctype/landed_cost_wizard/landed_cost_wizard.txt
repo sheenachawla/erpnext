@@ -3,9 +3,9 @@
 
 	# These values are common in all dictionaries
 	{
-		u'creation': '2012-07-03 13:29:45',
+		u'creation': '2012-10-18 15:07:36',
 		u'docstatus': 0,
-		u'modified': '2012-09-17 10:54:21',
+		u'modified': '2012-10-22 14:13:59',
 		u'modified_by': u'Administrator',
 		u'owner': u'wasim@webnotestech.com'
 	},
@@ -15,14 +15,16 @@
 		'_last_update': u'1321441191',
 		'colour': u'White:FFF',
 		'default_print_format': u'Standard',
+		'description': u'Distribute expenses post receipt to Items (for valuation).',
 		u'doctype': u'DocType',
+		'document_type': u'Other',
 		'issingle': 1,
 		'module': u'Stock',
 		u'name': u'__common__',
 		'section_style': u'Simple',
 		'server_code_error': u' ',
 		'show_in_menu': 1,
-		'version': 1
+		'version': 3
 	},
 
 	# These values are common for all DocField

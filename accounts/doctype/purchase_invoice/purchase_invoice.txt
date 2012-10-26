@@ -3,9 +3,9 @@
 
 	# These values are common in all dictionaries
 	{
-		u'creation': '2012-10-12 20:20:32',
+		u'creation': '2012-10-18 15:07:13',
 		u'docstatus': 0,
-		u'modified': '2012-10-18 17:17:00',
+		u'modified': '2012-10-22 16:31:55',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -16,17 +16,20 @@
 		'allow_attach': 1,
 		'colour': u'White:FFF',
 		'default_print_format': u'Standard',
+		'description': u'Invoice (Bill) received from Supplier.',
 		u'doctype': u'DocType',
+		'document_type': u'Transaction',
 		'is_submittable': 1,
 		'module': u'Accounts',
 		u'name': u'__common__',
+		'open_count': u'outstanding_amount>0.01',
 		'read_only_onload': 1,
 		'search_fields': u'posting_date, credit_to, fiscal_year, bill_no, grand_total, outstanding_amount',
 		'section_style': u'Tabbed',
 		'server_code_error': u' ',
 		'show_in_menu': 0,
 		'subject': u'From %(supplier_name)s worth %(grand_total)s due on %(due_date)s | %(outstanding_amount)s outstanding',
-		'version': 1
+		'version': 5
 	},
 
 	# These values are common for all DocField
@@ -825,6 +828,7 @@
 	{
 		u'doctype': u'DocField',
 		'fieldname': u'rounded_total_in_words_print',
+		'description': u'In Words will be visible once you save the Purchase Invoice.',
 		'fieldtype': u'Data',
 		'label': u'Rounded Total In Words (Import)',
 		'no_copy': 1,

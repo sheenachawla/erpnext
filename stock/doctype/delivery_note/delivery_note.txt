@@ -16,6 +16,7 @@
 		'allow_attach': 1,
 		'colour': u'White:FFF',
 		'default_print_format': u'Standard',
+		'description': u'Record of shipment (delivery) to Customer.',
 		u'doctype': u'DocType',
 		'document_type': u'Transaction',
 		'in_create': 0,
@@ -30,7 +31,7 @@
 		'show_in_menu': 0,
 		'subject': u'To %(customer_name)s on %(posting_date)s | %(per_billed)s% billed',
 		'tag_fields': u'billing_status',
-		'version': 1
+		'version': 4
 	},
 
 	# These values are common for all DocField

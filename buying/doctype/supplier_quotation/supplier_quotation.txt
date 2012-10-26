@@ -3,9 +3,9 @@
 
 	# These values are common in all dictionaries
 	{
-		u'creation': '2012-08-06 11:15:46',
+		u'creation': '2012-10-18 15:07:19',
 		u'docstatus': 0,
-		u'modified': '2012-10-18 15:57:09',
+		u'modified': '2012-10-22 13:56:21',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -14,6 +14,7 @@
 	{
 		'allow_attach': 1,
 		'default_print_format': u'Standard',
+		'description': u'Quote given by Supplier.',
 		u'doctype': u'DocType',
 		'document_type': u'Transaction',
 		'is_submittable': 1,

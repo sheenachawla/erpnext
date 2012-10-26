@@ -3,11 +3,11 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-03-27 14:35:55',
-		'docstatus': 0,
-		'modified': '2012-03-27 14:35:55',
-		'modified_by': u'Administrator',
-		'owner': u'Administrator'
+		u'creation': '2012-10-18 15:07:21',
+		u'docstatus': 0,
+		u'modified': '2012-10-22 12:57:39',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
 	},
 
 	# These values are common for all DocType
@@ -16,23 +16,24 @@
 		'allow_attach': 1,
 		'allow_trash': 1,
 		'colour': u'White:FFF',
-		'doctype': 'DocType',
+		'description': u'Details / history of past, present employees.',
+		u'doctype': u'DocType',
 		'document_type': u'Master',
 		'module': u'HR',
-		'name': '__common__',
+		u'name': u'__common__',
 		'search_fields': u'employee_name',
 		'section_style': u'Tabbed',
 		'server_code_error': u' ',
 		'show_in_menu': 0,
 		'subject': u'%(employee_name)s',
 		'tag_fields': u'status',
-		'version': 444
+		'version': 445
 	},
 
 	# These values are common for all DocField
 	{
-		'doctype': u'DocField',
-		'name': '__common__',
+		u'doctype': u'DocField',
+		u'name': u'__common__',
 		'parent': u'Employee',
 		'parentfield': u'fields',
 		'parenttype': u'DocType'
@@ -40,8 +41,8 @@
 
 	# These values are common for all DocPerm
 	{
-		'doctype': u'DocPerm',
-		'name': '__common__',
+		u'doctype': u'DocPerm',
+		u'name': u'__common__',
 		'parent': u'Employee',
 		'parentfield': u'permissions',
 		'parenttype': u'DocType',
@@ -50,102 +51,13 @@
 
 	# DocType, Employee
 	{
-		'doctype': 'DocType',
-		'name': u'Employee'
-	},
-
-	# DocPerm
-	{
-		'doctype': u'DocPerm',
-		'permlevel': 1,
-		'role': u'All'
-	},
-
-	# DocPerm
-	{
-		'cancel': 1,
-		'create': 1,
-		'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'HR User',
-		'write': 1
-	},
-
-	# DocPerm
-	{
-		'cancel': 1,
-		'create': 1,
-		'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'HR Manager',
-		'write': 1
-	},
-
-	# DocPerm
-	{
-		'doctype': u'DocPerm',
-		'permlevel': 1,
-		'role': u'HR User'
-	},
-
-	# DocPerm
-	{
-		'doctype': u'DocPerm',
-		'permlevel': 1,
-		'role': u'HR Manager'
-	},
-
-	# DocPerm
-	{
-		'amend': 0,
-		'cancel': 0,
-		'create': 0,
-		'doctype': u'DocPerm',
-		'match': u'owner',
-		'permlevel': 0,
-		'submit': 0,
-		'write': 0
-	},
-
-	# DocPerm
-	{
-		'amend': 0,
-		'cancel': 0,
-		'create': 0,
-		'doctype': u'DocPerm',
-		'match': u'owner',
-		'permlevel': 0,
-		'submit': 0,
-		'write': 0
-	},
-
-	# DocPerm
-	{
-		'amend': 0,
-		'cancel': 0,
-		'create': 0,
-		'doctype': u'DocPerm',
-		'match': u'owner',
-		'permlevel': 0,
-		'submit': 0,
-		'write': 0
-	},
-
-	# DocPerm
-	{
-		'amend': 0,
-		'cancel': 0,
-		'create': 0,
-		'doctype': u'DocPerm',
-		'match': u'owner',
-		'permlevel': 0,
-		'submit': 0,
-		'write': 0
+		u'doctype': u'DocType',
+		u'name': u'Employee'
 	},
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'basic_information',
 		'fieldtype': u'Section Break',
 		'label': u'Basic Information',
@@ -155,7 +67,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'column_break0',
 		'fieldtype': u'Column Break',
 		'permlevel': 0,
@@ -165,7 +77,7 @@
 	# DocField
 	{
 		'description': u'To manage multiple series please go to Setup > Manage Series',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'naming_series',
 		'fieldtype': u'Select',
 		'label': u'Naming Series',
@@ -180,7 +92,7 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'salutation',
 		'fieldtype': u'Select',
 		'label': u'Salutation',
@@ -195,7 +107,7 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'employee_name',
 		'fieldtype': u'Data',
 		'label': u'Employee Name',
@@ -207,7 +119,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'employee_number',
 		'fieldtype': u'Data',
 		'in_filter': 1,
@@ -221,7 +133,7 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'date_of_joining',
 		'fieldtype': u'Date',
 		'label': u'Date of Joining',
@@ -234,7 +146,7 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'date_of_birth',
 		'fieldtype': u'Date',
 		'in_filter': 1,
@@ -249,7 +161,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'gender',
 		'fieldtype': u'Select',
 		'in_filter': 1,
@@ -264,7 +176,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'company',
 		'fieldtype': u'Select',
 		'in_filter': 1,
@@ -277,7 +189,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'column_break1',
 		'fieldtype': u'Column Break',
 		'permlevel': 0,
@@ -288,7 +200,7 @@
 	{
 		'colour': u'White:FFF',
 		'default': u'Active',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'status',
 		'fieldtype': u'Select',
 		'in_filter': 1,
@@ -303,7 +215,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'employment_type',
 		'fieldtype': u'Link',
 		'in_filter': 1,
@@ -317,7 +229,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'scheduled_confirmation_date',
 		'fieldtype': u'Date',
 		'in_filter': 1,
@@ -330,7 +242,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'final_confirmation_date',
 		'fieldtype': u'Date',
 		'label': u'Final Confirmation Date',
@@ -342,7 +254,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'contract_end_date',
 		'fieldtype': u'Date',
 		'in_filter': 1,
@@ -355,7 +267,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'date_of_retirement',
 		'fieldtype': u'Date',
 		'label': u'Date Of Retirement',
@@ -368,7 +280,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'Applicable Holiday List',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'holiday_list',
 		'fieldtype': u'Link',
 		'label': u'Holiday List',
@@ -380,7 +292,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'job_profile',
 		'fieldtype': u'Section Break',
 		'label': u'Job Profile',
@@ -389,7 +301,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'column_break2',
 		'fieldtype': u'Column Break',
 		'permlevel': 0,
@@ -399,7 +311,7 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'branch',
 		'fieldtype': u'Link',
 		'in_filter': 1,
@@ -414,7 +326,7 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'department',
 		'fieldtype': u'Link',
 		'in_filter': 1,
@@ -429,7 +341,7 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'designation',
 		'fieldtype': u'Link',
 		'in_filter': 1,
@@ -445,7 +357,7 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'grade',
 		'fieldtype': u'Link',
 		'in_filter': 1,
@@ -459,7 +371,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'reports_to',
 		'fieldtype': u'Link',
 		'label': u'Reports to',
@@ -472,7 +384,7 @@
 	# DocField
 	{
 		'description': u'Provide email id registered in company',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'company_email',
 		'fieldtype': u'Data',
 		'in_filter': 1,
@@ -485,7 +397,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'salary_information',
 		'fieldtype': u'Column Break',
 		'label': u'Salary Information',
@@ -497,7 +409,7 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'salary_mode',
 		'fieldtype': u'Select',
 		'label': u'Salary Mode',
@@ -512,7 +424,7 @@
 	{
 		'colour': u'White:FFF',
 		'depends_on': u"eval:doc.salary_mode == 'Bank'",
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'bank_name',
 		'fieldtype': u'Data',
 		'hidden': 0,
@@ -528,7 +440,7 @@
 	{
 		'colour': u'White:FFF',
 		'depends_on': u"eval:doc.salary_mode == 'Bank'",
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'bank_ac_no',
 		'fieldtype': u'Data',
 		'hidden': 0,
@@ -540,7 +452,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'esic_card_no',
 		'fieldtype': u'Data',
 		'label': u'ESIC CARD No',
@@ -551,7 +463,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'pf_number',
 		'fieldtype': u'Data',
 		'label': u'PF Number',
@@ -562,7 +474,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'gratuity_lic_id',
 		'fieldtype': u'Data',
 		'label': u'Gratuity LIC ID',
@@ -573,7 +485,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'contact_details',
 		'fieldtype': u'Section Break',
 		'label': u'Contact Details',
@@ -582,7 +494,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'column_break3',
 		'fieldtype': u'Column Break',
 		'permlevel': 0,
@@ -591,7 +503,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'cell_number',
 		'fieldtype': u'Data',
 		'label': u'Cell Number',
@@ -600,7 +512,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'personal_email',
 		'fieldtype': u'Data',
 		'label': u'Personal Email',
@@ -609,7 +521,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'notice_number_of_days',
 		'fieldtype': u'Int',
 		'label': u'Notice - Number of Days',
@@ -620,7 +532,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'emergency_contact_details',
 		'fieldtype': u'HTML',
 		'label': u'Emergency Contact Details',
@@ -630,7 +542,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'person_to_be_contacted',
 		'fieldtype': u'Data',
 		'label': u'Person To Be Contacted',
@@ -639,7 +551,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'relation',
 		'fieldtype': u'Data',
 		'label': u'Relation',
@@ -648,7 +560,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'emergency_phone_number',
 		'fieldtype': u'Data',
 		'label': u'Emergency Phone Number',
@@ -657,7 +569,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'column_break4',
 		'fieldtype': u'Column Break',
 		'permlevel': 0,
@@ -666,7 +578,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'permanent_accommodation_type',
 		'fieldtype': u'Select',
 		'label': u'Permanent Accommodation Type',
@@ -676,7 +588,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'permanent_address',
 		'fieldtype': u'Small Text',
 		'label': u'Permanent Address',
@@ -685,7 +597,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'current_accommodation_type',
 		'fieldtype': u'Select',
 		'label': u'Current Accommodation Type',
@@ -695,7 +607,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'current_address',
 		'fieldtype': u'Small Text',
 		'label': u'Current Address',
@@ -704,7 +616,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'personal_details',
 		'fieldtype': u'Section Break',
 		'label': u'Personal Details',
@@ -713,7 +625,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'column_break5',
 		'fieldtype': u'Column Break',
 		'permlevel': 0,
@@ -722,7 +634,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'pan_number',
 		'fieldtype': u'Data',
 		'label': u'PAN Number',
@@ -731,7 +643,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'passport_number',
 		'fieldtype': u'Data',
 		'label': u'Passport Number',
@@ -741,7 +653,7 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'employee_profile',
 		'fieldtype': u'Button',
 		'hidden': 1,
@@ -753,7 +665,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'date_of_issue',
 		'fieldtype': u'Date',
 		'label': u'Date of Issue',
@@ -762,7 +674,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'valid_upto',
 		'fieldtype': u'Date',
 		'label': u'Valid Upto',
@@ -772,7 +684,7 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'salary_structure',
 		'fieldtype': u'Button',
 		'hidden': 1,
@@ -784,7 +696,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'place_of_issue',
 		'fieldtype': u'Data',
 		'label': u'Place of Issue',
@@ -793,7 +705,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'marital_status',
 		'fieldtype': u'Select',
 		'label': u'Marital Status',
@@ -803,7 +715,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'blood_group',
 		'fieldtype': u'Select',
 		'label': u'Blood Group',
@@ -813,7 +725,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'column_break6',
 		'fieldtype': u'Column Break',
 		'permlevel': 0,
@@ -824,7 +736,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'Here you can maintain family details like name and occupation of parent, spouse and children',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'family_background',
 		'fieldtype': u'Small Text',
 		'label': u'Family Background',
@@ -835,7 +747,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'Here you can maintain height, weight, allergies, medical concerns etc',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'health_details',
 		'fieldtype': u'Small Text',
 		'label': u'Health Details',
@@ -844,7 +756,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'educational_qualification',
 		'fieldtype': u'Section Break',
 		'label': u'Educational Qualification',
@@ -853,7 +765,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'educational_qualification_details',
 		'fieldtype': u'Table',
 		'label': u'Educational Qualification Details',
@@ -863,7 +775,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'career_history',
 		'fieldtype': u'Section Break',
 		'label': u'Career History',
@@ -872,7 +784,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'previous_work_experience',
 		'fieldtype': u'Section Break',
 		'label': u'Previous Work Experience',
@@ -882,7 +794,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'previous_experience_details',
 		'fieldtype': u'Table',
 		'label': u'Employee External Work History',
@@ -892,7 +804,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'history_in_company',
 		'fieldtype': u'Section Break',
 		'label': u'History In Company',
@@ -902,7 +814,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'experience_in_company_details',
 		'fieldtype': u'Table',
 		'label': u'Employee Internal Work Historys',
@@ -912,7 +824,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'exit',
 		'fieldtype': u'Section Break',
 		'label': u'Exit',
@@ -922,7 +834,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'column_break7',
 		'fieldtype': u'Column Break',
 		'permlevel': 0,
@@ -931,7 +843,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'resignation_letter_date',
 		'fieldtype': u'Date',
 		'label': u'Resignation Letter Date',
@@ -942,7 +854,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'relieving_date',
 		'fieldtype': u'Date',
 		'in_filter': 1,
@@ -954,7 +866,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'reason_for_leaving',
 		'fieldtype': u'Data',
 		'label': u'Reason for Leaving',
@@ -965,7 +877,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'leave_encashed',
 		'fieldtype': u'Select',
 		'label': u'Leave Encashed?',
@@ -977,7 +889,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'encashment_date',
 		'fieldtype': u'Date',
 		'label': u'Encashment Date',
@@ -988,7 +900,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'exit_interview_details',
 		'fieldtype': u'Column Break',
 		'label': u'Exit Interview Details',
@@ -1000,7 +912,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'held_on',
 		'fieldtype': u'Date',
 		'label': u'Held On',
@@ -1011,7 +923,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'reason_for_resignation',
 		'fieldtype': u'Select',
 		'label': u'Reason for Resignation',
@@ -1023,7 +935,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'new_workplace',
 		'fieldtype': u'Data',
 		'label': u'New Workplace',
@@ -1034,7 +946,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'feedback',
 		'fieldtype': u'Small Text',
 		'label': u'Feedback',
@@ -1045,7 +957,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'file_list',
 		'fieldtype': u'Text',
 		'hidden': 1,
@@ -1056,12 +968,101 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'trash_reason',
 		'fieldtype': u'Small Text',
 		'label': u'Trash Reason',
 		'oldfieldname': u'trash_reason',
 		'oldfieldtype': u'Small Text',
 		'permlevel': 1
+	},
+
+	# DocPerm
+	{
+		u'doctype': u'DocPerm',
+		'permlevel': 1,
+		'role': u'All'
+	},
+
+	# DocPerm
+	{
+		'cancel': 1,
+		'create': 1,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'HR User',
+		'write': 1
+	},
+
+	# DocPerm
+	{
+		'cancel': 1,
+		'create': 1,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'HR Manager',
+		'write': 1
+	},
+
+	# DocPerm
+	{
+		u'doctype': u'DocPerm',
+		'permlevel': 1,
+		'role': u'HR User'
+	},
+
+	# DocPerm
+	{
+		u'doctype': u'DocPerm',
+		'permlevel': 1,
+		'role': u'HR Manager'
+	},
+
+	# DocPerm
+	{
+		'amend': 0,
+		'cancel': 0,
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'match': u'owner',
+		'permlevel': 0,
+		'submit': 0,
+		'write': 0
+	},
+
+	# DocPerm
+	{
+		'amend': 0,
+		'cancel': 0,
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'match': u'owner',
+		'permlevel': 0,
+		'submit': 0,
+		'write': 0
+	},
+
+	# DocPerm
+	{
+		'amend': 0,
+		'cancel': 0,
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'match': u'owner',
+		'permlevel': 0,
+		'submit': 0,
+		'write': 0
+	},
+
+	# DocPerm
+	{
+		'amend': 0,
+		'cancel': 0,
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'match': u'owner',
+		'permlevel': 0,
+		'submit': 0,
+		'write': 0
 	}
 ]

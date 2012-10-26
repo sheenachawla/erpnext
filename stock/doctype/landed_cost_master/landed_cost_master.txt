@@ -3,9 +3,9 @@
 
 	# These values are common in all dictionaries
 	{
-		u'creation': '2012-07-03 13:29:45',
+		u'creation': '2012-10-18 15:07:36',
 		u'docstatus': 0,
-		u'modified': '2012-09-17 10:53:26',
+		u'modified': '2012-10-22 14:15:33',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -15,13 +15,14 @@
 		'_last_update': u'1309508838',
 		'autoname': u'field:title',
 		'colour': u'White:FFF',
+		'description': u'Template for Landed Cost Wizard.',
 		u'doctype': u'DocType',
 		'document_type': u'Master',
 		'module': u'Stock',
 		u'name': u'__common__',
 		'section_style': u'Simple',
 		'server_code_error': u' ',
-		'version': 1
+		'version': 2
 	},
 
 	# These values are common for all DocField

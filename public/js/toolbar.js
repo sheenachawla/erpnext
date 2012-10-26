@@ -41,8 +41,8 @@ erpnext.toolbar.setup = function() {
 		Forum</a></li>')
 
 	$('#toolbar-help').append('<li><a href="http://www.providesupport.com?messenger=iwebnotes" target="_blank">\
-		Live Chat (Office Hours)</a></li>')
-
+		Live Chat (Office Hours)</a></li>');
+		
 	erpnext.toolbar.set_new_comments();
 }
 
@@ -68,11 +68,11 @@ erpnext.toolbar.add_modules = function() {
 		if(m!='Setup' && wn.boot.profile.allow_modules.indexOf(m)!=-1) {
 			args = {
 				module: m,
-				module_page: erpnext.modules[m],
+				module_page: erpnext.modules[m] || ("Module/" + m),
 				module_label: m=='HR' ? 'Human Resources' : m
 			}
 
-			$('.navbar .modules').append(repl('<li><a href="#!%(module_page)s" \
+			$('.navbar .modules').append(repl('<li><a href="#%(module_page)s" \
 				data-module="%(module)s">%(module_label)s</a></li>', args));			
 		}
 	}
@@ -87,21 +87,11 @@ erpnext.toolbar.add_modules = function() {
 
 erpnext.toolbar.set_new_comments = function(new_comments) {
 	var navbar_nc = $('.navbar-new-comments');
-	if(wn.container.page && wn.container.page.page_name=="messages") 
-		return;
 	if(new_comments && new_comments.length>0) {
 		navbar_nc.text(new_comments.length);
 		navbar_nc.addClass('navbar-new-comments-true')
-		$.each(new_comments, function(i, v) {
-			var msg = v[1];
-			var id = v[0].replace('/', '-');
-			if(!$('#' + id)[0]) { 
-				show_alert(msg).attr("id", id);
-			}
-		});
 	} else {
-		navbar_nc.removeClass('navbar-new-comments-true');
 		navbar_nc.text(0);
+		navbar_nc.removeClass('navbar-new-comments-true');
 	}
 }
-

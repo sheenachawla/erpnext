@@ -3,11 +3,11 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-03-27 14:36:26',
-		'docstatus': 0,
-		'modified': '2012-03-27 14:36:26',
-		'modified_by': u'Administrator',
-		'owner': u'harshada@webnotestech.com'
+		u'creation': '2012-10-18 15:07:33',
+		u'docstatus': 0,
+		u'modified': '2012-10-22 14:19:44',
+		u'modified_by': u'Administrator',
+		u'owner': u'harshada@webnotestech.com'
 	},
 
 	# These values are common for all DocType
@@ -15,19 +15,20 @@
 		'allow_trash': 1,
 		'autoname': u'field:batch_id',
 		'colour': u'White:FFF',
-		'doctype': 'DocType',
+		'description': u'Unique code for identification of a batch of units.',
+		u'doctype': u'DocType',
 		'document_type': u'Master',
 		'module': u'Stock',
-		'name': '__common__',
+		u'name': u'__common__',
 		'section_style': u'Simple',
 		'server_code_error': u' ',
-		'version': 12
+		'version': 13
 	},
 
 	# These values are common for all DocField
 	{
-		'doctype': u'DocField',
-		'name': '__common__',
+		u'doctype': u'DocField',
+		u'name': u'__common__',
 		'parent': u'Batch',
 		'parentfield': u'fields',
 		'parenttype': u'DocType'
@@ -35,8 +36,8 @@
 
 	# These values are common for all DocPerm
 	{
-		'doctype': u'DocPerm',
-		'name': '__common__',
+		u'doctype': u'DocPerm',
+		u'name': u'__common__',
 		'parent': u'Batch',
 		'parentfield': u'permissions',
 		'parenttype': u'DocType',
@@ -46,28 +47,13 @@
 
 	# DocType, Batch
 	{
-		'doctype': 'DocType',
-		'name': u'Batch'
-	},
-
-	# DocPerm
-	{
-		'cancel': 1,
-		'create': 1,
-		'doctype': u'DocPerm',
-		'permlevel': 0,
-		'write': 1
-	},
-
-	# DocPerm
-	{
-		'doctype': u'DocPerm',
-		'permlevel': 1
+		u'doctype': u'DocType',
+		u'name': u'Batch'
 	},
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'trash_reason',
 		'fieldtype': u'Small Text',
 		'label': u'Trash Reason',
@@ -78,7 +64,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'batch_id',
 		'fieldtype': u'Data',
 		'label': u'Batch ID',
@@ -91,7 +77,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'description',
 		'fieldtype': u'Small Text',
 		'label': u'Description',
@@ -103,7 +89,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'start_date',
 		'fieldtype': u'Date',
 		'label': u'Batch Started Date',
@@ -114,7 +100,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'finished_date',
 		'fieldtype': u'Date',
 		'label': u'Batch Finished Date',
@@ -125,7 +111,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'expiry_date',
 		'fieldtype': u'Date',
 		'label': u'Expiry Date',
@@ -136,7 +122,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'item',
 		'fieldtype': u'Link',
 		'label': u'Item',
@@ -145,5 +131,20 @@
 		'options': u'Item',
 		'permlevel': 0,
 		'reqd': 1
+	},
+
+	# DocPerm
+	{
+		'cancel': 1,
+		'create': 1,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'write': 1
+	},
+
+	# DocPerm
+	{
+		u'doctype': u'DocPerm',
+		'permlevel': 1
 	}
 ]

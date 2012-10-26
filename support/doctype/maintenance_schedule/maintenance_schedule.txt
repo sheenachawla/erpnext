@@ -16,15 +16,17 @@
 		'autoname': u'MS.#####',
 		'colour': u'White:FFF',
 		'default_print_format': u'Standard',
+		'search_fields': u'status,customer,customer_name, sales_order',
+		'description': u'Schedule for planned maintenance of an Item.',
 		u'doctype': u'DocType',
+		'document_type': u'Other',
 		'is_submittable': 1,
 		'module': u'Support',
 		u'name': u'__common__',
-		'search_fields': u'status,customer,customer_name, sales_order',
 		'section_style': u'Simple',
 		'server_code_error': u' ',
 		'show_in_menu': 0,
-		'version': 1
+		'version': 159
 	},
 
 	# These values are common for all DocField

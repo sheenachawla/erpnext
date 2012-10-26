@@ -3,9 +3,9 @@
 
 	# These values are common in all dictionaries
 	{
-		u'creation': '2012-10-16 16:36:12',
+		u'creation': '2012-10-18 15:07:36',
 		u'docstatus': 0,
-		u'modified': '2012-10-17 11:36:17',
+		u'modified': '2012-10-19 16:16:14',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -14,11 +14,10 @@
 	{
 		'description': u'Child table in Item to store Item Parameter value',
 		u'doctype': u'DocType',
-		'document_type': u'Transaction',
 		'istable': 1,
 		'module': u'Stock',
 		u'name': u'__common__',
-		'version': 1
+		'version': 2
 	},
 
 	# These values are common for all DocField

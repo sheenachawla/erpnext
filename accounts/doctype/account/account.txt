@@ -3,11 +3,11 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-07-03 13:30:50',
-		'docstatus': 0,
-		'modified': '2012-07-11 13:58:44',
-		'modified_by': u'Administrator',
-		'owner': u'Administrator'
+		u'creation': '2012-10-18 15:07:10',
+		u'docstatus': 0,
+		u'modified': '2012-10-22 13:40:32',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
 	},
 
 	# These values are common for all DocType
@@ -17,23 +17,23 @@
 		'allow_trash': 1,
 		'colour': u'White:FFF',
 		'default_print_format': u'Standard',
-		'description': u'An **Account** is heading under which financial and business transactions are carried on. For example, \u201cTravel Expense\u201d is an account, \u201cCustomer Zoe\u201d, \u201cSupplier Mae\u201d are accounts. \n\n**Note:** ERPNext creates accounts for Customers and Suppliers automatically.\n\n### Groups and Ledgers\n\nThere are two main kinds of Accounts in ERPNext - Group and Ledger. Groups can have sub-groups and ledgers within them, whereas ledgers are the leaf nodes of your chart and cannot be further classified.\n\nAccounting Transactions can only be made against Ledger Accounts (not Groups)\n',
-		'doctype': 'DocType',
+		'description': u'Accounting structure (Groups and Ledgers).',
+		u'doctype': u'DocType',
 		'document_type': u'Master',
 		'in_create': 1,
 		'module': u'Accounts',
-		'name': '__common__',
+		u'name': u'__common__',
 		'search_fields': u'debit_or_credit, group_or_ledger',
 		'section_style': u'Tray',
 		'server_code_error': u' ',
 		'show_in_menu': 0,
-		'version': 1
+		'version': 2
 	},
 
 	# These values are common for all DocField
 	{
-		'doctype': u'DocField',
-		'name': '__common__',
+		u'doctype': u'DocField',
+		u'name': u'__common__',
 		'parent': u'Account',
 		'parentfield': u'fields',
 		'parenttype': u'DocType'
@@ -42,8 +42,8 @@
 	# These values are common for all DocPerm
 	{
 		'amend': 0,
-		'doctype': u'DocPerm',
-		'name': '__common__',
+		u'doctype': u'DocPerm',
+		u'name': u'__common__',
 		'parent': u'Account',
 		'parentfield': u'permissions',
 		'parenttype': u'DocType',
@@ -53,123 +53,13 @@
 
 	# DocType, Account
 	{
-		'doctype': 'DocType',
-		'name': u'Account'
-	},
-
-	# DocPerm
-	{
-		'cancel': 0,
-		'create': 0,
-		'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'Auditor',
-		'write': 1
-	},
-
-	# DocPerm
-	{
-		'cancel': 0,
-		'create': 0,
-		'doctype': u'DocPerm',
-		'permlevel': 1,
-		'role': u'Auditor',
-		'write': 0
-	},
-
-	# DocPerm
-	{
-		'cancel': 0,
-		'create': 0,
-		'doctype': u'DocPerm',
-		'permlevel': 2,
-		'role': u'Auditor',
-		'write': 0
-	},
-
-	# DocPerm
-	{
-		'cancel': 0,
-		'create': 0,
-		'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'Sales User',
-		'write': 0
-	},
-
-	# DocPerm
-	{
-		'cancel': 0,
-		'create': 0,
-		'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'Purchase User',
-		'write': 0
-	},
-
-	# DocPerm
-	{
-		'cancel': 0,
-		'create': 0,
-		'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'Accounts User',
-		'write': 1
-	},
-
-	# DocPerm
-	{
-		'cancel': 1,
-		'create': 1,
-		'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'Accounts Manager',
-		'write': 1
-	},
-
-	# DocPerm
-	{
-		'cancel': 0,
-		'create': 0,
-		'doctype': u'DocPerm',
-		'permlevel': 1,
-		'role': u'Accounts User',
-		'write': 0
-	},
-
-	# DocPerm
-	{
-		'cancel': 0,
-		'create': 0,
-		'doctype': u'DocPerm',
-		'permlevel': 1,
-		'role': u'Accounts Manager',
-		'write': 0
-	},
-
-	# DocPerm
-	{
-		'cancel': 0,
-		'create': 0,
-		'doctype': u'DocPerm',
-		'permlevel': 2,
-		'role': u'Accounts Manager',
-		'write': 1
-	},
-
-	# DocPerm
-	{
-		'cancel': 0,
-		'create': 0,
-		'doctype': u'DocPerm',
-		'permlevel': 2,
-		'role': u'Accounts User',
-		'write': 0
+		u'doctype': u'DocType',
+		u'name': u'Account'
 	},
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'properties',
 		'fieldtype': u'Section Break',
 		'label': u'Account Details',
@@ -179,7 +69,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'column_break0',
 		'fieldtype': u'Column Break',
 		'permlevel': 0,
@@ -188,7 +78,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'account_name',
 		'fieldtype': u'Data',
 		'in_filter': 1,
@@ -203,7 +93,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'level',
 		'fieldtype': u'Int',
 		'hidden': 1,
@@ -217,7 +107,7 @@
 	# DocField
 	{
 		'default': u'Ledger',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'group_or_ledger',
 		'fieldtype': u'Select',
 		'in_filter': 1,
@@ -232,7 +122,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'debit_or_credit',
 		'fieldtype': u'Data',
 		'in_filter': 1,
@@ -245,7 +135,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'is_pl_account',
 		'fieldtype': u'Select',
 		'in_filter': 1,
@@ -259,7 +149,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'company',
 		'fieldtype': u'Link',
 		'in_filter': 1,
@@ -274,7 +164,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'column_break1',
 		'fieldtype': u'Column Break',
 		'permlevel': 0,
@@ -283,7 +173,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'parent_account',
 		'fieldtype': u'Link',
 		'label': u'Parent Account',
@@ -299,7 +189,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'Setting Account Type helps in selecting this Account in transactions.',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'account_type',
 		'fieldtype': u'Select',
 		'in_filter': 1,
@@ -316,7 +206,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'Rate at which this tax is applied',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'tax_rate',
 		'fieldtype': u'Currency',
 		'hidden': 0,
@@ -331,7 +221,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'If the account is frozen, entries are allowed for the "Account Manager" only.',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'freeze_account',
 		'fieldtype': u'Select',
 		'label': u'Frozen',
@@ -344,7 +234,7 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'credit_days',
 		'fieldtype': u'Int',
 		'hidden': 1,
@@ -357,7 +247,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'credit_limit',
 		'fieldtype': u'Currency',
 		'hidden': 1,
@@ -372,7 +262,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'If this Account represents a Customer, Supplier or Employee, set it here.',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'master_type',
 		'fieldtype': u'Select',
 		'label': u'Master Type',
@@ -384,7 +274,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'master_name',
 		'fieldtype': u'Link',
 		'label': u'Master Name',
@@ -392,5 +282,115 @@
 		'oldfieldtype': u'Link',
 		'permlevel': 0,
 		'trigger': u'Client'
+	},
+
+	# DocPerm
+	{
+		'cancel': 0,
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'Auditor',
+		'write': 1
+	},
+
+	# DocPerm
+	{
+		'cancel': 0,
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'permlevel': 1,
+		'role': u'Auditor',
+		'write': 0
+	},
+
+	# DocPerm
+	{
+		'cancel': 0,
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'permlevel': 2,
+		'role': u'Auditor',
+		'write': 0
+	},
+
+	# DocPerm
+	{
+		'cancel': 0,
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'Sales User',
+		'write': 0
+	},
+
+	# DocPerm
+	{
+		'cancel': 0,
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'Purchase User',
+		'write': 0
+	},
+
+	# DocPerm
+	{
+		'cancel': 0,
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'Accounts User',
+		'write': 1
+	},
+
+	# DocPerm
+	{
+		'cancel': 1,
+		'create': 1,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'Accounts Manager',
+		'write': 1
+	},
+
+	# DocPerm
+	{
+		'cancel': 0,
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'permlevel': 1,
+		'role': u'Accounts User',
+		'write': 0
+	},
+
+	# DocPerm
+	{
+		'cancel': 0,
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'permlevel': 1,
+		'role': u'Accounts Manager',
+		'write': 0
+	},
+
+	# DocPerm
+	{
+		'cancel': 0,
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'permlevel': 2,
+		'role': u'Accounts Manager',
+		'write': 1
+	},
+
+	# DocPerm
+	{
+		'cancel': 0,
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'permlevel': 2,
+		'role': u'Accounts User',
+		'write': 0
 	}
 ]

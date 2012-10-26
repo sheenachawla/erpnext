@@ -15,7 +15,7 @@
 		'_last_update': u'1328091392',
 		'autoname': u'PS.#######',
 		'colour': u'White:FFF',
-		'description': u'Generate packing slips for packages to be delivered. Used to notify package number, package contents and its weight.',
+		'description': u'List of Items in a Package for delivery.',
 		u'doctype': u'DocType',
 		'document_type': u'Transaction',
 		'is_submittable': 1,
@@ -27,7 +27,7 @@
 		'section_style': u'Simple',
 		'show_in_menu': 0,
 		'subject': u'[%(delivery_note)s] Case Nos: %(from_case_no)s - %(to_case_no)s  |  Net Weight: %(net_weight_pkg)s %(net_weight_uom)s  |  Gross Weight: %(gross_weight_pkg)s %(gross_weight_uom)s',
-		'version': 1
+		'version': 2
 	},
 
 	# These values are common for all DocField

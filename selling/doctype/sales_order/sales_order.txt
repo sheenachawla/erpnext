@@ -3,9 +3,9 @@
 
 	# These values are common in all dictionaries
 	{
-		u'creation': '2012-10-03 11:57:18',
+		u'creation': '2012-10-19 16:39:10',
 		u'docstatus': 0,
-		u'modified': '2012-10-09 18:10:00',
+		u'modified': '2012-10-22 17:06:50',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -16,6 +16,7 @@
 		'allow_attach': 1,
 		'colour': u'White:FFF',
 		'default_print_format': u'Standard',
+		'description': u'Confirmed order from the Customer for sales.',
 		u'doctype': u'DocType',
 		'document_type': u'Transaction',
 		'is_submittable': 1,
@@ -30,7 +31,7 @@
 		'show_in_menu': 0,
 		'subject': u'From %(customer_name)s on %(posting_date)s worth %(currency)s %(grand_total_print)s | %(per_delivered)s% delivered | %(per_billed)s% billed',
 		'tag_fields': u'delivery_status,billing_status',
-		'version': 1
+		'version': 3
 	},
 
 	# These values are common for all DocField

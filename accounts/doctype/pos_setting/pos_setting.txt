@@ -3,11 +3,11 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-06-11 12:09:53',
-		'docstatus': 0,
-		'modified': '2012-07-16 16:27:51',
-		'modified_by': u'Administrator',
-		'owner': u'Administrator'
+		u'creation': '2012-10-18 15:07:13',
+		u'docstatus': 0,
+		u'modified': '2012-10-22 13:34:51',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
 	},
 
 	# These values are common for all DocType
@@ -16,19 +16,21 @@
 		'autoname': u'POS/.####',
 		'colour': u'White:FFF',
 		'default_print_format': u'Standard',
-		'doctype': 'DocType',
+		'description': u'Settings for Point-of-Sales (POS) Invoice.',
+		u'doctype': u'DocType',
+		'document_type': u'Setup',
 		'module': u'Accounts',
-		'name': '__common__',
+		u'name': u'__common__',
 		'section_style': u'Simple',
 		'server_code_error': u' ',
 		'show_in_menu': 0,
-		'version': 1
+		'version': 4
 	},
 
 	# These values are common for all DocField
 	{
-		'doctype': u'DocField',
-		'name': '__common__',
+		u'doctype': u'DocField',
+		u'name': u'__common__',
 		'parent': u'POS Setting',
 		'parentfield': u'fields',
 		'parenttype': u'DocType',
@@ -37,8 +39,8 @@
 
 	# These values are common for all DocPerm
 	{
-		'doctype': u'DocPerm',
-		'name': '__common__',
+		u'doctype': u'DocPerm',
+		u'name': u'__common__',
 		'parent': u'POS Setting',
 		'parentfield': u'permissions',
 		'parenttype': u'DocType',
@@ -48,13 +50,13 @@
 
 	# DocType, POS Setting
 	{
-		'doctype': 'DocType',
-		'name': u'POS Setting'
+		u'doctype': u'DocType',
+		u'name': u'POS Setting'
 	},
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'user',
 		'fieldtype': u'Link',
 		'label': u'User',
@@ -65,7 +67,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'territory',
 		'fieldtype': u'Link',
 		'label': u'Territory',
@@ -77,7 +79,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'naming_series',
 		'fieldtype': u'Select',
 		'label': u'Series',
@@ -89,7 +91,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'currency',
 		'fieldtype': u'Select',
 		'label': u'Currency',
@@ -114,7 +116,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'price_list_name',
 		'fieldtype': u'Select',
 		'label': u'Price List',
@@ -126,7 +128,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'company',
 		'fieldtype': u'Link',
 		'label': u'Company',
@@ -138,7 +140,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'column_break0',
 		'fieldtype': u'Column Break',
 		'oldfieldtype': u'Column Break'
@@ -146,7 +148,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'customer_account',
 		'fieldtype': u'Link',
 		'label': u'Customer Account',
@@ -158,7 +160,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'cash_bank_account',
 		'fieldtype': u'Link',
 		'label': u'Cash/Bank Account',
@@ -170,7 +172,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'income_account',
 		'fieldtype': u'Link',
 		'label': u'Income Account',
@@ -182,7 +184,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'warehouse',
 		'fieldtype': u'Link',
 		'label': u'Warehouse',
@@ -194,7 +196,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'cost_center',
 		'fieldtype': u'Link',
 		'label': u'Cost Center',
@@ -217,7 +219,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'letter_head',
 		'fieldtype': u'Select',
 		'label': u'Letter Head',
@@ -229,7 +231,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'tc_name',
 		'fieldtype': u'Link',
 		'label': u'Terms and Conditions',
@@ -240,7 +242,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'select_print_heading',
 		'fieldtype': u'Select',
 		'in_filter': 0,
@@ -253,7 +255,7 @@
 	# DocPerm
 	{
 		'create': 1,
-		'doctype': u'DocPerm',
+		u'doctype': u'DocPerm',
 		'role': u'System Manager',
 		'submit': 0,
 		'write': 1
@@ -262,7 +264,7 @@
 	# DocPerm
 	{
 		'create': 1,
-		'doctype': u'DocPerm',
+		u'doctype': u'DocPerm',
 		'role': u'System Manager',
 		'write': 1
 	},
@@ -270,14 +272,14 @@
 	# DocPerm
 	{
 		'create': 1,
-		'doctype': u'DocPerm',
+		u'doctype': u'DocPerm',
 		'role': u'Accounts Manager',
 		'write': 1
 	},
 
 	# DocPerm
 	{
-		'doctype': u'DocPerm',
+		u'doctype': u'DocPerm',
 		'role': u'Accounts User'
 	}
 ]

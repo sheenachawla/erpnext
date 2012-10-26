@@ -3,9 +3,9 @@
 
 	# These values are common in all dictionaries
 	{
-		u'creation': '2012-07-11 12:11:18',
+		u'creation': '2012-10-18 15:07:13',
 		u'docstatus': 0,
-		u'modified': '2012-10-19 13:48:55',
+		u'modified': '2012-10-22 13:35:34',
 		u'modified_by': u'Administrator',
 		u'owner': u'jai@webnotestech.com'
 	},
@@ -16,7 +16,9 @@
 		'autoname': u'PCE/.###',
 		'colour': u'White:FFF',
 		'default_print_format': u'Standard',
+		'description': u'Clear Profit & Loss balance and update Balance Sheet.',
 		u'doctype': u'DocType',
+		'document_type': u'Other',
 		'is_submittable': 1,
 		'module': u'Accounts',
 		u'name': u'__common__',
@@ -24,7 +26,7 @@
 		'section_style': u'Simple',
 		'server_code_error': u' ',
 		'show_in_menu': 0,
-		'version': 1
+		'version': 3
 	},
 
 	# These values are common for all DocField

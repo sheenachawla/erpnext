@@ -3,30 +3,30 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-03-27 14:35:43',
-		'docstatus': 0,
-		'modified': '2012-03-27 14:35:43',
-		'modified_by': u'Administrator',
-		'owner': u'Administrator'
+		u'creation': '2012-10-18 15:07:12',
+		u'docstatus': 0,
+		u'modified': '2012-10-22 13:34:26',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
 	},
 
 	# These values are common for all DocType
 	{
 		'colour': u'White:FFF',
 		'default_print_format': u'Standard',
-		'doctype': 'DocType',
+		u'doctype': u'DocType',
 		'istable': 1,
 		'module': u'Accounts',
-		'name': '__common__',
+		u'name': u'__common__',
 		'section_style': u'Simple',
 		'show_in_menu': 0,
-		'version': 14
+		'version': 18
 	},
 
 	# These values are common for all DocField
 	{
-		'doctype': u'DocField',
-		'name': '__common__',
+		u'doctype': u'DocField',
+		u'name': u'__common__',
 		'parent': u'Payment to Invoice Matching Tool Detail',
 		'parentfield': u'fields',
 		'parenttype': u'DocType'
@@ -34,13 +34,13 @@
 
 	# DocType, Payment to Invoice Matching Tool Detail
 	{
-		'doctype': 'DocType',
-		'name': u'Payment to Invoice Matching Tool Detail'
+		u'doctype': u'DocType',
+		u'name': u'Payment to Invoice Matching Tool Detail'
 	},
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'selected',
 		'fieldtype': u'Check',
 		'label': u'Select',
@@ -51,7 +51,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'voucher_no',
 		'fieldtype': u'Link',
 		'label': u'Voucher No',
@@ -63,7 +63,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'amt_due',
 		'fieldtype': u'Currency',
 		'label': u'Amt Due',
@@ -72,7 +72,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'amt_to_be_reconciled',
 		'fieldtype': u'Currency',
 		'label': u'Amt to be reconciled',
@@ -82,7 +82,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'posting_date',
 		'fieldtype': u'Date',
 		'label': u'Posting Date',
@@ -91,7 +91,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'total_amt',
 		'fieldtype': u'Currency',
 		'label': u'Total Amt',
@@ -100,7 +100,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'against_account',
 		'fieldtype': u'Data',
 		'label': u'Against Account',
@@ -109,7 +109,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'remarks',
 		'fieldtype': u'Small Text',
 		'label': u'Remarks',
@@ -119,7 +119,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'voucher_detail_no',
 		'fieldtype': u'Data',
 		'hidden': 1,

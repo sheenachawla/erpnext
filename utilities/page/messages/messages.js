@@ -85,7 +85,7 @@ erpnext.Messages = Class.extend({
 		$('#message-title').html(contact==user ? "Everyone" :
 			wn.user_info(contact).fullname)
 
-		$('#avatar-area').html(wn.avatar(contact, true));
+		$('#avatar-area').html(wn.avatar(contact, true)).find("img").centerImage();
 
 		$("#show-everyone").toggle(contact!=user);
 		
@@ -156,6 +156,8 @@ erpnext.Messages = Class.extend({
 						<div class="help">by %(comment_by_fullname)s, %(creation)s</div>\
 					</div>\
 					<div style="clear: both;"></div>', data);
+					
+				$(wrapper).find(".avatar img").centerImage();
 			}
 		});
 	},
@@ -199,6 +201,7 @@ erpnext.Messages = Class.extend({
 						});			
 					}
 				}
+				$body.find(".avatar img").centerImage();
 			}
 		});
 	}

@@ -14,8 +14,18 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+cur_frm.cscript.onload = function(doc) {
+	if(!doc.company) {
+		doc.company = sys_defaults.company;
+	}
+	if(!doc.from_date) {
+		doc.from_date = dateutil.get_today();
+	}
+}
+
 cur_frm.cscript.item_code = function(doc,cdt,cdn) {
 	var d = locals[cdt][cdn];
+		
 	if (d.item_code) {
 		get_server_fields('get_item_details', d.item_code, 'pp_details', doc, cdt, cdn, 1);
 	}

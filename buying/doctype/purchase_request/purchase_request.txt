@@ -3,9 +3,9 @@
 
 	# These values are common in all dictionaries
 	{
-		u'creation': '2012-07-03 13:29:58',
+		u'creation': '2012-10-18 15:07:18',
 		u'docstatus': 0,
-		u'modified': '2012-10-18 16:00:52',
+		u'modified': '2012-10-22 13:55:52',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -17,7 +17,9 @@
 		'allow_print': 0,
 		'colour': u'White:FFF',
 		'default_print_format': u'Standard',
+		'description': u'Request for purchase of Items.',
 		u'doctype': u'DocType',
+		'document_type': u'Transaction',
 		'is_submittable': 1,
 		'module': u'Buying',
 		u'name': u'__common__',
@@ -27,7 +29,7 @@
 		'server_code_error': u' ',
 		'show_in_menu': 0,
 		'subject': u'%(per_ordered)s% ordered',
-		'version': 1
+		'version': 3
 	},
 
 	# These values are common for all DocField

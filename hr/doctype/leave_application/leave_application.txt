@@ -3,9 +3,9 @@
 
 	# These values are common in all dictionaries
 	{
-		u'creation': '2012-05-15 12:14:45',
+		u'creation': '2012-10-18 15:07:22',
 		u'docstatus': 0,
-		u'modified': '2012-10-02 11:19:44',
+		u'modified': '2012-10-22 12:57:06',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -15,6 +15,7 @@
 		'_last_update': u'1310019491',
 		'autoname': u'LAP/.#####',
 		'colour': u'White:FFF',
+		'description': u'Application for leave.',
 		u'doctype': u'DocType',
 		'document_type': u'Transaction',
 		'is_submittable': 1,
@@ -25,7 +26,7 @@
 		'show_in_menu': 0,
 		'subject': u'From %(employee_name)s, %(designation)s',
 		'tag_fields': u'leave_type',
-		'version': 1
+		'version': 2
 	},
 
 	# These values are common for all DocField

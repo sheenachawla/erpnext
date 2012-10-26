@@ -3,9 +3,9 @@
 
 	# These values are common in all dictionaries
 	{
-		u'creation': '2012-10-24 13:57:06',
+		u'creation': '2012-10-18 15:07:37',
 		u'docstatus': 0,
-		u'modified': '2012-10-24 14:07:11',
+		u'modified': '2012-10-22 14:16:30',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -16,6 +16,7 @@
 		'allow_attach': 1,
 		'colour': u'White:FFF',
 		'default_print_format': u'Standard',
+		'description': u'Record of receipt of Items from Supplier.',
 		u'doctype': u'DocType',
 		'document_type': u'Transaction',
 		'is_submittable': 1,
@@ -28,7 +29,7 @@
 		'server_code_error': u' ',
 		'show_in_menu': 0,
 		'subject': u'From %(supplier_name)s against %(purchase_order)s on %(posting_date)s',
-		'version': 1
+		'version': 3
 	},
 
 	# These values are common for all DocField
@@ -533,6 +534,7 @@
 		'colour': u'White:FFF',
 		u'doctype': u'DocField',
 		'fieldname': u'grand_total_in_words_print',
+		'description': u'In Words will be visible once you save the Purchase Receipt.',
 		'fieldtype': u'Data',
 		'label': u'Grand Total In Words (Import)',
 		'no_copy': 1,

@@ -3,9 +3,9 @@
 
 	# These values are common in all dictionaries
 	{
-		u'creation': '2012-10-24 14:34:00',
+		u'creation': '2012-10-18 15:07:34',
 		u'docstatus': 0,
-		u'modified': '2012-10-24 18:07:08',
+		u'modified': '2012-10-22 14:13:25',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -23,7 +23,7 @@
 		'section_style': u'Tray',
 		'server_code_error': u' ',
 		'show_in_menu': 0,
-		'version': 1
+		'version': 3
 	},
 
 	# These values are common for all DocField
