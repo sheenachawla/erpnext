@@ -3,9 +3,9 @@
 
 	# These values are common in all dictionaries
 	{
-		u'creation': '2012-07-03 13:30:02',
+		u'creation': '2012-10-24 15:40:26',
 		u'docstatus': 0,
-		u'modified': '2012-10-18 15:35:37',
+		u'modified': '2012-10-26 16:47:35',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -171,15 +171,6 @@
 		'fieldtype': u'Link',
 		'label': u'Default Stock UOM',
 		'options': u'UOM'
-	},
-
-	# DocField
-	{
-		u'doctype': u'DocField',
-		'fieldname': u'default_valuation_method',
-		'fieldtype': u'Select',
-		'label': u'Default Valuation Method',
-		'options': u'FIFO\nMoving Average'
 	},
 
 	# DocField

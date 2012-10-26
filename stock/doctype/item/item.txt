@@ -3,9 +3,9 @@
 
 	# These values are common in all dictionaries
 	{
-		u'creation': '2012-09-21 09:56:42',
+		u'creation': '2012-10-24 15:40:27',
 		u'docstatus': 0,
-		u'modified': '2012-10-17 12:33:01',
+		u'modified': '2012-10-26 16:47:15',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -282,18 +282,6 @@
 		'options': u'\nYes\nNo',
 		'permlevel': 0,
 		'reqd': 1
-	},
-
-	# DocField
-	{
-		u'doctype': u'DocField',
-		'fieldname': u'valuation_method',
-		'fieldtype': u'Select',
-		'label': u'Valuation Method',
-		'oldfieldname': u'valuation_method',
-		'oldfieldtype': u'Select',
-		'options': u'\nFIFO\nMoving Average',
-		'permlevel': 0
 	},
 
 	# DocField
@@ -981,73 +969,6 @@
 
 	# DocPerm
 	{
-		'amend': 0,
-		'cancel': 0,
-		'create': 0,
-		u'doctype': u'DocPerm',
-		'permlevel': 1,
-		'role': u'Material Manager',
-		'submit': 0,
-		'write': 0
-	},
-
-	# DocPerm
-	{
-		'amend': 0,
-		'cancel': 0,
-		'create': 0,
-		u'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'Material Manager',
-		'submit': 0,
-		'write': 0
-	},
-
-	# DocPerm
-	{
-		'amend': 0,
-		'cancel': 0,
-		'create': 0,
-		u'doctype': u'DocPerm',
-		'permlevel': 1,
-		'role': u'Material User',
-		'submit': 0,
-		'write': 0
-	},
-
-	# DocPerm
-	{
-		'amend': 0,
-		'cancel': 0,
-		'create': 0,
-		u'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'Material User',
-		'submit': 0,
-		'write': 0
-	},
-
-	# DocPerm
-	{
-		'cancel': 1,
-		'create': 1,
-		u'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'Material Master Manager',
-		'write': 1
-	},
-
-	# DocPerm
-	{
-		'create': 0,
-		u'doctype': u'DocPerm',
-		'permlevel': 1,
-		'role': u'Material Master Manager',
-		'write': 0
-	},
-
-	# DocPerm
-	{
 		'cancel': 1,
 		'create': 1,
 		u'doctype': u'DocPerm',
@@ -1058,8 +979,75 @@
 
 	# DocPerm
 	{
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'permlevel': 1,
+		'role': u'Material Master Manager',
+		'write': 0
+	},
+
+	# DocPerm
+	{
+		'cancel': 1,
+		'create': 1,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'Material Master Manager',
+		'write': 1
+	},
+
+	# DocPerm
+	{
 		u'doctype': u'DocPerm',
 		'permlevel': 1,
 		'role': u'System Manager'
+	},
+
+	# DocPerm
+	{
+		'amend': 0,
+		'cancel': 0,
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'permlevel': 1,
+		'role': u'Material Manager',
+		'submit': 0,
+		'write': 0
+	},
+
+	# DocPerm
+	{
+		'amend': 0,
+		'cancel': 0,
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'Material Manager',
+		'submit': 0,
+		'write': 0
+	},
+
+	# DocPerm
+	{
+		'amend': 0,
+		'cancel': 0,
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'permlevel': 1,
+		'role': u'Material User',
+		'submit': 0,
+		'write': 0
+	},
+
+	# DocPerm
+	{
+		'amend': 0,
+		'cancel': 0,
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'Material User',
+		'submit': 0,
+		'write': 0
 	}
 ]
