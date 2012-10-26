@@ -135,13 +135,15 @@ class TestPurchaseReceipt(unittest.TestCase):
 	def setUp(self):
 		webnotes.conn.begin()
 		load_data()
-		
+		webnotes.conn.set_value("Global Defaults", None, "automatic_inventory_accounting", 1)
+
+
 	def test_purchase_invoice(self):
 		from webnotes.model.doclist import DocList
 		controller = webnotes.model.insert(DocList(purchase_invoice_doclist))
 		controller.load_from_db()
 		dl = controller.doclist
-		
+
 		# test net total
 		self.assertEqual(dl[0].net_total, 1250)
 		
@@ -214,6 +216,32 @@ class TestPurchaseReceipt(unittest.TestCase):
 		for i, item in enumerate(dl.get({"parentfield": "entries"})):
 			self.assertEqual(item.item_code, expected_values[i][0])
 			self.assertEqual(item.item_tax_amount, expected_values[i][1])
+		
+	def test_gl_entries(self):
+		from webnotes.model.doclist import DocList
+		controller = webnotes.model.insert(DocList(purchase_invoice_doclist))
+		controller.submit()
+		controller.load_from_db()
+		dl = controller.doclist
+		
+		expected_values = {
+			"East Wind Inc. - %s" % abbr : [0, 1512.30],
+			"Shipping Charges - %s" % abbr : [100, 0],
+			"Excise Duty - %s" % abbr : [140, 0],
+			"Education Cess - %s" % abbr : [2.8, 0],
+			"S&H Education Cess - %s" % abbr : [1.4, 0],
+			"CST - %s" % abbr : [29.88, 0],
+			"VAT - Test - %s" % abbr : [156.25, 0],
+			"Discount - %s" % abbr : [0, 168.03],
+			"Stock Received But Not Billed - %s" % abbr : [1475, 0],
+			"Expenses Included In Valuation - %s" % abbr : [0, 225]
+		}
+		gl_entries = webnotes.conn.sql("""select account, debit, credit from `tabGL Entry`
+			where voucher_type = 'Purchase Invoice' and voucher_no = %s""", dl[0].name, as_dict=1)
+		for d in gl_entries:
+			self.assertEqual(d["debit"], expected_values.get(d['account'])[0])
+			self.assertEqual(d["credit"], expected_values.get(d['account'])[1])
+			
 		
 	def tearDown(self):
 		webnotes.conn.rollback()

@@ -47,10 +47,11 @@ class DocType:
 	# Cost center is required only if transaction made against pl account
 	#--------------------------------------------------------------------
 	def pl_must_have_cost_center(self):
-		if sql("select name from tabAccount where name=%s and is_pl_account='Yes'", self.doc.account):
+		if sql("select name from tabAccount where name=%s and is_pl_account='Yes'" 
+				, self.doc.account):
 			if not self.doc.cost_center and self.doc.voucher_type != 'Period Closing Voucher':
-				msgprint("Error: Cost Center must be specified for PL Account: %s" % self.doc.account)
-				raise Exception
+				msgprint("""Error: Cost Center must be specified for PL Account: %s""" 
+					% self.doc.account, raise_exception=1)
 		else: # not pl
 			if self.doc.cost_center:
 				self.doc.cost_center = ''
@@ -58,27 +59,29 @@ class DocType:
 	# Account must be ledger, active and not freezed
 	#-----------------------------------------------
 	def validate_account_details(self, adv_adj):
-		ret = sql("select group_or_ledger, docstatus, freeze_account, company from tabAccount where name=%s", self.doc.account)
+		ret = sql("select group_or_ledger, docstatus, freeze_account, company \
+			from tabAccount where name=%s", self.doc.account)
 		
 		# 1. Checks whether Account type is group or ledger
 		if ret and ret[0][0]=='Group':
-			msgprint("Error: All accounts must be Ledgers. Account %s is a group" % self.doc.account)
-			raise Exception
+			msgprint("Error: All accounts must be Ledgers. Account %s is a group" 
+				% self.doc.account, raise_exception=1)
 
 		# 2. Checks whether Account is active
 		if ret and ret[0][1]==2:
-			msgprint("Error: All accounts must be Active. Account %s moved to Trash" % self.doc.account)
-			raise Exception
+			msgprint("Error: All accounts must be Active. Account %s moved to Trash" 
+				% self.doc.account, raise_exception=1)
 			
 		# 3. Account has been freezed for other users except account manager
-		if ret and ret[0][2]== 'Yes' and not adv_adj and not 'Accounts Manager' in webnotes.user.get_roles():
-			msgprint("Error: Account %s has been freezed. Only Accounts Manager can do transaction against this account." % self.doc.account)
-			raise Exception
+		if ret and ret[0][2]== 'Yes' and not adv_adj \
+				and not 'Accounts Manager' in webnotes.user.get_roles():
+			msgprint("""Error: Account %s has been freezed. Only Accounts Manager can do 
+				transaction against this account.""" % self.doc.account, raise_exception=1)
 			
 		# 4. Check whether account is within the company
 		if ret and ret[0][3] != self.doc.company:
-			msgprint("Account: %s does not belong to the company: %s" % (self.doc.account, self.doc.company))
-			raise Exception
+			msgprint("Account: %s does not belong to the company: %s" 
+				% (self.doc.account, self.doc.company), raise_exception=1)
 			
 	# Posting date must be in selected fiscal year and fiscal year is active
 	#-------------------------------------------------------------------------
@@ -99,9 +102,9 @@ class DocType:
 	#----------------------------------------------------------------------------------------------
 	def check_freezing_date(self, adv_adj):
 		if not adv_adj:
-			acc_frozen_upto = get_value('Global Defaults', None, 'acc_frozen_upto')
+			acc_frozen_upto = webnotes.conn.get_value('Global Defaults', None, 'acc_frozen_upto')
 			if acc_frozen_upto:
-				bde_auth_role = get_value( 'Global Defaults', None,'bde_auth_role')
+				bde_auth_role = webnotes.conn.get_value( 'Global Defaults', None,'bde_auth_role')
 				if getdate(self.doc.posting_date) <= getdate(acc_frozen_upto) and not bde_auth_role in webnotes.user.get_roles():
 					msgprint("You are not authorized to do/modify back dated accounting entries before %s." % getdate(acc_frozen_upto).strftime('%d-%m-%Y'), raise_exception=1)
 

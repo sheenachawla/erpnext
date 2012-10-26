@@ -44,7 +44,7 @@ class DocType:
 				raise Exception
 			bin = Document('Bin')
 			bin.item_code = item_code
-			bin.stock_uom = get_value('Item', item_code, 'stock_uom')
+			bin.stock_uom = webnotes.conn.get_value('Item', item_code, 'stock_uom')
 			bin.warehouse = self.doc.name
 			bin.warehouse_type = self.doc.warehouse_type
 			bin_obj = get_obj(doc=bin)
@@ -65,7 +65,7 @@ class DocType:
 
 	def update_bin(self, actual_qty, reserved_qty, ordered_qty, indented_qty, planned_qty, item_code, dt, sle_id = '',posting_time = '', serial_no = '', is_cancelled = 'No',doc_type='',doc_name='',is_amended='No'):
 		self.validate_asset(item_code)
-		it_det = get_value('Item', item_code, 'is_stock_item')
+		it_det = webnotes.conn.get_value('Item', item_code, 'is_stock_item')
 		if it_det and it_det == 'Yes':
 			bin = self.get_bin(item_code)
 			bin.update_stock(actual_qty, reserved_qty, ordered_qty, indented_qty, planned_qty, dt, sle_id, posting_time, serial_no, is_cancelled,doc_type,doc_name,is_amended)

@@ -84,7 +84,6 @@ def get_name(s):
 class TestJournalVoucher(unittest.TestCase):
 	def setUp(self):
 		webnotes.conn.begin()
-		
 		# create a dummy account
 		webnotes.model.insert([data["expense_account"]])
 		webnotes.model.insert([data["supplier_account"]])
@@ -97,7 +96,6 @@ class TestJournalVoucher(unittest.TestCase):
 	def test_save_journal_voucher(self):
 		expense_ac_balance = get_balance_on(get_name("Test Expense"), nowdate())
 		supplier_ac_balance = get_balance_on(get_name("Test Supplier"), nowdate())
-		
 		dl = webnotes.model.insert(data["journal_voucher"])
 		dl.submit()
 		dl.load_from_db()

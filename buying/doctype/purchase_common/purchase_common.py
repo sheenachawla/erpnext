@@ -738,10 +738,13 @@ class DocType(TransactionBase):
 		
 	# update itemwise valuation rate
 	def update_item_valuation_rate(self, obj):
+		rate_field = 'purchase_rate'
+		if obj.doc.doctype == 'Purchase Invoice':
+			rate_field = 'rate'
 		for d in getlist(obj.doclist, obj.fname):
 			if flt(d.qty):
 				d.valuation_rate = (
-						flt(d.purchase_rate) + 
+						flt(d.fields.get(rate_field)) + 
 						(flt(d.rm_supp_cost) / flt(d.qty)) + 
 						(flt(d.item_tax_amount)/flt(d.qty)) 
 					) / flt(d.conversion_factor)

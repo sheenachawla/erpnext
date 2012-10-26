@@ -15,7 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 cur_frm.cscript.refresh = function(doc) {
-	// make sensitive fields(has_serial_no, is_stock_item, valuation_method)
+	// make sensitive fields(has_serial_no, is_stock_item)
 	// read only if any stock ledger entry exists
 
 	cur_frm.toggle_enable("item_code", doc.__islocal);
@@ -23,7 +23,7 @@ cur_frm.cscript.refresh = function(doc) {
 	if ((!doc.__islocal) && (doc.is_stock_item == 'Yes')) {
 		var callback = function(r, rt) {
 			var enabled = (r.message == 'exists') ? false : true;				
-			cur_frm.toggle_enable(['has_serial_no', 'is_stock_item', 'valuation_method'], enabled);
+			cur_frm.toggle_enable(['has_serial_no', 'is_stock_item'], enabled);
 		}
 		$c_obj(make_doclist(doc.doctype, doc.name),'check_if_sle_exists','',callback);
 	}

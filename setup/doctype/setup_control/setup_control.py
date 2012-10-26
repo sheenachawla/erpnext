@@ -63,7 +63,6 @@ class DocType:
 		def_args = {'current_fiscal_year':curr_fiscal_year,
 								'default_currency': args.get('currency'),
 								'default_company':args.get('company_name'),
-								'default_valuation_method':'FIFO',
 								'default_stock_uom':'Nos',
 								'date_format':'dd-mm-yyyy',
 								'default_currency_format':'Lacs',

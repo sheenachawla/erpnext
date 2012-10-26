@@ -142,7 +142,6 @@ def reset_global_defaults():
 		'sms_sender_name': '', 
 		'default_item_group': 'Default', 
 		'default_stock_uom': 'Nos', 
-		'default_valuation_method': 'FIFO', 
 		'default_warehouse_type': 'Default Warehouse Type', 
 		'tolerance': '', 
 		'acc_frozen_upto': '', 
