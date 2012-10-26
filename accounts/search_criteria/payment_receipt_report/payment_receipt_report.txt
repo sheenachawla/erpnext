@@ -3,11 +3,11 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-04-03 12:49:51',
-		'docstatus': 0,
-		'modified': '2012-04-03 12:49:51',
-		'modified_by': u'Administrator',
-		'owner': u'jai@webnotestech.com'
+		u'creation': '2012-10-24 14:33:41',
+		u'docstatus': 0,
+		u'modified': '2012-10-24 14:33:41',
+		u'modified_by': u'Administrator',
+		u'owner': u'jai@webnotestech.com'
 	},
 
 	# These values are common for all Search Criteria
@@ -15,10 +15,10 @@
 		'columns': u'GL Entry\x01ID,GL Entry\x01Owner,GL Entry\x01Posting Date,GL Entry\x01Account,GL Entry\x01Cost Center,GL Entry\x01Against Voucher,GL Entry\x01Voucher Type,GL Entry\x01Voucher No,GL Entry\x01Remarks,GL Entry\x01Is Cancelled,GL Entry\x01Is Opening,GL Entry\x01Fiscal Year,GL Entry\x01Company',
 		'criteria_name': u'Payment Receipt Report',
 		'doc_type': u'GL Entry',
-		'doctype': 'Search Criteria',
+		u'doctype': u'Search Criteria',
 		'filters': u"{'GL Entry\x01Voucher Type':'','GL Entry\x01Is Cancelled':'','GL Entry\x01Is Opening':'','GL Entry\x01Fiscal Year':''}",
 		'module': u'Accounts',
-		'name': '__common__',
+		u'name': u'__common__',
 		'page_len': 50,
 		'sort_by': u'`tabGL Entry`.`name`',
 		'sort_order': u'DESC',
@@ -27,7 +27,7 @@
 
 	# Search Criteria, payment_receipt_report
 	{
-		'doctype': 'Search Criteria',
-		'name': u'payment_receipt_report'
+		u'doctype': u'Search Criteria',
+		u'name': u'payment_receipt_report'
 	}
 ]

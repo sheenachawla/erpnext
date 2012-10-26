@@ -3,17 +3,17 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2010-08-08 17:09:34',
-		'docstatus': 0,
-		'modified': '2012-04-03 12:49:50',
-		'modified_by': u'Administrator',
-		'owner': u'Administrator'
+		u'creation': '2010-09-20 12:33:34',
+		u'docstatus': 0,
+		u'modified': '2012-10-24 14:33:55',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
 	},
 
 	# These values are common for all Table Mapper Detail
 	{
-		'doctype': u'Table Mapper Detail',
-		'name': '__common__',
+		u'doctype': u'Table Mapper Detail',
+		u'name': u'__common__',
 		'parent': u'Opportunity-Quotation',
 		'parentfield': u'table_mapper_details',
 		'parenttype': u'DocType Mapper',
@@ -22,8 +22,8 @@
 
 	# These values are common for all Field Mapper Detail
 	{
-		'doctype': u'Field Mapper Detail',
-		'name': '__common__',
+		u'doctype': u'Field Mapper Detail',
+		u'name': u'__common__',
 		'parent': u'Opportunity-Quotation',
 		'parentfield': u'field_mapper_details',
 		'parenttype': u'DocType Mapper'
@@ -31,23 +31,23 @@
 
 	# These values are common for all DocType Mapper
 	{
-		'doctype': u'DocType Mapper',
+		u'doctype': u'DocType Mapper',
 		'from_doctype': u'Opportunity',
 		'module': u'Selling',
-		'name': '__common__',
+		u'name': u'__common__',
 		'ref_doc_submitted': 1,
 		'to_doctype': u'Quotation'
 	},
 
 	# DocType Mapper, Opportunity-Quotation
 	{
-		'doctype': u'DocType Mapper',
-		'name': u'Opportunity-Quotation'
+		u'doctype': u'DocType Mapper',
+		u'name': u'Opportunity-Quotation'
 	},
 
 	# Field Mapper Detail
 	{
-		'doctype': u'Field Mapper Detail',
+		u'doctype': u'Field Mapper Detail',
 		'from_field': u'uom',
 		'map': u'Yes',
 		'match_id': 1,
@@ -56,7 +56,7 @@
 
 	# Field Mapper Detail
 	{
-		'doctype': u'Field Mapper Detail',
+		u'doctype': u'Field Mapper Detail',
 		'from_field': u'name',
 		'map': u'Yes',
 		'match_id': 0,
@@ -65,7 +65,16 @@
 
 	# Field Mapper Detail
 	{
-		'doctype': u'Field Mapper Detail',
+		u'doctype': u'Field Mapper Detail',
+		'from_field': u'name',
+		'map': u'Yes',
+		'match_id': 0,
+		'to_field': u'opportunity'
+	},
+
+	# Field Mapper Detail
+	{
+		u'doctype': u'Field Mapper Detail',
 		'from_field': u'parent',
 		'map': u'Yes',
 		'match_id': 1,
@@ -74,7 +83,7 @@
 
 	# Field Mapper Detail
 	{
-		'doctype': u'Field Mapper Detail',
+		u'doctype': u'Field Mapper Detail',
 		'from_field': u'parenttype',
 		'map': u'Yes',
 		'match_id': 1,
@@ -83,7 +92,7 @@
 
 	# Field Mapper Detail
 	{
-		'doctype': u'Field Mapper Detail',
+		u'doctype': u'Field Mapper Detail',
 		'from_field': u'enquiry_from',
 		'map': u'Yes',
 		'match_id': 0,
@@ -92,7 +101,7 @@
 
 	# Field Mapper Detail
 	{
-		'doctype': u'Field Mapper Detail',
+		u'doctype': u'Field Mapper Detail',
 		'from_field': u'enquiry_type',
 		'map': u'Yes',
 		'match_id': 0,
@@ -101,7 +110,7 @@
 
 	# Field Mapper Detail
 	{
-		'doctype': u'Field Mapper Detail',
+		u'doctype': u'Field Mapper Detail',
 		'from_field': u'transaction_date',
 		'map': u'No',
 		'match_id': 0,
@@ -110,7 +119,16 @@
 
 	# Field Mapper Detail
 	{
-		'doctype': u'Field Mapper Detail',
+		u'doctype': u'Field Mapper Detail',
+		'from_field': u'posting_date',
+		'map': u'No',
+		'match_id': 0,
+		'to_field': u'posting_date'
+	},
+
+	# Field Mapper Detail
+	{
+		u'doctype': u'Field Mapper Detail',
 		'from_field': u'status',
 		'map': u'No',
 		'match_id': 0,
@@ -119,7 +137,7 @@
 
 	# Field Mapper Detail
 	{
-		'doctype': u'Field Mapper Detail',
+		u'doctype': u'Field Mapper Detail',
 		'from_field': u'naming_series',
 		'map': u'No',
 		'match_id': 0,
@@ -128,7 +146,7 @@
 
 	# Table Mapper Detail
 	{
-		'doctype': u'Table Mapper Detail',
+		u'doctype': u'Table Mapper Detail',
 		'from_table': u'Opportunity',
 		'match_id': 0,
 		'to_table': u'Quotation'
@@ -136,11 +154,11 @@
 
 	# Table Mapper Detail
 	{
-		'doctype': u'Table Mapper Detail',
+		u'doctype': u'Table Mapper Detail',
 		'from_field': u'enq_details',
 		'from_table': u'Opportunity Item',
 		'match_id': 1,
-		'to_field': u'quotation_details',
+		'to_field': u'quotation_items',
 		'to_table': u'Quotation Item'
 	}
 ]

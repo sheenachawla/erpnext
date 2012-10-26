@@ -129,7 +129,6 @@ class DocType:
 		values = [{
 				'item_code'					: row[0],
 				'warehouse'					: row[1],
-				'transaction_date'	 		: nowdate(),
 				'posting_date'				: self.doc.reconciliation_date,
 				'posting_time'			 	: self.doc.reconciliation_time,
 				'voucher_type'			 	: self.doc.doctype,

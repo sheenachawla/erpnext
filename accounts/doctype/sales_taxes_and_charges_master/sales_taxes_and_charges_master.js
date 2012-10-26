@@ -28,19 +28,19 @@ cur_frm.pformat.net_total = function(doc) {
 	return '';
 }
 
-cur_frm.pformat.grand_total_export = function(doc) {
+cur_frm.pformat.grand_total_print = function(doc) {
 	return '';
 }
 
-cur_frm.pformat.rounded_total_export = function(doc) {
+cur_frm.pformat.rounded_total_print = function(doc) {
 	return '';
 }
 
-cur_frm.pformat.in_words_export = function(doc) {
+cur_frm.pformat.rounded_total_in_words_print = function(doc) {
 	return '';
 }
 
-cur_frm.pformat.other_charges= function(doc){
+cur_frm.pformat.taxes_and_charges= function(doc){
   //function to make row of table
 	var make_row = function(title,val,bold){
 		var bstart = '<b>'; var bend = '</b>';
@@ -51,7 +51,7 @@ cur_frm.pformat.other_charges= function(doc){
 	}
 
 	function convert_rate(val){
-		var new_val = flt(val)/flt(doc.conversion_rate);
+		var new_val = flt(val)/flt(doc.exchange_rate);
 		return new_val;
 	}
 	out ='';
@@ -64,7 +64,7 @@ cur_frm.pformat.other_charges= function(doc){
 			}
 		}
 
-		var cl = getchildren('Sales Taxes and Charges',doc.name,'other_charges');
+		var cl = getchildren('Sales Taxes and Charges',doc.name,'taxes_and_charges');
 
 		// outer table  
 		var out='<div><table class="noborder" style="width:100%"><tr><td style="width: 60%"></td><td>';
@@ -85,19 +85,19 @@ cur_frm.pformat.other_charges= function(doc){
 		}
 
 		// grand total
-		if(!print_hide_dict['grand_total_export']) {
-			out += make_row('Grand Total',fmt_money(doc.grand_total_export),1);
+		if(!print_hide_dict['grand_total_print']) {
+			out += make_row('Grand Total',fmt_money(doc.grand_total_print),1);
 		}
 		
-		if(!print_hide_dict['rounded_total_export']) {
-			out += make_row('Rounded Total',fmt_money(doc.rounded_total_export),1);
+		if(!print_hide_dict['rounded_total_print']) {
+			out += make_row('Rounded Total',fmt_money(doc.rounded_total_print),1);
 		}
 
-		if(doc.in_words_export && !print_hide_dict['in_words_export']){
+		if(doc.rounded_total_in_words_print && !print_hide_dict['rounded_total_in_words_print']){
 			out +='</table></td></tr>';
 			out += '<tr><td colspan = "2">';
 			out += '<table><tr><td style="width:25%;"><b>In Words</b></td>'
-			out+= '<td style="width:50%;">'+doc.in_words_export+'</td></tr>'
+			out+= '<td style="width:50%;">'+doc.rounded_total_in_words_print+'</td></tr>'
 		}
 		out +='</table></td></tr></table></div>';   
 	}
@@ -111,7 +111,7 @@ cur_frm.cscript.charge_type = function(doc, cdt, cdn) {
     d.charge_type = '';
   }
   validated = false;
-  refresh_field('charge_type',d.name,'other_charges');
+  refresh_field('charge_type',d.name,'taxes_and_charges');
   cur_frm.cscript.row_id(doc, cdt, cdn);
   cur_frm.cscript.rate(doc, cdt, cdn);
   cur_frm.cscript.tax_amount(doc, cdt, cdn);
@@ -134,16 +134,16 @@ cur_frm.cscript.row_id = function(doc, cdt, cdn) {
     }
   }
   validated = false;
-  refresh_field('row_id',d.name,'other_charges');
+  refresh_field('row_id',d.name,'taxes_and_charges');
 }
 
 /*---------------------- Get rate if account_head has account_type as TAX or CHARGEABLE-------------------------------------*/
 
-cur_frm.fields_dict['other_charges'].grid.get_field("account_head").get_query = function(doc,cdt,cdn) {
+cur_frm.fields_dict['taxes_and_charges'].grid.get_field("account_head").get_query = function(doc,cdt,cdn) {
   return 'SELECT tabAccount.name FROM tabAccount WHERE tabAccount.group_or_ledger="Ledger" AND tabAccount.docstatus != 2 AND tabAccount.account_type in ("Tax", "Chargeable", "Income Account") AND tabAccount.company = "'+doc.company+'" AND  tabAccount.name LIKE "%s"'
 }
 
-cur_frm.fields_dict['other_charges'].grid.get_field("cost_center_other_charges").get_query = function(doc) {
+cur_frm.fields_dict['taxes_and_charges'].grid.get_field("cost_center").get_query = function(doc) {
 	return 'SELECT `tabCost Center`.`name` FROM `tabCost Center` WHERE `tabCost Center`.`company_name` = "' +doc.company+'" AND `tabCost Center`.%(key)s LIKE "%s" AND `tabCost Center`.`group_or_ledger` = "Ledger" AND `tabCost Center`.`docstatus`!= 2 ORDER BY	`tabCost Center`.`name` ASC LIMIT 50';
 }
 
@@ -157,9 +157,9 @@ cur_frm.cscript.account_head = function(doc, cdt, cdn) {
   }
   else if(d.account_head && d.charge_type) {
     arg = "{'charge_type' : '" + d.charge_type +"', 'account_head' : '" + d.account_head + "'}";
-    get_server_fields('get_rate', arg, 'other_charges', doc, cdt, cdn, 1);
+    get_server_fields('get_rate', arg, 'taxes_and_charges', doc, cdt, cdn, 1);
   }
-  refresh_field('account_head',d.name,'other_charges');
+  refresh_field('account_head',d.name,'taxes_and_charges');
 }
 
 cur_frm.cscript.rate = function(doc, cdt, cdn) {
@@ -169,7 +169,7 @@ cur_frm.cscript.rate = function(doc, cdt, cdn) {
     d.rate = '';
   }
   validated = false;
-  refresh_field('rate',d.name,'other_charges');
+  refresh_field('rate',d.name,'taxes_and_charges');
 }
 
 cur_frm.cscript.tax_amount = function(doc, cdt, cdn) {
@@ -183,5 +183,5 @@ cur_frm.cscript.tax_amount = function(doc, cdt, cdn) {
     d.tax_amount = '';
   }
   validated = false;
-  refresh_field('tax_amount',d.name,'other_charges');
+  refresh_field('tax_amount',d.name,'taxes_and_charges');
 }

@@ -455,7 +455,7 @@ def send_notification(new_rv):
 				</tr>
 		'''
 	for d in getlist(new_rv.doclist, 'entries'):
-		tbl += '<tr><td>' + d.item_code +'</td><td>' + d.description+'</td><td>' + cstr(d.qty) +'</td><td>' + cstr(d.basic_rate) +'</td><td>' + cstr(d.amount) +'</td></tr>'
+		tbl += '<tr><td>' + d.item_code +'</td><td>' + d.description+'</td><td>' + cstr(d.qty) +'</td><td>' + cstr(d.rate) +'</td><td>' + cstr(d.amount) +'</td></tr>'
 	tbl += '</table>'
 
 	totals =''' <table cellspacing= "5" cellpadding="5"  width = "100%%">
@@ -478,7 +478,7 @@ def send_notification(new_rv):
 					<tr><td>Terms and Conditions:</td></tr>
 					<tr><td>%s</td></tr>
 				</table>
-			''' % (new_rv.doc.net_total, new_rv.doc.other_charges_total,new_rv.doc.grand_total, new_rv.doc.in_words,new_rv.doc.terms)
+			''' % (new_rv.doc.net_total, new_rv.doc.taxes_and_charges_total,new_rv.doc.grand_total, new_rv.doc.in_words,new_rv.doc.terms)
 
 
 	msg = hd + tbl + totals

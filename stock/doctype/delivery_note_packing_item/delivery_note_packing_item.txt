@@ -3,20 +3,20 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-06-11 12:10:10',
-		'docstatus': 0,
-		'modified': '2012-07-10 12:05:31',
-		'modified_by': u'Administrator',
-		'owner': u'Administrator'
+		u'creation': '2012-07-12 22:19:57',
+		u'docstatus': 0,
+		u'modified': '2012-10-19 13:33:39',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
 	},
 
 	# These values are common for all DocType
 	{
 		'colour': u'White:FFF',
-		'doctype': 'DocType',
+		u'doctype': u'DocType',
 		'istable': 1,
 		'module': u'Stock',
-		'name': '__common__',
+		u'name': u'__common__',
 		'section_style': u'Tray',
 		'server_code_error': u' ',
 		'show_in_menu': 0,
@@ -25,8 +25,8 @@
 
 	# These values are common for all DocField
 	{
-		'doctype': u'DocField',
-		'name': '__common__',
+		u'doctype': u'DocField',
+		u'name': u'__common__',
 		'parent': u'Delivery Note Packing Item',
 		'parentfield': u'fields',
 		'parenttype': u'DocType'
@@ -34,13 +34,13 @@
 
 	# DocType, Delivery Note Packing Item
 	{
-		'doctype': 'DocType',
-		'name': u'Delivery Note Packing Item'
+		u'doctype': u'DocType',
+		u'name': u'Delivery Note Packing Item'
 	},
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'parent_item',
 		'fieldtype': u'Link',
 		'label': u'Parent Item',
@@ -52,33 +52,7 @@
 
 	# DocField
 	{
-		'colour': u'White:FFF',
-		'doctype': u'DocField',
-		'fieldname': u'item_code',
-		'fieldtype': u'Link',
-		'in_filter': 1,
-		'label': u'Item Code',
-		'oldfieldname': u'item_code',
-		'oldfieldtype': u'Link',
-		'options': u'Item',
-		'permlevel': 1
-	},
-
-	# DocField
-	{
-		'doctype': u'DocField',
-		'fieldname': u'item_name',
-		'fieldtype': u'Data',
-		'in_filter': 1,
-		'label': u'Item Name',
-		'oldfieldname': u'item_name',
-		'oldfieldtype': u'Data',
-		'permlevel': 1
-	},
-
-	# DocField
-	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'parent_detail_docname',
 		'fieldtype': u'Data',
 		'hidden': 1,
@@ -92,7 +66,33 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		'colour': u'White:FFF',
+		u'doctype': u'DocField',
+		'fieldname': u'item_code',
+		'fieldtype': u'Link',
+		'in_filter': 1,
+		'label': u'Item Code',
+		'oldfieldname': u'item_code',
+		'oldfieldtype': u'Link',
+		'options': u'Item',
+		'permlevel': 1
+	},
+
+	# DocField
+	{
+		u'doctype': u'DocField',
+		'fieldname': u'item_name',
+		'fieldtype': u'Data',
+		'in_filter': 1,
+		'label': u'Item Name',
+		'oldfieldname': u'item_name',
+		'oldfieldtype': u'Data',
+		'permlevel': 1
+	},
+
+	# DocField
+	{
+		u'doctype': u'DocField',
 		'fieldname': u'description',
 		'fieldtype': u'Text',
 		'label': u'Description',
@@ -104,7 +104,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'warehouse',
 		'fieldtype': u'Link',
 		'label': u'Warehouse',
@@ -116,9 +116,9 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'qty',
-		'fieldtype': u'Currency',
+		'fieldtype': u'Float',
 		'label': u'Qty',
 		'oldfieldname': u'qty',
 		'oldfieldtype': u'Currency',
@@ -127,7 +127,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'serial_no',
 		'fieldtype': u'Text',
 		'label': u'Serial No',
@@ -136,7 +136,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'batch_no',
 		'fieldtype': u'Data',
 		'label': u'Batch No',
@@ -145,9 +145,9 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'actual_qty',
-		'fieldtype': u'Currency',
+		'fieldtype': u'Float',
 		'label': u'Actual Qty',
 		'no_copy': 1,
 		'oldfieldname': u'actual_qty',
@@ -157,9 +157,9 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'projected_qty',
-		'fieldtype': u'Currency',
+		'fieldtype': u'Float',
 		'label': u'Projected Qty',
 		'no_copy': 1,
 		'oldfieldname': u'projected_qty',
@@ -169,7 +169,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'uom',
 		'fieldtype': u'Link',
 		'label': u'UOM',
@@ -182,22 +182,8 @@
 
 	# DocField
 	{
-		'colour': u'White:FFF',
-		'doctype': u'DocField',
-		'fieldname': u'prevdoc_doctype',
-		'fieldtype': u'Data',
-		'hidden': 1,
-		'label': u'Prevdoc DocType',
-		'oldfieldname': u'prevdoc_doctype',
-		'oldfieldtype': u'Data',
-		'permlevel': 1,
-		'print_hide': 1
-	},
-
-	# DocField
-	{
 		'allow_on_submit': 1,
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'page_break',
 		'fieldtype': u'Check',
 		'label': u'Page Break',

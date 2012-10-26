@@ -19,7 +19,7 @@ report.customize_filters = function() {
 
   //Add filter
   this.add_filter({fieldname:'based_on', label:'Based On', fieldtype:'Select', options:'Sales Order'+NEWLINE+'Delivery Note'+NEWLINE+'Sales Invoice', report_default:'Sales Order', ignore : 1,parent:'Sales Person', single_select :1, in_first_page:1});
-  this.add_filter({fieldname:'transaction_date', label:'Date', fieldtype:'Date', options:'', ignore : 1,parent:'Sales Person', in_first_page:1});
+  this.add_filter({fieldname:'posting_date', label:'Date', fieldtype:'Date', options:'', ignore : 1,parent:'Sales Person', in_first_page:1});
   this.add_filter({fieldname:'voucher_id', label:'Voucher Id', fieldtype:'Data', options:'', ignore : 1,parent:'Sales Person', in_first_page:1});
   this.add_filter({fieldname:'territory', label:'Territory', fieldtype:'Link', options:'Territory', ignore : 1,parent:'Sales Person', in_first_page:1});
   this.add_filter({fieldname:'sales_person', label:'Sales Person', fieldtype:'Link', options:'Sales Person', ignore : 1,parent:'Sales Person', in_first_page:1});
@@ -38,11 +38,7 @@ report.get_query = function() {
   terr = this.get_filter('Sales Person', 'Territory').get_value();
   sp = this.get_filter('Sales Person', 'Sales Person').get_value();
 
-  date_fld = 'transaction_date';
-  if(based_on == 'Sales Invoice') {
-    based_on = 'Sales Invoice';
-    date_fld = 'posting_date';
-  }
+  date_fld = 'posting_date';
 
   sp_cond = '';
   if (from_date) sp_cond += ' AND t1.' + date_fld + '>= "' + from_date + '"';

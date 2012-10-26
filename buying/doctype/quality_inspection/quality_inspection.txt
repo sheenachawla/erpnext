@@ -3,11 +3,11 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-03-27 14:35:51',
-		'docstatus': 0,
-		'modified': '2012-03-27 14:45:50',
-		'modified_by': u'Administrator',
-		'owner': u'Administrator'
+		u'creation': '2012-10-18 15:07:19',
+		u'docstatus': 0,
+		u'modified': '2012-10-22 13:55:35',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
 	},
 
 	# These values are common for all DocType
@@ -16,22 +16,24 @@
 		'autoname': u'QAI/.######',
 		'colour': u'White:FFF',
 		'default_print_format': u'Standard',
-		'doctype': 'DocType',
+		'description': u'Record of quality checks on incoming goods.',
+		u'doctype': u'DocType',
+		'document_type': u'Transaction',
 		'is_submittable': 1,
 		'module': u'Buying',
-		'name': '__common__',
+		u'name': u'__common__',
 		'print_outline': u'Yes',
 		'search_fields': u'item_code, report_date, purchase_receipt_no, delivery_note_no',
 		'section_style': u'Simple',
 		'server_code_error': u' ',
 		'show_in_menu': 0,
-		'version': 38
+		'version': 40
 	},
 
 	# These values are common for all DocField
 	{
-		'doctype': u'DocField',
-		'name': '__common__',
+		u'doctype': u'DocField',
+		u'name': u'__common__',
 		'parent': u'Quality Inspection',
 		'parentfield': u'fields',
 		'parenttype': u'DocType'
@@ -39,8 +41,8 @@
 
 	# These values are common for all DocPerm
 	{
-		'doctype': u'DocPerm',
-		'name': '__common__',
+		u'doctype': u'DocPerm',
+		u'name': u'__common__',
 		'parent': u'Quality Inspection',
 		'parentfield': u'permissions',
 		'parenttype': u'DocType',
@@ -50,30 +52,13 @@
 
 	# DocType, Quality Inspection
 	{
-		'doctype': 'DocType',
-		'name': u'Quality Inspection'
-	},
-
-	# DocPerm
-	{
-		'doctype': u'DocPerm',
-		'permlevel': 1
-	},
-
-	# DocPerm
-	{
-		'amend': 1,
-		'cancel': 1,
-		'create': 1,
-		'doctype': u'DocPerm',
-		'permlevel': 0,
-		'submit': 1,
-		'write': 1
+		u'doctype': u'DocType',
+		u'name': u'Quality Inspection'
 	},
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'qa_inspection',
 		'fieldtype': u'Section Break',
 		'label': u'QA Inspection',
@@ -84,7 +69,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'column_break0',
 		'fieldtype': u'Column Break',
 		'oldfieldtype': u'Column Break',
@@ -94,7 +79,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'naming_series',
 		'fieldtype': u'Select',
 		'label': u'Naming Series',
@@ -107,7 +92,7 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'inspection_type',
 		'fieldtype': u'Select',
 		'in_filter': 1,
@@ -122,7 +107,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'report_date',
 		'fieldtype': u'Date',
 		'in_filter': 1,
@@ -137,7 +122,7 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'item_code',
 		'fieldtype': u'Link',
 		'hidden': 0,
@@ -154,7 +139,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'sample_size',
 		'fieldtype': u'Currency',
 		'in_filter': 0,
@@ -168,7 +153,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'description',
 		'fieldtype': u'Small Text',
 		'in_filter': 1,
@@ -182,7 +167,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'column_break1',
 		'fieldtype': u'Column Break',
 		'oldfieldtype': u'Column Break',
@@ -192,7 +177,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'item_serial_no',
 		'fieldtype': u'Link',
 		'hidden': 0,
@@ -206,7 +191,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'batch_no',
 		'fieldtype': u'Link',
 		'label': u'Batch No',
@@ -219,7 +204,7 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'purchase_receipt_no',
 		'fieldtype': u'Link',
 		'hidden': 0,
@@ -236,7 +221,7 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'delivery_note_no',
 		'fieldtype': u'Link',
 		'hidden': 0,
@@ -252,7 +237,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'inspected_by',
 		'fieldtype': u'Data',
 		'label': u'Inspected By',
@@ -264,7 +249,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'remarks',
 		'fieldtype': u'Text',
 		'label': u'Remarks',
@@ -276,7 +261,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'verified_by',
 		'fieldtype': u'Data',
 		'label': u'Verified By',
@@ -287,7 +272,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'amended_from',
 		'fieldtype': u'Data',
 		'label': u'Amended From',
@@ -300,7 +285,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'amendment_date',
 		'fieldtype': u'Date',
 		'label': u'Amendment Date',
@@ -313,7 +298,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'specification_details',
 		'fieldtype': u'Section Break',
 		'label': u'Specification Details',
@@ -324,7 +309,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'get_specification_details',
 		'fieldtype': u'Button',
 		'label': u'Get Specification Details',
@@ -334,7 +319,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'qa_specification_details',
 		'fieldtype': u'Table',
 		'label': u'Quality Inspection Readings',
@@ -342,5 +327,22 @@
 		'oldfieldtype': u'Table',
 		'options': u'Quality Inspection Reading',
 		'permlevel': 0
+	},
+
+	# DocPerm
+	{
+		u'doctype': u'DocPerm',
+		'permlevel': 1
+	},
+
+	# DocPerm
+	{
+		'amend': 1,
+		'cancel': 1,
+		'create': 1,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'submit': 1,
+		'write': 1
 	}
 ]

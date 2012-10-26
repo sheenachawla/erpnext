@@ -3,11 +3,11 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-05-15 12:14:52',
-		'docstatus': 0,
-		'modified': '2012-05-31 12:42:38',
-		'modified_by': u'Administrator',
-		'owner': u'Administrator'
+		u'creation': '2012-10-18 15:07:26',
+		u'docstatus': 0,
+		u'modified': '2012-10-22 17:08:14',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
 	},
 
 	# These values are common for all DocType
@@ -15,23 +15,24 @@
 		'_last_update': u'1324284087',
 		'colour': u'White:FFF',
 		'default_print_format': u'Standard',
-		'doctype': 'DocType',
+		'description': u'Specific opportunity to do business with a Lead or Customer.',
+		u'doctype': u'DocType',
 		'document_type': u'Transaction',
 		'is_submittable': 1,
 		'module': u'Selling',
 		'name': '__common__',
-		'search_fields': u'status,transaction_date,customer,lead,enquiry_type,territory,company',
+		'search_fields': u'status,posting_date,customer,lead,enquiry_type,territory,company',
 		'section_style': u'Tabbed',
 		'server_code_error': u' ',
 		'show_in_menu': 0,
-		'subject': u'To %(customer_name)s%(lead_name)s on %(transaction_date)s',
+		'subject': u'To %(customer_name)s%(lead_name)s on %(posting_date)s',
 		'version': 1
 	},
 
 	# These values are common for all DocField
 	{
-		'doctype': u'DocField',
-		'name': '__common__',
+		u'doctype': u'DocField',
+		u'name': u'__common__',
 		'parent': u'Opportunity',
 		'parentfield': u'fields',
 		'parenttype': u'DocType'
@@ -39,8 +40,8 @@
 
 	# These values are common for all DocPerm
 	{
-		'doctype': u'DocPerm',
-		'name': '__common__',
+		u'doctype': u'DocPerm',
+		u'name': u'__common__',
 		'parent': u'Opportunity',
 		'parentfield': u'permissions',
 		'parenttype': u'DocType',
@@ -49,82 +50,15 @@
 
 	# DocType, Opportunity
 	{
-		'doctype': 'DocType',
-		'name': u'Opportunity'
-	},
-
-	# DocPerm
-	{
-		'amend': 0,
-		'cancel': 0,
-		'create': 0,
-		'doctype': u'DocPerm',
-		'permlevel': 1,
-		'role': u'Sales Manager',
-		'submit': 0,
-		'write': 0
-	},
-
-	# DocPerm
-	{
-		'amend': 1,
-		'cancel': 1,
-		'create': 1,
-		'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'System Manager',
-		'submit': 1,
-		'write': 1
-	},
-
-	# DocPerm
-	{
-		'doctype': u'DocPerm',
-		'permlevel': 1,
-		'role': u'System Manager'
-	},
-
-	# DocPerm
-	{
-		'amend': 1,
-		'cancel': 1,
-		'create': 1,
-		'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'Sales User',
-		'submit': 1,
-		'write': 1
-	},
-
-	# DocPerm
-	{
-		'amend': 0,
-		'cancel': 0,
-		'create': 0,
-		'doctype': u'DocPerm',
-		'permlevel': 1,
-		'role': u'Sales User',
-		'submit': 0,
-		'write': 0
-	},
-
-	# DocPerm
-	{
-		'amend': 1,
-		'cancel': 1,
-		'create': 1,
-		'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'Sales Manager',
-		'submit': 1,
-		'write': 1
+		u'doctype': u'DocType',
+		u'name': u'Opportunity'
 	},
 
 	# DocField
 	{
 		'colour': u'White:FFF',
 		'description': u'Enter customer enquiry for which you might raise a quotation in future',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'basic_info',
 		'fieldtype': u'Section Break',
 		'label': u'Basic Info',
@@ -136,7 +70,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'To manage multiple series please go to Setup > Manage Series',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'naming_series',
 		'fieldtype': u'Select',
 		'label': u'Naming Series',
@@ -151,7 +85,7 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'enquiry_from',
 		'fieldtype': u'Select',
 		'label': u'Opportunity From',
@@ -168,7 +102,7 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'customer',
 		'fieldtype': u'Link',
 		'hidden': 0,
@@ -186,7 +120,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'lead',
 		'fieldtype': u'Link',
 		'hidden': 0,
@@ -202,7 +136,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'column_break0',
 		'fieldtype': u'Column Break',
 		'oldfieldtype': u'Column Break',
@@ -214,7 +148,7 @@
 	{
 		'colour': u'White:FFF',
 		'default': u'Draft',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'status',
 		'fieldtype': u'Select',
 		'label': u'Status',
@@ -229,7 +163,7 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'enquiry_type',
 		'fieldtype': u'Select',
 		'label': u'Opportunity Type',
@@ -243,7 +177,7 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'items',
 		'fieldtype': u'Section Break',
 		'label': u'Items',
@@ -256,7 +190,7 @@
 		'colour': u'White:FFF',
 		'description': u"Items which do not exist in Item master can also be entered on customer's request",
 		'doctype': u'DocField',
-		'fieldname': u'enquiry_details',
+		'fieldname': u'opportunity_items',
 		'fieldtype': u'Table',
 		'label': u'Opportunity Items',
 		'oldfieldname': u'enquiry_details',
@@ -269,7 +203,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'Keep a track of communication related to this enquiry which will help for future reference.',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'communication_history',
 		'fieldtype': u'Section Break',
 		'label': u'Communication History',
@@ -281,7 +215,7 @@
 	{
 		'allow_on_submit': 1,
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'communication_html',
 		'fieldtype': u'HTML',
 		'label': u'Communication HTML',
@@ -292,7 +226,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'contact_info',
 		'fieldtype': u'Section Break',
 		'label': u'Contact Info',
@@ -301,7 +235,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'contact_person',
 		'fieldtype': u'Link',
 		'in_filter': 1,
@@ -314,7 +248,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'customer_address',
 		'fieldtype': u'Link',
 		'in_filter': 1,
@@ -327,7 +261,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'customer_name',
 		'fieldtype': u'Data',
 		'label': u'Customer Name',
@@ -337,7 +271,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'address_display',
 		'fieldtype': u'Small Text',
 		'hidden': 0,
@@ -349,7 +283,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'column_break3',
 		'fieldtype': u'Column Break',
 		'permlevel': 0
@@ -357,7 +291,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'contact_display',
 		'fieldtype': u'Small Text',
 		'label': u'Contact',
@@ -366,7 +300,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'contact_email',
 		'fieldtype': u'Text',
 		'label': u'Contact Email',
@@ -375,7 +309,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'contact_mobile',
 		'fieldtype': u'Text',
 		'label': u'Contact Mobile No',
@@ -384,7 +318,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'lead_name',
 		'fieldtype': u'Data',
 		'hidden': 0,
@@ -399,7 +333,7 @@
 		'colour': u'White:FFF',
 		'depends_on': u'eval:doc.enquiry_from=="Customer"',
 		'description': u'<a href="javascript:cur_frm.cscript.CGHelp();">To Manage Customer Groups, click here</a>',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'customer_group',
 		'fieldtype': u'Link',
 		'hidden': 0,
@@ -419,7 +353,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'<a href="javascript:cur_frm.cscript.TerritoryHelp();">To Manage Territory, click here</a>',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'territory',
 		'fieldtype': u'Link',
 		'in_filter': 1,
@@ -436,7 +370,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'Filing in Additional Information about the Opportunity will help you analyze your data better.',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'more_info',
 		'fieldtype': u'Section Break',
 		'label': u'More Info',
@@ -446,7 +380,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'column_break1',
 		'fieldtype': u'Column Break',
 		'oldfieldtype': u'Column Break',
@@ -459,7 +393,7 @@
 		'default': u'Today',
 		'description': u'The date at which current entry is made in system.',
 		'doctype': u'DocField',
-		'fieldname': u'transaction_date',
+		'fieldname': u'posting_date',
 		'fieldtype': u'Date',
 		'label': u'Opportunity Date',
 		'oldfieldname': u'transaction_date',
@@ -471,7 +405,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'fiscal_year',
 		'fieldtype': u'Select',
 		'in_filter': 1,
@@ -487,7 +421,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'source',
 		'fieldtype': u'Select',
 		'label': u'Source',
@@ -501,7 +435,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'Enter name of campaign if source of enquiry is campaign',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'campaign',
 		'fieldtype': u'Link',
 		'label': u'Campaign',
@@ -515,7 +449,7 @@
 	{
 		'colour': u'White:FFF',
 		'depends_on': u'eval:!doc.__islocal',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'order_lost_reason',
 		'fieldtype': u'Small Text',
 		'label': u'Quotation Lost Reason',
@@ -528,7 +462,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'company',
 		'fieldtype': u'Link',
 		'in_filter': 1,
@@ -544,7 +478,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'column_break2',
 		'fieldtype': u'Column Break',
 		'oldfieldtype': u'Column Break',
@@ -556,7 +490,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'Your sales person who will contact the customer in future',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'contact_by',
 		'fieldtype': u'Link',
 		'in_filter': 1,
@@ -572,7 +506,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'Your sales person will get a reminder on this date to contact the customer',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'contact_date',
 		'fieldtype': u'Date',
 		'label': u'Next Contact Date',
@@ -587,7 +521,7 @@
 		'colour': u'White:FFF',
 		'depends_on': u'eval:!doc.__islocal',
 		'description': u'Date on which the lead was last contacted',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'last_contact_date',
 		'fieldtype': u'Date',
 		'label': u'Last Contact Date',
@@ -600,7 +534,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'to_discuss',
 		'fieldtype': u'Small Text',
 		'label': u'To Discuss',
@@ -612,7 +546,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'amended_from',
 		'fieldtype': u'Data',
 		'label': u'Amended From',
@@ -626,7 +560,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'amendment_date',
 		'fieldtype': u'Date',
 		'label': u'Amendment Date',
@@ -636,5 +570,72 @@
 		'permlevel': 1,
 		'print_hide': 1,
 		'width': u'150px'
+	},
+
+	# DocPerm
+	{
+		'amend': 0,
+		'cancel': 0,
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'permlevel': 1,
+		'role': u'Sales Manager',
+		'submit': 0,
+		'write': 0
+	},
+
+	# DocPerm
+	{
+		'amend': 1,
+		'cancel': 1,
+		'create': 1,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'System Manager',
+		'submit': 1,
+		'write': 1
+	},
+
+	# DocPerm
+	{
+		u'doctype': u'DocPerm',
+		'permlevel': 1,
+		'role': u'System Manager'
+	},
+
+	# DocPerm
+	{
+		'amend': 1,
+		'cancel': 1,
+		'create': 1,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'Sales User',
+		'submit': 1,
+		'write': 1
+	},
+
+	# DocPerm
+	{
+		'amend': 0,
+		'cancel': 0,
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'permlevel': 1,
+		'role': u'Sales User',
+		'submit': 0,
+		'write': 0
+	},
+
+	# DocPerm
+	{
+		'amend': 1,
+		'cancel': 1,
+		'create': 1,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'Sales Manager',
+		'submit': 1,
+		'write': 1
 	}
 ]

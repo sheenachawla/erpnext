@@ -100,7 +100,7 @@ class DocType:
 				
 				pr_oc_row = sql("select name from `tabPurchase Taxes and Charges` where parent = %s and category = 'Valuation' and add_deduct_tax = 'Add' and charge_type = 'Actual' and account_head = %s",(pr, lc.account_head))
 				if not pr_oc_row:	# add if not exists
-					ch = addchild(pr_obj.doc, 'purchase_tax_details', 'Purchase Taxes and Charges', 1)
+					ch = addchild(pr_obj.doc, 'taxes_and_charges', 'Purchase Taxes and Charges', 1)
 					ch.category = 'Valuation'
 					ch.add_deduct_tax = 'Add'
 					ch.charge_type = 'Actual'
@@ -116,9 +116,9 @@ class DocType:
 					sql("update `tabPurchase Taxes and Charges` set rate = %s, tax_amount = %s where name = %s and parent = %s ", (amt, amt, pr_oc_row[0][0], pr))
 		
 		
-	def reset_other_charges(self, pr_obj):
+	def reset_taxes_and_charges(self, pr_obj):
 		""" Reset all calculated values to zero"""
-		for t in getlist(pr_obj.doclist, 'purchase_tax_details'):
+		for t in getlist(pr_obj.doclist, 'taxes_and_charges'):
 			t.total_tax_amount = 0;
 			t.total_amount = 0;
 			t.tax_amount = 0;
@@ -132,11 +132,11 @@ class DocType:
 		for pr in self.selected_pr:
 			obj = get_obj('Purchase Receipt', pr, with_children = 1)
 			total = 0
-			self.reset_other_charges(obj)
+			self.reset_taxes_and_charges(obj)
 
 			for prd in getlist(obj.doclist, 'purchase_receipt_details'):
 				prev_total, item_tax = flt(prd.amount), 0
-				total += flt(prd.qty) * flt(prd.purchase_rate)
+				total += flt(prd.qty) * flt(prd.rate)
 			
 				try:
 					item_tax_rate = prd.item_tax_rate and json.loads(prd.item_tax_rate) or {}
@@ -144,7 +144,7 @@ class DocType:
 					item_tax_rate = prd.item_tax_rate and eval(prd.item_tax_rate) or {}
 
 				
-				ocd = getlist(obj.doclist, 'purchase_tax_details')
+				ocd = getlist(obj.doclist, 'taxes_and_charges')
 				# calculate tax for other charges
 				for oc in range(len(ocd)):
 					# Get rate : consider if diff for this item
@@ -222,7 +222,7 @@ class DocType:
 			
 			for d in getlist(pr_obj.doclist, 'purchase_receipt_details'):
 				if flt(d.qty):
-					d.valuation_rate = (flt(d.purchase_rate) + (flt(d.rm_supp_cost)/flt(d.qty)) + (flt(d.item_tax_amount)/flt(d.qty))) / flt(d.conversion_factor)
+					d.valuation_rate = (flt(d.rate) + (flt(d.rm_supp_cost)/flt(d.qty)) + (flt(d.item_tax_amount)/flt(d.qty))) / flt(d.conversion_factor)
 					d.save()
 					self.update_serial_no(d.serial_no, d.valuation_rate)
 				sql("update `tabStock Ledger Entry` set incoming_rate = '%s' where voucher_detail_no = '%s'"%(flt(d.valuation_rate), d.name))

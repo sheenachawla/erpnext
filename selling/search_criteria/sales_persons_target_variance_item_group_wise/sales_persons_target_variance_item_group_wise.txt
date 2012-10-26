@@ -3,21 +3,21 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-04-03 12:49:52',
-		'docstatus': 0,
-		'modified': '2012-04-03 12:49:52',
-		'modified_by': u'Administrator',
-		'owner': u'Administrator'
+		u'creation': '2012-10-24 14:33:56',
+		u'docstatus': 0,
+		u'modified': '2012-10-24 14:33:56',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
 	},
 
 	# These values are common for all Search Criteria
 	{
 		'criteria_name': u'Sales Persons Target Variance (Item Group wise)',
 		'doc_type': u'Target Detail',
-		'doctype': 'Search Criteria',
+		u'doctype': u'Search Criteria',
 		'filters': u"{'Sales Person\x01Country':'','Sales Person\x01State':'','Target Detail\x01Fiscal Year':''}",
 		'module': u'Selling',
-		'name': '__common__',
+		u'name': u'__common__',
 		'page_len': 50,
 		'parent_doc_type': u'Sales Person',
 		'sort_by': u'`tabTarget Detail`.`target_amount`',
@@ -27,7 +27,7 @@
 
 	# Search Criteria, sales_persons_target_variance_item_group_wise
 	{
-		'doctype': 'Search Criteria',
-		'name': u'sales_persons_target_variance_item_group_wise'
+		u'doctype': u'Search Criteria',
+		u'name': u'sales_persons_target_variance_item_group_wise'
 	}
 ]

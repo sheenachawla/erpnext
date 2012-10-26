@@ -75,7 +75,7 @@ class DocType(StockController):
 		return get_obj(dt='Purchase Common').get_bin_details(arg)
 
 	# Pull Purchase Order
-	def get_po_details(self):
+	def get_purchase_order_items(self):
 		self.validate_prev_docname()
 		get_obj('DocType Mapper', 'Purchase Order-Purchase Receipt').dt_map('Purchase Order', 'Purchase Receipt', self.doc.purchase_order_no, self.doc, self.doclist, "[['Purchase Order','Purchase Receipt'],['Purchase Order Item', 'Purchase Receipt Item'],['Purchase Taxes and Charges','Purchase Taxes and Charges']]")
 
@@ -144,7 +144,7 @@ class DocType(StockController):
 		pc_obj = get_obj(dt='Purchase Common')
 		pc_obj.validate_for_items(self)
 		pc_obj.validate_mandatory(self)
-		pc_obj.validate_conversion_rate(self)
+		pc_obj.validate_exchange_rate(self)
 		pc_obj.get_prevdoc_date(self)
 		pc_obj.validate_reference_value(self)
 		# update item valuation rate
@@ -154,8 +154,8 @@ class DocType(StockController):
 		
 		# get total in words
 		dcc = super(DocType, self).get_company_currency(self.doc.company)
-		self.doc.in_words = pc_obj.get_total_in_words(dcc, self.doc.grand_total)
-		self.doc.in_words_import = pc_obj.get_total_in_words(self.doc.currency, self.doc.grand_total_import)
+		self.doc.grand_total_in_words = pc_obj.get_total_in_words(dcc, self.doc.grand_total)
+		self.doc.grand_total_in_words_print = pc_obj.get_total_in_words(self.doc.currency, self.doc.grand_total_print)
 
 	def on_update(self):
 		if self.doc.rejected_warehouse:
@@ -177,16 +177,17 @@ class DocType(StockController):
 		pc_obj = get_obj('Purchase Common')
 		self.values = []
 		for d in getlist(self.doclist, 'purchase_receipt_details'):
-			# Check if is_stock_item == 'Yes'
-			if sql("select is_stock_item from tabItem where name=%s", d.item_code)[0][0]=='Yes':
+			if webnotes.conn.get_value("Item", d.item_code, "is_stock_item") == "Yes":
 				ord_qty = 0
 				pr_qty = flt(d.qty) * flt(d.conversion_factor)
 
-				# Check If Prevdoc Doctype is Purchase Order
 				if cstr(d.prevdoc_doctype) == 'Purchase Order':
 					# get qty and pending_qty of prevdoc
-					curr_ref_qty = pc_obj.get_qty( d.doctype, 'prevdoc_detail_docname', d.prevdoc_detail_docname, 'Purchase Order Item', 'Purchase Order - Purchase Receipt', self.doc.name)
-					max_qty, qty, curr_qty = flt(curr_ref_qty.split('~~~')[1]), flt(curr_ref_qty.split('~~~')[0]), 0
+					curr_ref_qty = pc_obj.get_qty( d.doctype, 'prevdoc_detail_docname',
+					 	d.prevdoc_detail_docname, 'Purchase Order Item', 
+						'Purchase Order - Purchase Receipt', self.doc.name)
+					max_qty, qty, curr_qty = flt(curr_ref_qty.split('~~~')[1]), \
+					 	flt(curr_ref_qty.split('~~~')[0]), 0
 
 					if flt(qty) + flt(pr_qty) > flt(max_qty):
 						curr_qty = (flt(max_qty) - flt(qty)) * flt(d.conversion_factor)
@@ -194,11 +195,18 @@ class DocType(StockController):
 						curr_qty = flt(pr_qty)
 
 					ord_qty = -flt(curr_qty)
-					# update order qty in bin
-					bin = get_obj('Warehouse', d.warehouse).update_bin(0, 0, (is_submit and 1 or -1) * flt(ord_qty), 0, 0, d.item_code, self.doc.posting_date)
+					
+					# update ordered qty in bin
+					args = {
+						"item_code": d.item_code,
+						"posting_date": self.doc.posting_date,
+						"ordered_qty": (is_submit and 1 or -1) * flt(ord_qty)
+					}
+					get_obj("Warehouse", d.warehouse).update_bin(args)
 
 				# UPDATE actual qty to warehouse by pr_qty
 				self.make_sl_entry(d, d.warehouse, flt(pr_qty), d.valuation_rate, is_submit)
+				
 				# UPDATE actual to rejected warehouse by rejected qty
 				if flt(d.rejected_qty) > 0:
 					self.make_sl_entry(d, self.doc.rejected_warehouse, flt(d.rejected_qty) * flt(d.conversion_factor), d.valuation_rate, is_submit, rejected = 1)
@@ -219,7 +227,7 @@ class DocType(StockController):
 		self.values.append({
 			'item_code'					: d.fields.has_key('item_code') and d.item_code or d.rm_item_code,
 			'warehouse'					: wh,
-			'transaction_date'			: getdate(self.doc.modified).strftime('%Y-%m-%d'),
+			'posting_date'			: getdate(self.doc.modified).strftime('%Y-%m-%d'),
 			'posting_date'				: self.doc.posting_date,
 			'posting_time'				: self.doc.posting_time,
 			'voucher_type'				: 'Purchase Receipt',

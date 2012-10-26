@@ -22,7 +22,7 @@ else:
 
 cols = [
 	[filter_values.get('based_on'), 'Link','150px', based_on_dt],
-	['Transaction Date', 'Date', '120px', ''], 
+	['Posting Date', 'Date', '120px', ''], 
 	['Customer', 'Link','150px','Customer'], 
 	['Net Total', 'Currency', '80px', ''], 
 	['Tax Account', 'Link','150px','Account'], 

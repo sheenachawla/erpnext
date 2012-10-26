@@ -70,11 +70,11 @@ class DocType(TransactionBase):
 		for d in getlist( obj.doclist, obj.fname):
 			item = sql("select lead_time_days from `tabItem` where name = '%s' and (ifnull(end_of_life,'')='' or end_of_life = '0000-00-00' or end_of_life >	now())" % cstr(d.item_code) , as_dict = 1)
 			ltd = item and cint(item[0]['lead_time_days']) or 0
-			if ltd and obj.doc.transaction_date:
+			if ltd and obj.doc.posting_date:
 				if d.fields.has_key('lead_time_date') or obj.doc.doctype == 'Purchase Request':
-					d.lead_time_date = cstr(add_days( obj.doc.transaction_date, cint(ltd)))
+					d.lead_time_date = cstr(add_days( obj.doc.posting_date, cint(ltd)))
 				if not d.fields.has_key('prevdoc_docname') or (d.fields.has_key('prevdoc_docname') and not d.prevdoc_docname):
-					d.schedule_date =	cstr( add_days( obj.doc.transaction_date, cint(ltd)))
+					d.schedule_date =	cstr( add_days( obj.doc.posting_date, cint(ltd)))
 				
 	# Client Trigger functions
 	#------------------------------------------------------------------------------------------------
@@ -127,7 +127,7 @@ class DocType(TransactionBase):
 			'warehouse': wh,
 			'item_tax_rate': json.dumps(t),
 			'batch_no': '',
-			'discount_rate': 0
+			'discount': 0
 		}
 		
 		# get min_order_qty from item
@@ -140,30 +140,30 @@ class DocType(TransactionBase):
 			ret['projected_qty'] = bin and flt(bin[0]['projected_qty']) or 0
 
 		# get schedule date, lead time date
-		if obj.doc.transaction_date and item and item[0]['lead_time_days']:
-			ret['schedule_date'] =	cstr(add_days(obj.doc.transaction_date, cint(item[0]['lead_time_days'])))
-			ret['lead_time_date'] = cstr(add_days(obj.doc.transaction_date, cint(item[0]['lead_time_days'])))
+		if obj.doc.posting_date and item and item[0]['lead_time_days']:
+			ret['schedule_date'] =	cstr(add_days(obj.doc.posting_date, cint(item[0]['lead_time_days'])))
+			ret['lead_time_date'] = cstr(add_days(obj.doc.posting_date, cint(item[0]['lead_time_days'])))
 		
 		# get last purchase rate as per stock uom and default currency for following list of doctypes
 		if obj.doc.doctype in ['Purchase Order', 'Purchase Receipt']:
 			last_purchase_details, last_purchase_date = self.get_last_purchase_details(arg['item_code'], obj.doc.name)
 
 			if last_purchase_details:
-				# updates ret with purchase_ref_rate, discount_rate, purchase_rate
-				conversion_rate = flt(obj.doc.fields.get('conversion_rate'))
+				# updates ret with ref_rate, discount, rate
+				exchange_rate = flt(obj.doc.fields.get('exchange_rate'))
 				ret.update(last_purchase_details)
 				ret.update({
-					'import_ref_rate': flt(last_purchase_details['purchase_ref_rate']) / conversion_rate,
-					'import_rate': flt(last_purchase_details['purchase_rate']) / conversion_rate,
+					'print_ref_rate': flt(last_purchase_details['ref_rate']) / exchange_rate,
+					'print_rate': flt(last_purchase_details['rate']) / exchange_rate,
 				})
 			else:
 				# set these values as blank in the form
 				ret.update({
-					'purchase_ref_rate': 0,
-					'discount_rate': 0,
-					'purchase_rate': 0,
-					'import_ref_rate': 0,
-					'import_rate': 0,
+					'ref_rate': 0,
+					'discount': 0,
+					'rate': 0,
+					'print_ref_rate': 0,
+					'print_rate': 0,
 				})
 		
 		if obj.doc.doctype == 'Purchase Order':
@@ -198,19 +198,19 @@ class DocType(TransactionBase):
 		
 		last_purchase_details, last_purchase_date = self.get_last_purchase_details(arg['item_code'], arg['doc_name'])
 
-		conversion_rate = flt(arg['conversion_rate'])
-		purchase_ref_rate = last_purchase_details and \
-							(last_purchase_details['purchase_ref_rate'] * conversion_factor) or 0
-		purchase_rate = last_purchase_details and \
-						(last_purchase_details['purchase_rate'] * conversion_factor) or 0
+		exchange_rate = flt(arg['exchange_rate'])
+		ref_rate = last_purchase_details and \
+							(last_purchase_details['ref_rate'] * conversion_factor) or 0
+		rate = last_purchase_details and \
+						(last_purchase_details['rate'] * conversion_factor) or 0
 
 		ret = {
 			'conversion_factor': conversion_factor,
 			'qty': flt(arg['stock_qty']) / conversion_factor,
-			'purchase_ref_rate': purchase_ref_rate,
-			'purchase_rate': purchase_rate,
-			'import_ref_rate': purchase_ref_rate / conversion_rate,
-			'import_rate': purchase_rate / conversion_rate,
+			'ref_rate': ref_rate,
+			'rate': rate,
+			'print_ref_rate': ref_rate / exchange_rate,
+			'print_rate': rate / exchange_rate,
 		}
 		
 		return ret
@@ -222,7 +222,7 @@ class DocType(TransactionBase):
 		"""updates last_purchase_rate in item table for each item"""
 		
 		import webnotes.utils
-		this_purchase_date = webnotes.utils.getdate(obj.doc.fields.get('posting_date') or obj.doc.fields.get('transaction_date'))
+		this_purchase_date = webnotes.utils.getdate(obj.doc.fields.get('posting_date') or obj.doc.fields.get('posting_date'))
 
 		for d in getlist(obj.doclist,obj.fname):
 			# get last purchase details
@@ -231,11 +231,11 @@ class DocType(TransactionBase):
 			# compare last purchase date and this transaction's date
 			last_purchase_rate = None
 			if last_purchase_date > this_purchase_date:
-				last_purchase_rate = last_purchase_details['purchase_rate']
+				last_purchase_rate = last_purchase_details['rate']
 			elif is_submit == 1:
 				# even if this transaction is the latest one, it should be submitted
 				# for it to be considered for latest purchase rate
-				last_purchase_rate = flt(d.purchase_rate) / flt(d.conversion_factor)
+				last_purchase_rate = flt(d.rate) / flt(d.conversion_factor)
 
 			# update last purchsae rate
 			if last_purchase_rate:
@@ -245,27 +245,27 @@ class DocType(TransactionBase):
 	def get_last_purchase_rate(self, obj):
 		"""get last purchase rates for all items"""
 		doc_name = obj.doc.name
-		conversion_rate = flt(obj.doc.fields.get('conversion_rate')) or 1.0
+		exchange_rate = flt(obj.doc.fields.get('exchange_rate')) or 1.0
 		
 		for d in getlist(obj.doclist, obj.fname):
 			if d.item_code:
 				last_purchase_details, last_purchase_date = self.get_last_purchase_details(d.item_code, doc_name)
 
 				if last_purchase_details:
-					d.purchase_ref_rate = last_purchase_details['purchase_ref_rate'] * (flt(d.conversion_factor) or 1.0)
-					d.discount_rate = last_purchase_details['discount_rate']
-					d.purchase_rate = last_purchase_details['purchase_rate'] * (flt(d.conversion_factor) or 1.0)
-					d.import_ref_rate = d.purchase_ref_rate / conversion_rate
-					d.import_rate = d.purchase_rate / conversion_rate
+					d.ref_rate = last_purchase_details['ref_rate'] * (flt(d.conversion_factor) or 1.0)
+					d.discount = last_purchase_details['discount']
+					d.rate = last_purchase_details['rate'] * (flt(d.conversion_factor) or 1.0)
+					d.print_ref_rate = d.ref_rate / exchange_rate
+					d.print_rate = d.rate / exchange_rate
 				else:
 					# if no last purchase found, reset all values to 0
-					d.purchase_ref_rate = d.purchase_rate = d.import_ref_rate = d.import_rate = d.discount_rate = 0
+					d.ref_rate = d.rate = d.print_ref_rate = d.print_rate = d.discount = 0
 					
 					item_last_purchase_rate = webnotes.conn.get_value("Item",
 						d.item_code, "last_purchase_rate")
 					if item_last_purchase_rate:
-						d.purchase_ref_rate = d.purchase_rate = d.import_ref_rate \
-							= d.import_rate = item_last_purchase_rate
+						d.ref_rate = d.rate = d.print_ref_rate \
+							= d.print_rate = item_last_purchase_rate
 			
 	def get_last_purchase_details(self, item_code, doc_name):
 		import webnotes
@@ -273,18 +273,18 @@ class DocType(TransactionBase):
 
 		# get last purchase order item details
 		last_po_item = webnotes.conn.sql("""\
-			select po.name, po.transaction_date, po_item.conversion_factor, po_item.purchase_ref_rate, 
-				po_item.discount_rate, po_item.purchase_rate
+			select po.name, po.posting_date, po_item.conversion_factor, po_item.ref_rate, 
+				po_item.discount, po_item.rate
 			from `tabPurchase Order` po, `tabPurchase Order Item` po_item
 			where po.docstatus = 1 and po_item.item_code = %s and po.name != %s and 
 				po.name = po_item.parent
-			order by po.transaction_date desc, po.name desc
+			order by po.posting_date desc, po.name desc
 			limit 1""", (item_code, doc_name), as_dict=1)
 		
 		# get last purchase receipt item details		
 		last_pr_item = webnotes.conn.sql("""\
 			select pr.name, pr.posting_date, pr.posting_time, pr_item.conversion_factor,
-				pr_item.purchase_ref_rate, pr_item.discount_rate, pr_item.purchase_rate
+				pr_item.ref_rate, pr_item.discount, pr_item.rate
 			from `tabPurchase Receipt` pr, `tabPurchase Receipt Item` pr_item
 			where pr.docstatus = 1 and pr_item.item_code = %s and pr.name != %s and
 				pr.name = pr_item.parent
@@ -292,7 +292,7 @@ class DocType(TransactionBase):
 			limit 1""", (item_code, doc_name), as_dict=1)
 
 		# get the latest of the two
-		po_date_obj = webnotes.utils.getdate(last_po_item and last_po_item[0]['transaction_date'] or '2000-01-01')
+		po_date_obj = webnotes.utils.getdate(last_po_item and last_po_item[0]['posting_date'] or '2000-01-01')
 		pr_date_obj = webnotes.utils.getdate(last_pr_item and last_pr_item[0]['posting_date'] or '2000-01-01')
 		
 		# if both exists, return true
@@ -312,9 +312,9 @@ class DocType(TransactionBase):
 		# prepare last purchase details, dividing by conversion factor
 		conversion_factor = flt(last_purchase_item['conversion_factor'])
 		last_purchase_details = {
-			'purchase_ref_rate': flt(last_purchase_item['purchase_ref_rate']) / conversion_factor,
-			'purchase_rate': flt(last_purchase_item['purchase_rate']) / conversion_factor,
-			'discount_rate': flt(last_purchase_item['discount_rate']),
+			'ref_rate': flt(last_purchase_item['ref_rate']) / conversion_factor,
+			'rate': flt(last_purchase_item['rate']) / conversion_factor,
+			'discount': flt(last_purchase_item['discount']),
 		}
 		
 		return last_purchase_details, last_purchase_date	
@@ -412,23 +412,23 @@ class DocType(TransactionBase):
 					chk_dupl_itm.append(f)
 
 	# validate conversion rate
-	def validate_conversion_rate(self, obj):
+	def validate_exchange_rate(self, obj):
 		default_currency = TransactionBase().get_company_currency(obj.doc.company)			
 		if not default_currency:
 			msgprint('Message: Please enter default currency in Company Master')
 			raise Exception
 			
-		if obj.doc.conversion_rate == 0:
+		if obj.doc.exchange_rate == 0:
 			msgprint('Conversion Rate cannot be 0', raise_exception=1)
-		elif not obj.doc.conversion_rate:
+		elif not obj.doc.exchange_rate:
 			msgprint('Please specify Conversion Rate', raise_exception=1)
 		elif obj.doc.currency == default_currency and \
-				flt(obj.doc.conversion_rate) != 1.00:
+				flt(obj.doc.exchange_rate) != 1.00:
 			msgprint("""Conversion Rate should be equal to 1.00, \
 						since the specified Currency and the company's currency \
 						are same""", raise_exception=1)
 		elif obj.doc.currency != default_currency and \
-				flt(obj.doc.conversion_rate) == 1.00:
+				flt(obj.doc.exchange_rate) == 1.00:
 			msgprint("""Conversion Rate should not be equal to 1.00, \
 						since the specified Currency and the company's currency \
 						are different""", raise_exception=1)
@@ -590,12 +590,12 @@ class DocType(TransactionBase):
 			
 			# for payable voucher
 			if d.fields.has_key('purchase_order') and d.purchase_order:
-				curr_qty = sql("select sum(qty) from `tabPurchase Invoice Item` where po_detail = '%s' and parent = '%s'" % (cstr(d.po_detail), cstr(obj.doc.name)))
+				curr_qty = sql("select sum(qty) from `tabPurchase Invoice Item` where purchase_order_item = '%s' and parent = '%s'" % (cstr(d.purchase_order_item), cstr(obj.doc.name)))
 				curr_qty = curr_qty and flt(curr_qty[0][0]) or 0
-				self.update_ref_doctype_dict( curr_qty, d.doctype, d.purchase_order, 'Purchase Order', 'po_detail', d.po_detail, 'Purchase Order - ' + cstr(obj.doc.doctype), d.item_code, is_submit,	obj.doc.doctype, obj.doc.name)
+				self.update_ref_doctype_dict( curr_qty, d.doctype, d.purchase_order, 'Purchase Order', 'purchase_order_item', d.purchase_order_item, 'Purchase Order - ' + cstr(obj.doc.doctype), d.item_code, is_submit,	obj.doc.doctype, obj.doc.name)
 
 			if d.fields.has_key('purchase_receipt') and d.purchase_receipt:
-				 self.update_ref_doctype_dict( flt(d.qty), d.doctype, d.purchase_receipt, 'Purchase Receipt', 'pr_detail', d.pr_detail, 'Purchase Receipt - ' + cstr(obj.doc.doctype), d.item_code, is_submit,	obj.doc.doctype, obj.doc.name)
+				 self.update_ref_doctype_dict( flt(d.qty), d.doctype, d.purchase_receipt, 'Purchase Receipt', 'purchase_receipt_item', d.purchase_receipt_item, 'Purchase Receipt - ' + cstr(obj.doc.doctype), d.item_code, is_submit,	obj.doc.doctype, obj.doc.name)
 			
 		for ref_dn in self.ref_doctype_dict:
 			# Calculate percentage
@@ -617,11 +617,11 @@ class DocType(TransactionBase):
 			sql("update `tab%s` set %s = '%s', modified = '%s' where name = '%s'" % (self.ref_doctype_dict[ref_dn][0], self.update_percent_field[self.ref_doctype_dict[ref_dn][2]], percent_complete, obj.doc.modified, ref_dn))
 			
 			
-	def validate_fiscal_year(self, fiscal_year, transaction_date, dn):
+	def validate_fiscal_year(self, fiscal_year, posting_date, dn):
 		fy=sql("select year_start_date from `tabFiscal Year` where name='%s'"%fiscal_year)
 		ysd=fy and fy[0][0] or ""
 		yed=add_days(str(ysd),365)		
-		if str(transaction_date) < str(ysd) or str(transaction_date) > str(yed):
+		if str(posting_date) < str(ysd) or str(posting_date) > str(yed):
 			msgprint("'%s' Not Within The Fiscal Year"%(dn))
 			raise Exception			
 
@@ -629,10 +629,10 @@ class DocType(TransactionBase):
 		return self.get_purchase_tax_details(obj, 1)
 	
 	def get_purchase_tax_details(self,obj, default = 0):
-		obj.doclist = self.doc.clear_table(obj.doclist,'purchase_tax_details')
+		obj.doclist = self.doc.clear_table(obj.doclist,'taxes_and_charges')
 		
 		if default: add_cond = " and ifnull(t2.is_default,0) = 1"
-		else: add_cond = " and t1.parent = '"+cstr(obj.doc.purchase_other_charges)+"'"
+		else: add_cond = " and t1.parent = '"+cstr(obj.doc.purchase_taxes_and_charges_master)+"'"
 
 		other_charge = sql("""
 			select t1.*
@@ -643,7 +643,7 @@ class DocType(TransactionBase):
 		
 		idx = 0
 		for other in other_charge:
-			d =	addchild(obj.doc, 'purchase_tax_details', 'Purchase Taxes and Charges', 1, obj.doclist)
+			d =	addchild(obj.doc, 'taxes_and_charges', 'Purchase Taxes and Charges', 1, obj.doclist)
 			d.category = other['category']
 			d.add_deduct_tax = other['add_deduct_tax']
 			d.charge_type = other['charge_type']
@@ -683,7 +683,7 @@ class DocType(TransactionBase):
 		import datetime
 		for d in getlist(obj.doclist, obj.fname):
 			if d.prevdoc_doctype and d.prevdoc_docname:
-				dt = sql("select transaction_date from `tab%s` where name = '%s'" % (d.prevdoc_doctype, d.prevdoc_docname))
+				dt = sql("select posting_date from `tab%s` where name = '%s'" % (d.prevdoc_doctype, d.prevdoc_docname))
 				d.prevdoc_date = dt and dt[0][0].strftime('%Y-%m-%d') or ''
 
 
@@ -694,11 +694,11 @@ class DocType(TransactionBase):
 			item_det = webnotes.conn.get_value("Item", d.item_code, 
 				['is_sub_contracted_item', 'is_purchase_item'])
 			
-			if item_det[0][0] == 'Yes':
-				if item_det[0][1] == 'Yes' and not obj.doc.is_subcontracted:
+			if item_det[0] == 'Yes':
+				if item_det[1] == 'Yes' and not obj.doc.is_subcontracted:
 					msgprint("""Please enter whether purchase order to be made for subcontracting 
 						or for purchasing, in 'Is Subcontracted' field""", raise_exception=1)
-				elif item_det[0][1] == 'No' or obj.doc.is_subcontracted == 'Yes':
+				elif item_det[1] == 'No' or obj.doc.is_subcontracted == 'Yes':
 					self.add_bom(d)
 				
 
@@ -738,13 +738,10 @@ class DocType(TransactionBase):
 		
 	# update itemwise valuation rate
 	def update_item_valuation_rate(self, obj):
-		rate_field = 'purchase_rate'
-		if obj.doc.doctype == 'Purchase Invoice':
-			rate_field = 'rate'
 		for d in getlist(obj.doclist, obj.fname):
 			if flt(d.qty):
 				d.valuation_rate = (
-						flt(d.fields.get(rate_field)) + 
+						flt(d.rate) + 
 						(flt(d.rm_supp_cost) / flt(d.qty)) + 
 						(flt(d.item_tax_amount)/flt(d.qty)) 
 					) / flt(d.conversion_factor)

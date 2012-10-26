@@ -16,7 +16,7 @@
 
 
 cur_frm.cscript.onload = function(doc, dt, dn) {
-  if (!doc.posting_date) doc.transaction_date = dateutil.obj_to_str(new Date());
+  if (!doc.posting_date) doc.posting_date = dateutil.obj_to_str(new Date());
   if (!doc.status) doc.status = 'Draft';
 
   cfn_set_fields(doc, dt, dn);

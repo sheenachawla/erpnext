@@ -3,11 +3,11 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-04-11 13:16:55',
-		'docstatus': 0,
-		'modified': '2012-04-13 12:06:15',
-		'modified_by': u'Administrator',
-		'owner': u'Administrator'
+		u'creation': '2012-10-24 14:33:45',
+		u'docstatus': 0,
+		u'modified': '2012-10-24 14:33:45',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
 	},
 
 	# These values are common for all Search Criteria
@@ -20,10 +20,10 @@
 		'description': u'List of PR whose posting date is after PV posting date',
 		'dis_filters': u'`tabPurchase Receipt`.`pr_posting_date`',
 		'doc_type': u'Purchase Invoice Item',
-		'doctype': 'Search Criteria',
+		u'doctype': u'Search Criteria',
 		'filters': u'{"Purchase Invoice\\u0001Submitted":1,"Purchase Invoice\\u0001Is Opening":[""],"Purchase Invoice\\u0001Fiscal Year":[""]}',
 		'module': u'Buying',
-		'name': '__common__',
+		u'name': u'__common__',
 		'page_len': 50,
 		'parent_doc_type': u'Purchase Invoice',
 		'sort_by': u'`tabPurchase Invoice`.`name`',
@@ -33,7 +33,7 @@
 
 	# Search Criteria, purchase_in_transit
 	{
-		'doctype': 'Search Criteria',
-		'name': u'purchase_in_transit'
+		u'doctype': u'Search Criteria',
+		u'name': u'purchase_in_transit'
 	}
 ]

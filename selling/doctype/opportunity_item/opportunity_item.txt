@@ -3,30 +3,30 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-03-27 14:36:08',
-		'docstatus': 0,
-		'modified': '2012-03-27 14:36:08',
-		'modified_by': u'Administrator',
-		'owner': u'Administrator'
+		u'creation': '2012-07-03 13:29:37',
+		u'docstatus': 0,
+		u'modified': '2012-10-18 18:15:43',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
 	},
 
 	# These values are common for all DocType
 	{
 		'colour': u'White:FFF',
-		'doctype': 'DocType',
+		u'doctype': u'DocType',
 		'istable': 1,
 		'module': u'Selling',
-		'name': '__common__',
+		u'name': u'__common__',
 		'section_style': u'Simple',
 		'server_code_error': u' ',
 		'show_in_menu': 0,
-		'version': 59
+		'version': 1
 	},
 
 	# These values are common for all DocField
 	{
-		'doctype': u'DocField',
-		'name': '__common__',
+		u'doctype': u'DocField',
+		u'name': u'__common__',
 		'parent': u'Opportunity Item',
 		'parentfield': u'fields',
 		'parenttype': u'DocType',
@@ -35,14 +35,14 @@
 
 	# DocType, Opportunity Item
 	{
-		'doctype': 'DocType',
-		'name': u'Opportunity Item'
+		u'doctype': u'DocType',
+		u'name': u'Opportunity Item'
 	},
 
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'item_code',
 		'fieldtype': u'Link',
 		'label': u'Item Code',
@@ -55,7 +55,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'item_name',
 		'fieldtype': u'Data',
 		'label': u'Item Name',
@@ -66,7 +66,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'description',
 		'fieldtype': u'Text',
 		'label': u'Description',
@@ -78,7 +78,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'item_group',
 		'fieldtype': u'Link',
 		'hidden': 1,
@@ -92,7 +92,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'brand',
 		'fieldtype': u'Link',
 		'hidden': 1,
@@ -106,21 +106,9 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
-		'fieldname': u'basic_rate',
-		'fieldtype': u'Currency',
-		'hidden': 1,
-		'label': u'Basic Rate',
-		'oldfieldname': u'basic_rate',
-		'oldfieldtype': u'Currency',
-		'print_hide': 1
-	},
-
-	# DocField
-	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'qty',
-		'fieldtype': u'Currency',
+		'fieldtype': u'Float',
 		'label': u'Qty',
 		'oldfieldname': u'qty',
 		'oldfieldtype': u'Currency'
@@ -128,7 +116,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'uom',
 		'fieldtype': u'Link',
 		'label': u'UOM',

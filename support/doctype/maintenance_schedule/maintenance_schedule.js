@@ -18,7 +18,7 @@ cur_frm.cscript.onload = function(doc, dt, dn) {
   if(!doc.status) set_multiple(dt,dn,{status:'Draft'});
   
   if(doc.__islocal){
-    set_multiple(dt,dn,{transaction_date:get_today()});
+    set_multiple(dt,dn,{posting_date:get_today()});
     hide_field(['customer_address','contact_person','customer_name','address_display','contact_display','contact_mobile','contact_email','territory','customer_group']);
   }   
 }
@@ -91,7 +91,7 @@ cur_frm.cscript.customer = function(doc, cdt, cdn) {
 }
 */
 
-cur_frm.fields_dict['sales_order_no'].get_query = function(doc) {
+cur_frm.fields_dict['sales_order'].get_query = function(doc) {
   doc = locals[this.doctype][this.docname];
   var cond = '';
   if(doc.customer) {

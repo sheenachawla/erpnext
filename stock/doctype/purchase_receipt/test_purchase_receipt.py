@@ -89,12 +89,12 @@ base_purchase_receipt = [
 		"doctype": "Purchase Receipt", "supplier": "East Wind Inc.",
 		"naming_series": "PR", "posting_date": nowdate(), "posting_time": "12:05",
 		"company": company, "fiscal_year": webnotes.conn.get_default("fiscal_year"), 
-		"currency": webnotes.conn.get_default("currency"), "conversion_rate": 1
+		"currency": webnotes.conn.get_default("currency"), "exchange_rate": 1
 	},
 	{
 		"doctype": "Purchase Receipt Item", 
 		"item_code": "Home Desktop 100",
-		"qty": 10, "received_qty": 10, "rejected_qty": 0, "purchase_rate": 50, 
+		"qty": 10, "received_qty": 10, "rejected_qty": 0, "rate": 50, 
 		"amount": 500, "warehouse": "Default Warehouse", "item_tax_amount": 250,
 		"parentfield": "purchase_receipt_details",
 		"conversion_factor": 1, "uom": "Nos", "stock_uom": "Nos"

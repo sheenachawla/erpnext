@@ -15,8 +15,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 cur_frm.cscript.tname = "Sales Invoice Item";
-cur_frm.cscript.fname = "entries";
-cur_frm.cscript.other_fname = "other_charges";
+cur_frm.cscript.fname = "sales_invoice_items";
+cur_frm.cscript.other_fname = "taxes_and_charges";
 cur_frm.cscript.sales_team_fname = "sales_team";
 
 // print heading
@@ -36,7 +36,7 @@ cur_frm.cscript.onload = function(doc,dt,dn) {
 		if(!doc.due_date) set_multiple(dt,dn,{due_date:get_today()});
 		if(!doc.posting_date) set_multiple(dt,dn,{posting_date:get_today()});
 		if(!doc.currency && sys_defaults.currency) set_multiple(dt,dn,{currency:sys_defaults.currency});
-		if(!doc.price_list_currency) set_multiple(dt, dn, {price_list_currency: doc.currency, plc_conversion_rate: 1});
+		if(!doc.price_list_currency) set_multiple(dt, dn, {price_list_currency: doc.currency, plc_exchange_rate: 1});
 		if(!doc.posting_time) doc.posting_time = dateutil.get_cur_time();
 	}
 }
@@ -49,7 +49,7 @@ cur_frm.cscript.onload_post_render = function(doc, dt, dn) {
 				$c_obj(make_doclist(doc.doctype,doc.name),
 					'load_default_accounts','',
 					function(r,rt) {
-						refresh_field('entries');
+						refresh_field('sales_invoice_items');
 						cur_frm.cscript.customer(doc,dt,dn,onload=true);
 					}
 				);
@@ -73,8 +73,8 @@ cur_frm.cscript.onload_post_render = function(doc, dt, dn) {
 // Hide Fields
 // ------------
 cur_frm.cscript.hide_fields = function(doc, cdt, cdn) {
-	par_flds = ['project_name', 'due_date', 'sales_order_main',
-	'delivery_note_main', 'get_items', 'is_opening', 'conversion_rate',
+	par_flds = ['project_name', 'due_date', 'sales_order',
+	'delivery_note', 'get_items', 'is_opening', 'exchange_rate',
 	'source', 'cancel_reason', 'total_advance', 'gross_profit',
 	'gross_profit_percent', 'get_advances_received',
 	'advance_adjustment_details', 'sales_partner', 'commission_rate',
@@ -86,13 +86,13 @@ cur_frm.cscript.hide_fields = function(doc, cdt, cdn) {
 	if(cint(doc.is_pos) == 1) {
 		hide_field(par_flds);
 		unhide_field('payments_section');
-		for(f in item_flds_normal) cur_frm.fields_dict['entries'].grid.set_column_disp(item_flds_normal[f], false);
-		for(f in item_flds_pos) cur_frm.fields_dict['entries'].grid.set_column_disp(item_flds_pos[f], (doc.update_stock==1?true:false));
+		for(f in item_flds_normal) cur_frm.fields_dict['sales_invoice_items'].grid.set_column_disp(item_flds_normal[f], false);
+		for(f in item_flds_pos) cur_frm.fields_dict['sales_invoice_items'].grid.set_column_disp(item_flds_pos[f], (doc.update_stock==1?true:false));
 	} else {
 		hide_field('payments_section');
 		unhide_field(par_flds);
-		for(f in item_flds_normal) cur_frm.fields_dict['entries'].grid.set_column_disp(item_flds_normal[f], true);
-		for(f in item_flds_pos) cur_frm.fields_dict['entries'].grid.set_column_disp(item_flds_pos[f], false);
+		for(f in item_flds_normal) cur_frm.fields_dict['sales_invoice_items'].grid.set_column_disp(item_flds_normal[f], true);
+		for(f in item_flds_pos) cur_frm.fields_dict['sales_invoice_items'].grid.set_column_disp(item_flds_pos[f], false);
 	}
 	if (doc.docstatus==1) unhide_field('recurring_invoice');
 	else hide_field('recurring_invoice');
@@ -162,7 +162,7 @@ cur_frm.cscript.warehouse = function(doc, cdt , cdn) {
 	if (!d.item_code) {alert("please enter item code first"); return};
 	if (d.warehouse) {
 		arg = "{'item_code':'" + d.item_code + "','warehouse':'" + d.warehouse +"'}";
-		get_server_fields('get_actual_qty',arg,'entries',doc,cdt,cdn,1);
+		get_server_fields('get_actual_qty',arg,'sales_invoice_items',doc,cdt,cdn,1);
 	}
 }
 
@@ -270,7 +270,7 @@ cur_frm.cscript.project_name = function(doc,cdt,cdn){
 
 //Set debit and credit to zero on adding new row
 //----------------------------------------------
-cur_frm.fields_dict['entries'].grid.onrowadd = function(doc, cdt, cdn){
+cur_frm.fields_dict['sales_invoice_items'].grid.onrowadd = function(doc, cdt, cdn){
 
 	cl = getchildren('Sales Invoice Item', doc.name, cur_frm.cscript.fname, doc.doctype);
 	acc = '';
@@ -283,8 +283,8 @@ cur_frm.fields_dict['entries'].grid.onrowadd = function(doc, cdt, cdn){
 			cc = cl[i].cost_center;
 		}
 		else{
-			if (! cl[i].income_account) { cl[i].income_account = acc; refresh_field('income_account', cl[i].name, 'entries');}
-			if (! cl[i].cost_center)	{cl[i].cost_center = cc;refresh_field('cost_center', cl[i].name, 'entries');}
+			if (! cl[i].income_account) { cl[i].income_account = acc; refresh_field('income_account', cl[i].name, 'sales_invoice_items');}
+			if (! cl[i].cost_center)	{cl[i].cost_center = cc;refresh_field('cost_center', cl[i].name, 'sales_invoice_items');}
 		}
 	}
 }
@@ -387,26 +387,26 @@ cur_frm.fields_dict['territory'].get_query = function(doc,cdt,cdn) {
 
 // Income Account in Details Table
 // --------------------------------
-cur_frm.fields_dict.entries.grid.get_field("income_account").get_query = function(doc) {
+cur_frm.fields_dict.sales_invoice_items.grid.get_field("income_account").get_query = function(doc) {
 	return 'SELECT tabAccount.name FROM tabAccount WHERE (tabAccount.debit_or_credit="Credit" OR tabAccount.account_type = "Income Account") AND tabAccount.group_or_ledger="Ledger" AND tabAccount.docstatus!=2 AND tabAccount.company="'+doc.company+'" AND tabAccount.%(key)s LIKE "%s"';
 }
 
 // warehouse in detail table
 //----------------------------
-cur_frm.fields_dict['entries'].grid.get_field('warehouse').get_query= function(doc, cdt, cdn) {
+cur_frm.fields_dict['sales_invoice_items'].grid.get_field('warehouse').get_query= function(doc, cdt, cdn) {
 	var d = locals[cdt][cdn];
 	return "SELECT `tabBin`.`warehouse`, `tabBin`.`actual_qty` FROM `tabBin` WHERE `tabBin`.`item_code` = '"+ d.item_code +"' AND ifnull(`tabBin`.`actual_qty`,0) > 0 AND `tabBin`.`warehouse` like '%s' ORDER BY `tabBin`.`warehouse` DESC LIMIT 50";
 }
 
 // Cost Center in Details Table
 // -----------------------------
-cur_frm.fields_dict.entries.grid.get_field("cost_center").get_query = function(doc) {
+cur_frm.fields_dict.sales_invoice_items.grid.get_field("cost_center").get_query = function(doc) {
 	return 'SELECT `tabCost Center`.`name` FROM `tabCost Center` WHERE `tabCost Center`.`company_name` = "' +doc.company+'" AND `tabCost Center`.%(key)s LIKE "%s" AND `tabCost Center`.`group_or_ledger` = "Ledger" AND `tabCost Center`.`docstatus`!= 2 ORDER BY	`tabCost Center`.`name` ASC LIMIT 50';
 }
 
 // Sales Order
 // -----------
-cur_frm.fields_dict.sales_order_main.get_query = function(doc) {
+cur_frm.fields_dict.sales_order.get_query = function(doc) {
 	if (doc.customer)
 		return 'SELECT DISTINCT `tabSales Order`.`name` FROM `tabSales Order` WHERE `tabSales Order`.company = "' + doc.company + '" and `tabSales Order`.`docstatus` = 1 and `tabSales Order`.`status` != "Stopped" and ifnull(`tabSales Order`.per_billed,0) < 100 and `tabSales Order`.`customer` =	"' + doc.customer + '" and `tabSales Order`.%(key)s LIKE "%s" ORDER BY `tabSales Order`.`name` DESC LIMIT 50';
 	else
@@ -415,7 +415,7 @@ cur_frm.fields_dict.sales_order_main.get_query = function(doc) {
 
 // Delivery Note
 // --------------
-cur_frm.fields_dict.delivery_note_main.get_query = function(doc) {
+cur_frm.fields_dict.delivery_note.get_query = function(doc) {
 	if (doc.customer)
 		return 'SELECT DISTINCT `tabDelivery Note`.`name` FROM `tabDelivery Note` WHERE `tabDelivery Note`.company = "' + doc.company + '" and `tabDelivery Note`.`docstatus` = 1 and ifnull(`tabDelivery Note`.per_billed,0) < 100 and `tabDelivery Note`.`customer` =	"' + doc.customer + '" and `tabDelivery Note`.%(key)s LIKE "%s" ORDER BY `tabDelivery Note`.`name` DESC LIMIT 50';
 	else

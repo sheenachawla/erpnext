@@ -3,11 +3,11 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-05-15 12:14:48',
-		'docstatus': 0,
-		'modified': '2012-05-28 19:03:56',
-		'modified_by': u'Administrator',
-		'owner': u'Administrator'
+		u'creation': '2012-10-18 15:07:24',
+		u'docstatus': 0,
+		u'modified': '2012-10-22 14:11:59',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
 	},
 
 	# These values are common for all DocType
@@ -15,21 +15,23 @@
 		'_last_update': u'1325837006',
 		'colour': u'White:FFF',
 		'default_print_format': u'Standard',
-		'doctype': 'DocType',
+		'description': u'Authorization for production of an Item.',
+		u'doctype': u'DocType',
+		'document_type': u'Transaction',
 		'in_create': 0,
 		'is_submittable': 1,
 		'module': u'Production',
-		'name': '__common__',
+		u'name': u'__common__',
 		'section_style': u'Tabbed',
 		'server_code_error': u' ',
 		'show_in_menu': 0,
-		'version': 1
+		'version': 3
 	},
 
 	# These values are common for all DocField
 	{
-		'doctype': u'DocField',
-		'name': '__common__',
+		u'doctype': u'DocField',
+		u'name': u'__common__',
 		'parent': u'Production Order',
 		'parentfield': u'fields',
 		'parenttype': u'DocType'
@@ -37,8 +39,8 @@
 
 	# These values are common for all DocPerm
 	{
-		'doctype': u'DocPerm',
-		'name': '__common__',
+		u'doctype': u'DocPerm',
+		u'name': u'__common__',
 		'parent': u'Production Order',
 		'parentfield': u'permissions',
 		'parenttype': u'DocType',
@@ -47,56 +49,13 @@
 
 	# DocType, Production Order
 	{
-		'doctype': 'DocType',
-		'name': u'Production Order'
-	},
-
-	# DocPerm
-	{
-		'amend': 1,
-		'cancel': 1,
-		'create': 1,
-		'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'System Manager',
-		'submit': 1,
-		'write': 1
-	},
-
-	# DocPerm
-	{
-		'doctype': u'DocPerm',
-		'permlevel': 1,
-		'role': u'All'
-	},
-
-	# DocPerm
-	{
-		'amend': 1,
-		'cancel': 1,
-		'create': 1,
-		'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'Production Manager',
-		'submit': 1,
-		'write': 1
-	},
-
-	# DocPerm
-	{
-		'amend': 1,
-		'cancel': 1,
-		'create': 1,
-		'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'Production User',
-		'submit': 1,
-		'write': 1
+		u'doctype': u'DocType',
+		u'name': u'Production Order'
 	},
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'column_break0',
 		'fieldtype': u'Column Break',
 		'permlevel': 0,
@@ -107,7 +66,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'Item for which this Production Order is raised.',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'production_item',
 		'fieldtype': u'Link',
 		'in_filter': 1,
@@ -122,7 +81,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'description',
 		'fieldtype': u'Text',
 		'label': u'Description',
@@ -134,7 +93,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'stock_uom',
 		'fieldtype': u'Data',
 		'label': u'Stock UOM',
@@ -147,7 +106,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'Bill of Material which was considered for manufacturing the production item.',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'bom_no',
 		'fieldtype': u'Link',
 		'label': u'BOM No',
@@ -163,7 +122,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'Quantity of item for which Production Order is raised.',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'qty',
 		'fieldtype': u'Currency',
 		'label': u'Qty',
@@ -177,7 +136,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'The warehouse for finished goods where stock of produced items will be updated.',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'fg_warehouse',
 		'fieldtype': u'Link',
 		'in_filter': 1,
@@ -193,7 +152,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'The work in progress warehouse where raw materials will be operated upon to create finished goods.',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'wip_warehouse',
 		'fieldtype': u'Link',
 		'in_filter': 1,
@@ -207,7 +166,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'amended_from',
 		'fieldtype': u'Data',
 		'label': u'Amended From',
@@ -219,7 +178,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'amendment_date',
 		'fieldtype': u'Date',
 		'label': u'Amendment Date',
@@ -231,7 +190,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'column_break1',
 		'fieldtype': u'Column Break',
 		'oldfieldtype': u'Column Break',
@@ -243,7 +202,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'The date on which current entry will get or has actually executed.',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'posting_date',
 		'fieldtype': u'Date',
 		'label': u'Posting Date',
@@ -257,7 +216,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'Select "Yes" if stock is maintained and tracked for sub-assembly items. Select "No" if you want child items of sub-assembly for material transfer.',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'consider_sa_items',
 		'fieldtype': u'Select',
 		'in_filter': 1,
@@ -272,7 +231,7 @@
 	# DocField
 	{
 		'description': u'Select name of the project if Production Order need to be created against any project',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'project_name',
 		'fieldtype': u'Link',
 		'in_filter': 1,
@@ -286,7 +245,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'origin',
 		'fieldtype': u'Select',
 		'in_filter': 1,
@@ -301,7 +260,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'status',
 		'fieldtype': u'Select',
 		'in_filter': 1,
@@ -319,7 +278,7 @@
 	{
 		'colour': u'White:FFF',
 		'description': u'Updated after finished goods are transferred to FG Warehouse through Stock Entry',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'produced_qty',
 		'fieldtype': u'Currency',
 		'label': u'Produced Qty',
@@ -331,7 +290,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'company',
 		'fieldtype': u'Link',
 		'label': u'Company',
@@ -344,7 +303,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'fiscal_year',
 		'fieldtype': u'Select',
 		'in_filter': 1,
@@ -354,5 +313,48 @@
 		'options': u'link:Fiscal Year',
 		'permlevel': 0,
 		'reqd': 1
+	},
+
+	# DocPerm
+	{
+		'amend': 1,
+		'cancel': 1,
+		'create': 1,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'System Manager',
+		'submit': 1,
+		'write': 1
+	},
+
+	# DocPerm
+	{
+		u'doctype': u'DocPerm',
+		'permlevel': 1,
+		'role': u'All'
+	},
+
+	# DocPerm
+	{
+		'amend': 1,
+		'cancel': 1,
+		'create': 1,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'Production Manager',
+		'submit': 1,
+		'write': 1
+	},
+
+	# DocPerm
+	{
+		'amend': 1,
+		'cancel': 1,
+		'create': 1,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'Production User',
+		'submit': 1,
+		'write': 1
 	}
 ]

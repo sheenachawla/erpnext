@@ -3,11 +3,11 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-04-03 12:49:52',
-		'docstatus': 0,
-		'modified': '2012-04-03 12:49:52',
-		'modified_by': u'Administrator',
-		'owner': u'Administrator'
+		u'creation': '2012-10-24 14:33:56',
+		u'docstatus': 0,
+		u'modified': '2012-10-24 14:33:56',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
 	},
 
 	# These values are common for all Search Criteria
@@ -16,10 +16,10 @@
 		'columns': u'Serial No\x01ID,Serial No\x01Status,Serial No\x01Warranty Expiry Date,Serial No\x01Customer Name',
 		'criteria_name': u'Serial No-Warranty expiring this month',
 		'doc_type': u'Serial No',
-		'doctype': 'Search Criteria',
+		u'doctype': u'Search Criteria',
 		'filters': u"{'Serial No\x01Saved':1,'Serial No\x01Submitted':1,'Serial No\x01Status':'Issued','Serial No\x01Maintenance Status':''}",
 		'module': u'Selling',
-		'name': '__common__',
+		u'name': u'__common__',
 		'page_len': 50,
 		'sort_by': u'`tabSerial No`.`name`',
 		'sort_order': u'DESC',
@@ -28,7 +28,7 @@
 
 	# Search Criteria, serial_no-warranty_expiring_this_month
 	{
-		'doctype': 'Search Criteria',
-		'name': u'serial_no-warranty_expiring_this_month'
+		u'doctype': u'Search Criteria',
+		u'name': u'serial_no-warranty_expiring_this_month'
 	}
 ]

@@ -3,15 +3,16 @@
 
 	# These values are common in all dictionaries
 	{
-		u'creation': '2012-09-18 11:05:48',
+		u'creation': '2012-10-05 11:10:47',
 		u'docstatus': 0,
-		u'modified': '2012-10-04 17:01:47',
+		u'modified': '2012-10-22 14:02:07',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
 
 	# These values are common for all Page
 	{
+		'description': u'Balance (as on) of all account ledgers and groups.',
 		u'doctype': u'Page',
 		'module': u'Accounts',
 		u'name': u'__common__',

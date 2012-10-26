@@ -18,47 +18,47 @@ from __future__ import unicode_literals
 import webnotes
 
 from webnotes.utils import add_days, cint, cstr, flt, get_defaults, now, nowdate
-
 from webnotes.model.doc import Document, addchild
 from webnotes.model.code import get_obj
 from webnotes import msgprint
 
-
 sql = webnotes.conn.sql
-
-
-
-
 
 class DocType:	
 	def __init__(self, doc, doclist=[]):
 		self.doc = doc
 		self.doclist = doclist
-
-	def update_stock(self, actual_qty=0, reserved_qty=0, ordered_qty=0, indented_qty=0, \
-	 		planned_qty=0, dt=None, sle_id='', posting_time='', serial_no = '', \
-			is_cancelled = 'No',doc_type='',doc_name='',is_amended='No'):
-		if not dt: 
-			dt = nowdate()
-			
-		# update the stock values (for current quantities)
-		self.doc.actual_qty = flt(self.doc.actual_qty) + flt(actual_qty)
-		self.doc.ordered_qty = flt(self.doc.ordered_qty) + flt(ordered_qty)
-		self.doc.reserved_qty = flt(self.doc.reserved_qty) + flt(reserved_qty)
-		self.doc.indented_qty = flt(self.doc.indented_qty) + flt(indented_qty)
-		self.doc.planned_qty = flt(self.doc.planned_qty) + flt(planned_qty)
-		self.doc.projected_qty = flt(self.doc.actual_qty) + flt(self.doc.ordered_qty) + flt(self.doc.indented_qty) + flt(self.doc.planned_qty) - flt(self.doc.reserved_qty)
-		self.doc.save()
-		if(( flt(actual_qty)<0 or flt(reserved_qty)>0 ) and is_cancelled == 'No' and is_amended=='No'):
-			self.reorder_item(doc_type,doc_name)
 		
-		if actual_qty:
+	def update_stock(self, args):
+		if not args.get("posting_date"):
+			posting_date = nowdate()
+			
+		self.update_qty(args)
+		
+		if (flt(args.get("actual_qty")) < 0 or flt(args.get("reserved_qty")) > 0) \
+				and args.get("is_cancelled") == 'No' and args.get("is_amended")=='No':
+			self.reorder_item(args.get("doc_type"), args.get("doc_name"))
+		
+		if args.get("actual_qty"):
 			# check actual qty with total number of serial no
-			if serial_no:
+			if args.get("serial_no"):
 				self.check_qty_with_serial_no()
 				
 			# update valuation and qty after transaction for post dated entry
-			self.update_entries_after(dt, posting_time)
+			self.update_entries_after(args.get("posting_date"), args.get("posting_time"))
+		
+	def update_qty(self, args):
+		# update the stock values (for current quantities)
+		self.doc.actual_qty = flt(self.doc.actual_qty) + flt(args.get("actual_qty", 0))
+		self.doc.ordered_qty = flt(self.doc.ordered_qty) + flt(args.get("ordered_qty", 0))
+		self.doc.reserved_qty = flt(self.doc.reserved_qty) + flt(args.get("reserved_qty"))
+		self.doc.indented_qty = flt(self.doc.indented_qty) + flt(args.get("indented_qty"))
+		self.doc.planned_qty = flt(self.doc.planned_qty) + flt(args.get("planned_qty"))
+		
+		self.doc.projected_qty = flt(self.doc.actual_qty) + flt(self.doc.ordered_qty) + \
+		 	flt(self.doc.indented_qty) + flt(self.doc.planned_qty) - flt(self.doc.reserved_qty)
+		
+		self.doc.save()
 
 	def check_qty_with_serial_no(self):
 		"""
@@ -291,7 +291,7 @@ class DocType:
 	def reorder_item(self,doc_type,doc_name):
 		""" Reorder item if stock reaches reorder level"""
 
-		if get_value('Global Defaults', None, 'auto_indent'):
+		if webnotes.conn.get_value('Global Defaults', None, 'auto_indent'):
 			#check if re-order is required
 			ret = sql("""select re_order_level, item_name, description, brand, item_group,
 			 	lead_time_days, min_order_qty, email_notify, re_order_qty 
@@ -313,7 +313,7 @@ class DocType:
 	def create_auto_indent(self, i , doc_type, doc_name, cur_qty):
 		"""	Create indent on reaching reorder level	"""
 		indent = Document('Purchase Request')
-		indent.transaction_date = nowdate()
+		indent.posting_date = nowdate()
 		indent.naming_series = 'IDT'
 		indent.company = get_defaults()['company']
 		indent.fiscal_year = get_defaults()['fiscal_year']
@@ -322,7 +322,7 @@ class DocType:
 			reaches re-order level when %s %s was created""" % (doc_type,doc_name)
 		indent.save(1)
 		indent_obj = get_obj('Purchase Request',indent.name,with_children=1)
-		indent_details_child = addchild(indent_obj.doc,'indent_details','Purchase Request Item',0)
+		indent_details_child = addchild(indent_obj.doc,'purchase_request_items','Purchase Request Item',0)
 		indent_details_child.item_code = self.doc.item_code
 		indent_details_child.uom = self.doc.stock_uom
 		indent_details_child.warehouse = self.doc.warehouse

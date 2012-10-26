@@ -3,30 +3,31 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-03-27 14:35:55',
-		'docstatus': 0,
-		'modified': '2012-03-27 14:35:55',
-		'modified_by': u'Administrator',
-		'owner': u'harshada@webnotestech.com'
+		u'creation': '2012-10-18 15:07:22',
+		u'docstatus': 0,
+		u'modified': '2012-10-22 12:50:00',
+		u'modified_by': u'Administrator',
+		u'owner': u'harshada@webnotestech.com'
 	},
 
 	# These values are common for all DocType
 	{
 		'autoname': u'field:expense_type',
 		'colour': u'White:FFF',
-		'doctype': 'DocType',
-		'document_type': u'Master',
+		'description': u'Type of Expense Claim. e.g. Travel, Food',
+		u'doctype': u'DocType',
+		'document_type': u'Setup',
 		'module': u'HR',
-		'name': '__common__',
+		u'name': u'__common__',
 		'section_style': u'Simple',
 		'server_code_error': u' ',
-		'version': 5
+		'version': 7
 	},
 
 	# These values are common for all DocField
 	{
-		'doctype': u'DocField',
-		'name': '__common__',
+		u'doctype': u'DocField',
+		u'name': u'__common__',
 		'parent': u'Expense Claim Type',
 		'parentfield': u'fields',
 		'parenttype': u'DocType',
@@ -36,8 +37,8 @@
 	# These values are common for all DocPerm
 	{
 		'create': 1,
-		'doctype': u'DocPerm',
-		'name': '__common__',
+		u'doctype': u'DocPerm',
+		u'name': u'__common__',
 		'parent': u'Expense Claim Type',
 		'parentfield': u'permissions',
 		'parenttype': u'DocType',
@@ -48,31 +49,13 @@
 
 	# DocType, Expense Claim Type
 	{
-		'doctype': 'DocType',
-		'name': u'Expense Claim Type'
-	},
-
-	# DocPerm
-	{
-		'doctype': u'DocPerm',
-		'role': u'System Manager'
-	},
-
-	# DocPerm
-	{
-		'doctype': u'DocPerm',
-		'role': u'HR Manager'
-	},
-
-	# DocPerm
-	{
-		'doctype': u'DocPerm',
-		'role': u'System Manager'
+		u'doctype': u'DocType',
+		u'name': u'Expense Claim Type'
 	},
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'expense_type',
 		'fieldtype': u'Data',
 		'in_filter': 0,
@@ -85,12 +68,30 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'description',
 		'fieldtype': u'Small Text',
 		'label': u'Description',
 		'oldfieldname': u'description',
 		'oldfieldtype': u'Small Text',
 		'width': u'300px'
+	},
+
+	# DocPerm
+	{
+		u'doctype': u'DocPerm',
+		'role': u'System Manager'
+	},
+
+	# DocPerm
+	{
+		u'doctype': u'DocPerm',
+		'role': u'HR Manager'
+	},
+
+	# DocPerm
+	{
+		u'doctype': u'DocPerm',
+		'role': u'System Manager'
 	}
 ]

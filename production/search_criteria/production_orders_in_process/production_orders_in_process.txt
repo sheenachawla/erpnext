@@ -3,11 +3,11 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-04-03 12:49:52',
-		'docstatus': 0,
-		'modified': '2012-04-03 12:49:52',
-		'modified_by': u'Administrator',
-		'owner': u'jai@webnotestech.com'
+		u'creation': '2012-10-24 14:33:49',
+		u'docstatus': 0,
+		u'modified': '2012-10-24 14:33:49',
+		u'modified_by': u'Administrator',
+		u'owner': u'jai@webnotestech.com'
 	},
 
 	# These values are common for all Search Criteria
@@ -16,10 +16,10 @@
 		'columns': u'Production Order\x01ID,Production Order\x01Origin,Production Order\x01Status,Production Order\x01Posting Date,Production Order\x01Production Item,Production Order\x01BOM No,Production Order\x01Description,Production Order\x01Stock UOM,Production Order\x01Qty,Production Order\x01Produced Qty,Production Order\x01FG Warehouse,Production Order\x01WIP Warehouse,Production Order\x01Consider SA Items,Production Order\x01Fiscal Year,Production Order\x01Company',
 		'criteria_name': u'Production Orders In Process',
 		'doc_type': u'Production Order',
-		'doctype': 'Search Criteria',
+		u'doctype': u'Search Criteria',
 		'filters': u"{'Production Order\x01Submitted':1,'Production Order\x01Origin':'','Production Order\x01Status':'','Production Order\x01Consider SA Items':'','Production Order\x01Fiscal Year':''}",
 		'module': u'Production',
-		'name': '__common__',
+		u'name': u'__common__',
 		'page_len': 50,
 		'sort_by': u'`tabProduction Order`.`name`',
 		'sort_order': u'DESC',
@@ -28,7 +28,7 @@
 
 	# Search Criteria, production_orders_in_process
 	{
-		'doctype': 'Search Criteria',
-		'name': u'production_orders_in_process'
+		u'doctype': u'Search Criteria',
+		u'name': u'production_orders_in_process'
 	}
 ]

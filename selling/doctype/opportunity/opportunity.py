@@ -138,7 +138,7 @@ class DocType(TransactionBase):
 				raise Exception
 
 	def validate_item_details(self):
-		if not getlist(self.doclist, 'enquiry_details'):
+		if not getlist(self.doclist, 'opportunity_items'):
 			msgprint("Please select items for which enquiry needs to be made")
 			raise Exception
 
@@ -146,7 +146,7 @@ class DocType(TransactionBase):
 		fy=sql("select year_start_date from `tabFiscal Year` where name='%s'"%self.doc.fiscal_year)
 		ysd=fy and fy[0][0] or ""
 		yed=add_days(str(ysd),365)
-		if str(self.doc.transaction_date) < str(ysd) or str(self.doc.transaction_date) > str(yed):
+		if str(self.doc.posting_date) < str(ysd) or str(self.doc.posting_date) > str(yed):
 			msgprint("Opportunity Date is not within the Fiscal Year selected")
 			raise Exception		
 

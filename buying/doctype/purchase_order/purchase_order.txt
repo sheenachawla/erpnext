@@ -3,9 +3,9 @@
 
 	# These values are common in all dictionaries
 	{
-		u'creation': '2012-08-06 20:00:37',
+		u'creation': '2012-10-18 15:07:16',
 		u'docstatus': 0,
-		u'modified': '2012-10-12 14:18:35',
+		u'modified': '2012-10-22 13:56:07',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -16,6 +16,7 @@
 		'allow_attach': 1,
 		'colour': u'White:FFF',
 		'default_print_format': u'Standard',
+		'description': u'Order given to Supplier to deliver items.',
 		u'doctype': u'DocType',
 		'document_type': u'Transaction',
 		'is_submittable': 1,
@@ -28,7 +29,7 @@
 		'server_code_error': u' ',
 		'show_in_menu': 0,
 		'subject': u'To %(supplier_name)s on %(transaction_date)s | %(per_received)s% delivered',
-		'version': 1
+		'version': 2
 	},
 
 	# These values are common for all DocField
@@ -121,7 +122,7 @@
 		'fieldtype': u'Data',
 		'hidden': 1,
 		'label': u'Name',
-		'permlevel': 1
+		'permlevel': 0
 	},
 
 	# DocField
@@ -131,7 +132,7 @@
 		'fieldtype': u'Small Text',
 		'hidden': 1,
 		'label': u'Address',
-		'permlevel': 1
+		'permlevel': 0
 	},
 
 	# DocField
@@ -141,7 +142,7 @@
 		'fieldtype': u'Small Text',
 		'hidden': 1,
 		'label': u'Contact',
-		'permlevel': 1
+		'permlevel': 0
 	},
 
 	# DocField
@@ -151,7 +152,7 @@
 		'fieldtype': u'Text',
 		'hidden': 1,
 		'label': u'Mobile No',
-		'permlevel': 1
+		'permlevel': 0
 	},
 
 	# DocField
@@ -161,7 +162,7 @@
 		'fieldtype': u'Text',
 		'hidden': 1,
 		'label': u'Contact Email',
-		'permlevel': 1,
+		'permlevel': 0,
 		'print_hide': 1
 	},
 
@@ -181,7 +182,7 @@
 		'colour': u'White:FFF',
 		'description': u'The date at which current entry is made in system.',
 		u'doctype': u'DocField',
-		'fieldname': u'transaction_date',
+		'fieldname': u'posting_date',
 		'fieldtype': u'Date',
 		'in_filter': 1,
 		'label': u'Purchase Order Date',
@@ -208,7 +209,7 @@
 	{
 		'allow_on_submit': 1,
 		u'doctype': u'DocField',
-		'fieldname': u'po_details',
+		'fieldname': u'purchase_order_items',
 		'fieldtype': u'Table',
 		'label': u'Purchase Order Items',
 		'no_copy': 0,
@@ -253,7 +254,7 @@
 	# DocField
 	{
 		u'doctype': u'DocField',
-		'fieldname': u'net_total_import',
+		'fieldname': u'net_total_print',
 		'fieldtype': u'Currency',
 		'label': u'Net Total (Import)',
 		'no_copy': 0,
@@ -319,7 +320,7 @@
 		'default': u'1',
 		'description': u"Rate at which supplier's currency is converted to company's base currency",
 		u'doctype': u'DocField',
-		'fieldname': u'conversion_rate',
+		'fieldname': u'exchange_rate',
 		'fieldtype': u'Float',
 		'hidden': 0,
 		'label': u'Conversion Rate',
@@ -337,7 +338,7 @@
 		'colour': u'White:FFF',
 		'description': u'You can make a purchase order from multiple Purchase Requests. Select Purchase Requests one by one and click on the button below.',
 		u'doctype': u'DocField',
-		'fieldname': u'indent_no',
+		'fieldname': u'purchase_request',
 		'fieldtype': u'Link',
 		'hidden': 0,
 		'label': u'Select Purchase Request',
@@ -404,7 +405,7 @@
 		'colour': u'White:FFF',
 		'description': u'If you have created a standard template in Purchase Taxes and Charges Master, select one and click on the button below.',
 		u'doctype': u'DocField',
-		'fieldname': u'purchase_other_charges',
+		'fieldname': u'purchase_taxes_and_charges_master',
 		'fieldtype': u'Link',
 		'label': u'Purchase Taxes and Charges',
 		'no_copy': 1,
@@ -430,7 +431,7 @@
 	# DocField
 	{
 		u'doctype': u'DocField',
-		'fieldname': u'purchase_tax_details',
+		'fieldname': u'taxes_and_charges',
 		'fieldtype': u'Table',
 		'label': u'Purchase Taxes and Charges',
 		'no_copy': 0,
@@ -467,12 +468,24 @@
 	# DocField
 	{
 		u'doctype': u'DocField',
-		'fieldname': u'total_tax',
+		'fieldname': u'taxes_and_charges_total',
 		'fieldtype': u'Currency',
-		'label': u'Total Tax*',
+		'label': u'Taxes and Charges Total*',
 		'no_copy': 1,
 		'oldfieldname': u'total_tax',
 		'oldfieldtype': u'Currency',
+		'permlevel': 1,
+		'print_hide': 1
+	},
+
+	# DocField
+	{
+		u'doctype': u'DocField',
+		'fieldname': u'taxes_and_charges_total_print',
+		'fieldtype': u'Currency',
+		'label': u'Taxes and Charges Total (Import)',
+		'no_column': 0,
+		'no_copy': 1,
 		'permlevel': 1,
 		'print_hide': 1
 	},
@@ -503,24 +516,13 @@
 
 	# DocField
 	{
-		u'doctype': u'DocField',
-		'fieldname': u'rounded_total',
-		'fieldtype': u'Currency',
-		'label': u'Rounded Total',
-		'oldfieldname': u'rounded_total',
-		'oldfieldtype': u'Currency',
-		'permlevel': 1,
-		'print_hide': 1
-	},
-
-	# DocField
-	{
 		'colour': u'White:FFF',
 		'description': u'In Words will be visible once you save the Purchase Order.',
 		u'doctype': u'DocField',
-		'fieldname': u'in_words',
+		'fieldname': u'grand_total_in_words',
 		'fieldtype': u'Data',
-		'label': u'In Words',
+		'label': u'Grand Total In Words',
+		'no_copy': 1,
 		'oldfieldname': u'in_words',
 		'oldfieldtype': u'Data',
 		'permlevel': 1,
@@ -530,11 +532,11 @@
 	# DocField
 	{
 		u'doctype': u'DocField',
-		'fieldname': u'other_charges_added',
+		'fieldname': u'rounded_total',
 		'fieldtype': u'Currency',
-		'label': u'Taxes and Charges Added',
-		'no_copy': 0,
-		'oldfieldname': u'other_charges_added',
+		'label': u'Rounded Total',
+		'no_copy': 1,
+		'oldfieldname': u'rounded_total',
 		'oldfieldtype': u'Currency',
 		'permlevel': 1,
 		'print_hide': 1
@@ -543,12 +545,10 @@
 	# DocField
 	{
 		u'doctype': u'DocField',
-		'fieldname': u'other_charges_deducted',
-		'fieldtype': u'Currency',
-		'label': u'Taxes and Charges Deducted',
-		'no_copy': 0,
-		'oldfieldname': u'other_charges_deducted',
-		'oldfieldtype': u'Currency',
+		'fieldname': u'rounded_total_in_words',
+		'fieldtype': u'Data',
+		'label': u'Rounded Total In Words',
+		'no_copy': 1,
 		'permlevel': 1,
 		'print_hide': 1
 	},
@@ -566,10 +566,10 @@
 	# DocField
 	{
 		u'doctype': u'DocField',
-		'fieldname': u'grand_total_import',
+		'fieldname': u'grand_total_print',
 		'fieldtype': u'Currency',
 		'label': u'Grand Total (Import)',
-		'no_copy': 0,
+		'no_copy': 1,
 		'oldfieldname': u'grand_total_import',
 		'oldfieldtype': u'Currency',
 		'permlevel': 1,
@@ -581,9 +581,10 @@
 	{
 		'colour': u'White:FFF',
 		u'doctype': u'DocField',
-		'fieldname': u'in_words_import',
+		'fieldname': u'grand_total_in_words_print',
 		'fieldtype': u'Data',
-		'label': u'In Words(Import)',
+		'label': u'Grand Total In Words (Import)',
+		'no_copy': 1,
 		'oldfieldname': u'in_words_import',
 		'oldfieldtype': u'Data',
 		'permlevel': 1,
@@ -593,29 +594,23 @@
 	# DocField
 	{
 		u'doctype': u'DocField',
-		'fieldname': u'other_charges_added_import',
+		'fieldname': u'rounded_total_print',
 		'fieldtype': u'Currency',
-		'label': u'Taxes and Charges Added (Import)',
-		'no_copy': 0,
-		'oldfieldname': u'other_charges_added_import',
-		'oldfieldtype': u'Currency',
+		'label': u'Rounded Total (Import)',
+		'no_copy': 1,
 		'permlevel': 1,
-		'print_hide': 1,
-		'report_hide': 0
+		'print_hide': 1
 	},
 
 	# DocField
 	{
 		u'doctype': u'DocField',
-		'fieldname': u'other_charges_deducted_import',
-		'fieldtype': u'Currency',
-		'label': u'Taxes and Charges Deducted (Import)',
-		'no_copy': 0,
-		'oldfieldname': u'other_charges_deducted_import',
-		'oldfieldtype': u'Currency',
+		'fieldname': u'rounded_total_in_words_print',
+		'fieldtype': u'Data',
+		'label': u'Rounded Total In Words (Import)',
+		'no_copy': 1,
 		'permlevel': 1,
-		'print_hide': 1,
-		'report_hide': 0
+		'print_hide': 1
 	},
 
 	# DocField
@@ -744,7 +739,7 @@
 		'oldfieldname': u'status',
 		'oldfieldtype': u'Select',
 		'options': u'\nDraft\nSubmitted\nStopped\nCancelled',
-		'permlevel': 1,
+		'permlevel': 0,
 		'print_hide': 1,
 		'reqd': 1,
 		'search_index': 1
@@ -765,20 +760,6 @@
 	# DocField
 	{
 		u'doctype': u'DocField',
-		'fieldname': u'ref_sq',
-		'fieldtype': u'Data',
-		'hidden': 1,
-		'label': u'Ref SQ',
-		'no_copy': 1,
-		'oldfieldname': u'ref_sq',
-		'oldfieldtype': u'Data',
-		'permlevel': 1,
-		'print_hide': 1
-	},
-
-	# DocField
-	{
-		u'doctype': u'DocField',
 		'fieldname': u'amended_from',
 		'fieldtype': u'Data',
 		'hidden': 0,
@@ -786,7 +767,7 @@
 		'no_copy': 1,
 		'oldfieldname': u'amended_from',
 		'oldfieldtype': u'Data',
-		'permlevel': 1,
+		'permlevel': 0,
 		'print_hide': 1,
 		'report_hide': 0
 	},
@@ -893,7 +874,7 @@
 		'no_copy': 1,
 		'oldfieldname': u'per_received',
 		'oldfieldtype': u'Currency',
-		'permlevel': 1,
+		'permlevel': 0,
 		'print_hide': 1
 	},
 
@@ -909,7 +890,7 @@
 		'no_copy': 1,
 		'oldfieldname': u'per_billed',
 		'oldfieldtype': u'Currency',
-		'permlevel': 1,
+		'permlevel': 0,
 		'print_hide': 1
 	},
 
@@ -952,7 +933,7 @@
 		'no_copy': 1,
 		'oldfieldname': u'cancel_reason',
 		'oldfieldtype': u'Data',
-		'permlevel': 1,
+		'permlevel': 0,
 		'print_hide': 1
 	},
 
@@ -980,7 +961,7 @@
 		'oldfieldname': u'po_raw_material_details',
 		'oldfieldtype': u'Table',
 		'options': u'Items Supplied For Subcontracting',
-		'permlevel': 1,
+		'permlevel': 0,
 		'print_hide': 1
 	},
 

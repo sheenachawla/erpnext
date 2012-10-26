@@ -36,7 +36,7 @@ class DocType(TransactionBase):
 		self.doclist = doclist
 		self.defaults = get_defaults()
 		self.tname = 'Purchase Order Item'
-		self.fname = 'po_details'
+		self.fname = 'purchase_order_items'
 
 	# Autoname
 	# ---------
@@ -47,7 +47,7 @@ class DocType(TransactionBase):
 		get_obj(dt = 'Purchase Common').get_default_schedule_date(self)
 		
 	def validate_fiscal_year(self):
-		get_obj(dt = 'Purchase Common').validate_fiscal_year(self.doc.fiscal_year,self.doc.transaction_date,'PO Date')
+		get_obj(dt = 'Purchase Common').validate_fiscal_year(self.doc.fiscal_year,self.doc.posting_date,'PO Date')
 
 
 	# Get Item Details
@@ -80,22 +80,22 @@ class DocType(TransactionBase):
 
 	# Pull Purchase Request
 	def get_indent_details(self):
-		if self.doc.indent_no:
-			get_obj('DocType Mapper','Purchase Request-Purchase Order').dt_map('Purchase Request','Purchase Order',self.doc.indent_no, self.doc, self.doclist, "[['Purchase Request','Purchase Order'],['Purchase Request Item', 'Purchase Order Item']]")
+		if self.doc.purchase_request:
+			get_obj('DocType Mapper','Purchase Request-Purchase Order').dt_map('Purchase Request','Purchase Order',self.doc.purchase_request, self.doc, self.doclist, "[['Purchase Request','Purchase Order'],['Purchase Request Item', 'Purchase Order Item']]")
 			pcomm = get_obj('Purchase Common')
-			for d in getlist(self.doclist, 'po_details'):
-				if d.item_code and not d.purchase_rate:
+			for d in getlist(self.doclist, 'purchase_order_items'):
+				if d.item_code and not d.rate:
 					last_purchase_details, last_purchase_date = pcomm.get_last_purchase_details(d.item_code, self.doc.name)
 					if last_purchase_details:
 						conversion_factor = d.conversion_factor or 1.0
-						conversion_rate = self.doc.fields.get('conversion_rate') or 1.0
-						d.purchase_ref_rate = last_purchase_details['purchase_ref_rate'] * conversion_factor
-						d.discount_rate = last_purchase_details['discount_rate']
-						d.purchase_rate = last_purchase_details['purchase_rate'] * conversion_factor
-						d.import_ref_rate = d.purchase_ref_rate / conversion_rate
-						d.import_rate = d.purchase_rate / conversion_rate						
+						exchange_rate = self.doc.fields.get('exchange_rate') or 1.0
+						d.ref_rate = last_purchase_details['ref_rate'] * conversion_factor
+						d.discount = last_purchase_details['discount']
+						d.rate = last_purchase_details['rate'] * conversion_factor
+						d.print_ref_rate = d.ref_rate / exchange_rate
+						d.print_rate = d.rate / exchange_rate						
 					else:
-						d.purchase_ref_rate = d.discount_rate = d.purchase_rate = d.import_ref_rate = d.import_rate = 0.0
+						d.ref_rate = d.discount = d.rate = d.print_ref_rate = d.print_rate = 0.0
 						
 	def get_supplier_quotation_items(self):
 		if self.doc.supplier_quotation:
@@ -105,7 +105,7 @@ class DocType(TransactionBase):
 				['Supplier Quotation Item', 'Purchase Order Item'],
 				['Purchase Taxes and Charges', 'Purchase Taxes and Charges']]""")
 			self.get_default_schedule_date()
-			for d in getlist(self.doclist, 'po_details'):
+			for d in getlist(self.doclist, 'purchase_order_items'):
 				if d.prevdoc_detail_docname and not d.schedule_date:
 					d.schedule_date = webnotes.conn.get_value("Purchase Request Item",
 							d.prevdoc_detail_docname, "schedule_date")
@@ -124,7 +124,7 @@ class DocType(TransactionBase):
 	# Check for Stopped status 
 	def check_for_stopped_status(self, pc_obj):
 		check_list =[]
-		for d in getlist(self.doclist, 'po_details'):
+		for d in getlist(self.doclist, 'purchase_order_items'):
 			if d.fields.has_key('prevdoc_docname') and d.prevdoc_docname and d.prevdoc_docname not in check_list:
 				check_list.append(d.prevdoc_docname)
 				pc_obj.check_for_stopped_status( d.prevdoc_doctype, d.prevdoc_docname)
@@ -146,7 +146,7 @@ class DocType(TransactionBase):
 		pc_obj.validate_for_items(self)
 
 		# Step 5:=> validate conversion rate
-		pc_obj.validate_conversion_rate(self)
+		pc_obj.validate_exchange_rate(self)
 		
 		# Get po date
 		pc_obj.get_prevdoc_date(self)
@@ -157,42 +157,50 @@ class DocType(TransactionBase):
 		# Check for stopped status
 		self.check_for_stopped_status(pc_obj)
 		
-			
 		 # get total in words
 		dcc = TransactionBase().get_company_currency(self.doc.company)
-		self.doc.in_words = pc_obj.get_total_in_words(dcc, self.doc.grand_total)
-		self.doc.in_words_import = pc_obj.get_total_in_words(self.doc.currency, self.doc.grand_total_import)
+		self.doc.grand_total_in_words = pc_obj.get_total_in_words(dcc, self.doc.grand_total)
+		self.doc.grand_total_in_words_print = pc_obj.get_total_in_words(self.doc.currency, self.doc.grand_total_print)
 	
-	# update bin
-	# ----------
+
 	def update_bin(self, is_submit, is_stopped = 0):
 		pc_obj = get_obj('Purchase Common')
-		for d in getlist(self.doclist, 'po_details'):
+		for d in getlist(self.doclist, 'purchase_order_items'):
 			#1. Check if is_stock_item == 'Yes'
-			if sql("select is_stock_item from tabItem where name=%s", d.item_code)[0][0]=='Yes':
-				
+			if webnotes.conn.get_value("Item", d.item_code, "is_stock_item") == "Yes":
 				ind_qty, po_qty = 0, flt(d.qty) * flt(d.conversion_factor)
 				if is_stopped:
-					po_qty = flt(d.qty) > flt(d.received_qty) and flt( flt(flt(d.qty) - flt(d.received_qty)) * flt(d.conversion_factor))or 0 
+					po_qty = flt(d.qty) > flt(d.received_qty) and \
+						flt( flt(flt(d.qty) - flt(d.received_qty))*flt(d.conversion_factor)) or 0 
 				
 				# No updates in Purchase Request on Stop / Unstop
 				if cstr(d.prevdoc_doctype) == 'Purchase Request' and not is_stopped:
 					# get qty and pending_qty of prevdoc 
-					curr_ref_qty = pc_obj.get_qty( d.doctype, 'prevdoc_detail_docname', d.prevdoc_detail_docname, 'Purchase Request Item', 'Purchase Request - Purchase Order', self.doc.name)
-					max_qty, qty, curr_qty = flt(curr_ref_qty.split('~~~')[1]), flt(curr_ref_qty.split('~~~')[0]), 0
+					curr_ref_qty = pc_obj.get_qty(d.doctype, 'prevdoc_detail_docname',
+					 	d.prevdoc_detail_docname, 'Purchase Request Item', 
+						'Purchase Request - Purchase Order', self.doc.name)
+					max_qty, qty, curr_qty = flt(curr_ref_qty.split('~~~')[1]), \
+					 	flt(curr_ref_qty.split('~~~')[0]), 0
 					
 					if flt(qty) + flt(po_qty) > flt(max_qty):
 						curr_qty = flt(max_qty) - flt(qty)
-						# special case as there is no restriction for Purchase Request - Purchase Order 
-						curr_qty = (curr_qty > 0) and curr_qty or 0
+						# special case as there is no restriction 
+						# for Purchase Request - Purchase Order 
+						curr_qty = curr_qty > 0 and curr_qty or 0
 					else:
 						curr_qty = flt(po_qty)
 					
 					ind_qty = -flt(curr_qty)
 
-				#==> Update Bin's Purchase Request Qty by +- ind_qty and Ordered Qty by +- qty
-				get_obj('Warehouse', d.warehouse).update_bin(0, 0, (is_submit and 1 or -1) * flt(po_qty), (is_submit and 1 or -1) * flt(ind_qty), 0, d.item_code, self.doc.transaction_date)
-
+				# Update ordered_qty and indented_qty in bin
+				args = {
+					"item_code" : d.item_code,
+					"ordered_qty" : (is_submit and 1 or -1) * flt(po_qty),
+					"indented_qty" : (is_submit and 1 or -1) * flt(ind_qty),
+					"posting_date": self.doc.posting_date
+				}
+				get_obj("Warehouse", d.warehouse).update_bin(args)
+				
 	def check_modified_date(self):
 		mod_db = sql("select modified from `tabPurchase Order` where name = '%s'" % self.doc.name)
 		date_diff = sql("select TIMEDIFF('%s', '%s')" % ( mod_db[0][0],cstr(self.doc.modified)))

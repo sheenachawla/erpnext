@@ -3,11 +3,11 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-04-23 12:46:00',
-		'docstatus': 0,
-		'modified': '2012-05-04 12:49:43',
-		'modified_by': u'Administrator',
-		'owner': u'saumil@webnotestech.com'
+		u'creation': '2012-10-24 14:33:41',
+		u'docstatus': 0,
+		u'modified': '2012-10-24 14:33:41',
+		u'modified_by': u'Administrator',
+		u'owner': u'saumil@webnotestech.com'
 	},
 
 	# These values are common for all Search Criteria
@@ -15,10 +15,10 @@
 		'columns': u'Profile\x01ID,Profile\x01Owner',
 		'criteria_name': u'Trend Analyzer',
 		'doc_type': u'Profile',
-		'doctype': 'Search Criteria',
+		u'doctype': u'Search Criteria',
 		'filters': u'{}',
 		'module': u'Accounts',
-		'name': '__common__',
+		u'name': u'__common__',
 		'page_len': 50,
 		'sort_by': u'`tabProfile`.`name`',
 		'sort_order': u'DESC',
@@ -27,7 +27,7 @@
 
 	# Search Criteria, trend_analyzer
 	{
-		'doctype': 'Search Criteria',
-		'name': u'trend_analyzer'
+		u'doctype': u'Search Criteria',
+		u'name': u'trend_analyzer'
 	}
 ]

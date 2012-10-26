@@ -3,11 +3,11 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-03-30 13:33:32',
-		'docstatus': 0,
-		'modified': '2012-03-30 13:33:32',
-		'modified_by': u'Administrator',
-		'owner': u'ashwini@webnotestech.com'
+		u'creation': '2012-10-24 14:33:48',
+		u'docstatus': 0,
+		u'modified': '2012-10-24 14:33:48',
+		u'modified_by': u'Administrator',
+		u'owner': u'ashwini@webnotestech.com'
 	},
 
 	# These values are common for all Search Criteria
@@ -15,10 +15,10 @@
 		'columns': u'Expense Claim\x01ID,Expense Claim\x01Approval Status,Expense Claim\x01From Employee,Expense Claim\x01Employee Name,Expense Claim\x01Approver,Expense Claim\x01Posting Date,Expense Claim\x01Total Claimed Amount,Expense Claim\x01Total Sanctioned Amount',
 		'criteria_name': u'Expense Claims',
 		'doc_type': u'Expense Claim',
-		'doctype': 'Search Criteria',
+		u'doctype': u'Search Criteria',
 		'filters': u"{'Expense Claim\x01Saved':1,'Expense Claim\x01Submitted':1,'Expense Claim\x01Approval Status':'','Expense Claim\x01Fiscal Year':''}",
 		'module': u'HR',
-		'name': '__common__',
+		u'name': u'__common__',
 		'page_len': 50,
 		'sort_by': u'`tabExpense Claim`.`name`',
 		'sort_order': u'DESC',
@@ -27,7 +27,7 @@
 
 	# Search Criteria, expense_claims
 	{
-		'doctype': 'Search Criteria',
-		'name': u'expense_claims'
+		u'doctype': u'Search Criteria',
+		u'name': u'expense_claims'
 	}
 ]

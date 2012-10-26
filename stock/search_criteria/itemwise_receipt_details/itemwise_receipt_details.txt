@@ -3,11 +3,11 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-04-11 13:16:55',
-		'docstatus': 0,
-		'modified': '2012-04-13 11:16:40',
-		'modified_by': u'Administrator',
-		'owner': u'Administrator'
+		u'creation': '2012-10-24 14:34:07',
+		u'docstatus': 0,
+		u'modified': '2012-10-24 14:34:07',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
 	},
 
 	# These values are common for all Search Criteria
@@ -15,10 +15,10 @@
 		'columns': u'Purchase Receipt\x01ID,Purchase Receipt\x01Posting Date,Purchase Receipt Item\x01Item Code,Purchase Receipt Item\x01Item Name,Purchase Receipt Item\x01Accepted Quantity,Purchase Receipt Item\x01Rejected Quantity,Purchase Receipt Item\x01UOM,Purchase Receipt Item\x01Accepted Warehouse,Purchase Receipt Item\x01Rejected Warehouse,Purchase Receipt Item\x01Amount',
 		'criteria_name': u'Itemwise Receipt Details',
 		'doc_type': u'Purchase Receipt Item',
-		'doctype': 'Search Criteria',
+		u'doctype': u'Search Criteria',
 		'filters': u'{"Purchase Receipt\\u0001Submitted":1,"Purchase Receipt\\u0001Status":[""],"Purchase Receipt\\u0001Fiscal Year":[""]}',
 		'module': u'Stock',
-		'name': '__common__',
+		u'name': u'__common__',
 		'page_len': 50,
 		'parent_doc_type': u'Purchase Receipt',
 		'sort_by': u'`tabPurchase Receipt`.`name`',
@@ -28,7 +28,7 @@
 
 	# Search Criteria, itemwise_receipt_details
 	{
-		'doctype': 'Search Criteria',
-		'name': u'itemwise_receipt_details'
+		u'doctype': u'Search Criteria',
+		u'name': u'itemwise_receipt_details'
 	}
 ]

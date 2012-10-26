@@ -16,7 +16,7 @@
 
 cur_frm.cscript.tname = "Purchase Receipt Item";
 cur_frm.cscript.fname = "purchase_receipt_details";
-cur_frm.cscript.other_fname = "purchase_tax_details";
+cur_frm.cscript.other_fname = "taxes_and_charges";
 
 wn.require('app/accounts/doctype/purchase_taxes_and_charges_master/purchase_taxes_and_charges_master.js');
 wn.require('app/buying/doctype/purchase_common/purchase_common.js');
@@ -28,7 +28,7 @@ cur_frm.cscript.onload = function(doc, cdt, cdn) {
 	if(!doc.fiscal_year && doc.__islocal){ set_default_values(doc);}
 	if(!doc.posting_date) doc.posting_date = dateutil.obj_to_str(new Date());
 	if(!doc.posting_time) doc.posting_time = dateutil.get_cur_time();
-	if(!doc.transaction_date) doc.transaction_date = dateutil.obj_to_str(new Date());
+	if(!doc.posting_date) doc.posting_date = dateutil.obj_to_str(new Date());
 	if(!doc.status) doc.status = 'Draft';
 }
 
@@ -105,9 +105,9 @@ cur_frm.fields_dict.contact_person.on_new = function(dn) {
 cur_frm.cscript.pull_purchase_order_details = function(doc, dt, dn) {
 	var callback = function(r,rt) { 
 		//unhide_field(['supplier_address','contact_person','supplier_name','address_display', 'contact_display', 'contact_mobile','contact_email']);				
-		refresh_many(['supplier','supplier_address','contact_person', 'supplier_name', 'address_display', 'contact_display','contact_mobile', 'contact_email', 'purchase_receipt_details', 'purchase_tax_details']);
+		refresh_many(['supplier','supplier_address','contact_person', 'supplier_name', 'address_display', 'contact_display','contact_mobile', 'contact_email', 'purchase_receipt_details', 'taxes_and_charges']);
 	}
-	$c_obj(make_doclist(dt,dn),'get_po_details','',callback);
+	$c_obj(make_doclist(dt,dn),'get_purchase_order_items','',callback);
 }
 
 
@@ -121,7 +121,7 @@ cur_frm.cscript.new_contact = function(){
 }
 
 //======================= posting date =============================
-cur_frm.cscript.transaction_date = function(doc,cdt,cdn){
+cur_frm.cscript.posting_date = function(doc,cdt,cdn){
 	if(doc.__islocal){ 
 		cur_frm.cscript.get_default_schedule_date(doc);
 	}

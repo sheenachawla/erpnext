@@ -14,126 +14,97 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-cur_frm.cscript.tname = "Purchase Request Item";
-cur_frm.cscript.fname = "indent_details";
+wn.require('public/app/js/buying.js');
+// wn.require('app/utilities/doctype/sms_control/sms_control.js');
 
-wn.require('app/buying/doctype/purchase_common/purchase_common.js');
-wn.require('app/utilities/doctype/sms_control/sms_control.js');
-	
-//========================== On Load =================================================
-cur_frm.cscript.onload = function(doc, cdt, cdn) {
-	if (!doc.transaction_date) doc.transaction_date = dateutil.obj_to_str(new Date())
-	if (!doc.status) doc.status = 'Draft';
+wn.provide("erpnext.buying");
 
-	// defined in purchase_common.js
-	//cur_frm.cscript.update_item_details(doc, cdt, cdn);
-}
-
-cur_frm.cscript.onload_post_render = function(doc, cdt, cdn) {
-	// second call
-	if(doc.__islocal){ 
-		cur_frm.cscript.get_item_defaults(doc);
-	}	
-}
-
-cur_frm.cscript.get_item_defaults = function(doc) {
-		var ch = getchildren( 'Purchase Request Item', doc.name, 'indent_details');
-		if (flt(ch.length) > 0){
-			$c_obj(make_doclist(doc.doctype, doc.name), 'get_item_defaults', '', function(r, rt) {refresh_field('indent_details'); });
+erpnext.buying.PurchaseRequest = erpnext.Buying.extend({
+	onload_post_render: function() {
+		this.get_item_defaults();
+	},
+	refresh: function() {
+		this._super();
+		this.add_buttons();
+	},
+	validate: function() {
+		this.is_table_empty("purchase_request_items");
+	},
+	posting_date: function() {
+		if(this.frm.doc.__islocal && this.frm.doc.posting_date) {
+			// on change of posting date, update schedule date
+			this.set_schedule_date("purchase_request_items");
 		}
-}
-
-
-//======================= Refresh =====================================
-cur_frm.cscript.refresh = function(doc, cdt, cdn) { 
-	cur_frm.clear_custom_buttons();
-	erpnext.hide_naming_series();
-
-	if(doc.docstatus == 1 && doc.status != 'Stopped'){
-		if(doc.per_ordered < 100) {
-			cur_frm.add_custom_button('Make Purchase Order', cur_frm.cscript['Make Purchase Order']);
-			cur_frm.add_custom_button('Stop Purchase Request', cur_frm.cscript['Stop Purchase Request']);
+	},
+	qty: function(doc, cdt, cdn) {
+		// warn if qty < min order qty
+		var child = locals[cdt][cdn];
+		if(flt(child.qty) < flt(child.min_order_qty)) {
+			msgprint(repl("Warning: \
+				Requested Quantity is less than Minimum Order Quantity \
+				for Item: %(item_code)s at row # %(row_idx)s", 
+				{ item_code: child.item_code, row_idx: child.idx + 1 }));
 		}
-		cur_frm.add_custom_button('Send SMS', cur_frm.cscript.send_sms);
-		cur_frm.add_custom_button("Make Supplier Quotation", cur_frm.cscript.make_supplier_quotation);
-	}
- 
-	if(doc.docstatus == 1 && doc.status == 'Stopped')
-		cur_frm.add_custom_button('Unstop Purchase Request', cur_frm.cscript['Unstop Purchase Request'])
-}
-
-//======================= validation ===================================
-cur_frm.cscript.validate = function(doc,cdt,cdn){
-	is_item_table(doc,cdt,cdn);
-}
-//======================= transaction date =============================
-cur_frm.cscript.transaction_date = function(doc,cdt,cdn){
-	if(doc.__islocal){ 
-		cur_frm.cscript.get_default_schedule_date(doc);
-	}
-}
-
-//=================== Quantity ===================================================================
-cur_frm.cscript.qty = function(doc, cdt, cdn) {
-	var d = locals[cdt][cdn];
-	if (flt(d.qty) < flt(d.min_order_qty))
-		alert("Warning: Purchase Requested Qty is less than Minimum Order Qty");
-}
-
-// On Button Click Functions
-// ------------------------------------------------------------------------------
-
-// Make Purchase Order
-cur_frm.cscript['Make Purchase Order'] = function() {
-	var doc = cur_frm.doc;
-	n = createLocal('Purchase Order');
-	$c('dt_map', args={
-		'docs':compress_doclist([locals['Purchase Order'][n]]),
-		'from_doctype':doc.doctype,
-		'to_doctype':'Purchase Order',
-		'from_docname':doc.name,
-		'from_to_list':"[['Purchase Request','Purchase Order'],['Purchase Request Item','Purchase Order Item']]"
-		}, function(r,rt) {
-			 loaddoc('Purchase Order', n);
+	},
+	get_item_defaults: function() {
+		if(this.frm.doc.__islocal && wn.model.has_children(this.frm.doc.doctype,
+				this.frm.doc.name, "purchase_request_items")) {
+			$c_obj(make_doclist(this.frm.doc.doctype, this.frm.doc.name),
+				"set_item_defaults", null, function(r) {
+					refresh_field("purchase_request_items");
+				});
 		}
-	);
-}
+	},
+	add_buttons: function() {
+		var me = this;
+		this.frm.clear_custom_buttons();
+		
+		if(this.frm.doc.docstatus == 1) {
+			if(this.frm.doc.status == "Stopped") {
+				this.frm.add_custom_button("Resume Purchase Request",
+					function() { me.resume_purchase_request(); }, "icon-play");
+			} else {
+				this.frm.add_custom_button("Make Supplier Quotation",
+					function() { me.make_supplier_quotation(); });
+				
+				if(this.frm.doc.per_ordered < 100.0) {
+					this.frm.add_custom_button("Make Purchase Order",
+						function() { me.make_purchase_order(); });
 
-// Stop INDENT
-// ==================================================================================================
-cur_frm.cscript['Stop Purchase Request'] = function() {
-	var doc = cur_frm.doc;
-	var check = confirm("Do you really want to STOP this Purchase Request?");
-
-	if (check) {
-		$c('runserverobj', args={'method':'update_status', 'arg': 'Stopped', 'docs': compress_doclist(make_doclist(doc.doctype, doc.name))}, function(r,rt) {
-			cur_frm.refresh();
-		});
+					this.frm.add_custom_button("Stop Purchase Request",
+						function() { me.stop_purchase_request(); }, "icon-ban-circle");
+				}
+				this.frm.add_custom_button("Send SMS", this.send_sms);
+			}
+		}
+	},
+	make_supplier_quotation: function() {
+		wn.model.map_doclist([["Purchase Request", "Supplier Quotation"],
+			["Purchase Request Item", "Supplier Quotation Item"]], this.frm.doc.name);
+	},
+	make_purchase_order: function() {
+		wn.model.map_doclist([["Purchase Request", "Purchase Order"],
+			["Purchase Request Item", "Purchase Order Item"]], this.frm.doc.name);
+	},
+	stop_purchase_request: function() {
+		// TODO
+		// this.frm.doc.status = "Stopped";
+		// this.frm.save();
+	},
+	resume_purchase_request: function() {
+		// TODO
+		// this.frm.doc.status = "Submitted";
+		// this.frm.save();
+	},
+	send_sms: function(me) {
+		// TODO
+	},
+	load_precision_maps: function() {
+		// TODO
+		// this.frm.main_precision = wn.model.get_precision_map("Purchase Request");
+		// this.frm.item_precision = wn.model.get_precision_map("Purchase Request Item");
 	}
-}
+})
 
-// Un Stop INDENT
-//====================================================================================================
-cur_frm.cscript['Unstop Purchase Request'] = function(){
-	var doc = cur_frm.doc
-	var check = confirm("Do you really want to UNSTOP this Purchase Request?");
-	
-	if (check) {
-		$c('runserverobj', args={'method':'update_status', 'arg': 'Submitted','docs': compress_doclist(make_doclist(doc.doctype, doc.name))}, function(r,rt) {
-			cur_frm.refresh();
-			
-		});
-	}
-}
-
-cur_frm.cscript.make_supplier_quotation = function() {
-	var new_sq_name = createLocal("Supplier Quotation");
-	$c("dt_map", {
-		"docs": compress_doclist([locals['Supplier Quotation'][new_sq_name]]),
-		"from_doctype": cur_frm.doc.doctype,
-		"to_doctype": "Supplier Quotation",
-		"from_docname": cur_frm.doc.name,
-		"from_to_list": JSON.stringify([['Purchase Request', 'Supplier Quotation'],
-			['Purchase Request Item', 'Supplier Quotation Item']]),
-	}, function(r, rt) { loaddoc("Supplier Quotation", new_sq_name) });
-}
+cur_frm.cscript = new erpnext.buying.PurchaseRequest({
+	frm: cur_frm, item_table_field: "purchase_request_items"});

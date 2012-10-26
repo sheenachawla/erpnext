@@ -3,20 +3,20 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2010-09-01 15:47:59',
-		'docstatus': 0,
-		'modified': '2012-04-03 12:49:50',
-		'modified_by': u'Administrator',
-		'owner': u'ashwini@webnotestech.com'
+		u'creation': '2010-09-20 12:33:34',
+		u'docstatus': 0,
+		u'modified': '2012-10-24 14:33:48',
+		u'modified_by': u'Administrator',
+		u'owner': u'ashwini@webnotestech.com'
 	},
 
 	# These values are common for all Table Mapper Detail
 	{
-		'doctype': u'Table Mapper Detail',
+		u'doctype': u'Table Mapper Detail',
 		'from_field': u'kra_sheet',
 		'from_table': u'Appraisal Template Goal',
 		'match_id': 0,
-		'name': '__common__',
+		u'name': u'__common__',
 		'parent': u'Appraisal Template-Appraisal',
 		'parentfield': u'table_mapper_details',
 		'parenttype': u'DocType Mapper',
@@ -27,21 +27,21 @@
 
 	# These values are common for all DocType Mapper
 	{
-		'doctype': 'DocType Mapper',
+		u'doctype': u'DocType Mapper',
 		'from_doctype': u'Appraisal Template',
 		'module': u'HR',
-		'name': '__common__',
+		u'name': u'__common__',
 		'to_doctype': u'Appraisal'
 	},
 
 	# DocType Mapper, Appraisal Template-Appraisal
 	{
-		'doctype': 'DocType Mapper',
-		'name': u'Appraisal Template-Appraisal'
+		u'doctype': u'DocType Mapper',
+		u'name': u'Appraisal Template-Appraisal'
 	},
 
 	# Table Mapper Detail
 	{
-		'doctype': u'Table Mapper Detail'
+		u'doctype': u'Table Mapper Detail'
 	}
 ]

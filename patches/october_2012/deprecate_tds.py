@@ -23,7 +23,7 @@ def execute():
 		where ifnull(tax_code, '')!='' and ifnull(ded_amount, 0)!=0""")
 	for pi in pi_list:
 		piobj = get_obj("Purchase Invoice", pi[0], with_children=1)
-		ch = addchild(piobj.doc, 'purchase_tax_details', 'Purchase Taxes and Charges')
+		ch = addchild(piobj.doc, 'taxes_and_charges', 'Purchase Taxes and Charges')
 		ch.charge_type = "Actual"
 		ch.account_head = piobj.doc.tax_code
 		ch.description = piobj.doc.tax_code

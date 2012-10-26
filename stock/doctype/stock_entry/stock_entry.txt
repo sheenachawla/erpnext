@@ -3,11 +3,11 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-05-03 11:12:49',
-		'docstatus': 0,
-		'modified': '2012-07-17 13:32:44',
-		'modified_by': u'Administrator',
-		'owner': u'Administrator'
+		u'creation': '2012-10-18 15:07:39',
+		u'docstatus': 0,
+		u'modified': '2012-10-22 14:13:33',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
 	},
 
 	# These values are common for all DocType
@@ -21,7 +21,9 @@
 		'allow_trash': 0,
 		'colour': u'White:FFF',
 		'default_print_format': u'Standard',
-		'doctype': 'DocType',
+		'description': u'Material movement entry.',
+		u'doctype': u'DocType',
+		'document_type': u'Transaction',
 		'hide_heading': 0,
 		'hide_toolbar': 0,
 		'in_create': 0,
@@ -31,7 +33,7 @@
 		'issingle': 0,
 		'max_attachments': 0,
 		'module': u'Stock',
-		'name': '__common__',
+		u'name': u'__common__',
 		'print_outline': u'No',
 		'read_only': 0,
 		'read_only_onload': 0,
@@ -42,13 +44,13 @@
 		'subject': u'%(remarks)s',
 		'tag_fields': u'purpose',
 		'use_template': 0,
-		'version': 1
+		'version': 3
 	},
 
 	# These values are common for all DocField
 	{
-		'doctype': u'DocField',
-		'name': '__common__',
+		u'doctype': u'DocField',
+		u'name': u'__common__',
 		'parent': u'Stock Entry',
 		'parentfield': u'fields',
 		'parenttype': u'DocType'
@@ -56,8 +58,8 @@
 
 	# These values are common for all DocPerm
 	{
-		'doctype': u'DocPerm',
-		'name': '__common__',
+		u'doctype': u'DocPerm',
+		u'name': u'__common__',
 		'parent': u'Stock Entry',
 		'parentfield': u'permissions',
 		'parenttype': u'DocType',
@@ -66,116 +68,13 @@
 
 	# DocType, Stock Entry
 	{
-		'doctype': 'DocType',
-		'name': u'Stock Entry'
-	},
-
-	# DocPerm
-	{
-		'amend': 1,
-		'cancel': 1,
-		'create': 1,
-		'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'Material Manager',
-		'submit': 1,
-		'write': 1
-	},
-
-	# DocPerm
-	{
-		'amend': 0,
-		'cancel': 0,
-		'create': 0,
-		'doctype': u'DocPerm',
-		'permlevel': 1,
-		'role': u'Material Manager',
-		'submit': 0,
-		'write': 0
-	},
-
-	# DocPerm
-	{
-		'amend': 1,
-		'cancel': 1,
-		'create': 1,
-		'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'Material User',
-		'submit': 1,
-		'write': 1
-	},
-
-	# DocPerm
-	{
-		'amend': 0,
-		'cancel': 0,
-		'create': 0,
-		'doctype': u'DocPerm',
-		'permlevel': 1,
-		'role': u'Material User',
-		'submit': 0,
-		'write': 0
-	},
-
-	# DocPerm
-	{
-		'amend': 1,
-		'cancel': 1,
-		'create': 1,
-		'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'Production User',
-		'submit': 1,
-		'write': 1
-	},
-
-	# DocPerm
-	{
-		'doctype': u'DocPerm',
-		'permlevel': 1,
-		'role': u'Production User'
-	},
-
-	# DocPerm
-	{
-		'create': 0,
-		'doctype': u'DocPerm',
-		'permlevel': 2,
-		'role': u'Production User',
-		'write': 1
-	},
-
-	# DocPerm
-	{
-		'amend': 1,
-		'cancel': 1,
-		'create': 1,
-		'doctype': u'DocPerm',
-		'permlevel': 0,
-		'role': u'Production Manager',
-		'submit': 1,
-		'write': 1
-	},
-
-	# DocPerm
-	{
-		'doctype': u'DocPerm',
-		'permlevel': 1,
-		'role': u'Production Manager'
-	},
-
-	# DocPerm
-	{
-		'doctype': u'DocPerm',
-		'permlevel': 2,
-		'role': u'Production Manager',
-		'write': 1
+		u'doctype': u'DocType',
+		u'name': u'Stock Entry'
 	},
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'col1',
 		'fieldtype': u'Column Break',
 		'oldfieldtype': u'Column Break',
@@ -188,7 +87,7 @@
 		'allow_on_submit': 0,
 		'colour': u'White:FFF',
 		'description': u'To manage multiple series please go to Setup > Manage Series',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'naming_series',
 		'fieldtype': u'Select',
 		'hidden': 0,
@@ -209,7 +108,7 @@
 	{
 		'allow_on_submit': 0,
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'purpose',
 		'fieldtype': u'Select',
 		'hidden': 0,
@@ -231,7 +130,7 @@
 	{
 		'allow_on_submit': 0,
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'delivery_note_no',
 		'fieldtype': u'Link',
 		'hidden': 1,
@@ -253,7 +152,7 @@
 	{
 		'allow_on_submit': 0,
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'purchase_receipt_no',
 		'fieldtype': u'Link',
 		'hidden': 1,
@@ -273,7 +172,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'sales_invoice_no',
 		'fieldtype': u'Link',
 		'hidden': 1,
@@ -287,7 +186,7 @@
 	{
 		'allow_on_submit': 0,
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'process',
 		'fieldtype': u'Select',
 		'hidden': 1,
@@ -309,7 +208,7 @@
 	{
 		'allow_on_submit': 0,
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'production_order',
 		'fieldtype': u'Link',
 		'hidden': 1,
@@ -330,7 +229,7 @@
 	# DocField
 	{
 		'depends_on': u"eval:doc.purpose == 'Other'",
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'bom_no',
 		'fieldtype': u'Link',
 		'label': u'BOM No',
@@ -343,7 +242,7 @@
 		'colour': u'White:FFF',
 		'depends_on': u"eval:doc.purpose == 'Other'",
 		'description': u'Select "Yes" if stock is maintained and tracked for sub-assembly items. Select "No" if you want child items of sub-assembly for material transfer.',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'consider_sa_items_as_raw_materials',
 		'fieldtype': u'Select',
 		'label': u'Consider SA Items as Raw Materials',
@@ -354,7 +253,7 @@
 	# DocField
 	{
 		'allow_on_submit': 0,
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'fg_completed_qty',
 		'fieldtype': u'Currency',
 		'hidden': 0,
@@ -375,7 +274,7 @@
 	{
 		'allow_on_submit': 0,
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'get_items',
 		'fieldtype': u'Button',
 		'hidden': 0,
@@ -394,7 +293,7 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'warehouse_html',
 		'fieldtype': u'HTML',
 		'label': u'Warehouse HTML',
@@ -409,7 +308,7 @@
 	{
 		'allow_on_submit': 0,
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'from_warehouse',
 		'fieldtype': u'Link',
 		'hidden': 0,
@@ -432,7 +331,7 @@
 		'allow_on_submit': 0,
 		'colour': u'White:FFF',
 		'description': u'<b>Notes:</b> Either Source or Target is Mandatory',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'to_warehouse',
 		'fieldtype': u'Link',
 		'hidden': 0,
@@ -452,7 +351,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'col2',
 		'fieldtype': u'Column Break',
 		'oldfieldtype': u'Column Break',
@@ -464,7 +363,7 @@
 	{
 		'allow_on_submit': 0,
 		'description': u'The date at which current entry will get or has actually executed.',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'posting_date',
 		'fieldtype': u'Date',
 		'hidden': 0,
@@ -483,7 +382,7 @@
 	# DocField
 	{
 		'allow_on_submit': 0,
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'posting_time',
 		'fieldtype': u'Time',
 		'hidden': 0,
@@ -502,7 +401,7 @@
 	# DocField
 	{
 		'allow_on_submit': 0,
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'remarks',
 		'fieldtype': u'Text',
 		'hidden': 0,
@@ -520,7 +419,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'items_section',
 		'fieldtype': u'Section Break',
 		'label': u'Items',
@@ -532,7 +431,7 @@
 	{
 		'allow_on_submit': 0,
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'mtn_details',
 		'fieldtype': u'Table',
 		'hidden': 0,
@@ -551,7 +450,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'item_section',
 		'fieldtype': u'Section Break',
 		'oldfieldtype': u'Section Break',
@@ -562,7 +461,7 @@
 	# DocField
 	{
 		'allow_on_submit': 0,
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'total_amount',
 		'fieldtype': u'Currency',
 		'hidden': 0,
@@ -580,7 +479,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'col3',
 		'fieldtype': u'Column Break',
 		'oldfieldtype': u'Column Break',
@@ -589,7 +488,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'get_stock_and_rate',
 		'fieldtype': u'Button',
 		'label': u'Get Stock and Rate',
@@ -601,7 +500,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'contact_section',
 		'fieldtype': u'Section Break',
 		'label': u'Contact Info',
@@ -612,7 +511,7 @@
 	{
 		'allow_on_submit': 0,
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'supplier',
 		'fieldtype': u'Link',
 		'hidden': 0,
@@ -633,7 +532,7 @@
 	# DocField
 	{
 		'allow_on_submit': 0,
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'supplier_name',
 		'fieldtype': u'Data',
 		'hidden': 0,
@@ -653,7 +552,7 @@
 	{
 		'allow_on_submit': 0,
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'supplier_address',
 		'fieldtype': u'Small Text',
 		'hidden': 0,
@@ -674,7 +573,7 @@
 	{
 		'allow_on_submit': 0,
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'customer',
 		'fieldtype': u'Link',
 		'hidden': 0,
@@ -695,7 +594,7 @@
 	# DocField
 	{
 		'allow_on_submit': 0,
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'customer_name',
 		'fieldtype': u'Data',
 		'hidden': 0,
@@ -714,7 +613,7 @@
 	# DocField
 	{
 		'allow_on_submit': 0,
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'customer_address',
 		'fieldtype': u'Small Text',
 		'hidden': 0,
@@ -732,7 +631,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'more_info',
 		'fieldtype': u'Section Break',
 		'label': u'More Info',
@@ -742,7 +641,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'col4',
 		'fieldtype': u'Column Break',
 		'permlevel': 0,
@@ -751,7 +650,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'project_name',
 		'fieldtype': u'Link',
 		'in_filter': 1,
@@ -765,7 +664,7 @@
 	# DocField
 	{
 		'allow_on_submit': 0,
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'select_print_heading',
 		'fieldtype': u'Link',
 		'hidden': 0,
@@ -785,7 +684,7 @@
 	# DocField
 	{
 		'allow_on_submit': 0,
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'cancel_reason',
 		'fieldtype': u'Data',
 		'hidden': 1,
@@ -805,7 +704,7 @@
 	{
 		'allow_on_submit': 0,
 		'default': u'Today',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'transfer_date',
 		'fieldtype': u'Date',
 		'hidden': 0,
@@ -823,7 +722,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'col5',
 		'fieldtype': u'Column Break',
 		'permlevel': 0,
@@ -833,7 +732,7 @@
 	# DocField
 	{
 		'allow_on_submit': 0,
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'is_excisable_goods',
 		'fieldtype': u'Select',
 		'hidden': 0,
@@ -853,7 +752,7 @@
 	# DocField
 	{
 		'allow_on_submit': 0,
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'excisable_goods',
 		'fieldtype': u'Select',
 		'hidden': 0,
@@ -873,7 +772,7 @@
 	# DocField
 	{
 		'allow_on_submit': 0,
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'under_rule',
 		'fieldtype': u'Select',
 		'hidden': 1,
@@ -893,7 +792,7 @@
 	# DocField
 	{
 		'allow_on_submit': 0,
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'transporter',
 		'fieldtype': u'Data',
 		'hidden': 0,
@@ -912,7 +811,7 @@
 	# DocField
 	{
 		'allow_on_submit': 0,
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'company',
 		'fieldtype': u'Link',
 		'hidden': 0,
@@ -932,7 +831,7 @@
 	# DocField
 	{
 		'allow_on_submit': 0,
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'fiscal_year',
 		'fieldtype': u'Select',
 		'hidden': 0,
@@ -952,7 +851,7 @@
 	# DocField
 	{
 		'allow_on_submit': 0,
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'amended_from',
 		'fieldtype': u'Link',
 		'hidden': 0,
@@ -973,7 +872,7 @@
 	{
 		'allow_on_submit': 0,
 		'description': u'The date at which current entry is corrected in the system.',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'amendment_date',
 		'fieldtype': u'Date',
 		'hidden': 0,
@@ -987,5 +886,108 @@
 		'report_hide': 0,
 		'reqd': 0,
 		'search_index': 0
+	},
+
+	# DocPerm
+	{
+		'amend': 1,
+		'cancel': 1,
+		'create': 1,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'Material Manager',
+		'submit': 1,
+		'write': 1
+	},
+
+	# DocPerm
+	{
+		'amend': 0,
+		'cancel': 0,
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'permlevel': 1,
+		'role': u'Material Manager',
+		'submit': 0,
+		'write': 0
+	},
+
+	# DocPerm
+	{
+		'amend': 1,
+		'cancel': 1,
+		'create': 1,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'Material User',
+		'submit': 1,
+		'write': 1
+	},
+
+	# DocPerm
+	{
+		'amend': 0,
+		'cancel': 0,
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'permlevel': 1,
+		'role': u'Material User',
+		'submit': 0,
+		'write': 0
+	},
+
+	# DocPerm
+	{
+		'amend': 1,
+		'cancel': 1,
+		'create': 1,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'Production User',
+		'submit': 1,
+		'write': 1
+	},
+
+	# DocPerm
+	{
+		u'doctype': u'DocPerm',
+		'permlevel': 1,
+		'role': u'Production User'
+	},
+
+	# DocPerm
+	{
+		'create': 0,
+		u'doctype': u'DocPerm',
+		'permlevel': 2,
+		'role': u'Production User',
+		'write': 1
+	},
+
+	# DocPerm
+	{
+		'amend': 1,
+		'cancel': 1,
+		'create': 1,
+		u'doctype': u'DocPerm',
+		'permlevel': 0,
+		'role': u'Production Manager',
+		'submit': 1,
+		'write': 1
+	},
+
+	# DocPerm
+	{
+		u'doctype': u'DocPerm',
+		'permlevel': 1,
+		'role': u'Production Manager'
+	},
+
+	# DocPerm
+	{
+		u'doctype': u'DocPerm',
+		'permlevel': 2,
+		'role': u'Production Manager',
+		'write': 1
 	}
 ]

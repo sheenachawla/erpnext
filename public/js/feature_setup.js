@@ -19,7 +19,7 @@ Dictionary Format
 	'projects': {
 		'Sales Order': {
 			'fields':['project_name'],
-			'sales_order_details':['projected_qty']
+			'sales_order_items':['projected_qty']
 		},
 		'Purchase Order': {
 			'fields':['project_name']
@@ -30,58 +30,58 @@ pscript.feature_dict = {
 	'fs_projects': {
 		'BOM': {'fields':['project_name']},
 		'Delivery Note': {'fields':['project_name']},
-		'Purchase Invoice': {'entries':['project_name']},
+		'Purchase Invoice': {'purchase_invoice_items':['project_name']},
 		'Production Order': {'fields':['project_name']},
-		'Purchase Order': {'po_details':['project_name']},
+		'Purchase Order': {'purchase_order_items':['project_name']},
 		'Purchase Receipt': {'purchase_receipt_details':['project_name']},
 		'Sales Invoice': {'fields':['project_name']},
 		'Sales Order': {'fields':['project_name']},
 		'Stock Entry': {'fields':['project_name']},
 		'Timesheet': {'timesheet_details':['project_name']}
 	},
-	'fs_packing_details': {
-		//'Delivery Note': {'fields':['packing_details','print_packing_slip','packing_checked_by','packed_by','pack_size','shipping_mark'],'delivery_note_details':['no_of_packs','pack_gross_wt','pack_nett_wt','pack_no','pack_unit']},
-		//'Sales Order': {'fields':['packing_details']}
+	'fs_delivery_note_packing_items': {
+		//'Delivery Note': {'fields':['delivery_note_packing_items','print_packing_slip','packing_checked_by','packed_by','pack_size','shipping_mark'],'delivery_note_items':['no_of_packs','pack_gross_wt','pack_nett_wt','pack_no','pack_unit']},
+		//'Sales Order': {'fields':['delivery_note_packing_items']}
 	},
 	'fs_discounts': {
-		'Delivery Note': {'delivery_note_details':['adj_rate']},
-		'Quotation': {'quotation_details':['adj_rate']},
-		'Sales Invoice': {'entries':['adj_rate']},
-		'Sales Order': {'sales_order_details':['adj_rate','ref_rate']}
+		'Delivery Note': {'delivery_note_items':['discount']},
+		'Quotation': {'quotation_items':['discount']},
+		'Sales Invoice': {'sales_invoice_items':['discount']},
+		'Sales Order': {'sales_order_items':['discount','ref_rate']}
 	},
 	'fs_purchase_discounts': {
-		'Purchase Order': {'po_details':['purchase_ref_rate', 'discount_rate', 'import_ref_rate']},
-		'Purchase Receipt': {'purchase_receipt_details':['purchase_ref_rate', 'discount_rate', 'import_ref_rate']},
-		'Purchase Invoice': {'entries':['purchase_ref_rate', 'discount_rate', 'import_ref_rate']}
+		'Purchase Order': {'purchase_order_items':['ref_rate', 'discount', 'print_ref_rate']},
+		'Purchase Receipt': {'purchase_receipt_details':['ref_rate', 'discount', 'print_ref_rate']},
+		'Purchase Invoice': {'purchase_invoice_items':['ref_rate', 'discount', 'print_ref_rate']}
 	},
 	'fs_brands': {
-		'Delivery Note': {'delivery_note_details':['brand']},
-		'Purchase Request': {'indent_details':['brand']},
+		'Delivery Note': {'delivery_note_items':['brand']},
+		'Purchase Request': {'purchase_request_items':['brand']},
 		'Item': {'fields':['brand']},
-		'Purchase Order': {'po_details':['brand']},
-		'Purchase Invoice': {'entries':['brand']},
-		'Quotation': {'quotation_details':['brand']},
-		'Sales Invoice': {'entries':['brand']},
+		'Purchase Order': {'purchase_order_items':['brand']},
+		'Purchase Invoice': {'purchase_invoice_items':['brand']},
+		'Quotation': {'quotation_items':['brand']},
+		'Sales Invoice': {'sales_invoice_items':['brand']},
 		'Sales BOM': {'fields':['new_item_brand']},
-		'Sales Order': {'sales_order_details':['brand']},
+		'Sales Order': {'sales_order_items':['brand']},
 		'Serial No': {'fields':['brand']}
 	},
 	'fs_after_sales_installations': {
-		'Delivery Note': {'fields':['installation_status','per_installed'],'delivery_note_details':['installed_qty']}
+		'Delivery Note': {'fields':['installation_status','per_installed'],'delivery_note_items':['installed_qty']}
 	},
 	'fs_item_batch_nos': {
-		'Delivery Note': {'delivery_note_details':['batch_no']},
+		'Delivery Note': {'delivery_note_items':['batch_no']},
 		'Item': {'fields':['has_batch_no']},
 		'Purchase Receipt': {'purchase_receipt_details':['batch_no']},
 		'Quality Inspection': {'fields':['batch_no']},
 		'Sales and Pruchase Return Wizard': {'return_details':['batch_no']},
-		'Sales Invoice': {'entries':['batch_no']},
+		'Sales Invoice': {'sales_invoice_items':['batch_no']},
 		'Stock Entry': {'mtn_details':['batch_no']},
 		'Stock Ledger Entry': {'fields':['batch_no']}
 	},
 	'fs_item_serial_nos': {
 		'Customer Issue': {'fields':['serial_no']},
-		'Delivery Note': {'delivery_note_details':['serial_no'],'packing_details':['serial_no']},
+		'Delivery Note': {'delivery_note_items':['serial_no'],'delivery_note_packing_items':['serial_no']},
 		'Installation Note': {'installed_item_details':['serial_no']},
 		'Item': {'fields':['has_serial_no']},
 		'Maintenance Schedule': {'item_maintenance_detail':['serial_no'],'maintenance_schedule_detail':['serial_no']},
@@ -89,57 +89,57 @@ pscript.feature_dict = {
 		'Purchase Receipt': {'purchase_receipt_details':['serial_no']},
 		'Quality Inspection': {'fields':['item_serial_no']},
 		'Sales and Pruchase Return Wizard': {'return_details':['serial_no']},
-		'Sales Invoice': {'entries':['serial_no']},
+		'Sales Invoice': {'sales_invoice_items':['serial_no']},
 		'Stock Entry': {'mtn_details':['serial_no']},
 		'Stock Ledger Entry': {'fields':['serial_no']}
 	},
 	'fs_item_barcode': {
 		'Item': {'fields': ['barcode']},
-		'Delivery Note': {'delivery_note_details': ['barcode']},
-		'Sales Invoice': {'entries': ['barcode']}
+		'Delivery Note': {'delivery_note_items': ['barcode']},
+		'Sales Invoice': {'sales_invoice_items': ['barcode']}
 	},
 	'fs_item_group_in_details': {
-		'Delivery Note': {'delivery_note_details':['item_group']},
-		'Opportunity': {'enquiry_details':['item_group']},
-		'Purchase Request': {'indent_details':['item_group']},
+		'Delivery Note': {'delivery_note_items':['item_group']},
+		'Opportunity': {'opportunity_items':['item_group']},
+		'Purchase Request': {'purchase_request_items':['item_group']},
 		'Item': {'fields':['item_group']},
 		'Global Defaults': {'fields':['default_item_group']},
-		'Purchase Order': {'po_details':['item_group']},
+		'Purchase Order': {'purchase_order_items':['item_group']},
 		'Purchase Receipt': {'purchase_receipt_details':['item_group']},
 		'Purchase Voucher': {'entries':['item_group']},
-		'Quotation': {'quotation_details':['item_group']},
-		'Sales Invoice': {'entries':['item_group']},
+		'Quotation': {'quotation_items':['item_group']},
+		'Sales Invoice': {'sales_invoice_items':['item_group']},
 		'Sales BOM': {'fields':['serial_no']},
-		'Sales Order': {'sales_order_details':['item_group']},
+		'Sales Order': {'sales_order_items':['item_group']},
 		'Serial No': {'fields':['item_group']},
 		'Sales Partner': {'partner_target_details':['item_group']},
 		'Sales Person': {'target_details':['item_group']},
 		'Territory': {'target_details':['item_group']}
 	},
 	'fs_page_break': {
-		'Delivery Note': {'delivery_note_details':['page_break'],'packing_details':['page_break']},
-		'Purchase Request': {'indent_details':['page_break']},
-		'Purchase Order': {'po_details':['page_break']},
+		'Delivery Note': {'delivery_note_items':['page_break'],'delivery_note_packing_items':['page_break']},
+		'Purchase Request': {'purchase_request_items':['page_break']},
+		'Purchase Order': {'purchase_order_items':['page_break']},
 		'Purchase Receipt': {'purchase_receipt_details':['page_break']},
 		'Purchase Voucher': {'entries':['page_break']},
-		'Quotation': {'quotation_details':['page_break']},
-		'Sales Invoice': {'entries':['page_break']},
-		'Sales Order': {'sales_order_details':['page_break']}
+		'Quotation': {'quotation_items':['page_break']},
+		'Sales Invoice': {'sales_invoice_items':['page_break']},
+		'Sales Order': {'sales_order_items':['page_break']}
 	},
 	'fs_exports': {
-		'Delivery Note': {'fields':['Note','conversion_rate','currency','grand_total_export','in_words_export','rounded_total_export'],'delivery_note_details':['base_ref_rate','amount','basic_rate']},
-		'POS Setting': {'fields':['conversion_rate','currency']},
-		'Quotation': {'fields':['Note HTML','OT Notes','conversion_rate','currency','grand_total_export','in_words_export','rounded_total_export'],'quotation_details':['base_ref_rate','amount','basic_rate']},
-		'Sales Invoice': {'fields':['conversion_rate','currency','grand_total_export','in_words_export','rounded_total_export'],'entries':['base_ref_rate','amount','basic_rate']},
+		'Delivery Note': {'fields':['Note','exchange_rate','currency','grand_total_print','rounded_total_in_words_print','rounded_total_print'],'delivery_note_items':['ref_rate','amount','rate']},
+		'POS Setting': {'fields':['exchange_rate','currency']},
+		'Quotation': {'fields':['Note HTML','OT Notes','exchange_rate','currency','grand_total_print','rounded_total_in_words_print','rounded_total_print'],'quotation_items':['ref_rate','amount','rate']},
+		'Sales Invoice': {'fields':['exchange_rate','currency','grand_total_print','rounded_total_in_words_print','rounded_total_print'],'sales_invoice_items':['ref_rate','amount','rate']},
 		'Item': {'ref_rate_details':['ref_currency']},
 		'Sales BOM': {'fields':['currency']},
-		'Sales Order': {'fields':['Note1','OT Notes','conversion_rate','currency','grand_total_export','in_words_export','rounded_total_export'],'sales_order_details':['base_ref_rate','amount','basic_rate']}
+		'Sales Order': {'fields':['Note1','OT Notes','exchange_rate','currency','grand_total_print','rounded_total_in_words_print','rounded_total_print'],'sales_order_items':['ref_rate','amount','rate']}
 	},
 	'fs_imports': {
-		'Purchase Invoice': {'fields':['conversion_rate','currency','grand_total_import','in_words_import','net_total_import','other_charges_added_import','other_charges_deducted_import'],'entries':['purchase_ref_rate', 'amount','rate']},
-		'Purchase Order': {'fields':['Note HTML','conversion_rate','currency','grand_total_import','in_words_import','net_total_import','other_charges_added_import','other_charges_deducted_import'],'po_details':['purchase_ref_rate', 'amount','purchase_rate']},
-		'Purchase Receipt': {'fields':['conversion_rate','currency','grand_total_import','in_words_import','net_total_import','other_charges_added_import','other_charges_deducted_import'],'purchase_receipt_details':['purchase_ref_rate','amount','purchase_rate']},
-		'Supplier Quotation': {'fields':['conversion_rate','currency']}
+		'Purchase Invoice': {'fields':['exchange_rate','currency','grand_total_print','grand_total_in_words_print','net_total_print','other_charges_added_import','other_charges_deducted_import'],'purchase_invoice_items':['ref_rate', 'amount','rate']},
+		'Purchase Order': {'fields':['Note HTML','exchange_rate','currency','grand_total_print','grand_total_in_words_print','net_total_print','other_charges_added_import','other_charges_deducted_import'],'purchase_order_items':['ref_rate', 'amount','rate']},
+		'Purchase Receipt': {'fields':['exchange_rate','currency','grand_total_print','grand_total_in_words_print','net_total_print','other_charges_added_import','other_charges_deducted_import'],'purchase_receipt_details':['ref_rate','amount','rate']},
+		'Supplier Quotation': {'fields':['exchange_rate','currency']}
 	},
 	'fs_item_advanced': {
 		'Item': {'fields':['item_customer_details']}

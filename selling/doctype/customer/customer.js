@@ -146,21 +146,21 @@ cur_frm.cscript.get_common_list_view = function(parent, doc, doctype) {
 			this.fields = this.fields.concat([
 				"`tab" + doctype + "`.status",
 				"`tab" + doctype + "`.currency",
-				"ifnull(`tab" + doctype + "`.grand_total_export, 0) as grand_total_export",
+				"ifnull(`tab" + doctype + "`.grand_total_print, 0) as grand_total_print",
 				
 			]);
 		},
 
 		prepare_data: function(data) {
 			this._super(data);
-			data.grand_total_export = data.currency + " " + fmt_money(data.grand_total_export)
+			data.grand_total_print = data.currency + " " + fmt_money(data.grand_total_print)
 		},
 
 		columns: [
 			{width: '3%', content: 'docstatus'},
 			{width: '25%', content: 'name'},
 			{width: '25%', content: 'status'},
-			{width: '35%', content: 'grand_total_export', css: {'text-align': 'right'}},			
+			{width: '35%', content: 'grand_total_print', css: {'text-align': 'right'}},			
 			{width: '12%', content:'modified', css: {'text-align': 'right'}}		
 		],
 	});
@@ -176,8 +176,8 @@ cur_frm.cscript.make_si_list = function(parent, doc) {
 			this.fields = this.fields.concat([
 				"ifnull(`tabSales Invoice`.outstanding_amount, 0) as outstanding_amount",
 				"`tabSales Invoice`.currency",
-				"ifnull(`tabSales Invoice`.conversion_rate, 0) as conversion_rate",
-				"ifnull(`tabSales Invoice`.grand_total_export, 0) as grand_total_export",
+				"ifnull(`tabSales Invoice`.exchange_rate, 0) as exchange_rate",
+				"ifnull(`tabSales Invoice`.grand_total_print, 0) as grand_total_print",
 				
 			]);
 		},
@@ -186,13 +186,13 @@ cur_frm.cscript.make_si_list = function(parent, doc) {
 			this._super(data);
 			if (data.outstanding_amount) {
 				data.outstanding_amount = data.currency + " " + 
-					fmt_money(flt(data.outstanding_amount)/flt(data.conversion_rate)) + 
+					fmt_money(flt(data.outstanding_amount)/flt(data.exchange_rate)) + 
 					" [outstanding]";
 				
 			} else {
 				data.outstanding_amount = '';
 			}
-			data.grand_total_export = data.currency + " " + fmt_money(data.grand_total_export);
+			data.grand_total_print = data.currency + " " + fmt_money(data.grand_total_print);
 		},
 
 		columns: [
@@ -200,7 +200,7 @@ cur_frm.cscript.make_si_list = function(parent, doc) {
 			{width: '25%', content: 'name'},
 			{width: '25%', content: 'outstanding_amount',
 				css: {'text-align': 'right', 'color': '#777'}},
-			{width: '35%', content: 'grand_total_export', css: {'text-align': 'right'}},
+			{width: '35%', content: 'grand_total_print', css: {'text-align': 'right'}},
 			{width: '12%', content:'modified', css: {'text-align': 'right'}}
 		],
 	});

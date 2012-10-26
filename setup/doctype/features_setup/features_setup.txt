@@ -135,7 +135,7 @@
 		'colour': u'White:FFF',
 		'description': u'If Sale BOM is defined, the actual BOM of the Pack is displayed as table.\nAvailable in Delivery Note and Sales Order',
 		'doctype': u'DocField',
-		'fieldname': u'fs_packing_details',
+		'fieldname': u'fs_delivery_note_packing_items',
 		'fieldtype': u'Check',
 		'label': u'Packing Detials'
 	},

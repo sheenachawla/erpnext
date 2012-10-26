@@ -144,18 +144,18 @@ class DocType(TransactionBase):
 			'income_account'		: item and item[0]['default_income_account'] or args.get('income_account'),
 			'cost_center'			: item and item[0]['default_sales_cost_center'] or args.get('cost_center'),
 			'qty'					: 1.00,	 # this is done coz if item once fetched is fetched again thn its qty shld be reset to 1
-			'adj_rate'				: 0,
+			'discount'				: 0,
 			'amount'				: 0,
-			'export_amount'			: 0,
+			'print_amount'			: 0,
 			'item_tax_rate'			: json.dumps(t),
 			'batch_no'				: ''
 		}
 		if(obj.doc.price_list_name and item):	#this is done to fetch the changed BASIC RATE and REF RATE based on PRICE LIST
-			base_ref_rate =	self.get_ref_rate(args['item_code'], obj.doc.price_list_name, obj.doc.price_list_currency, obj.doc.plc_conversion_rate)
-			ret['ref_rate'] = flt(base_ref_rate)/flt(obj.doc.conversion_rate)
-			ret['export_rate'] = flt(base_ref_rate)/flt(obj.doc.conversion_rate)
-			ret['base_ref_rate'] = flt(base_ref_rate)
-			ret['basic_rate'] = flt(base_ref_rate)
+			ref_rate =	self.get_ref_rate(args['item_code'], obj.doc.price_list_name, obj.doc.price_list_currency, obj.doc.plc_exchange_rate)
+			ret['print_ref_rate'] = flt(ref_rate)/flt(obj.doc.exchange_rate)
+			ret['print_rate'] = flt(ref_rate)/flt(obj.doc.exchange_rate)
+			ret['ref_rate'] = flt(ref_rate)
+			ret['rate'] = flt(ref_rate)
 			
 		if ret['warehouse'] or ret['reserved_warehouse']:
 			av_qty = self.get_available_qty({'item_code': args['item_code'], 'warehouse': ret['warehouse'] or ret['reserved_warehouse']})
@@ -197,8 +197,8 @@ class DocType(TransactionBase):
 	# ***************** Get Ref rate as entered in Item Master ********************
 	def get_ref_rate(self, item_code, price_list_name, price_list_currency, plc_conv_rate):
 		ref_rate = webnotes.conn.sql("select ref_rate from `tabItem Price` where parent = %s and price_list_name = %s and ref_currency = %s", (item_code, price_list_name, price_list_currency))
-		base_ref_rate = ref_rate and flt(ref_rate[0][0]) * flt(plc_conv_rate) or 0
-		return base_ref_rate
+		ref_rate = ref_rate and flt(ref_rate[0][0]) * flt(plc_conv_rate) or 0
+		return ref_rate
 
 	def get_barcode_details(self, barcode):
 		item = webnotes.conn.sql("select name, end_of_life, is_sales_item, is_service_item \
@@ -222,32 +222,32 @@ class DocType(TransactionBase):
 	# ****** Re-cancellculates Basic Rate & amount based on Price List Selected ******
 	def get_adj_percent(self, obj): 
 		for d in getlist(obj.doclist, obj.fname):
-			base_ref_rate = self.get_ref_rate(d.item_code, obj.doc.price_list_name, obj.doc.price_list_currency, obj.doc.plc_conversion_rate)
-			d.adj_rate = 0
-			d.ref_rate = flt(base_ref_rate)/flt(obj.doc.conversion_rate)
-			d.basic_rate = flt(base_ref_rate)
-			d.base_ref_rate = flt(base_ref_rate)
-			d.export_rate = flt(base_ref_rate)/flt(obj.doc.conversion_rate)
-			d.amount = flt(d.qty)*flt(base_ref_rate)
-			d.export_amount = flt(d.qty)*flt(base_ref_rate)/flt(obj.doc.conversion_rate)
+			ref_rate = self.get_ref_rate(d.item_code, obj.doc.price_list_name, obj.doc.price_list_currency, obj.doc.plc_exchange_rate)
+			d.discount = 0
+			d.print_ref_rate = flt(ref_rate)/flt(obj.doc.exchange_rate)
+			d.rate = flt(ref_rate)
+			d.ref_rate = flt(ref_rate)
+			d.print_rate = flt(ref_rate)/flt(obj.doc.exchange_rate)
+			d.amount = flt(d.qty)*flt(ref_rate)
+			d.print_amount = flt(d.qty)*flt(ref_rate)/flt(obj.doc.exchange_rate)
 
 
 	# Load Default Taxes
 	# ====================
 	def load_default_taxes(self, obj):
-		if cstr(obj.doc.charge):
-			return self.get_other_charges(obj)
+		if cstr(obj.doc.sales_taxes_and_charges_master):
+			return self.get_taxes_and_charges(obj)
 		else:
-			return self.get_other_charges(obj, 1)
+			return self.get_taxes_and_charges(obj, 1)
 
 		
 	# Get other charges from Master
 	# =================================================================================
-	def get_other_charges(self,obj, default=0):
-		obj.doclist = obj.doc.clear_table(obj.doclist, 'other_charges')
-		if not getlist(obj.doclist, 'other_charges'):
+	def get_taxes_and_charges(self,obj, default=0):
+		obj.doclist = obj.doc.clear_table(obj.doclist, 'taxes_and_charges')
+		if not getlist(obj.doclist, 'taxes_and_charges'):
 			if default: add_cond = 'ifnull(t2.is_default,0) = 1'
-			else: add_cond = 't1.parent = "'+cstr(obj.doc.charge)+'"'
+			else: add_cond = 't1.parent = "'+cstr(obj.doc.sales_taxes_and_charges_master)+'"'
 			idx = 0
 			other_charge = webnotes.conn.sql("""\
 				select t1.*
@@ -266,7 +266,7 @@ class DocType(TransactionBase):
 				for field in default_fields:
 					if field in other: del other[field]
 
-				d = addchild(obj.doc, 'other_charges', 'Sales Taxes and Charges', 1,
+				d = addchild(obj.doc, 'taxes_and_charges', 'Sales Taxes and Charges', 1,
 						obj.doclist)
 				d.fields.update(other)
 				d.rate = flt(d.rate)
@@ -333,7 +333,7 @@ class DocType(TransactionBase):
 	def validate_max_discount(self,obj, detail_table):
 		for d in getlist(obj.doclist, detail_table):
 			discount = webnotes.conn.sql("select max_discount from tabItem where name = '%s'" %(d.item_code),as_dict = 1)
-			if discount and discount[0]['max_discount'] and (flt(d.adj_rate)>flt(discount[0]['max_discount'])):
+			if discount and discount[0]['max_discount'] and (flt(d.discount)>flt(discount[0]['max_discount'])):
 				msgprint("You cannot give more than " + cstr(discount[0]['max_discount']) + " % discount on Item Code : "+cstr(d.item_code))
 				raise Exception
 
@@ -351,15 +351,15 @@ class DocType(TransactionBase):
 			
 	# Check Conversion Rate (i.e. it will not allow conversion rate to be 1 for Currency other than default currency set in Global Defaults)
 	# ===========================================================================
-	def check_conversion_rate(self, obj):
+	def check_exchange_rate(self, obj):
 		default_currency = TransactionBase().get_company_currency(obj.doc.company)
 		if not default_currency:
 			msgprint('Message: Please enter default currency in Company Master')
 			raise Exception		
-		if (obj.doc.currency == default_currency and flt(obj.doc.conversion_rate) != 1.00) or not obj.doc.conversion_rate or (obj.doc.currency != default_currency and flt(obj.doc.conversion_rate) == 1.00):
+		if (obj.doc.currency == default_currency and flt(obj.doc.exchange_rate) != 1.00) or not obj.doc.exchange_rate or (obj.doc.currency != default_currency and flt(obj.doc.exchange_rate) == 1.00):
 			msgprint("Please Enter Appropriate Conversion Rate for Customer's Currency to Base Currency (%s --> %s)" % (obj.doc.currency, default_currency), raise_exception = 1)
 	
-		if (obj.doc.price_list_currency == default_currency and flt(obj.doc.plc_conversion_rate) != 1.00) or not obj.doc.plc_conversion_rate or (obj.doc.price_list_currency != default_currency and flt(obj.doc.plc_conversion_rate) == 1.00):
+		if (obj.doc.price_list_currency == default_currency and flt(obj.doc.plc_exchange_rate) != 1.00) or not obj.doc.plc_exchange_rate or (obj.doc.price_list_currency != default_currency and flt(obj.doc.plc_exchange_rate) == 1.00):
 			msgprint("Please Enter Appropriate Conversion Rate for Price List Currency to Base Currency ( (%s --> %s)" % (obj.doc.price_list_currency, default_currency), raise_exception = 1)
 	
 
@@ -406,7 +406,7 @@ class DocType(TransactionBase):
 				reserved_wh = d.reserved_warehouse
 						
 			if self.has_sales_bom(d.item_code):
-				for p in getlist(obj.doclist, 'packing_details'):
+				for p in getlist(obj.doclist, 'delivery_note_packing_items'):
 					if p.parent_detail_docname == d.name and p.parent_item == d.item_code:
 						# the packing details table's qty is already multiplied with parent's qty
 						il.append({
@@ -476,13 +476,13 @@ class DocType(TransactionBase):
 
 		# check if exists
 		exists = 0
-		for d in getlist(obj.doclist, 'packing_details'):
+		for d in getlist(obj.doclist, 'delivery_note_packing_items'):
 			if d.parent_item == line.item_code and d.item_code == packing_item_code and d.parent_detail_docname == line.name:
 				pi, exists = d, 1
 				break
 
 		if not exists:
-			pi = addchild(obj.doc, 'packing_details', 'Delivery Note Packing Item', 1, obj.doclist)
+			pi = addchild(obj.doc, 'delivery_note_packing_items', 'Delivery Note Packing Item', 1, obj.doclist)
 
 		pi.parent_item = line.item_code
 		pi.item_code = packing_item_code
@@ -493,7 +493,6 @@ class DocType(TransactionBase):
 		pi.qty = flt(qty)
 		pi.actual_qty = bin and flt(bin['actual_qty']) or 0
 		pi.projected_qty = bin and flt(bin['projected_qty']) or 0
-		pi.prevdoc_doctype = line.prevdoc_doctype
 		if not pi.warehouse:
 			pi.warehouse = warehouse
 		if not pi.batch_no:
@@ -511,7 +510,7 @@ class DocType(TransactionBase):
 		self.packing_list_idx = 0
 		parent_items = []
 		for d in getlist(obj.doclist, fname):
-			warehouse = fname == "sales_order_details" and d.reserved_warehouse or d.warehouse
+			warehouse = fname == "sales_order_items" and d.reserved_warehouse or d.warehouse
 			if self.has_sales_bom(d.item_code):
 				for i in self.get_sales_bom_items(d.item_code):
 					self.update_packing_list_item(obj, i['item_code'], flt(i['qty'])*flt(d.qty), warehouse, d)
@@ -526,7 +525,7 @@ class DocType(TransactionBase):
 	def cleanup_packing_list(self, obj, parent_items):
 		"""Remove all those child items which are no longer present in main item table"""
 		delete_list = []
-		for d in getlist(obj.doclist, 'packing_details'):
+		for d in getlist(obj.doclist, 'delivery_note_packing_items'):
 			if [d.parent_item, d.parent_detail_docname] not in parent_items:
 				# mark for deletion from doclist
 				delete_list.append(d.name)
@@ -605,11 +604,11 @@ class DocType(TransactionBase):
 			exact_outstanding = flt(tot_outstanding) + flt(grand_total)
 			get_obj('Account',acc_head[0][0]).check_credit_limit(acc_head[0][0], obj.doc.company, exact_outstanding)
 
-	def validate_fiscal_year(self,fiscal_year,transaction_date,dn):
+	def validate_fiscal_year(self,fiscal_year,posting_date,dn):
 		fy=webnotes.conn.sql("select year_start_date from `tabFiscal Year` where name='%s'"%fiscal_year)
 		ysd=fy and fy[0][0] or ""
 		yed=add_days(str(ysd),365)
-		if str(transaction_date) < str(ysd) or str(transaction_date) > str(yed):
+		if str(posting_date) < str(ysd) or str(posting_date) > str(yed):
 			msgprint("%s not within the fiscal year"%(dn))
 			raise Exception
 
@@ -623,7 +622,7 @@ class DocType(TransactionBase):
 				if d.prevdoc_doctype == 'Sales Invoice':
 					dt = webnotes.conn.sql("select posting_date from `tab%s` where name = '%s'" % (d.prevdoc_doctype, d.prevdoc_docname))
 				else:
-					dt = webnotes.conn.sql("select transaction_date from `tab%s` where name = '%s'" % (d.prevdoc_doctype, d.prevdoc_docname))
+					dt = webnotes.conn.sql("select posting_date from `tab%s` where name = '%s'" % (d.prevdoc_doctype, d.prevdoc_docname))
 				d.prevdoc_date = (dt and dt[0][0]) and dt[0][0].strftime('%Y-%m-%d') or ''
 
 	def update_prevdoc_detail(self, is_submit, obj):
@@ -683,16 +682,16 @@ class StatusUpdater:
 			self.validate_qty({
 				'source_dt'		:'Sales Invoice Item',
 				'compare_field'	:'billed_amt',
-				'compare_ref_field'	:'export_amount',
+				'compare_ref_field'	:'print_amount',
 				'target_dt'		:'Sales Order Item',
-				'join_field'	:'so_detail'
+				'join_field'	:'sales_order_item'
 			})
 			self.validate_qty({
 				'source_dt'		:'Sales Invoice Item',
 				'compare_field'	:'billed_amt',
-				'compare_ref_field'	:'export_amount',
+				'compare_ref_field'	:'print_amount',
 				'target_dt'		:'Delivery Note Item',
-				'join_field'	:'dn_detail'
+				'join_field'	:'delivery_note_item'
 			}, no_tolerance =1)
 		elif self.obj.doc.doctype=='Installation Note':
 			self.validate_qty({
@@ -700,7 +699,7 @@ class StatusUpdater:
 				'compare_field'	:'installed_qty',
 				'compare_ref_field'	:'qty',
 				'target_dt'		:'Delivery Note Item',
-				'join_field'	:'dn_detail'
+				'join_field'	:'delivery_note_item'
 			}, no_tolerance =1)
 
 	
@@ -803,10 +802,10 @@ class StatusUpdater:
 				'target_dt'				:'Sales Order Item',
 				'target_parent_dt'		:'Sales Order',
 				'target_parent_field'	:'per_billed',
-				'target_ref_field'		:'export_amount',
+				'target_ref_field'		:'print_amount',
 				'source_dt'				:'Sales Invoice Item',
-				'source_field'			:'export_amount',
-				'join_field'			:'so_detail',
+				'source_field'			:'print_amount',
+				'join_field'			:'sales_order_item',
 				'percent_join_field'	:'sales_order',
 				'status_field'			:'billing_status',
 				'keyword'				:'Billed'
@@ -817,10 +816,10 @@ class StatusUpdater:
 				'target_dt'				:'Delivery Note Item',
 				'target_parent_dt'		:'Delivery Note',
 				'target_parent_field'	:'per_billed',
-				'target_ref_field'		:'export_amount',
+				'target_ref_field'		:'print_amount',
 				'source_dt'				:'Sales Invoice Item',
-				'source_field'			:'export_amount',
-				'join_field'			:'dn_detail',
+				'source_field'			:'print_amount',
+				'join_field'			:'delivery_note_item',
 				'percent_join_field'	:'delivery_note',
 				'status_field'			:'billing_status',
 				'keyword'				:'Billed'

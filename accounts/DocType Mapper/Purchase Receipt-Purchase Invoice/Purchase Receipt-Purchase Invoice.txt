@@ -3,17 +3,17 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2010-08-08 17:09:35',
-		'docstatus': 0,
-		'modified': '2012-04-03 12:49:50',
-		'modified_by': u'Administrator',
-		'owner': u'Administrator'
+		u'creation': '2010-09-20 12:33:34',
+		u'docstatus': 0,
+		u'modified': '2012-10-24 14:33:40',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
 	},
 
 	# These values are common for all Table Mapper Detail
 	{
-		'doctype': u'Table Mapper Detail',
-		'name': '__common__',
+		u'doctype': u'Table Mapper Detail',
+		u'name': u'__common__',
 		'parent': u'Purchase Receipt-Purchase Invoice',
 		'parentfield': u'table_mapper_details',
 		'parenttype': u'DocType Mapper'
@@ -21,8 +21,8 @@
 
 	# These values are common for all Field Mapper Detail
 	{
-		'doctype': u'Field Mapper Detail',
-		'name': '__common__',
+		u'doctype': u'Field Mapper Detail',
+		u'name': u'__common__',
 		'parent': u'Purchase Receipt-Purchase Invoice',
 		'parentfield': u'field_mapper_details',
 		'parenttype': u'DocType Mapper'
@@ -30,23 +30,23 @@
 
 	# These values are common for all DocType Mapper
 	{
-		'doctype': u'DocType Mapper',
+		u'doctype': u'DocType Mapper',
 		'from_doctype': u'Purchase Receipt',
 		'module': u'Accounts',
-		'name': '__common__',
+		u'name': u'__common__',
 		'ref_doc_submitted': 1,
 		'to_doctype': u'Purchase Invoice'
 	},
 
 	# DocType Mapper, Purchase Receipt-Purchase Invoice
 	{
-		'doctype': u'DocType Mapper',
-		'name': u'Purchase Receipt-Purchase Invoice'
+		u'doctype': u'DocType Mapper',
+		u'name': u'Purchase Receipt-Purchase Invoice'
 	},
 
 	# Field Mapper Detail
 	{
-		'doctype': u'Field Mapper Detail',
+		u'doctype': u'Field Mapper Detail',
 		'from_field': u'eval: flt(obj.qty) - flt(obj.billed_qty)',
 		'map': u'Yes',
 		'match_id': 1,
@@ -55,7 +55,7 @@
 
 	# Field Mapper Detail
 	{
-		'doctype': u'Field Mapper Detail',
+		u'doctype': u'Field Mapper Detail',
 		'from_field': u'purchase_rate',
 		'map': u'Yes',
 		'match_id': 1,
@@ -64,7 +64,16 @@
 
 	# Field Mapper Detail
 	{
-		'doctype': u'Field Mapper Detail',
+		u'doctype': u'Field Mapper Detail',
+		'from_field': u'rate',
+		'map': u'Yes',
+		'match_id': 1,
+		'to_field': u'rate'
+	},
+
+	# Field Mapper Detail
+	{
+		u'doctype': u'Field Mapper Detail',
 		'from_field': u'eval: (flt(obj.qty) - flt(obj.billed_qty)) * flt(obj.purchase_rate)',
 		'map': u'Yes',
 		'match_id': 1,
@@ -73,7 +82,16 @@
 
 	# Field Mapper Detail
 	{
-		'doctype': u'Field Mapper Detail',
+		u'doctype': u'Field Mapper Detail',
+		'from_field': u'eval: (flt(obj.qty) - flt(obj.billed_qty)) * flt(obj.rate)',
+		'map': u'Yes',
+		'match_id': 1,
+		'to_field': u'amount'
+	},
+
+	# Field Mapper Detail
+	{
+		u'doctype': u'Field Mapper Detail',
 		'from_field': u'eval: (flt(obj.qty) - flt(obj.billed_qty)) * flt(obj.import_rate)',
 		'map': u'Yes',
 		'match_id': 1,
@@ -82,7 +100,16 @@
 
 	# Field Mapper Detail
 	{
-		'doctype': u'Field Mapper Detail',
+		u'doctype': u'Field Mapper Detail',
+		'from_field': u'eval: (flt(obj.qty) - flt(obj.billed_qty)) * flt(obj.print_rate)',
+		'map': u'Yes',
+		'match_id': 1,
+		'to_field': u'print_amount'
+	},
+
+	# Field Mapper Detail
+	{
+		u'doctype': u'Field Mapper Detail',
 		'from_field': u'parent',
 		'map': u'Yes',
 		'match_id': 1,
@@ -91,7 +118,7 @@
 
 	# Field Mapper Detail
 	{
-		'doctype': u'Field Mapper Detail',
+		u'doctype': u'Field Mapper Detail',
 		'from_field': u'prevdoc_docname',
 		'map': u'Yes',
 		'match_id': 1,
@@ -100,7 +127,16 @@
 
 	# Field Mapper Detail
 	{
-		'doctype': u'Field Mapper Detail',
+		u'doctype': u'Field Mapper Detail',
+		'from_field': u'name',
+		'map': u'Yes',
+		'match_id': 1,
+		'to_field': u'purchase_receipt_item'
+	},
+
+	# Field Mapper Detail
+	{
+		u'doctype': u'Field Mapper Detail',
 		'from_field': u'name',
 		'map': u'Yes',
 		'match_id': 1,
@@ -109,16 +145,7 @@
 
 	# Field Mapper Detail
 	{
-		'doctype': u'Field Mapper Detail',
-		'from_field': u'prevdoc_detail_docname',
-		'map': u'Yes',
-		'match_id': 1,
-		'to_field': u'po_detail'
-	},
-
-	# Field Mapper Detail
-	{
-		'doctype': u'Field Mapper Detail',
+		u'doctype': u'Field Mapper Detail',
 		'from_field': u'naming_series',
 		'map': u'No',
 		'match_id': 0,
@@ -127,7 +154,16 @@
 
 	# Field Mapper Detail
 	{
-		'doctype': u'Field Mapper Detail',
+		u'doctype': u'Field Mapper Detail',
+		'from_field': u'prevdoc_detail_docname',
+		'map': u'Yes',
+		'match_id': 1,
+		'to_field': u'po_detail'
+	},
+
+	# Field Mapper Detail
+	{
+		u'doctype': u'Field Mapper Detail',
 		'from_field': u'net_total',
 		'map': u'Yes',
 		'match_id': 0,
@@ -136,7 +172,7 @@
 
 	# Field Mapper Detail
 	{
-		'doctype': u'Field Mapper Detail',
+		u'doctype': u'Field Mapper Detail',
 		'from_field': u'grand_total',
 		'map': u'Yes',
 		'match_id': 0,
@@ -145,7 +181,16 @@
 
 	# Field Mapper Detail
 	{
-		'doctype': u'Field Mapper Detail',
+		u'doctype': u'Field Mapper Detail',
+		'from_field': u'taxes_and_charges_total',
+		'map': u'Yes',
+		'match_id': 0,
+		'to_field': u'taxes_and_charges_total'
+	},
+
+	# Field Mapper Detail
+	{
+		u'doctype': u'Field Mapper Detail',
 		'from_field': u'total_tax',
 		'map': u'Yes',
 		'match_id': 0,
@@ -154,18 +199,18 @@
 
 	# Table Mapper Detail
 	{
-		'doctype': u'Table Mapper Detail',
+		u'doctype': u'Table Mapper Detail',
 		'from_field': u'purchase_receipt_details',
 		'from_table': u'Purchase Receipt Item',
 		'match_id': 1,
-		'to_field': u'entries',
+		'to_field': u'purchase_invoice_items',
 		'to_table': u'Purchase Invoice Item',
 		'validation_logic': u'ifnull(billed_qty,0)  < qty'
 	},
 
 	# Table Mapper Detail
 	{
-		'doctype': u'Table Mapper Detail',
+		u'doctype': u'Table Mapper Detail',
 		'from_table': u'Purchase Receipt',
 		'match_id': 0,
 		'to_table': u'Purchase Invoice',
@@ -174,11 +219,11 @@
 
 	# Table Mapper Detail
 	{
-		'doctype': u'Table Mapper Detail',
-		'from_field': u'purchase_tax_details',
+		u'doctype': u'Table Mapper Detail',
+		'from_field': u'taxes_and_charges',
 		'from_table': u'Purchase Taxes and Charges',
 		'match_id': 2,
-		'to_field': u'purchase_tax_details',
+		'to_field': u'taxes_and_charges',
 		'to_table': u'Purchase Taxes and Charges',
 		'validation_logic': u'docstatus=1'
 	}

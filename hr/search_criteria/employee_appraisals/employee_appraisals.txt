@@ -3,11 +3,11 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-04-03 12:49:51',
-		'docstatus': 0,
-		'modified': '2012-04-03 12:49:51',
-		'modified_by': u'Administrator',
-		'owner': u'ashwini@webnotestech.com'
+		u'creation': '2012-10-24 14:33:48',
+		u'docstatus': 0,
+		u'modified': '2012-10-24 14:33:48',
+		u'modified_by': u'Administrator',
+		u'owner': u'ashwini@webnotestech.com'
 	},
 
 	# These values are common for all Search Criteria
@@ -15,10 +15,10 @@
 		'columns': u'Appraisal\x01ID,Appraisal\x01Status,Appraisal\x01Employee,Appraisal\x01Employee Name,Appraisal\x01Start Date,Appraisal\x01End Date,Appraisal\x01Approver,Appraisal\x01Total Score',
 		'criteria_name': u'Employee Appraisals',
 		'doc_type': u'Appraisal',
-		'doctype': 'Search Criteria',
+		u'doctype': u'Search Criteria',
 		'filters': u"{'Appraisal\x01Saved':1,'Appraisal\x01Submitted':1,'Appraisal\x01Status':'','Appraisal\x01Fiscal Year':''}",
 		'module': u'HR',
-		'name': '__common__',
+		u'name': u'__common__',
 		'page_len': 50,
 		'sort_by': u'`tabAppraisal`.`name`',
 		'sort_order': u'DESC',
@@ -27,7 +27,7 @@
 
 	# Search Criteria, employee_appraisals
 	{
-		'doctype': 'Search Criteria',
-		'name': u'employee_appraisals'
+		u'doctype': u'Search Criteria',
+		u'name': u'employee_appraisals'
 	}
 ]

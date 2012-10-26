@@ -67,10 +67,10 @@ class DocType(StockControllers):
 		self.validate_item()
 
 	def on_update(self):
-		if self.doc.warehouse and self.doc.status == 'In Store' and \
-				cint(self.doc.sle_exists) == 0 and \
-				not sql("""select name from `tabStock Ledger Entry` where serial_no = %s and
-				ifnull(is_cancelled, 'No') = 'No'""", self.doc.name):
+		if self.doc.warehouse and self.doc.status == 'In Store' \
+				and cint(self.doc.sle_exists) == 0 and \
+				not sql("""select name from `tabStock Ledger Entry` where serial_no = %s and 
+				 	ifnull(is_cancelled, 'No') = 'No'""", self.doc.name):
 			self.make_stock_ledger_entry(1)
 			self.make_gl_entries()
 			webnotes.conn.set(self.doc, 'sle_exists', 1)
@@ -96,7 +96,6 @@ class DocType(StockControllers):
 		values = [{
 			'item_code'				: self.doc.item_code,
 			'warehouse'				: self.doc.warehouse,
-			'transaction_date'		: nowdate(),
 			'posting_date'			: self.doc.purchase_date or (self.doc.creation and self.doc.creation.split(' ')[0]) or nowdate(),
 			'posting_time'			: self.doc.purchase_time or '00:00',
 			'voucher_type'			: 'Serial No',

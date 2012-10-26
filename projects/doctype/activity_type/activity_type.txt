@@ -1,0 +1,52 @@
+# DocType, Activity Type
+[
+
+	# These values are common in all dictionaries
+	{
+		u'creation': '2012-05-03 18:41:41',
+		u'docstatus': 0,
+		u'modified': '2012-10-22 14:08:43',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
+	},
+
+	# These values are common for all DocType
+	{
+		'autoname': u'field:activity_type',
+		'colour': u'White:FFF',
+		'description': u'Project activity category.',
+		u'doctype': u'DocType',
+		'document_type': u'Setup',
+		'in_dialog': 1,
+		'module': u'Projects',
+		u'name': u'__common__',
+		'section_style': u'Simple',
+		'server_code_error': u' ',
+		'version': 14
+	},
+
+	# These values are common for all DocField
+	{
+		u'doctype': u'DocField',
+		'fieldname': u'activity_type',
+		'fieldtype': u'Data',
+		'label': u'Activity Type',
+		u'name': u'__common__',
+		'parent': u'Activity Type',
+		'parentfield': u'fields',
+		'parenttype': u'DocType',
+		'permlevel': 0,
+		'reqd': 1
+	},
+
+	# DocType, Activity Type
+	{
+		u'doctype': u'DocType',
+		u'name': u'Activity Type'
+	},
+
+	# DocField
+	{
+		u'doctype': u'DocField'
+	}
+]

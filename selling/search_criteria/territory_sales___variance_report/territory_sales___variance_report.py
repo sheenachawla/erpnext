@@ -130,7 +130,7 @@ for r in res:
     target = target and flt(flt(target[0][0])/2) or 0
     r.append(target)
 
-    query += ' MONTH(transaction_date) BETWEEN '+cstr(start_month)+' and '+cstr(start_month+5)
+    query += ' MONTH(posting_date) BETWEEN '+cstr(start_month)+' and '+cstr(start_month+5)
     so = sql("select sum(net_total) from `tab%s` where territory = '%s'  and %s and %s" % (based_on, r[col_idx['ID']],condition,query))
     so = so and flt(so[0][0]) or 0
     r.append(so)
@@ -138,7 +138,7 @@ for r in res:
     r.append(target)
 
     query =''
-    query += 'MONTH(transaction_date) NOT BETWEEN '+cstr(start_month)+' and '+cstr(start_month+5)
+    query += 'MONTH(posting_date) NOT BETWEEN '+cstr(start_month)+' and '+cstr(start_month+5)
     so = sql("select sum(net_total) from `tab%s` where territory = '%s'  and %s and %s" % (based_on, r[col_idx['ID']],condition,query))
     so = so and flt(so[0][0]) or 0
     r.append(so)
@@ -151,10 +151,10 @@ for r in res:
     val = length_1 % 4;
     for i in range(length_1):
       value = 3*i + val;
-      query +='SUM(CASE WHEN MONTH(transaction_date) BETWEEN '+cstr(value+1)+' AND '+cstr(value+3)+' THEN net_total ELSE NULL END),'
+      query +='SUM(CASE WHEN MONTH(posting_date) BETWEEN '+cstr(value+1)+' AND '+cstr(value+3)+' THEN net_total ELSE NULL END),'
     length_2 = (start_month - 1) / 3; #this gives the total no. of times we need to iterate for quarter (this is required only if fiscal year starts from april)
     for i in range(length_2):
-      query += 'SUM(CASE WHEN MONTH(transaction_date) BETWEEN '+cstr(3*i+1)+' AND '+cstr(3*i+3)+' THEN net_total ELSE NULL END)';
+      query += 'SUM(CASE WHEN MONTH(posting_date) BETWEEN '+cstr(3*i+1)+' AND '+cstr(3*i+3)+' THEN net_total ELSE NULL END)';
 
     target = sql("select sum(target_amount) from `tabTarget Detail` where parent = %s and parenttype= 'Territory' and fiscal_year = %s",(r[col_idx['ID']],fiscal_year))
     target = target and flt(flt(target[0][0])/4) or 0
@@ -183,13 +183,13 @@ for r in res:
 
     # for loop is required twice coz fiscal year starts from April (this will also work if fiscal year starts in January)
     for i in range(start_month-1,len(month_name)):
-      query += 'SUM(CASE WHEN MONTH(transaction_date) = '+cstr(i+1)+' THEN net_total ELSE NULL END),'
+      query += 'SUM(CASE WHEN MONTH(posting_date) = '+cstr(i+1)+' THEN net_total ELSE NULL END),'
 
     for i  in range(start_month-1):
       if i != (start_month-2):
-        query += 'SUM(CASE WHEN MONTH(transaction_date) = '+cstr(i+1)+' THEN net_total ELSE NULL END),'
+        query += 'SUM(CASE WHEN MONTH(posting_date) = '+cstr(i+1)+' THEN net_total ELSE NULL END),'
       else:
-        query += 'SUM(CASE WHEN MONTH(transaction_date) = '+cstr(i+1)+' THEN net_total ELSE NULL END)';
+        query += 'SUM(CASE WHEN MONTH(posting_date) = '+cstr(i+1)+' THEN net_total ELSE NULL END)';
     so = sql("SELECT %s from `tab%s` where territory ='%s' and %s " %(query,based_on,r[col_idx['ID']],condition))
 
     i = 0

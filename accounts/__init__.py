@@ -176,13 +176,15 @@ def get_prev_doc_list(obj, prev_doctype):
 	"""
 		Returns a list of previous doc's names
 	"""
+	from webnotes.modules import scrub
 	prevdoc_list = []
+	prevdoc_field = scrub(prev_doctype)
 	for ch in obj.doclist:
-		if ch.fields.get('prevdoc_docname') and ch.fields.get('prevdoc_doctype')==prev_doctype:
-			prevdoc_list.append(ch.fields.get('prevdoc_docname'))
+		if ch.fields.get(prevdoc_field):
+			prevdoc_list.append(ch.fields.get(prevdoc_field))
+	
 	return prevdoc_list
-
-
+	
 def get_inv_list(table, field, value):
 	"""
 		Returns invoice list

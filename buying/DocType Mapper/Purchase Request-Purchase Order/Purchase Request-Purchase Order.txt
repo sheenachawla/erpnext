@@ -130,10 +130,10 @@
 	{
 		'checking_operator': u'>=',
 		'doctype': u'Field Mapper Detail',
-		'from_field': u'transaction_date',
+		'from_field': u'posting_date',
 		'map': u'No',
 		'match_id': 0,
-		'to_field': u'transaction_date'
+		'to_field': u'posting_date'
 	},
 
 	# Table Mapper Detail
@@ -149,11 +149,11 @@
 	# Table Mapper Detail
 	{
 		'doctype': u'Table Mapper Detail',
-		'from_field': u'indent_details',
+		'from_field': u'purchase_request_items',
 		'from_table': u'Purchase Request Item',
 		'match_id': 1,
 		'reference_doctype_key': u'prevdoc_doctype',
-		'to_field': u'po_details',
+		'to_field': u'purchase_order_items',
 		'to_table': u'Purchase Order Item',
 		'validation_logic': u'qty > ifnull(ordered_qty,0) and docstatus =1'
 	}

@@ -3,106 +3,114 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2010-08-08 17:09:34',
-		'docstatus': 0,
-		'modified': '2011-09-15 15:04:41',
-		'modified_by': 'Administrator',
-		'owner': 'ashwini@webnotestech.com'
+		u'creation': '2010-09-20 12:33:33',
+		u'docstatus': 0,
+		u'modified': '2012-10-24 14:34:08',
+		u'modified_by': u'Administrator',
+		u'owner': u'ashwini@webnotestech.com'
 	},
 
 	# These values are common for all Table Mapper Detail
 	{
-		'doctype': 'Table Mapper Detail',
-		'from_table': 'Customer Issue',
-		'name': '__common__',
-		'parent': 'Customer Issue-Maintenance Visit',
-		'parentfield': 'table_mapper_details',
-		'parenttype': 'DocType Mapper',
-		'reference_key': 'prevdoc_docname',
-		'validation_logic': 'docstatus=1'
+		u'doctype': u'Table Mapper Detail',
+		'from_table': u'Customer Issue',
+		u'name': u'__common__',
+		'parent': u'Customer Issue-Maintenance Visit',
+		'parentfield': u'table_mapper_details',
+		'parenttype': u'DocType Mapper',
+		'reference_key': u'prevdoc_docname',
+		'validation_logic': u'docstatus=1'
 	},
 
 	# These values are common for all Field Mapper Detail
 	{
-		'doctype': 'Field Mapper Detail',
-		'map': 'Yes',
-		'name': '__common__',
-		'parent': 'Customer Issue-Maintenance Visit',
-		'parentfield': 'field_mapper_details',
-		'parenttype': 'DocType Mapper'
+		u'doctype': u'Field Mapper Detail',
+		'map': u'Yes',
+		u'name': u'__common__',
+		'parent': u'Customer Issue-Maintenance Visit',
+		'parentfield': u'field_mapper_details',
+		'parenttype': u'DocType Mapper'
 	},
 
 	# These values are common for all DocType Mapper
 	{
-		'doctype': 'DocType Mapper',
-		'from_doctype': 'Customer Issue',
-		'module': 'Support',
-		'name': '__common__',
+		u'doctype': u'DocType Mapper',
+		'from_doctype': u'Customer Issue',
+		'module': u'Support',
+		u'name': u'__common__',
 		'ref_doc_submitted': 1,
-		'to_doctype': 'Maintenance Visit'
+		'to_doctype': u'Maintenance Visit'
 	},
 
 	# DocType Mapper, Customer Issue-Maintenance Visit
 	{
-		'doctype': 'DocType Mapper',
-		'name': 'Customer Issue-Maintenance Visit'
+		u'doctype': u'DocType Mapper',
+		u'name': u'Customer Issue-Maintenance Visit'
 	},
 
 	# Field Mapper Detail
 	{
-		'checking_operator': '=',
-		'doctype': 'Field Mapper Detail',
-		'from_field': 'customer',
+		'checking_operator': u'=',
+		u'doctype': u'Field Mapper Detail',
+		'from_field': u'customer',
 		'match_id': 0,
-		'to_field': 'customer'
+		'to_field': u'customer'
 	},
 
 	# Field Mapper Detail
 	{
-		'doctype': 'Field Mapper Detail',
-		'from_field': 'name',
+		u'doctype': u'Field Mapper Detail',
+		'from_field': u'name',
 		'match_id': 0,
-		'to_field': 'customer_issue_no'
+		'to_field': u'customer_issue_no'
 	},
 
 	# Field Mapper Detail
 	{
-		'checking_operator': '=',
-		'doctype': 'Field Mapper Detail',
-		'from_field': 'complaint',
-		'match_id': 1,
-		'to_field': 'description'
+		u'doctype': u'Field Mapper Detail',
+		'from_field': u'name',
+		'match_id': 0,
+		'to_field': u'customer_issue'
 	},
 
 	# Field Mapper Detail
 	{
-		'doctype': 'Field Mapper Detail',
-		'from_field': 'doctype',
+		'checking_operator': u'=',
+		u'doctype': u'Field Mapper Detail',
+		'from_field': u'complaint',
 		'match_id': 1,
-		'to_field': 'prevdoc_doctype'
+		'to_field': u'description'
 	},
 
 	# Field Mapper Detail
 	{
-		'doctype': 'Field Mapper Detail',
-		'from_field': 'name',
+		u'doctype': u'Field Mapper Detail',
+		'from_field': u'doctype',
 		'match_id': 1,
-		'to_field': 'prevdoc_docname'
+		'to_field': u'prevdoc_doctype'
+	},
+
+	# Field Mapper Detail
+	{
+		u'doctype': u'Field Mapper Detail',
+		'from_field': u'name',
+		'match_id': 1,
+		'to_field': u'prevdoc_docname'
 	},
 
 	# Table Mapper Detail
 	{
-		'doctype': 'Table Mapper Detail',
+		u'doctype': u'Table Mapper Detail',
 		'match_id': 1,
-		'reference_doctype_key': 'prevdoc_doctype',
-		'to_field': 'maintenance_visit_details',
-		'to_table': 'Maintenance Visit Purpose'
+		'reference_doctype_key': u'prevdoc_doctype',
+		'to_field': u'maintenance_visit_details',
+		'to_table': u'Maintenance Visit Purpose'
 	},
 
 	# Table Mapper Detail
 	{
-		'doctype': 'Table Mapper Detail',
+		u'doctype': u'Table Mapper Detail',
 		'match_id': 0,
-		'to_table': 'Maintenance Visit'
+		'to_table': u'Maintenance Visit'
 	}
 ]

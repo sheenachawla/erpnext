@@ -3,11 +3,11 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-04-11 13:17:40',
-		'docstatus': 0,
-		'modified': '2012-04-12 14:52:49',
-		'modified_by': u'Administrator',
-		'owner': u'Administrator'
+		u'creation': '2012-07-03 13:29:57',
+		u'docstatus': 0,
+		u'modified': '2012-10-18 17:54:53',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
 	},
 
 	# These values are common for all DocType
@@ -15,20 +15,20 @@
 		'autoname': u'IDTD/.#####',
 		'colour': u'White:FFF',
 		'default_print_format': u'Standard',
-		'doctype': 'DocType',
+		u'doctype': u'DocType',
 		'istable': 1,
 		'module': u'Buying',
-		'name': '__common__',
+		u'name': u'__common__',
 		'section_style': u'Tray',
 		'server_code_error': u' ',
 		'show_in_menu': 0,
-		'version': 37
+		'version': 1
 	},
 
 	# These values are common for all DocField
 	{
-		'doctype': u'DocField',
-		'name': '__common__',
+		u'doctype': u'DocField',
+		u'name': u'__common__',
 		'parent': u'Purchase Request Item',
 		'parentfield': u'fields',
 		'parenttype': u'DocType'
@@ -36,13 +36,13 @@
 
 	# DocType, Purchase Request Item
 	{
-		'doctype': 'DocType',
-		'name': u'Purchase Request Item'
+		u'doctype': u'DocType',
+		u'name': u'Purchase Request Item'
 	},
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'schedule_date',
 		'fieldtype': u'Date',
 		'label': u'Required Date',
@@ -57,7 +57,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'item_code',
 		'fieldtype': u'Link',
 		'in_filter': 1,
@@ -74,7 +74,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'description',
 		'fieldtype': u'Text',
 		'label': u'Description',
@@ -87,7 +87,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'warehouse',
 		'fieldtype': u'Link',
 		'label': u'Warehouse',
@@ -105,9 +105,9 @@
 	{
 		'colour': u'White:FFF',
 		'default': u'0.00',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'qty',
-		'fieldtype': u'Currency',
+		'fieldtype': u'Float',
 		'label': u'Quantity',
 		'no_copy': 0,
 		'oldfieldname': u'qty',
@@ -120,7 +120,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'uom',
 		'fieldtype': u'Link',
 		'label': u'Stock UOM',
@@ -135,7 +135,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'lead_time_date',
 		'fieldtype': u'Date',
 		'label': u'Lead Time Date',
@@ -148,7 +148,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'item_name',
 		'fieldtype': u'Data',
 		'in_filter': 1,
@@ -164,7 +164,7 @@
 	# DocField
 	{
 		'colour': u'White:FFF',
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'item_group',
 		'fieldtype': u'Link',
 		'in_filter': 1,
@@ -181,7 +181,7 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'brand',
 		'fieldtype': u'Link',
 		'label': u'Brand',
@@ -195,9 +195,9 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'min_order_qty',
-		'fieldtype': u'Currency',
+		'fieldtype': u'Float',
 		'label': u'Min Order Qty',
 		'no_copy': 1,
 		'oldfieldname': u'min_order_qty',
@@ -210,9 +210,9 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'projected_qty',
-		'fieldtype': u'Currency',
+		'fieldtype': u'Float',
 		'label': u'Projected Qty',
 		'no_copy': 1,
 		'oldfieldname': u'projected_qty',
@@ -224,9 +224,9 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'ordered_qty',
-		'fieldtype': u'Currency',
+		'fieldtype': u'Float',
 		'label': u'Ordered Qty',
 		'no_copy': 1,
 		'oldfieldname': u'ordered_qty',
@@ -236,8 +236,8 @@
 
 	# DocField
 	{
-		'doctype': u'DocField',
-		'fieldname': u'sales_order_no',
+		u'doctype': u'DocField',
+		'fieldname': u'sales_order',
 		'fieldtype': u'Link',
 		'label': u'Sales Order No',
 		'no_copy': 1,
@@ -249,7 +249,7 @@
 	# DocField
 	{
 		'allow_on_submit': 1,
-		'doctype': u'DocField',
+		u'doctype': u'DocField',
 		'fieldname': u'page_break',
 		'fieldtype': u'Check',
 		'label': u'Page Break',

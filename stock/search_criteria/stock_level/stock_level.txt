@@ -3,11 +3,11 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-04-03 12:49:53',
-		'docstatus': 0,
-		'modified': '2012-04-03 12:49:53',
-		'modified_by': u'Administrator',
-		'owner': u'Administrator'
+		u'creation': '2012-10-24 14:34:07',
+		u'docstatus': 0,
+		u'modified': '2012-10-24 14:34:07',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
 	},
 
 	# These values are common for all Search Criteria
@@ -18,10 +18,10 @@
 		'columns': u'Bin\x01Warehouse,Bin\x01Item Code,Bin\x01UOM,Bin\x01Reserved Quantity,Bin\x01Actual Quantity,Bin\x01Ordered Quantity,Bin\x01Planned Qty,Bin\x01Projected Qty,Bin\x01Quantity Requested for Purchase,Bin\x01Valuation Rate,Bin\x01Stock Value',
 		'criteria_name': u'Stock Level',
 		'doc_type': u'Bin',
-		'doctype': 'Search Criteria',
+		u'doctype': u'Search Criteria',
 		'filters': u'{}',
 		'module': u'Stock',
-		'name': '__common__',
+		u'name': u'__common__',
 		'page_len': 50,
 		'sort_by': u'`tabBin`.`warehouse`',
 		'sort_order': u'DESC',
@@ -30,7 +30,7 @@
 
 	# Search Criteria, stock_level
 	{
-		'doctype': 'Search Criteria',
-		'name': u'stock_level'
+		u'doctype': u'Search Criteria',
+		u'name': u'stock_level'
 	}
 ]

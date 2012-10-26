@@ -3,17 +3,17 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-04-03 12:49:42',
-		'docstatus': 0,
-		'modified': '2012-04-03 12:49:42',
-		'modified_by': u'Administrator',
-		'owner': u'Administrator'
+		u'creation': '2010-09-20 12:33:35',
+		u'docstatus': 0,
+		u'modified': '2012-10-24 14:33:41',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
 	},
 
 	# These values are common for all Table Mapper Detail
 	{
-		'doctype': u'Table Mapper Detail',
-		'name': '__common__',
+		u'doctype': u'Table Mapper Detail',
+		u'name': u'__common__',
 		'parent': u'Sales Order-Sales Invoice',
 		'parentfield': u'table_mapper_details',
 		'parenttype': u'DocType Mapper'
@@ -21,8 +21,8 @@
 
 	# These values are common for all Field Mapper Detail
 	{
-		'doctype': u'Field Mapper Detail',
-		'name': '__common__',
+		u'doctype': u'Field Mapper Detail',
+		u'name': u'__common__',
 		'parent': u'Sales Order-Sales Invoice',
 		'parentfield': u'field_mapper_details',
 		'parenttype': u'DocType Mapper'
@@ -30,24 +30,24 @@
 
 	# These values are common for all DocType Mapper
 	{
-		'doctype': u'DocType Mapper',
+		u'doctype': u'DocType Mapper',
 		'from_doctype': u'Sales Order',
 		'module': u'Accounts',
-		'name': '__common__',
+		u'name': u'__common__',
 		'ref_doc_submitted': 1,
 		'to_doctype': u'Sales Invoice'
 	},
 
 	# DocType Mapper, Sales Order-Sales Invoice
 	{
-		'doctype': u'DocType Mapper',
-		'name': u'Sales Order-Sales Invoice'
+		u'doctype': u'DocType Mapper',
+		u'name': u'Sales Order-Sales Invoice'
 	},
 
 	# Field Mapper Detail
 	{
 		'checking_operator': u'=',
-		'doctype': u'Field Mapper Detail',
+		u'doctype': u'Field Mapper Detail',
 		'from_field': u'customer',
 		'map': u'Yes',
 		'match_id': 0,
@@ -56,7 +56,7 @@
 
 	# Field Mapper Detail
 	{
-		'doctype': u'Field Mapper Detail',
+		u'doctype': u'Field Mapper Detail',
 		'from_field': u'eval: obj.basic_rate and (flt(obj.amount) - flt(obj.billed_amt))/flt(obj.basic_rate) or obj.qty',
 		'map': u'Yes',
 		'match_id': 1,
@@ -65,7 +65,16 @@
 
 	# Field Mapper Detail
 	{
-		'doctype': u'Field Mapper Detail',
+		u'doctype': u'Field Mapper Detail',
+		'from_field': u'eval: obj.rate and (flt(obj.amount) - flt(obj.billed_amt))/flt(obj.rate) or obj.qty',
+		'map': u'Yes',
+		'match_id': 1,
+		'to_field': u'qty'
+	},
+
+	# Field Mapper Detail
+	{
+		u'doctype': u'Field Mapper Detail',
 		'from_field': u'parent',
 		'map': u'Yes',
 		'match_id': 1,
@@ -74,7 +83,7 @@
 
 	# Field Mapper Detail
 	{
-		'doctype': u'Field Mapper Detail',
+		u'doctype': u'Field Mapper Detail',
 		'from_field': u'name',
 		'map': u'Yes',
 		'match_id': 1,
@@ -83,7 +92,16 @@
 
 	# Field Mapper Detail
 	{
-		'doctype': u'Field Mapper Detail',
+		u'doctype': u'Field Mapper Detail',
+		'from_field': u'name',
+		'map': u'Yes',
+		'match_id': 1,
+		'to_field': u'sales_order_item'
+	},
+
+	# Field Mapper Detail
+	{
+		u'doctype': u'Field Mapper Detail',
 		'from_field': u'eval:flt(obj.amount) - flt(obj.billed_amt)',
 		'map': u'Yes',
 		'match_id': 1,
@@ -92,7 +110,7 @@
 
 	# Field Mapper Detail
 	{
-		'doctype': u'Field Mapper Detail',
+		u'doctype': u'Field Mapper Detail',
 		'from_field': u'eval: (flt(obj.amount) - flt(obj.billed_amt))* flt(obj.export_rate)/flt(obj.basic_rate)',
 		'map': u'Yes',
 		'match_id': 1,
@@ -101,8 +119,17 @@
 
 	# Field Mapper Detail
 	{
+		u'doctype': u'Field Mapper Detail',
+		'from_field': u'eval: (flt(obj.amount) - flt(obj.billed_amt))* flt(obj.print_rate)/flt(obj.rate)',
+		'map': u'Yes',
+		'match_id': 1,
+		'to_field': u'print_amount'
+	},
+
+	# Field Mapper Detail
+	{
 		'checking_operator': u'=',
-		'doctype': u'Field Mapper Detail',
+		u'doctype': u'Field Mapper Detail',
 		'from_field': u'project_name',
 		'map': u'Yes',
 		'match_id': 0,
@@ -111,7 +138,7 @@
 
 	# Field Mapper Detail
 	{
-		'doctype': u'Field Mapper Detail',
+		u'doctype': u'Field Mapper Detail',
 		'from_field': u'reserved_warehouse',
 		'map': u'Yes',
 		'match_id': 1,
@@ -120,7 +147,7 @@
 
 	# Field Mapper Detail
 	{
-		'doctype': u'Field Mapper Detail',
+		u'doctype': u'Field Mapper Detail',
 		'from_field': u'naming_series',
 		'map': u'No',
 		'match_id': 0,
@@ -129,7 +156,7 @@
 
 	# Field Mapper Detail
 	{
-		'doctype': u'Field Mapper Detail',
+		u'doctype': u'Field Mapper Detail',
 		'from_field': u'incentives',
 		'map': u'No',
 		'match_id': 3,
@@ -139,16 +166,26 @@
 	# Field Mapper Detail
 	{
 		'checking_operator': u'=',
-		'doctype': u'Field Mapper Detail',
+		u'doctype': u'Field Mapper Detail',
 		'from_field': u'export_rate',
 		'map': u'Yes',
 		'match_id': 1,
 		'to_field': u'export_rate'
 	},
 
+	# Field Mapper Detail
+	{
+		'checking_operator': u'=',
+		u'doctype': u'Field Mapper Detail',
+		'from_field': u'print_rate',
+		'map': u'Yes',
+		'match_id': 1,
+		'to_field': u'print_rate'
+	},
+
 	# Table Mapper Detail
 	{
-		'doctype': u'Table Mapper Detail',
+		u'doctype': u'Table Mapper Detail',
 		'from_table': u'Sales Order',
 		'match_id': 0,
 		'to_table': u'Sales Invoice',
@@ -157,29 +194,29 @@
 
 	# Table Mapper Detail
 	{
-		'doctype': u'Table Mapper Detail',
+		u'doctype': u'Table Mapper Detail',
 		'from_field': u'sales_order_detail',
 		'from_table': u'Sales Order Item',
 		'match_id': 1,
-		'to_field': u'entries',
+		'to_field': u'sales_invoice_items',
 		'to_table': u'Sales Invoice Item',
 		'validation_logic': u'(ifnull(amount, 0) = 0 or amount > ifnull(billed_amt, 0)) and docstatus = 1'
 	},
 
 	# Table Mapper Detail
 	{
-		'doctype': u'Table Mapper Detail',
-		'from_field': u'other_charges',
+		u'doctype': u'Table Mapper Detail',
+		'from_field': u'taxes_and_charges',
 		'from_table': u'Sales Taxes and Charges',
 		'match_id': 2,
-		'to_field': u'other_charges',
+		'to_field': u'taxes_and_charges',
 		'to_table': u'Sales Taxes and Charges',
 		'validation_logic': u'name is not null'
 	},
 
 	# Table Mapper Detail
 	{
-		'doctype': u'Table Mapper Detail',
+		u'doctype': u'Table Mapper Detail',
 		'from_field': u'sales_team',
 		'from_table': u'Sales Team',
 		'match_id': 3,

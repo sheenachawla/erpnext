@@ -3,19 +3,19 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2010-08-08 17:09:34',
-		'docstatus': 0,
-		'modified': '2012-04-03 12:49:50',
-		'modified_by': u'Administrator',
-		'owner': u'Administrator'
+		u'creation': '2010-09-20 12:33:34',
+		u'docstatus': 0,
+		u'modified': '2012-10-24 14:33:55',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
 	},
 
 	# These values are common for all Table Mapper Detail
 	{
-		'doctype': u'Table Mapper Detail',
+		u'doctype': u'Table Mapper Detail',
 		'from_table': u'Lead',
 		'match_id': 0,
-		'name': '__common__',
+		u'name': u'__common__',
 		'parent': u'Lead-Opportunity',
 		'parentfield': u'table_mapper_details',
 		'parenttype': u'DocType Mapper',
@@ -25,9 +25,9 @@
 
 	# These values are common for all Field Mapper Detail
 	{
-		'doctype': u'Field Mapper Detail',
+		u'doctype': u'Field Mapper Detail',
 		'match_id': 0,
-		'name': '__common__',
+		u'name': u'__common__',
 		'parent': u'Lead-Opportunity',
 		'parentfield': u'field_mapper_details',
 		'parenttype': u'DocType Mapper'
@@ -35,22 +35,22 @@
 
 	# These values are common for all DocType Mapper
 	{
-		'doctype': u'DocType Mapper',
+		u'doctype': u'DocType Mapper',
 		'from_doctype': u'Lead',
 		'module': u'Selling',
-		'name': '__common__',
+		u'name': u'__common__',
 		'to_doctype': u'Opportunity'
 	},
 
 	# DocType Mapper, Lead-Opportunity
 	{
-		'doctype': u'DocType Mapper',
-		'name': u'Lead-Opportunity'
+		u'doctype': u'DocType Mapper',
+		u'name': u'Lead-Opportunity'
 	},
 
 	# Field Mapper Detail
 	{
-		'doctype': u'Field Mapper Detail',
+		u'doctype': u'Field Mapper Detail',
 		'from_field': u'campaign_name',
 		'map': u'Yes',
 		'to_field': u'campaign'
@@ -58,7 +58,7 @@
 
 	# Field Mapper Detail
 	{
-		'doctype': u'Field Mapper Detail',
+		u'doctype': u'Field Mapper Detail',
 		'from_field': u'doctype',
 		'map': u'Yes',
 		'to_field': u'enquiry_from'
@@ -66,7 +66,7 @@
 
 	# Field Mapper Detail
 	{
-		'doctype': u'Field Mapper Detail',
+		u'doctype': u'Field Mapper Detail',
 		'from_field': u'name',
 		'map': u'Yes',
 		'to_field': u'lead'
@@ -74,7 +74,7 @@
 
 	# Field Mapper Detail
 	{
-		'doctype': u'Field Mapper Detail',
+		u'doctype': u'Field Mapper Detail',
 		'from_field': u'status',
 		'map': u'No',
 		'to_field': u'status'
@@ -82,6 +82,6 @@
 
 	# Table Mapper Detail
 	{
-		'doctype': u'Table Mapper Detail'
+		u'doctype': u'Table Mapper Detail'
 	}
 ]

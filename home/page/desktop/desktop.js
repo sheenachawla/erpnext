@@ -45,11 +45,11 @@ erpnext.desktop.render = function() {
 
 	var add_icon = function(m) {
 		var icon = icons[m];
-		icon.link = erpnext.modules[m];
+		icon.link = erpnext.modules[m] || ('Module/' + m);
 		icon.gradient = wn.module_css_map[m];
 		
 		$('#icon-grid').append(repl('\
-			<div id="%(sprite)s" class="case-wrapper"><a href="#!%(link)s">\
+			<div id="%(sprite)s" class="case-wrapper"><a href="#%(link)s">\
 				<div class="case-border case-%(gradient)s">\
 					<div class="sprite-image sprite-%(sprite)s"></div>\
 				</div></a>\

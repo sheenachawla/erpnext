@@ -3,29 +3,23 @@
 
 	# These values are common in all dictionaries
 	{
-		u'creation': '2012-07-12 22:19:57',
+		u'creation': '2012-10-26 16:25:40',
 		u'docstatus': 0,
-		u'modified': '2012-10-08 15:11:56',
+		u'modified': '2012-10-26 16:37:14',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
 
 	# These values are common for all DocType
 	{
-		'_last_update': u'1319016431',
-		'allow_trash': 1,
 		'autoname': u'field:warehouse_name',
-		'colour': u'White:FFF',
 		'default_print_format': u'Standard',
-		'description': u'A logical Warehouse against which stock entries are made.\n\nThere are two main Warehouse Types that are significant in ERPNext.\n\n1. **Stores:** These are where your incoming **Items** are kept before they are consumed or sold. You can have as many \u201cStores\u201d type **Warehouses** as you wish. Stores type warehouses are significant because if you set an Item for automatic re-order, ERPNext will check its quantities in all \u201cStores\u201d type **Warehouses** when deciding whether to re-order or not.\n\n2. **Asset**: **Items** marked as type \u201cFixed Asset\u201d are maintained in Asset Type **Warehouses**. This helps you separate them for the **Items** that are consumed as a part of your regular operations or \u201cCost of Goods Sold\u201d.\n',
+		'description': u'Location where Items are stored.',
 		u'doctype': u'DocType',
 		'document_type': u'Master',
 		'module': u'Stock',
 		u'name': u'__common__',
 		'search_fields': u'warehouse_type',
-		'section_style': u'Tabbed',
-		'server_code_error': u' ',
-		'show_in_menu': 0,
 		'version': 1
 	},
 
@@ -35,8 +29,7 @@
 		u'name': u'__common__',
 		'parent': u'Warehouse',
 		'parentfield': u'fields',
-		'parenttype': u'DocType',
-		'permlevel': 0
+		'parenttype': u'DocType'
 	},
 
 	# These values are common for all DocPerm
@@ -61,7 +54,8 @@
 		'fieldname': u'warehouse_detail',
 		'fieldtype': u'Section Break',
 		'label': u'Warehouse Detail',
-		'oldfieldtype': u'Section Break'
+		'oldfieldtype': u'Section Break',
+		'permlevel': 0
 	},
 
 	# DocField
@@ -72,12 +66,12 @@
 		'label': u'Warehouse Name',
 		'oldfieldname': u'warehouse_name',
 		'oldfieldtype': u'Data',
+		'permlevel': 0,
 		'reqd': 1
 	},
 
 	# DocField
 	{
-		'colour': u'White:FFF',
 		u'doctype': u'DocField',
 		'fieldname': u'warehouse_type',
 		'fieldtype': u'Link',
@@ -85,6 +79,7 @@
 		'oldfieldname': u'warehouse_type',
 		'oldfieldtype': u'Link',
 		'options': u'Warehouse Type',
+		'permlevel': 0,
 		'reqd': 1
 	},
 
@@ -94,17 +89,18 @@
 		'fieldname': u'stock_in_hand',
 		'fieldtype': u'Link',
 		'label': u'Stock In Hand',
-		'options': u'Account'
+		'options': u'Account',
+		'permlevel': 0
 	},
 
 	# DocField
 	{
-		'colour': u'White:FFF',
 		'description': u'For Reference Only.',
 		u'doctype': u'DocField',
 		'fieldname': u'warehouse_contact_info',
 		'fieldtype': u'Section Break',
-		'label': u'Warehouse Contact Info'
+		'label': u'Warehouse Contact Info',
+		'permlevel': 0
 	},
 
 	# DocField
@@ -116,6 +112,7 @@
 		'label': u'Email Id',
 		'oldfieldname': u'email_id',
 		'oldfieldtype': u'Data',
+		'permlevel': 0,
 		'print_hide': 0
 	},
 
@@ -127,7 +124,8 @@
 		'label': u'Phone No',
 		'oldfieldname': u'phone_no',
 		'oldfieldtype': u'Int',
-		'options': u'Phone'
+		'options': u'Phone',
+		'permlevel': 0
 	},
 
 	# DocField
@@ -138,7 +136,8 @@
 		'label': u'Mobile No',
 		'oldfieldname': u'mobile_no',
 		'oldfieldtype': u'Int',
-		'options': u'Phone'
+		'options': u'Phone',
+		'permlevel': 0
 	},
 
 	# DocField
@@ -146,7 +145,8 @@
 		u'doctype': u'DocField',
 		'fieldname': u'column_break0',
 		'fieldtype': u'Column Break',
-		'oldfieldtype': u'Column Break'
+		'oldfieldtype': u'Column Break',
+		'permlevel': 0
 	},
 
 	# DocField
@@ -156,7 +156,8 @@
 		'fieldtype': u'Data',
 		'label': u'Address Line 1',
 		'oldfieldname': u'address_line_1',
-		'oldfieldtype': u'Data'
+		'oldfieldtype': u'Data',
+		'permlevel': 0
 	},
 
 	# DocField
@@ -166,7 +167,8 @@
 		'fieldtype': u'Data',
 		'label': u'Address Line 2',
 		'oldfieldname': u'address_line_2',
-		'oldfieldtype': u'Data'
+		'oldfieldtype': u'Data',
+		'permlevel': 0
 	},
 
 	# DocField
@@ -177,29 +179,60 @@
 		'label': u'City',
 		'oldfieldname': u'city',
 		'oldfieldtype': u'Data',
+		'permlevel': 0,
 		'reqd': 0
 	},
 
 	# DocField
 	{
-		'colour': u'White:FFF',
 		u'doctype': u'DocField',
 		'fieldname': u'state',
 		'fieldtype': u'Data',
 		'label': u'State',
 		'oldfieldname': u'state',
 		'oldfieldtype': u'Select',
-		'options': u'Suggest'
+		'options': u'Suggest',
+		'permlevel': 0
 	},
 
 	# DocField
 	{
+		'description': u'This feature is for merging duplicate warehouses. It will replace all the links of this warehouse by "Merge With" warehouse. After merging you can delete this warehouse, as stock level for this warehouse will be zero.',
 		u'doctype': u'DocField',
 		'fieldname': u'pin',
 		'fieldtype': u'Int',
 		'label': u'PIN',
 		'oldfieldname': u'pin',
-		'oldfieldtype': u'Int'
+		'oldfieldtype': u'Int',
+		'permlevel': 0
+	},
+
+	# DocField
+	{
+		u'doctype': u'DocField',
+		'fieldname': u'merge_warehouses_section',
+		'fieldtype': u'Section Break',
+		'label': u'Merge Warehouses',
+		'permlevel': 2
+	},
+
+	# DocField
+	{
+		u'doctype': u'DocField',
+		'fieldname': u'merge_with',
+		'fieldtype': u'Link',
+		'label': u'Merge With',
+		'options': u'Warehouse',
+		'permlevel': 2
+	},
+
+	# DocField
+	{
+		u'doctype': u'DocField',
+		'fieldname': u'merge',
+		'fieldtype': u'Button',
+		'label': u'Merge',
+		'permlevel': 2
 	},
 
 	# DocPerm

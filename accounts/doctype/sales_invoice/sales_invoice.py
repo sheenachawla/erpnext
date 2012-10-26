@@ -35,7 +35,7 @@ class DocType(TransactionBase):
 		self.doc, self.doclist = d, dl
 		self.log = []
 		self.tname = 'Sales Invoice Item'
-		self.fname = 'entries'
+		self.fname = 'sales_invoice_items'
 
 
 	def autoname(self):
@@ -54,21 +54,21 @@ class DocType(TransactionBase):
 			if not self.doc.debit_to:
 				webnotes.conn.set(self.doc,'debit_to',val)
 			
-			lst = ['territory','naming_series','currency','charge','letter_head','tc_name','price_list_name','company','select_print_heading','cash_bank_account']
+			lst = ['territory','naming_series','currency','sales_taxes_and_charges_master','letter_head','tc_name','price_list_name','company','select_print_heading','cash_bank_account']
 				
 			for i in lst:
 				val = pos and pos[0][i] or ''
 				self.doc.fields[i] = val
 			self.set_pos_item_values()
 			
-			val = pos and flt(pos[0]['conversion_rate']) or 0	
-			self.doc.conversion_rate = val
+			val = pos and flt(pos[0]['exchange_rate']) or 0	
+			self.doc.exchange_rate = val
 
 			#fetch terms	
 			if self.doc.tc_name:	 self.get_tc_details()
 			
 			#fetch charges
-			if self.doc.charge:		self.get_other_charges()
+			if self.doc.sales_taxes_and_charges_master:		self.get_taxes_and_charges()
 
 
 	def set_pos_item_values(self):
@@ -77,7 +77,7 @@ class DocType(TransactionBase):
 			dtl = webnotes.conn.sql("select income_account, warehouse, cost_center from `tabPOS Setting` where ifnull(user,'') = '%s' and company = '%s'" % (session['user'], self.doc.company), as_dict=1)
 			if not dtl:
 				dtl = webnotes.conn.sql("select income_account, warehouse, cost_center from `tabPOS Setting` where ifnull(user,'') = '' and company = '%s'" % (self.doc.company), as_dict=1)
-			for d in getlist(self.doclist,'entries'):
+			for d in getlist(self.doclist,'sales_invoice_items'):
 				# overwrite if mentioned in item
 				item = webnotes.conn.sql("select default_income_account, default_sales_cost_center, default_warehouse from tabItem where name = '%s'" %(d.item_code), as_dict=1)
 				d.income_account = item and item[0]['default_income_account'] or dtl and dtl[0]['income_account'] or d.income_account
@@ -124,17 +124,17 @@ class DocType(TransactionBase):
 	def pull_details(self):
 		"""Pull Details of Delivery Note or Sales Order Selected"""
 		# Delivery Note
-		if self.doc.delivery_note_main:
+		if self.doc.delivery_note:
 			self.validate_prev_docname('delivery note')
-			self.doclist = self.doc.clear_table(self.doclist,'other_charges')			
-			self.doclist = get_obj('DocType Mapper', 'Delivery Note-Sales Invoice').dt_map('Delivery Note', 'Sales Invoice', self.doc.delivery_note_main, self.doc, self.doclist, "[['Delivery Note', 'Sales Invoice'],['Delivery Note Item', 'Sales Invoice Item'],['Sales Taxes and Charges','Sales Taxes and Charges'],['Sales Team','Sales Team']]")			
-			self.get_income_account('entries')
+			self.doclist = self.doc.clear_table(self.doclist,'taxes_and_charges')			
+			self.doclist = get_obj('DocType Mapper', 'Delivery Note-Sales Invoice').dt_map('Delivery Note', 'Sales Invoice', self.doc.delivery_note, self.doc, self.doclist, "[['Delivery Note', 'Sales Invoice'],['Delivery Note Item', 'Sales Invoice Item'],['Sales Taxes and Charges','Sales Taxes and Charges'],['Sales Team','Sales Team']]")			
+			self.get_income_account('sales_invoice_items')
 		# Sales Order
-		elif self.doc.sales_order_main:
+		elif self.doc.sales_order:
 			self.validate_prev_docname('sales order')
-			self.doclist = self.doc.clear_table(self.doclist,'other_charges')
-			get_obj('DocType Mapper', 'Sales Order-Sales Invoice').dt_map('Sales Order', 'Sales Invoice', self.doc.sales_order_main, self.doc, self.doclist, "[['Sales Order', 'Sales Invoice'],['Sales Order Item', 'Sales Invoice Item'],['Sales Taxes and Charges','Sales Taxes and Charges'], ['Sales Team', 'Sales Team']]")
-			self.get_income_account('entries')
+			self.doclist = self.doc.clear_table(self.doclist,'taxes_and_charges')
+			get_obj('DocType Mapper', 'Sales Order-Sales Invoice').dt_map('Sales Order', 'Sales Invoice', self.doc.sales_order, self.doc, self.doclist, "[['Sales Order', 'Sales Invoice'],['Sales Order Item', 'Sales Invoice Item'],['Sales Taxes and Charges','Sales Taxes and Charges'], ['Sales Team', 'Sales Team']]")
+			self.get_income_account('sales_invoice_items')
 			
 		ret = self.get_debit_to()
 		self.doc.debit_to = ret.get('debit_to')
@@ -144,7 +144,7 @@ class DocType(TransactionBase):
 		"""
 			Loads default accounts from items, customer when called from mapper
 		"""
-		self.get_income_account('entries')
+		self.get_income_account('sales_invoice_items')
 		
 		
 	def get_income_account(self,doctype):		
@@ -223,8 +223,8 @@ class DocType(TransactionBase):
 		self.doclist = get_obj('Sales Common').load_default_taxes(self)
 
 
-	def get_other_charges(self):
-		self.doclist = get_obj('Sales Common').get_other_charges(self)
+	def get_taxes_and_charges(self):
+		self.doclist = get_obj('Sales Common').get_taxes_and_charges(self)
 
 
 	def get_advances(self):
@@ -238,12 +238,12 @@ class DocType(TransactionBase):
 		
 	def validate_prev_docname(self,doctype):
 		"""Check whether sales order / delivery note items already pulled"""
-		for d in getlist(self.doclist, 'entries'): 
-			if doctype == 'delivery note' and self.doc.delivery_note_main == d.delivery_note:
-				msgprint(cstr(self.doc.delivery_note_main) + " delivery note details have already been pulled.")
+		for d in getlist(self.doclist, 'sales_invoice_items'): 
+			if doctype == 'delivery note' and self.doc.delivery_note == d.delivery_note:
+				msgprint(cstr(self.doc.delivery_note) + " delivery note details have already been pulled.")
 				raise Exception , "Validation Error. Delivery note details have already been pulled."
-			elif doctype == 'sales order' and self.doc.sales_order_main == d.sales_order and not d.delivery_note:
-				msgprint(cstr(self.doc.sales_order_main) + " sales order details have already been pulled.")
+			elif doctype == 'sales order' and self.doc.sales_order == d.sales_order and not d.delivery_note:
+				msgprint(cstr(self.doc.sales_order) + " sales order details have already been pulled.")
 				raise Exception , "Validation Error. Sales order details have already been pulled."
 
 
@@ -277,7 +277,7 @@ class DocType(TransactionBase):
 	
 	def validate_customer(self):
 		"""	Validate customer name with SO and DN"""
-		for d in getlist(self.doclist,'entries'):
+		for d in getlist(self.doclist,'sales_invoice_items'):
 			dt = d.delivery_note and 'Delivery Note' or d.sales_order and 'Sales Order' or ''
 			if dt:
 				dt_no = d.delivery_note or d.sales_order
@@ -312,7 +312,7 @@ class DocType(TransactionBase):
 
 	def validate_fixed_asset_account(self):
 		"""Validate Fixed Asset Account and whether Income Account Entered Exists"""
-		for d in getlist(self.doclist,'entries'):
+		for d in getlist(self.doclist,'sales_invoice_items'):
 			item = webnotes.conn.sql("select name,is_asset_item,is_sales_item from `tabItem` where name = '%s' and (ifnull(end_of_life,'')='' or end_of_life = '0000-00-00' or end_of_life >	now())"% d.item_code)
 			acc =	webnotes.conn.sql("select account_type from `tabAccount` where name = '%s' and docstatus != 2" % d.income_account)
 			if not acc:
@@ -325,8 +325,8 @@ class DocType(TransactionBase):
 
 	def set_in_words(self):
 		dcc = TransactionBase().get_company_currency(self.doc.company)
-		self.doc.in_words = get_obj('Sales Common').get_total_in_words(dcc, self.doc.rounded_total)
-		self.doc.in_words_export = get_obj('Sales Common').get_total_in_words(self.doc.currency, self.doc.rounded_total_export)
+		self.doc.rounded_total_in_words = get_obj('Sales Common').get_total_in_words(dcc, self.doc.rounded_total)
+		self.doc.rounded_total_in_words_print = get_obj('Sales Common').get_total_in_words(self.doc.currency, self.doc.rounded_total_print)
 
 
 	def clear_advances(self):
@@ -344,7 +344,7 @@ class DocType(TransactionBase):
 	def set_against_income_account(self):
 		"""Set against account for debit to account"""
 		against_acc = []
-		for d in getlist(self.doclist, 'entries'):
+		for d in getlist(self.doclist, 'sales_invoice_items'):
 			if d.income_account not in against_acc:
 				against_acc.append(d.income_account)
 		self.doc.against_income_account = ','.join(against_acc)
@@ -359,7 +359,7 @@ class DocType(TransactionBase):
 		dic = {'Sales Order':'so_required','Delivery Note':'dn_required'}
 		for i in dic:	
 			if webnotes.conn.get_value('Global Defaults', 'Global Defaults', dic[i]) == 'Yes':
-				for d in getlist(self.doclist,'entries'):
+				for d in getlist(self.doclist,'sales_invoice_items'):
 					if webnotes.conn.get_value('Item', d.item_code, 'is_stock_item') == 'Yes' \
 						and not d.fields[i.lower().replace(' ','_')]:
 						msgprint("%s is mandatory for stock item which is not mentioed against item: %s"%(i,d.item_code), raise_exception=1)
@@ -383,7 +383,7 @@ class DocType(TransactionBase):
 
 
 	def validate_item_code(self):
-		for d in getlist(self.doclist, 'entries'):
+		for d in getlist(self.doclist, 'sales_invoice_items'):
 			if not d.item_code:
 				msgprint("Please enter Item Code at line no : %s to update stock for POS or remove check from Update Stock in Basic Info Tab." % (d.idx))
 				raise Exception
@@ -404,12 +404,12 @@ class DocType(TransactionBase):
 			
 
 	def update_current_stock(self):
-		for d in getlist(self.doclist, 'entries'):
+		for d in getlist(self.doclist, 'sales_invoice_items'):
 			if d.item_code and d.warehouse:
 				bin = webnotes.conn.sql("select actual_qty from `tabBin` where item_code = %s and warehouse = %s", (d.item_code, d.warehouse), as_dict = 1)
 				d.actual_qty = bin and flt(bin[0]['actual_qty']) or 0
 
-		for d in getlist(self.doclist, 'packing_details'):
+		for d in getlist(self.doclist, 'delivery_note_packing_items'):
 			bin = sql("select actual_qty, projected_qty from `tabBin` where item_code =	%s and warehouse = %s", (d.item_code, d.warehouse), as_dict = 1)
 			d.actual_qty = bin and flt(bin[0]['actual_qty']) or 0
 			d.projected_qty = bin and flt(bin[0]['projected_qty']) or 0
@@ -421,8 +421,8 @@ class DocType(TransactionBase):
 		sales_com_obj = get_obj('Sales Common')
 		sales_com_obj.check_stop_sales_order(self)
 		sales_com_obj.check_active_sales_items(self)
-		sales_com_obj.check_conversion_rate(self)
-		sales_com_obj.validate_max_discount(self, 'entries')	 #verify whether rate is not greater than tolerance
+		sales_com_obj.check_exchange_rate(self)
+		sales_com_obj.validate_max_discount(self, 'sales_invoice_items')	 #verify whether rate is not greater than tolerance
 		sales_com_obj.get_allocated_sum(self)	# this is to verify that the allocated % of sales persons is 100%
 		sales_com_obj.validate_fiscal_year(self.doc.fiscal_year,self.doc.posting_date,'Posting Date')
 		self.validate_customer()
@@ -435,8 +435,8 @@ class DocType(TransactionBase):
 			self.validate_write_off_account()
 			if cint(self.doc.update_stock):
 				sl = get_obj('Stock Ledger')
-				sl.validate_serial_no(self, 'entries')
-				sl.validate_serial_no(self, 'packing_details')
+				sl.validate_serial_no(self, 'sales_invoice_items')
+				sl.validate_serial_no(self, 'delivery_note_packing_items')
 				self.validate_item_code()
 				self.update_current_stock()
 		self.set_in_words()
@@ -464,10 +464,10 @@ class DocType(TransactionBase):
 
 	
 	def make_packing_list(self):
-		get_obj('Sales Common').make_packing_list(self,'entries')
+		get_obj('Sales Common').make_packing_list(self,'sales_invoice_items')
 		sl = get_obj('Stock Ledger')
 		sl.scrub_serial_nos(self)
-		sl.scrub_serial_nos(self, 'packing_details')
+		sl.scrub_serial_nos(self, 'delivery_note_packing_items')
 
 
 	def on_update(self):
@@ -476,13 +476,13 @@ class DocType(TransactionBase):
 			if cint(self.doc.update_stock) == 1:
 				w = self.get_warehouse()
 				if w:
-					for d in getlist(self.doclist, 'entries'):
+					for d in getlist(self.doclist, 'sales_invoice_items'):
 						if not d.warehouse:
 							d.warehouse = cstr(w)
 							
 				self.make_packing_list()
 			else:
-				self.doclist = self.doc.clear_table(self.doclist, 'packing_details')
+				self.doclist = self.doc.clear_table(self.doclist, 'delivery_note_packing_items')
 
 			if flt(self.doc.paid_amount) == 0:
 				if self.doc.cash_bank_account: 
@@ -494,14 +494,14 @@ class DocType(TransactionBase):
 					webnotes.msgprint("Note: Payment Entry will not be created since 'Cash/Bank Account' was not specified.")
 
 		else:
-			self.doclist = self.doc.clear_table(self.doclist, 'packing_details')
+			self.doclist = self.doc.clear_table(self.doclist, 'delivery_note_packing_items')
 			webnotes.conn.set(self.doc,'paid_amount',0)
 
 		webnotes.conn.set(self.doc,'outstanding_amount',flt(self.doc.grand_total) - flt(self.doc.total_advance) - flt(self.doc.paid_amount) - flt(self.doc.write_off_amount))
 
 		
 	def check_prev_docstatus(self):
-		for d in getlist(self.doclist,'entries'):
+		for d in getlist(self.doclist,'sales_invoice_items'):
 			if d.sales_order:
 				submitted = webnotes.conn.sql("select name from `tabSales Order` where docstatus = 1 and name = '%s'" % d.sales_order)
 				if not submitted:
@@ -520,7 +520,6 @@ class DocType(TransactionBase):
 		self.values.append({
 			'item_code'					 : d['item_code'],
 			'warehouse'					 : wh,
-			'transaction_date'			: getdate(self.doc.modified).strftime('%Y-%m-%d'),
 			'posting_date'				: self.doc.posting_date,
 			'posting_time'				: self.doc.posting_time,
 			'voucher_type'				: 'Sales Invoice',
@@ -696,10 +695,10 @@ class DocType(TransactionBase):
 			if cint(self.doc.update_stock) == 1:
 				sl_obj = get_obj("Stock Ledger")
 				sl_obj.validate_serial_no_warehouse(self, 'entries')
-				sl_obj.validate_serial_no_warehouse(self, 'packing_details')
+				sl_obj.validate_serial_no_warehouse(self, 'delivery_note_packing_items')
 				
 				sl_obj.update_serial_record(self, 'entries', is_submit = 1, is_incoming = 0)
-				sl_obj.update_serial_record(self, 'packing_details', is_submit = 1, is_incoming = 0)
+				sl_obj.update_serial_record(self, 'delivery_note_packing_items', is_submit = 1, is_incoming = 0)
 				
 				self.update_stock_ledger(update_stock=1)
 		else:
@@ -724,7 +723,7 @@ class DocType(TransactionBase):
 			if cint(self.doc.update_stock) == 1:
 				sl = get_obj('Stock Ledger')
 				sl.update_serial_record(self, 'entries', is_submit = 0, is_incoming = 0)
-				sl.update_serial_record(self, 'packing_details', is_submit = 0, is_incoming = 0)
+				sl.update_serial_record(self, 'delivery_note_packing_items', is_submit = 0, is_incoming = 0)
 				
 				self.update_stock_ledger(update_stock = -1)
 		else:

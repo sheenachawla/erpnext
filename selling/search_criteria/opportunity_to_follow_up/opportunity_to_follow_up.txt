@@ -3,23 +3,23 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-03-30 14:50:44',
-		'docstatus': 0,
-		'modified': '2012-03-30 14:50:44',
-		'modified_by': u'Administrator',
-		'owner': u'Administrator'
+		u'creation': '2012-10-24 14:33:56',
+		u'docstatus': 0,
+		u'modified': '2012-10-24 14:33:56',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
 	},
 
 	# These values are common for all Search Criteria
 	{
-		'add_cond': u"`tabOpportunity`.name=`tabQuotation`.enq_no\n`tabOpportunity`.docstatus=1\n`tabQuotation`.status='Submitted'",
+		'add_cond': u"`tabOpportunity`.name=`tabQuotation`.opportunity\n`tabOpportunity`.docstatus=1\n`tabQuotation`.status='Submitted'",
 		'columns': u'Opportunity\x01ID,Opportunity\x01Owner,Opportunity\x01Company,Opportunity\x01Fiscal Year',
 		'criteria_name': u'Opportunity-To follow up',
 		'doc_type': u'Opportunity',
-		'doctype': 'Search Criteria',
+		u'doctype': u'Search Criteria',
 		'filters': u"{'Opportunity\x01Fiscal Year':''}",
 		'module': u'Selling',
-		'name': '__common__',
+		u'name': u'__common__',
 		'page_len': 50,
 		'sort_by': u'`tabOpportunity`.`name`',
 		'sort_order': u'DESC',
@@ -28,7 +28,7 @@
 
 	# Search Criteria, opportunity-to_follow_up
 	{
-		'doctype': 'Search Criteria',
-		'name': u'opportunity-to_follow_up'
+		u'doctype': u'Search Criteria',
+		u'name': u'opportunity-to_follow_up'
 	}
 ]

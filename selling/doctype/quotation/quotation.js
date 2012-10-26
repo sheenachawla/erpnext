@@ -16,8 +16,8 @@
 
 // Module CRM
 cur_frm.cscript.tname = "Quotation Item";
-cur_frm.cscript.fname = "quotation_details";
-cur_frm.cscript.other_fname = "other_charges";
+cur_frm.cscript.fname = "quotation_items";
+cur_frm.cscript.other_fname = "taxes_and_charges";
 cur_frm.cscript.sales_team_fname = "sales_team";
 
 // =====================================================================================
@@ -32,11 +32,10 @@ wn.require('app/support/doctype/communication/communication.js');
 cur_frm.cscript.onload = function(doc, cdt, cdn) {
 	if(!doc.quotation_to) hide_field(['customer','customer_address','contact_person','customer_name','lead', 'lead_name', 'address_display', 'contact_display', 'contact_mobile', 'contact_email', 'territory', 'customer_group']);
 	if(!doc.price_list_name) set_multiple(cdt,cdn,{price_list_name:sys_defaults.price_list_name});
-	if(!doc.status) set_multiple(cdt,cdn,{status:'Draft'});
-	if(!doc.transaction_date) set_multiple(cdt,cdn,{transaction_date:get_today()});
-	if(!doc.conversion_rate) set_multiple(cdt,cdn,{conversion_rate:'1.00'});
+	if(!doc.posting_date) set_multiple(cdt,cdn,{posting_date:get_today()});
+	if(!doc.exchange_rate) set_multiple(cdt,cdn,{exchange_rate:'1.00'});
 	if(!doc.currency && sys_defaults.currency) set_multiple(cdt,cdn,{currency:sys_defaults.currency});
-	if(!doc.price_list_currency) set_multiple(cdt, cdn, {price_list_currency: doc.currency, plc_conversion_rate: 1});
+	if(!doc.price_list_currency) set_multiple(cdt, cdn, {price_list_currency: doc.currency, plc_exchange_rate: 1});
 
 	if(!doc.company && sys_defaults.company) set_multiple(cdt,cdn,{company:sys_defaults.company});
 	if(!doc.fiscal_year && sys_defaults.fiscal_year) set_multiple(cdt,cdn,{fiscal_year:sys_defaults.fiscal_year});
@@ -158,7 +157,7 @@ cur_frm.cscript.lead = function(doc, cdt, cdn) {
 
 
 // =====================================================================================
-cur_frm.fields_dict['enq_no'].get_query = function(doc,cdt,cdn){
+cur_frm.fields_dict['opportunity'].get_query = function(doc,cdt,cdn){
 	var cond='';
 	var cond1='';
 	if(doc.order_type) cond = 'ifnull(`tabOpportunity`.enquiry_type, "") = "'+doc.order_type+'" AND';
@@ -200,7 +199,7 @@ cur_frm.cscript.pull_enquiry_detail = function(doc,cdt,cdn){
 			else if(doc.quotation_to == 'Customer') {
 				unhide_field(['customer','customer_address','contact_person','territory','customer_group']);
 			}
-			refresh_many(['quotation_details','quotation_to','customer','customer_address','contact_person','lead','lead_name','address_display','contact_display','contact_mobile','contact_email','territory','customer_group','order_type']);
+			refresh_many(['quotation_items','quotation_to','customer','customer_address','contact_person','lead','lead_name','address_display','contact_display','contact_mobile','contact_email','territory','customer_group','order_type']);
 		}
 	}
 
@@ -283,30 +282,30 @@ cur_frm.cscript.validate = function(doc,cdt,cdn){
 }
 
 //================ Last Quoted Price and Last Sold Price suggestion ======================
-cur_frm.fields_dict['quotation_details'].grid.get_field('item_code').get_query= function(doc, cdt, cdn) {
+cur_frm.fields_dict['quotation_items'].grid.get_field('item_code').get_query= function(doc, cdt, cdn) {
 	var d = locals[cdt][cdn];
 	var cond = (doc.order_type == 'Maintenance') ? " and item.is_service_item = 'Yes'" : " and item.is_sales_item = 'Yes'";
 	if(doc.customer) {
-		var export_rate_field = wn.meta.get_docfield(cdt, 'export_rate', cdn);
-		var precision = (export_rate_field && export_rate_field.fieldtype) === 'Float' ? 6 : 2;
+		var print_rate_field = wn.meta.get_docfield(cdt, 'print_rate', cdn);
+		var precision = (print_rate_field && print_rate_field.fieldtype) === 'Float' ? 6 : 2;
 		return repl("\
 			select \
 				item.name, \
 				( \
 					select concat('Last Quote @ ', q.currency, ' ', \
-						format(q_item.export_rate, %(precision)s)) \
+						format(q_item.print_rate, %(precision)s)) \
 					from `tabQuotation` q, `tabQuotation Item` q_item \
 					where \
 						q.name = q_item.parent \
 						and q_item.item_code = item.name \
 						and q.docstatus = 1 \
 						and q.customer = \"%(cust)s\" \
-					order by q.transaction_date desc \
+					order by q.posting_date desc \
 					limit 1 \
 				) as quote_rate, \
 				( \
 					select concat('Last Sale @ ', si.currency, ' ', \
-						format(si_item.basic_rate, %(precision)s)) \
+						format(si_item.rate, %(precision)s)) \
 					from `tabSales Invoice` si, `tabSales Invoice Item` si_item \
 					where \
 						si.name = si_item.parent \

@@ -3,9 +3,9 @@
 
 	# These values are common in all dictionaries
 	{
-		u'creation': '2012-07-09 12:37:57',
+		u'creation': '2012-10-10 16:02:33',
 		u'docstatus': 0,
-		u'modified': '2012-10-08 15:22:36',
+		u'modified': '2012-10-19 11:46:56',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -110,7 +110,7 @@
 	{
 		u'doctype': u'DocField',
 		'fieldname': u'qty',
-		'fieldtype': u'Currency',
+		'fieldtype': u'Float',
 		'label': u'Qty',
 		'oldfieldname': u'qty',
 		'oldfieldtype': u'Currency',
@@ -132,8 +132,8 @@
 	{
 		'colour': u'White:FFF',
 		u'doctype': u'DocField',
-		'fieldname': u'ref_rate',
-		'fieldtype': u'Currency',
+		'fieldname': u'print_ref_rate',
+		'fieldtype': u'Float',
 		'label': u'Price List Rate',
 		'oldfieldname': u'ref_rate',
 		'oldfieldtype': u'Currency',
@@ -147,8 +147,8 @@
 	{
 		'colour': u'White:FFF',
 		u'doctype': u'DocField',
-		'fieldname': u'adj_rate',
-		'fieldtype': u'Float',
+		'fieldname': u'discount',
+		'fieldtype': u'Currency',
 		'label': u'Discount (%)',
 		'oldfieldname': u'adj_rate',
 		'oldfieldtype': u'Float',
@@ -160,8 +160,8 @@
 	# DocField
 	{
 		u'doctype': u'DocField',
-		'fieldname': u'export_rate',
-		'fieldtype': u'Currency',
+		'fieldname': u'print_rate',
+		'fieldtype': u'Float',
 		'label': u'Basic Rate',
 		'oldfieldname': u'export_rate',
 		'oldfieldtype': u'Currency',
@@ -173,7 +173,7 @@
 	# DocField
 	{
 		u'doctype': u'DocField',
-		'fieldname': u'export_amount',
+		'fieldname': u'print_amount',
 		'fieldtype': u'Currency',
 		'label': u'Amount',
 		'oldfieldname': u'export_amount',
@@ -185,8 +185,8 @@
 	# DocField
 	{
 		u'doctype': u'DocField',
-		'fieldname': u'base_ref_rate',
-		'fieldtype': u'Currency',
+		'fieldname': u'ref_rate',
+		'fieldtype': u'Float',
 		'label': u'Price List Rate*',
 		'oldfieldname': u'base_ref_rate',
 		'oldfieldtype': u'Currency',
@@ -198,8 +198,8 @@
 	{
 		'colour': u'White:FFF',
 		u'doctype': u'DocField',
-		'fieldname': u'basic_rate',
-		'fieldtype': u'Currency',
+		'fieldname': u'rate',
+		'fieldtype': u'Float',
 		'in_filter': 0,
 		'label': u'Basic Rate*',
 		'oldfieldname': u'basic_rate',
@@ -341,7 +341,7 @@
 	{
 		u'doctype': u'DocField',
 		'fieldname': u'actual_qty',
-		'fieldtype': u'Currency',
+		'fieldtype': u'Float',
 		'label': u'Available Qty at Warehouse',
 		'oldfieldname': u'actual_qty',
 		'oldfieldtype': u'Currency',
@@ -353,7 +353,7 @@
 	{
 		u'doctype': u'DocField',
 		'fieldname': u'delivered_qty',
-		'fieldtype': u'Currency',
+		'fieldtype': u'Float',
 		'label': u'Delivered Qty',
 		'oldfieldname': u'delivered_qty',
 		'oldfieldtype': u'Currency',
@@ -380,11 +380,11 @@
 	# DocField
 	{
 		u'doctype': u'DocField',
-		'fieldname': u'so_detail',
+		'fieldname': u'sales_order_item',
 		'fieldtype': u'Data',
 		'hidden': 1,
 		'in_filter': 1,
-		'label': u'SO Detail ',
+		'label': u'Sales Order Item',
 		'oldfieldname': u'so_detail',
 		'oldfieldtype': u'Data',
 		'permlevel': 1,
@@ -411,11 +411,11 @@
 	# DocField
 	{
 		u'doctype': u'DocField',
-		'fieldname': u'dn_detail',
+		'fieldname': u'delivery_note_item',
 		'fieldtype': u'Data',
 		'hidden': 1,
 		'in_filter': 1,
-		'label': u'DN Detail',
+		'label': u'Delivery Note Item',
 		'oldfieldname': u'dn_detail',
 		'oldfieldtype': u'Data',
 		'permlevel': 1,
@@ -432,20 +432,6 @@
 		'label': u'Item Tax Rate',
 		'oldfieldname': u'item_tax_rate',
 		'oldfieldtype': u'Small Text',
-		'permlevel': 1,
-		'print_hide': 1
-	},
-
-	# DocField
-	{
-		u'doctype': u'DocField',
-		'fieldname': u'clear_pending',
-		'fieldtype': u'Check',
-		'hidden': 1,
-		'label': u'Clear Pending',
-		'no_copy': 1,
-		'oldfieldname': u'clear_pending',
-		'oldfieldtype': u'Check',
 		'permlevel': 1,
 		'print_hide': 1
 	},

@@ -3,11 +3,11 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-04-03 12:49:53',
-		'docstatus': 0,
-		'modified': '2012-04-03 12:49:53',
-		'modified_by': u'Administrator',
-		'owner': u'Administrator'
+		u'creation': '2012-10-24 14:33:56',
+		u'docstatus': 0,
+		u'modified': '2012-10-24 14:33:56',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
 	},
 
 	# These values are common for all Search Criteria
@@ -15,10 +15,10 @@
 		'columns': u'Sales Person\x01ID,Sales Person\x01Owner,Sales Person\x01Sales Person,Sales Person\x01Country,Sales Person\x01State,Sales Person\x01lft,Sales Person\x01rgt,Target Detail\x01Item Group,Target Detail\x01Fiscal Year,Target Detail\x01Target  Amount',
 		'criteria_name': u'Total Target Variance Report',
 		'doc_type': u'Target Detail',
-		'doctype': 'Search Criteria',
+		u'doctype': u'Search Criteria',
 		'filters': u"{'Sales Person\x01Saved':1,'Sales Person\x01Submitted':1,'Sales Person\x01Country':'','Sales Person\x01State':'','Target Detail\x01Fiscal Year':''}",
 		'module': u'Selling',
-		'name': '__common__',
+		u'name': u'__common__',
 		'page_len': 50,
 		'parent_doc_type': u'Sales Person',
 		'sort_by': u'`tabSales Person`.`name`',
@@ -28,7 +28,7 @@
 
 	# Search Criteria, total_target_variance_report
 	{
-		'doctype': 'Search Criteria',
-		'name': u'total_target_variance_report'
+		u'doctype': u'Search Criteria',
+		u'name': u'total_target_variance_report'
 	}
 ]

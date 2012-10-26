@@ -3,11 +3,11 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2012-04-03 12:49:51',
-		'docstatus': 0,
-		'modified': '2012-04-03 12:49:51',
-		'modified_by': u'Administrator',
-		'owner': u'Administrator'
+		u'creation': '2012-10-24 14:33:41',
+		u'docstatus': 0,
+		u'modified': '2012-10-24 14:33:41',
+		u'modified_by': u'Administrator',
+		u'owner': u'Administrator'
 	},
 
 	# These values are common for all Search Criteria
@@ -17,10 +17,10 @@
 		'description': u'Itemwise Purchase Register',
 		'dis_filters': u'fiscal_year',
 		'doc_type': u'Purchase Invoice Item',
-		'doctype': 'Search Criteria',
+		u'doctype': u'Search Criteria',
 		'filters': u"{'Purchase Invoice\x01Submitted':1,'Purchase Invoice\x01Is Opening':'No','Purchase Invoice\x01Company':'','Purchase Invoice\x01Fiscal Year':''}",
 		'module': u'Accounts',
-		'name': '__common__',
+		u'name': u'__common__',
 		'page_len': 50,
 		'parent_doc_type': u'Purchase Invoice',
 		'sort_by': u'`tabPurchase Invoice`.`name`',
@@ -30,7 +30,7 @@
 
 	# Search Criteria, itemwise_purchase_register
 	{
-		'doctype': 'Search Criteria',
-		'name': u'itemwise_purchase_register'
+		u'doctype': u'Search Criteria',
+		u'name': u'itemwise_purchase_register'
 	}
 ]

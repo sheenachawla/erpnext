@@ -25,7 +25,7 @@ erpnext.themes = {
 	Desert: {
 		sidebar: "#FFFDF7",
 		titlebar: "#DAD4C2",
-		toolbar: "#FAF6E9"
+		toolbar: "#FAF6E9",
 	},
 	Tropic: {
 		sidebar: "#FAFFF7",
@@ -60,10 +60,14 @@ erpnext.themes = {
 }
 
 erpnext.set_theme = function(theme) {
+	if(!theme.help) theme.help = '#999';
 	wn.dom.set_style(repl(".layout-wrapper-background { \
 		background-color: %(sidebar)s !important; }\
 	.appframe-toolbar { \
 		background-color: %(toolbar)s !important; }\
 	.appframe-titlebar { \
-		background-color: %(titlebar)s !important; }", erpnext.themes[theme]));
+		background-color: %(titlebar)s !important; }\
+	.help {\
+		color: %(help)s !important;\
+	}", erpnext.themes[theme]));
 }

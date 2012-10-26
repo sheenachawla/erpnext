@@ -83,7 +83,7 @@ cur_frm.cscript.item_code = function(doc, cdt, cdn) {
   }
 }
 
-cur_frm.fields_dict['sales_order_no'].get_query = function(doc) {
+cur_frm.fields_dict['sales_order'].get_query = function(doc) {
   doc = locals[this.doctype][this.docname];
   var cond = '';
   if(doc.customer) {
@@ -92,7 +92,7 @@ cur_frm.fields_dict['sales_order_no'].get_query = function(doc) {
   return repl('SELECT DISTINCT `tabSales Order`.name FROM `tabSales Order`, `tabSales Order Item`, `tabItem` WHERE `tabSales Order`.company = "%(company)s" AND `tabSales Order`.docstatus = 1 AND `tabSales Order Item`.parent = `tabSales Order`.name AND `tabSales Order Item`.item_code = `tabItem`.name AND `tabItem`.is_service_item = "Yes" AND %(cond)s `tabSales Order`.name LIKE "%s" ORDER BY `tabSales Order`.name DESC LIMIT 50', {company:doc.company, cond:cond});
 }
 
-cur_frm.fields_dict['customer_issue_no'].get_query = function(doc) {
+cur_frm.fields_dict['customer_issue'].get_query = function(doc) {
   doc = locals[this.doctype][this.docname];
   var cond = '';
   if(doc.customer) {
