@@ -1,0 +1,19 @@
+[
+ {
+  "owner": "Administrator", 
+  "docstatus": 0, 
+  "creation": "2012-10-26 15:52:50", 
+  "modified_by": "Administrator", 
+  "modified": "2012-10-26 15:52:50"
+ }, 
+ {
+  "is_custom": "No", 
+  "name": "__common__", 
+  "doctype": "Module Def", 
+  "module_name": "Utilities"
+ }, 
+ {
+  "name": "Utilities", 
+  "doctype": "Module Def"
+ }
+]

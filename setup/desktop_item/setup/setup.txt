@@ -1,0 +1,23 @@
+[
+ {
+  "owner": "Administrator", 
+  "docstatus": 0, 
+  "creation": "2012-10-26 15:48:17", 
+  "modified_by": "Administrator", 
+  "modified": "2012-10-26 16:15:04"
+ }, 
+ {
+  "style": "sprite-image sprite-setting", 
+  "is_custom": "No", 
+  "name": "__common__", 
+  "gradient": "#545454, #484848', #363636", 
+  "route": "Setup", 
+  "module": "Setup", 
+  "doctype": "Desktop Item", 
+  "label": "Setup"
+ }, 
+ {
+  "name": "Setup", 
+  "doctype": "Desktop Item"
+ }
+]

@@ -54,28 +54,13 @@ erpnext.toolbar.add_modules = function() {
 		</ul>\
 		</li>').prependTo('.navbar .nav:first');
 	
-	// if no modules list then show all
-	if(wn.boot.modules_list && typeof(wn.boot.modules_list) == 'string') {
-		wn.boot.modules_list = JSON.parse(wn.boot.modules_list);	
-	}
-	else
-		wn.boot.modules_list = keys(erpnext.modules).sort();
-
 	// add to dropdown
-	for(var i in wn.boot.modules_list) {
-		var m = wn.boot.modules_list[i]
-		
-		if(m!='Setup' && wn.boot.profile.allow_modules.indexOf(m)!=-1) {
-			args = {
-				module: m,
-				module_page: erpnext.modules[m] || ("Module/" + m),
-				module_label: m=='HR' ? 'Human Resources' : m
-			}
-
-			$('.navbar .modules').append(repl('<li><a href="#%(module_page)s" \
-				data-module="%(module)s">%(module_label)s</a></li>', args));			
+	$.each(wn.user.get_desktop_items(), function(i, d) {
+		if(d.route != 'Setup') {
+			$('.navbar .modules').append(repl('<li><a href="#%(route)s" \
+				data-module="%(name)s">%(label)s</a></li>', d));			
 		}
-	}
+	})
 	
 	// setup for system manager
 	if(user_roles.indexOf("System Manager")!=-1) {

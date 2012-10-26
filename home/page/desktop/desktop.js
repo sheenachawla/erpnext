@@ -1,7 +1,7 @@
 wn.provide('erpnext.desktop');
 
 erpnext.desktop.gradient = "<style>\
-	.case-%(name)s {\
+	.case-%(case_class)s {\
 		background: %(start)s; /* Old browsers */\
 		background: -moz-radial-gradient(center, ellipse cover,  %(start)s 0%, %(middle)s 44%, %(end)s 100%); /* FF3.6+ */\
 		background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,%(start)s), color-stop(44%,%(middle)s), color-stop(100%,%(end)s)); /* Chrome,Safari4+ */\
@@ -15,58 +15,46 @@ erpnext.desktop.gradient = "<style>\
 erpnext.desktop.refresh = function() {
 	erpnext.desktop.add_classes();
 	erpnext.desktop.render();
+	
+	$("#icon-grid").sortable({
+		update: function() {
+			new_order = [];
+			$("#icon-grid .case-wrapper").each(function(i, e) {
+				new_order.push($(this).attr("data-name"));
+			});
+			wn.user.set_default("_desktop_items", new_order);
+		}
+	});
 }
 
 erpnext.desktop.add_classes = function() {
-	$.each(wn.module_css_classes, function(i, v) {
-		v.name = i;
+	$.each(wn.model.get("Desktop Item"), function(i, v) {
+		var g = v.gradient.split(",");
+		v.start = g[0];
+		v.middle = g[1];
+		v.end = g[2];
+		v.case_class = v.label.replace(/ /g, "_").toLowerCase();
 		$(repl(erpnext.desktop.gradient, v)).appendTo('head');
 	});
 }
 
 erpnext.desktop.render = function() {
-	var icons = {
-		'Accounts': { sprite: 'account', label: 'Accounts'},
-		'Selling': { sprite: 'selling', label: 'Selling'},
-		'Stock': { sprite: 'stock', label: 'Stock'},
-		'Buying': { sprite: 'buying', label: 'Buying'},
-		'Support': { sprite: 'support', label: 'Support'},
-		'HR': { sprite: 'hr', label: 'Human<br />Resources'},
-		'Projects':	{ sprite: 'project', label: 'Projects'},
-		'Production': { sprite: 'production', label: 'Production'},
-		'Website': { sprite: 'website', label: 'Website'},
-		'Activity': { sprite: 'feed', label: 'Activity'},
-		'Setup': { sprite: 'setting', label: 'Setup'},
-		'To Do': { sprite: 'todo', label: 'To Do'},
-		'Messages': { sprite: 'messages', label: 'Messages'},
-		'Calendar': { sprite: 'calendar', label: 'Calendar'},
-		'Knowledge Base': { sprite: 'kb', label: 'Knowledge<br />Base'}
-	}
-
-	var add_icon = function(m) {
-		var icon = icons[m];
-		icon.link = erpnext.modules[m] || ('Module/' + m);
-		icon.gradient = wn.module_css_map[m];
-		
+	var add_icon = function(desktop_item) {		
 		$('#icon-grid').append(repl('\
-			<div id="%(sprite)s" class="case-wrapper"><a href="#%(link)s">\
-				<div class="case-border case-%(gradient)s">\
-					<div class="sprite-image sprite-%(sprite)s"></div>\
-				</div></a>\
+			<div id="%(case_class)s" class="case-wrapper" data-name="%(name)s">\
+				<a href="#%(route)s">\
+					<div class="case-border case-%(case_class)s">\
+						<div class="sprite-image sprite-%(style)s"></div>\
+					</div>\
+				</a>\
 				<div class="case-label">%(label)s</div>\
-			</div>', icon));		
+			</div>', desktop_item));		
 	}
 	
 	// setup
-	for(var i in wn.boot.modules_list) {
-		var m = wn.boot.modules_list[i];
-		if(!in_list(['Setup'], m) && wn.boot.profile.allow_modules.indexOf(m)!=-1)
-			add_icon(m);
-	}
-
-
-	if(user_roles.indexOf('System Manager')!=-1)
-		add_icon('Setup')
+	$.each(wn.user.get_desktop_items(), function(i, d) {
+		add_icon(d);
+	})
 
 	// apps
 	erpnext.desktop.show_pending_notifications();
@@ -102,10 +90,10 @@ erpnext.desktop.show_pending_notifications = function() {
 
 	add_circle('messages', 'unread_messages', 'Unread Messages');
 	add_circle('support', 'open_support_tickets', 'Open Support Tickets');
-	add_circle('todo', 'things_todo', 'Things To Do');
+	add_circle('to_do', 'things_todo', 'Things To Do');
 	add_circle('calendar', 'todays_events', 'Todays Events');
-	add_circle('project', 'open_tasks', 'Open Tasks');
-	add_circle('kb', 'unanswered_questions', 'Unanswered Questions');
+	add_circle('projects', 'open_tasks', 'Open Tasks');
+	add_circle('knowledge_base', 'unanswered_questions', 'Unanswered Questions');
 
 	erpnext.update_messages();
 

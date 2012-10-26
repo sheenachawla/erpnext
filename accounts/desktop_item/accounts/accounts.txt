@@ -1,0 +1,23 @@
+[
+ {
+  "owner": "Administrator", 
+  "docstatus": 0, 
+  "creation": "2012-10-26 15:45:32", 
+  "modified_by": "Administrator", 
+  "modified": "2012-10-26 16:22:18"
+ }, 
+ {
+  "style": "sprite-image sprite-account", 
+  "is_custom": "No", 
+  "name": "__common__", 
+  "gradient": "#026584, #025770, #004256", 
+  "route": "Module/Accounts", 
+  "module": "Accounts", 
+  "doctype": "Desktop Item", 
+  "label": "Accounts"
+ }, 
+ {
+  "name": "Accounts", 
+  "doctype": "Desktop Item"
+ }
+]

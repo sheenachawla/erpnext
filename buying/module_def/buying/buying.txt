@@ -1,0 +1,23 @@
+[
+ {
+  "owner": "Administrator", 
+  "docstatus": 0, 
+  "creation": "2011-07-01 17:40:38", 
+  "modified_by": "Administrator", 
+  "modified": "2012-10-26 12:49:41"
+ }, 
+ {
+  "style": "case-buying", 
+  "is_custom": "No", 
+  "name": "__common__", 
+  "module_name": "Buying", 
+  "gradient": "#A90329, #8F0222, #6D0019", 
+  "doctype": "Module Def", 
+  "label": "Buying", 
+  "disabled": "No"
+ }, 
+ {
+  "name": "Buying", 
+  "doctype": "Module Def"
+ }
+]

@@ -1,0 +1,23 @@
+[
+ {
+  "owner": "Administrator", 
+  "docstatus": 0, 
+  "creation": "2012-10-26 15:45:04", 
+  "modified_by": "Administrator", 
+  "modified": "2012-10-26 16:15:15"
+ }, 
+ {
+  "style": "sprite-image sprite-website", 
+  "is_custom": "No", 
+  "name": "__common__", 
+  "gradient": "#b0a400, #968c00, #726a00", 
+  "route": "Module/Website", 
+  "module": "Website", 
+  "doctype": "Desktop Item", 
+  "label": "Website"
+ }, 
+ {
+  "name": "Website", 
+  "doctype": "Desktop Item"
+ }
+]

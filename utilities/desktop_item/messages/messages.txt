@@ -1,0 +1,23 @@
+[
+ {
+  "owner": "Administrator", 
+  "docstatus": 0, 
+  "creation": "2012-10-26 15:53:35", 
+  "modified_by": "Administrator", 
+  "modified": "2012-10-26 16:14:46"
+ }, 
+ {
+  "style": "sprite-image sprite-messages", 
+  "is_custom": "No", 
+  "name": "__common__", 
+  "gradient": "#a40281, #8d016e, #6a0053", 
+  "route": "messages", 
+  "module": "Utilities", 
+  "doctype": "Desktop Item", 
+  "label": "Messages"
+ }, 
+ {
+  "name": "Messages", 
+  "doctype": "Desktop Item"
+ }
+]

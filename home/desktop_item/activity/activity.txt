@@ -1,0 +1,23 @@
+[
+ {
+  "owner": "Administrator", 
+  "docstatus": 0, 
+  "creation": "2012-10-26 15:50:58", 
+  "modified_by": "Administrator", 
+  "modified": "2012-10-26 16:14:50"
+ }, 
+ {
+  "style": "sprite-image sprite-feed", 
+  "is_custom": "No", 
+  "name": "__common__", 
+  "gradient": "#723e02, #633501, #4a2700", 
+  "route": "activity", 
+  "module": "Home", 
+  "doctype": "Desktop Item", 
+  "label": "Activity"
+ }, 
+ {
+  "name": "Activity", 
+  "doctype": "Desktop Item"
+ }
+]

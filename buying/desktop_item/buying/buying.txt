@@ -1,0 +1,23 @@
+[
+ {
+  "owner": "Administrator", 
+  "docstatus": 0, 
+  "creation": "2012-10-26 15:42:52", 
+  "modified_by": "Administrator", 
+  "modified": "2012-10-26 16:15:32"
+ }, 
+ {
+  "style": "sprite-image sprite-buying", 
+  "is_custom": "No", 
+  "name": "__common__", 
+  "gradient": "#A90329, #8F0222, #6D0019", 
+  "route": "Module/Buying", 
+  "module": "Buying", 
+  "doctype": "Desktop Item", 
+  "label": "Buying"
+ }, 
+ {
+  "name": "Buying", 
+  "doctype": "Desktop Item"
+ }
+]

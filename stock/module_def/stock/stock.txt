@@ -1,0 +1,23 @@
+[
+ {
+  "owner": "Administrator", 
+  "docstatus": 0, 
+  "creation": "2011-07-01 17:40:49", 
+  "modified_by": "Administrator", 
+  "modified": "2012-10-26 12:32:17"
+ }, 
+ {
+  "style": "case-stock", 
+  "is_custom": "No", 
+  "name": "__common__", 
+  "module_name": "Stock", 
+  "gradient": "#be7902, #a66a02, #865500", 
+  "doctype": "Module Def", 
+  "label": "Stock", 
+  "disabled": "No"
+ }, 
+ {
+  "name": "Stock", 
+  "doctype": "Module Def"
+ }
+]

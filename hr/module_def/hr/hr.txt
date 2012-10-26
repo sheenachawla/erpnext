@@ -1,0 +1,23 @@
+[
+ {
+  "owner": "Administrator", 
+  "docstatus": 0, 
+  "creation": "2011-07-01 17:41:43", 
+  "modified_by": "Administrator", 
+  "modified": "2012-10-26 12:47:38"
+ }, 
+ {
+  "style": "case-hr", 
+  "is_custom": "No", 
+  "name": "__common__", 
+  "module_name": "HR", 
+  "gradient": "#02a47e, #018d6c, #006a51", 
+  "doctype": "Module Def", 
+  "label": "Human Resources", 
+  "disabled": "No"
+ }, 
+ {
+  "name": "HR", 
+  "doctype": "Module Def"
+ }
+]

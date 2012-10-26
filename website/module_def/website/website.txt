@@ -1,0 +1,23 @@
+[
+ {
+  "owner": "Administrator", 
+  "docstatus": 0, 
+  "creation": "2012-02-06 14:54:35", 
+  "modified_by": "Administrator", 
+  "modified": "2012-10-26 12:45:21"
+ }, 
+ {
+  "style": "case-website", 
+  "is_custom": "No", 
+  "name": "__common__", 
+  "module_name": "Website", 
+  "gradient": "#b0a400, #968c00, #726a00", 
+  "doctype": "Module Def", 
+  "label": "Website ", 
+  "disabled": "No"
+ }, 
+ {
+  "name": "Website", 
+  "doctype": "Module Def"
+ }
+]

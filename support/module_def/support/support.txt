@@ -1,0 +1,23 @@
+[
+ {
+  "owner": "Administrator", 
+  "docstatus": 0, 
+  "creation": "2011-07-01 17:42:15", 
+  "modified_by": "Administrator", 
+  "modified": "2012-10-26 12:48:39"
+ }, 
+ {
+  "style": "case-support", 
+  "is_custom": "No", 
+  "name": "__common__", 
+  "module_name": "Support", 
+  "gradient": "#4d017d, #410169, #310050", 
+  "doctype": "Module Def", 
+  "label": "Support", 
+  "disabled": "No"
+ }, 
+ {
+  "name": "Support", 
+  "doctype": "Module Def"
+ }
+]

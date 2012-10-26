@@ -1,0 +1,23 @@
+[
+ {
+  "owner": "Administrator", 
+  "docstatus": 0, 
+  "creation": "2012-10-26 15:46:06", 
+  "modified_by": "Administrator", 
+  "modified": "2012-10-26 16:15:08"
+ }, 
+ {
+  "style": "sprite-image sprite-stock", 
+  "is_custom": "No", 
+  "name": "__common__", 
+  "gradient": "#be7902, #a66a02, #865500", 
+  "route": "Module/Stock", 
+  "module": "Stock", 
+  "doctype": "Desktop Item", 
+  "label": "Stock"
+ }, 
+ {
+  "name": "Stock", 
+  "doctype": "Desktop Item"
+ }
+]
