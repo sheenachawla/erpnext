@@ -235,11 +235,6 @@ class DocType(TransactionBase):
 		res = webnotes.conn.sql("select customer from `tabProject` where name = '%s'"%self.doc.project_name)
 		if res:
 			get_obj('DocType Mapper', 'Project-Sales Invoice').dt_map('Project', 'Sales Invoice', self.doc.project_name, self.doc, self.doclist, "[['Project', 'Sales Invoice']]")
-
-
-	def get_company_abbr(self):
-		return webnotes.conn.sql("select abbr from tabCompany where name=%s", self.doc.company)[0][0]
-		
 		
 	def validate_prev_docname(self,doctype):
 		"""Check whether sales order / delivery note items already pulled"""
@@ -565,14 +560,121 @@ class DocType(TransactionBase):
 			 'actual_qty' : actual_qty and flt(actual_qty[0]['actual_qty']) or 0
 		}
 		return ret
-
-
+	
 	def make_gl_entries(self, is_cancel=0):
-		mapper = self.doc.is_pos and self.doc.write_off_account and 'POS with write off' or self.doc.is_pos and not self.doc.write_off_account and 'POS' or ''
-		update_outstanding = self.doc.is_pos and self.doc.write_off_account and 'No' or 'Yes'
-		get_obj(dt='GL Control').make_gl_entries(self.doclist,cancel = is_cancel, use_mapper = mapper, update_outstanding = update_outstanding, merge_entries = cint(self.doc.is_pos) != 1 and 1 or 0)
+		gl_entries = []
+		auto_inventory_accounting = webnotes.conn.get_value("Global Defaults", None, 
+		 	"automatic_inventory_accounting")
+		abbr = self.get_company_abbr()
 		
-
+		# parent's gl entry
+		gl_entries.append(
+			self.get_gl_dict({
+				"account": self.doc.debit_to,
+				"against": self.doc.against_income_account,
+				"debit": self.doc.grand_total,
+				"remarks": self.doc.remarks,
+				"against_voucher": self.doc.name,
+				"against_voucher_type": self.doc.doctype,
+			}, is_cancel)
+		)
+	
+		# tax table gl entries
+		for tax in getlist(self.doclist, "purchase_tax_details"):
+			gl_entries.append(
+				self.get_gl_dict({
+					"account": tax.account_head,
+					"against": self.doc.debit_to,
+					"credit": flt(tax.tax_amount),
+					"remarks": self.doc.remarks,
+					"cost_center": tax.cost_center
+				}, is_cancel)
+			)
+		
+		# item gl entries
+		for item in getlist(self.doclist, 'entries'):
+			# income account gl entries
+			gl_entries.append(
+				self.get_gl_dict({
+					"account": item.income_account,
+					"against": self.doc.debit_to,
+					"credit": item.amount,
+					"remarks": self.doc.remarks,
+					"cost_center": item.cost_center
+				}, is_cancel)
+			)
+			# if auto inventory accounting enabled and stock item, 
+			# then do stock related gl entries
+			if auto_inventory_accounting and item.delivery_note and \
+					webnotes.conn.get_value("Item", item.item_code, "is_stock_item")=="Yes":
+				# to-do
+				valuation_amount = 0 # as per delivery note
+				# expense account gl entries
+				gl_entries.append(
+					self.get_gl_dict({
+						"account": item.expense_account,
+						"against": "Stock Delivered But Not Billed - %s" % (abbr,),
+						"debit": valuation_amount,
+						"remarks": self.doc.remarks or "Accounting Entry for Stock"
+					}, is_cancel)
+				)
+				gl_entries.append(
+					self.get_gl_dict({
+						"account": "Stock Delivered But Not Billed - %s" % (abbr,),
+						"against": item.expense_account,
+						"credit": valuation_amount,
+						"remarks": self.doc.remarks or "Accounting Entry for Stock"
+					}, is_cancel)
+				)
+		if self.doc.is_pos and self.doc.cash_bank_account and self.doc.paid_amount:
+			# POS, make payment entries
+			gl_entries.append(
+				self.get_gl_dict({
+					"account": self.doc.debit_to,
+					"against": self.doc.cash_bank_account,
+					"credit": self.doc.paid_amount,
+					"remarks": self.doc.remarks,
+					"against_voucher": self.doc.name,
+					"against_voucher_type": self.doc.doctype,
+				}, is_cancel)
+			)
+			gl_entries.append(
+				self.get_gl_dict({
+					"account": self.doc.cash_bank_account,
+					"against": self.doc.debit_to,
+					"debit": self.doc.paid_amount,
+					"remarks": self.doc.remarks,
+				}, is_cancel)
+			)
+			# write off entries, applicable if only pos
+			if self.doc.write_off_account and self.dco.write_off_amount:
+				gl_entries.append(
+					self.get_gl_dict({
+						"account": self.doc.debit_to,
+						"against": self.doc.write_off_account,
+						"credit": self.doc.write_off_amount,
+						"remarks": self.doc.remarks,
+						"against_voucher": self.doc.name,
+						"against_voucher_type": self.doc.doctype,
+					}, is_cancel)
+				)
+				gl_entries.append(
+					self.get_gl_dict({
+						"account": self.doc.write_off_account,
+						"against": self.doc.debit_to,
+						"debit": self.doc.write_off_amount,
+						"remarks": self.doc.remarks,
+						"cost_center": self.doc.write_off_cost_center
+					}, is_cancel)
+				)
+		
+		
+		update_outstanding = self.doc.is_pos and self.doc.write_off_account and 'No' or 'Yes'
+		super(DocType, self).make_gl_entries(cancel=is_cancel, 
+			gl_map=gl_entries, update_outstanding=update_outstanding, 
+			merge_entries=cint(self.doc.is_pos)!=1 and 1 or 0)
+		
+		
 	def update_c_form(self):
 		"""Update amended id in C-form"""
 		if self.doc.c_form_no and self.doc.amended_from:

@@ -239,7 +239,7 @@ class DocType(TransactionBase):
 
 			# update last purchsae rate
 			if last_purchase_rate:
-				sql("update `tabItem` set last_rate = %s where name = %s",
+				sql("update `tabItem` set last_purchase_rate = %s where name = %s",
 						(flt(last_purchase_rate),d.item_code))
 	
 	def get_last_purchase_rate(self, obj):
@@ -694,11 +694,11 @@ class DocType(TransactionBase):
 			item_det = webnotes.conn.get_value("Item", d.item_code, 
 				['is_sub_contracted_item', 'is_purchase_item'])
 			
-			if item_det[0][0] == 'Yes':
-				if item_det[0][1] == 'Yes' and not obj.doc.is_subcontracted:
+			if item_det[0] == 'Yes':
+				if item_det[1] == 'Yes' and not obj.doc.is_subcontracted:
 					msgprint("""Please enter whether purchase order to be made for subcontracting 
 						or for purchasing, in 'Is Subcontracted' field""", raise_exception=1)
-				elif item_det[0][1] == 'No' or obj.doc.is_subcontracted == 'Yes':
+				elif item_det[1] == 'No' or obj.doc.is_subcontracted == 'Yes':
 					self.add_bom(d)
 				
 

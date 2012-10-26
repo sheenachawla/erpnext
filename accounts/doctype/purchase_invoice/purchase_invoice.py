@@ -16,13 +16,12 @@
 
 from __future__ import unicode_literals
 import webnotes
-
 from webnotes.utils import add_days, cint, cstr, flt, formatdate, get_defaults
-
 from webnotes.model.doc import Document, make_autoname
 from webnotes.model.utils import getlist
 from webnotes.model.code import get_obj
 from webnotes import form, msgprint
+from pprint import pprint
 
 sql = webnotes.conn.sql
 	
@@ -175,10 +174,6 @@ class DocType(AccountsController):
 		rate = sql("select tax_rate from `tabAccount` where name='%s'"%(acc))
 		ret={'add_tax_rate' :rate and flt(rate[0][0]) or 0 }
 		return ret
-
-
-	def get_company_abbr(self):
-		return webnotes.conn.get_value("Company", self.doc.company, "abbr")
 
 	def validate_duplicate_docname(self,doctype):
 		for d in getlist(self.doclist, 'purchase_invoice_items'): 
@@ -362,7 +357,7 @@ class DocType(AccountsController):
 	def calculate_taxes_and_totals(self):
 		super(DocType, self).calculate_taxes_and_totals()
 		if self.doc.docstatus == 0:
-			self.doc.outstanding_amount = flt(self.doc.grand_total - \
+			self.doc.outstanding_amount = flt(self.doc.grand_total - 
 			 	flt(self.doc.total_advance, self.main_precision["total_advance"]),
 				self.main_precision["outstanding_amount"])
 	
@@ -464,31 +459,29 @@ class DocType(AccountsController):
 		
 		# this sequence because outstanding may get -negative
 		self.make_gl_entries()
-				
-		self.update_against_document_in_jv()
-		
+		self.update_against_document_in_jv()		
 		get_obj(dt = 'Purchase Common').update_prevdoc_detail(self, is_submit = 1)
 
 
-	def make_gl_entries(self, is_cancel=0):
-		abbr, stock_in_hand = self.get_company_details()
-		
+	def make_gl_entries(self, is_cancel=0):	
 		gl_entries = []
+		valuation_tax = 0
+		auto_inventory_accounting = webnotes.conn.get_value("Global Defaults", None, 
+		 	"automatic_inventory_accounting")
+		abbr = self.get_company_abbr()
 		
 		# parent's gl entry
 		gl_entries.append(
 			self.get_gl_dict({
 				"account": self.doc.credit_to,
 				"against": self.doc.against_expense_account,
-				"credit": self.doc.total_amount_to_pay,
+				"credit": self.doc.grand_total,
 				"remarks": self.doc.remarks,
 				"against_voucher": self.doc.name,
 				"against_voucher_type": self.doc.doctype,
 			}, is_cancel)
 		)
-		
-		valuation_tax = 0
-		
+	
 		# tax table gl entries
 		for tax in getlist(self.doclist, "taxes_and_charges"):
 			if tax.category in ("Total", "Valuation and Total"):
@@ -496,8 +489,7 @@ class DocType(AccountsController):
 					self.get_gl_dict({
 						"account": tax.account_head,
 						"against": self.doc.credit_to,
-						"debit": (tax.add_deduct_tax == "Add" and 1 or -1) * \
-							flt(tax.tax_amount),
+						"debit": tax.tax_amount,
 						"remarks": self.doc.remarks,
 						"cost_center": tax.cost_center
 					}, is_cancel)
@@ -505,31 +497,28 @@ class DocType(AccountsController):
 				
 			if tax.category in ("Valuation", "Valuation and Total"):
 				valuation_tax += flt(tax.tax_amount)
-				
+					
 		# item gl entries
-		stock_item_exists = False
-		for item in getlist(self.doclist, 'purchase_invoice_items'):
-			if webnotes.conn.get_value("Item", item.item_code, "is_stock_item")=="Yes":
-				# if it is a stock item, then do stock related gl entries
-				# accounting gl entries will be made when making sales invoice
-				
-				# debit stock received but not billed (credit account) to nullify it, 
-				# since we are making the bill
+		stock_item_and_auto_accounting = False
+		for item in self.doclist.get({"parentfield": "purchase_invoice_items"}):
+			if auto_inventory_accounting and \
+					webnotes.conn.get_value("Item", item.item_code, "is_stock_item")=="Yes":
+				# if auto inventory accounting enabled and stock item, 
+				# then do stock related gl entries, expense will be booked in sales invoice
 				gl_entries.append(
 					self.get_gl_dict({
 						"account": "Stock Received But Not Billed - %s" % (abbr,),
 						"against": self.doc.credit_to,
-						# TODO!!
 						"debit": flt(item.valuation_rate) * flt(item.conversion_factor) \
 							*  item.qty,
 						"remarks": self.doc.remarks or "Accounting Entry for Stock"
 					}, is_cancel)
 				)
-				
-				stock_item_exists = True
-				
+			
+				stock_item_and_auto_accounting = True
+			
 			else:
-				# if not a stock item -- book the expense here itself
+				# if not a stock item or auto inventory accounting disabled, book the expense
 				gl_entries.append(
 					self.get_gl_dict({
 						"account": item.expense_head,
@@ -540,12 +529,13 @@ class DocType(AccountsController):
 					}, is_cancel)
 				)
 				
-		if stock_item_exists:
-			# credit valuation tax amount in price difference account
-			# this is to balance out valuation included in cost of goods sold
+		if stock_item_and_auto_accounting and valuation_tax:
+			# credit valuation tax amount in "Expenses Included In Valuation"
+			# this will balance out valuation amount included in cost of goods sold
 			gl_entries.append(
 				self.get_gl_dict({
-					"account": "Valuation Price Difference - %s" % (abbr,),
+					"account": "Expenses Included In Valuation - %s" % (abbr,),
+					"cost_center": "ERP - %s" % abbr, # to-do
 					"against": self.doc.credit_to,
 					"credit": valuation_tax,
 					"remarks": self.doc.remarks or "Accounting Entry for Stock"
@@ -596,6 +586,7 @@ class DocType(AccountsController):
 			rm_cost = rm_cost and flt(rm_cost[0][0]) or 0
 			
 			d.conversion_factor = d.conversion_factor or webnotes.conn.get_value(
-				"UOM Conversion Detail", {"parent": d.item_code, "uom": d.uom}, "conversion_factor")
+				"UOM Conversion Detail", {"parent": d.item_code, "uom": d.uom}, 
+				"conversion_factor") or 1
 			
 			d.rm_supp_cost = rm_cost * flt(d.qty) * flt(d.conversion_factor)

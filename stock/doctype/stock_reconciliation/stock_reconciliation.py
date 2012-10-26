@@ -28,13 +28,9 @@ class DocType:
 		self.doclist = doclist
 		self.validated = 1
 		self.data = []
-		self.val_method = get_defaults()['valuation_method']
 
 	def get_template(self):
-		if self.val_method == 'Moving Average':
-			return [['Item Code', 'Warehouse', 'Quantity', 'Valuation Rate']]
-		else:
-			return [['Item Code', 'Warehouse', 'Quantity', 'Incoming Rate']]
+		return [['Item Code', 'Warehouse', 'Quantity', 'Incoming Rate']]
 
 
 	def read_csv_content(self, submit = 1):
@@ -54,20 +50,23 @@ class DocType:
 		for s in data:
 			count += 1
 			if count == 2:
+				msgprint(s)
 				if s[0] != 'Item Code' or s[1] != 'Warehouse':
-					msgprint("First row of the attachment always should be same as template(Item Code, Warehouse, Quantity \
-						and Valuation Rate/Incoming Rate)", raise_exception=1)
+					msgprint("""First row of the attachment always should be same as template( 
+						Item Code, Warehouse, Quantity and Incoming Rate)"""
+						, raise_exception=1)
 				else:
 					continue
 			# validate
 			if (submit and len(s) != 4) or (not submit and len(s) != 6):
-				msgprint("Data entered at Row No " + cstr(count) + " in Attachment File is not in correct format.", raise_exception=1)
+				msgprint("""Data entered at Row No %s in Attachment File 
+					is not in correct format.""" % count, raise_exception=1)
 				self.validated = 0
 			self.validate_item(s[0], count)
 			self.validate_warehouse(s[1], count)
-			
+		
 			self.data.append(s)
-			
+		
 		if not self.validated:
 			raise Exception
 
@@ -97,7 +96,6 @@ class DocType:
 			self.validated = 0
 
 
-
 	def validate(self):
 		"""Validate attachment data"""
 		if self.doc.file_list:
@@ -116,9 +114,7 @@ class DocType:
 	def get_incoming_rate(self, row, qty_diff, sys_stock):
 		"""Calculate incoming rate to maintain valuation rate"""
 		if qty_diff:
-			if self.val_method == 'Moving Average':
-				in_rate = flt(row[3]) + (flt(sys_stock['actual_qty'])*(flt(row[3]) - flt(sys_stock['val_rate'])))/ flt(qty_diff)
-			elif not sys_stock and not row[3]:
+			if not sys_stock and not row[3]:
 				msgprint("Incoming Rate is mandatory for item: %s and warehouse: %s" % (rpw[0], row[1]), raise_exception=1)
 			else:
 				in_rate = qty_diff > 0 and row[3] or 0
@@ -148,12 +144,7 @@ class DocType:
 				'serial_no'					: ''
 		 }]
 		get_obj('Stock Ledger', 'Stock Ledger').update_stock(values)
-		
-	def make_entry_for_valuation(self, row, sys_stock):
-		self.make_sl_entry(row, 1, sys_stock)
-		sys_stock['val_rate'] = row[3]
-		sys_stock['actual_qty'] += 1
-		self.make_sl_entry(row, -1, sys_stock)
+
 
 	def do_stock_reco(self):
 		"""
@@ -175,10 +166,6 @@ class DocType:
 				sys_stock['actual_qty'] += qty_diff
 
 
-			if (not qty_diff and rate_diff) or qty_diff < 0 and self.val_method == 'Moving Average':
-				self.make_entry_for_valuation(row, sys_stock)
-
-
 			r = [cstr(i) for i in row] + [cstr(qty_diff), cstr(rate_diff)]
 			self.store_diff_info(r)
 				
@@ -189,15 +176,10 @@ class DocType:
 		
 		# add header
 		if not self.diff_info:
-			if self.val_method == 'Moving Average':
-				self.diff_info += "Item Code, Warehouse, Qty, Valuation Rate, Qty Diff, Rate Diff"
-			else:
-				self.diff_info += "Item Code, Warehouse, Qty, Incoming Rate, Qty Diff, Rate Diff"
+			self.diff_info += "Item Code, Warehouse, Qty, Incoming Rate, Qty Diff, Rate Diff"
 
-		
 		# add data
 		self.diff_info += "\n" + ','.join(r)
-		
 		webnotes.conn.set(self.doc, 'diff_info', self.diff_info)
 		
 
@@ -206,7 +188,6 @@ class DocType:
 			msgprint("Please attach file before submitting.", raise_exception=1)
 		else:
 			self.do_stock_reco()
-			
 
 	def on_cancel(self):
 		self.cancel_stock_ledger_entries()

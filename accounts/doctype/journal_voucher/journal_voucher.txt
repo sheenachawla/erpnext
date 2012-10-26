@@ -603,33 +603,6 @@
 		'print_hide': 1
 	},
 
-	# DocField
-	{
-		u'doctype': u'DocField',
-		'fieldname': u'section_break0',
-		'fieldtype': u'Section Break',
-		'oldfieldtype': u'Section Break',
-		'options': u'Simple',
-		'permlevel': 0
-	},
-
-	# DocField
-	{
-		'colour': u'White:FFF',
-		u'doctype': u'DocField',
-		'fieldname': u'supplier_account',
-		'fieldtype': u'Link',
-		'hidden': 0,
-		'label': u'Supplier Account',
-		'no_copy': 1,
-		'oldfieldname': u'supplier_account',
-		'oldfieldtype': u'Link',
-		'options': u'Account',
-		'permlevel': 0,
-		'print_hide': 1,
-		'trigger': u'Client'
-	},
-
 	# DocPerm
 	{
 		'amend': 1,

@@ -152,7 +152,8 @@ class AccountsController(TransactionBase):
 			
 	def validate_total_debit_credit(self):
 		if abs(self.total_debit - self.total_credit) > 0.005:
-			msgprint("""Debit and Credit not equal for this voucher: Diff (Debit) is %s""" %
+			webnotes.msgprint("""Debit and Credit not equal for 
+				this voucher: Diff (Debit) is %s""" %
 			 	(self.total_debit - self.total_credit), raise_exception=1)
 		
 	def set_as_cancel(self):
@@ -187,15 +188,17 @@ class AccountsController(TransactionBase):
 		gl_dict.update(args)
 		return gl_dict
 	
-	def get_company_details(self):
-		abbr, stock_in_hand = webnotes.conn.get_value("Company", self.doc.company,
-			["abbr", "stock_in_hand"])
+	def get_company_abbr(self):
+		return webnotes.conn.get_value("Company", self.doc.company, "abbr")
+		
+	def get_stock_in_hand_account(self):
+		stock_in_hand = webnotes.conn.get_value("Company", self.doc.company, "stock_in_hand")
 		
 		if not stock_in_hand:
 			webnotes.msgprint("""Please specify "Stock In Hand" account 
 				for company: %s""" % (self.doc.company,), raise_exception=1)
 				
-		return abbr, stock_in_hand
+		return stock_in_hand
 		
 	def calculate_taxes_and_totals(self):
 		"""
@@ -282,8 +285,7 @@ class AccountsController(TransactionBase):
 		# loop through items and set item tax amount
 		for item in self.item_doclist:
 			item_tax_map = _load_item_tax_rate(item.item_tax_rate)
-			if not item.item_tax_amount:
-				item.item_tax_amount = 0
+			item.item_tax_amount = 0
 			
 			for i, tax in enumerate(self.tax_doclist):
 				# tax_amount represents the amount of tax for the current step
@@ -363,3 +365,4 @@ class AccountsController(TransactionBase):
 		self.item_precision = doctypelist.get_precision_map(parentfield=self.fname)
 		self.tax_precision = \
 			doctypelist.get_precision_map(parentfield=self.taxes_and_charges)
+		

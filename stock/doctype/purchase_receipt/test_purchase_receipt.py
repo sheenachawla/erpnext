@@ -57,6 +57,7 @@ def load_data():
 			"company_name": company, "company_abbr": abbr})
 		
 	# create account heads for taxes
+	
 	webnotes.model.insert({"doctype": "Account", "account_name": "Shipping Charges",
 		"parent_account": "Stock Expenses - %s" % abbr, "company": company,
 		"group_or_ledger": "Ledger"})
@@ -69,7 +70,7 @@ def load_data():
 		"group_or_ledger": "Group"})
 	webnotes.model.insert({"doctype": "Account", "account_name": "VAT - Test",
 		"parent_account": "Tax Assets - %s" % abbr, "company": company,
-		"group_or_ledger": "Group"})
+		"group_or_ledger": "Ledger"})
 		
 	# create BOM
 	webnotes.model.insert([
@@ -83,49 +84,58 @@ def load_data():
 	])
 
 
-base_purchase_receipt = {"doctype": "Purchase Receipt", "supplier": "East Wind Inc.",
-	"naming_series": "PR", "posting_date": nowdate(), "posting_time": "12:05",
-	"company": company, "fiscal_year": webnotes.conn.get_default("fiscal_year"), 
-	"currency": webnotes.conn.get_default("currency"), "exchange_rate": 1
-}
-
-base_purchase_receipt_item = {"doctype": "Purchase Receipt Item", 
-	"item_code": "Home Desktop 100",
-	"qty": 10, "received_qty": 10, "rejected_qty": 0, "rate": 50, 
-	"amount": 500, "warehouse": "Default Warehouse", "item_tax_amount": 250,
-	"parentfield": "purchase_receipt_details",
-	"conversion_factor": 1, "uom": "Nos", "stock_uom": "Nos"}
-	
-shipping_charges = {"doctype": "Purchase Taxes and Charges", "charge_type": "Actual",
-	"account_head": "Shipping Charges - %s" % abbr, "rate": 100, "tax_amount": 100,
-	"category": "Valuation and Total", "parentfield": "taxes_and_charges",
-	"cost_center": "Default Cost Center - %s" % abbr}
-
-vat = {"doctype": "Purchase Taxes and Charges", "charge_type": "Actual",
-	"account_head": "VAT - Test - %s" % abbr, "rate": 120, "tax_amount": 120,
-	"category": "Total", "parentfield": "taxes_and_charges"}
-
-customs_duty = {"doctype": "Purchase Taxes and Charges", "charge_type": "Actual",
-	"account_head": "Customs Duty - %s" % abbr, "rate": 150, "tax_amount": 150,
-	"category": "Valuation", "parentfield": "taxes_and_charges",
-	"cost_center": "Default Cost Center - %s" % abbr}
+base_purchase_receipt = [
+	{
+		"doctype": "Purchase Receipt", "supplier": "East Wind Inc.",
+		"naming_series": "PR", "posting_date": nowdate(), "posting_time": "12:05",
+		"company": company, "fiscal_year": webnotes.conn.get_default("fiscal_year"), 
+		"currency": webnotes.conn.get_default("currency"), "exchange_rate": 1
+	},
+	{
+		"doctype": "Purchase Receipt Item", 
+		"item_code": "Home Desktop 100",
+		"qty": 10, "received_qty": 10, "rejected_qty": 0, "rate": 50, 
+		"amount": 500, "warehouse": "Default Warehouse", "item_tax_amount": 250,
+		"parentfield": "purchase_receipt_details",
+		"conversion_factor": 1, "uom": "Nos", "stock_uom": "Nos"
+	},
+	{
+		"doctype": "Purchase Taxes and Charges", "charge_type": "Actual",
+		"account_head": "Shipping Charges - %s" % abbr, "rate": 100, "tax_amount": 100,
+		"category": "Valuation and Total", "parentfield": "purchase_tax_details",
+		"cost_center": "Default Cost Center - %s" % abbr
+	}, 
+	{
+		"doctype": "Purchase Taxes and Charges", "charge_type": "Actual",
+		"account_head": "VAT - Test - %s" % abbr, "rate": 120, "tax_amount": 120,
+		"category": "Total", "parentfield": "purchase_tax_details"
+	},
+	{
+		"doctype": "Purchase Taxes and Charges", "charge_type": "Actual",
+		"account_head": "Customs Duty - %s" % abbr, "rate": 150, "tax_amount": 150,
+		"category": "Valuation", "parentfield": "purchase_tax_details",
+		"cost_center": "Default Cost Center - %s" % abbr
+	}
+]
 
 
 class TestPurchaseReceipt(unittest.TestCase):
 	def setUp(self):
 		webnotes.conn.begin()
 		load_data()
+		webnotes.conn.set_value("Global Defaults", None, "automatic_inventory_accounting", 1)
+		
 		
 	def test_purchase_receipt(self):
 		# warehouse does not have stock in hand specified
-		self.run_purchase_receipt_test([base_purchase_receipt.copy(),
-			base_purchase_receipt_item.copy(), shipping_charges, vat, customs_duty], 
+		self.run_purchase_receipt_test(base_purchase_receipt,
 			"Stock In Hand - %s" % (abbr,), 
 			"Stock Received But Not Billed - %s" % (abbr,), 750.0)
 	
 	def run_purchase_receipt_test(self, purchase_receipt, debit_account, 
 			credit_account, stock_value):
-		dl = webnotes.model.insert(purchase_receipt)
+		from webnotes.model.doclist import DocList	
+		dl = webnotes.model.insert(DocList(purchase_receipt))
 		dl.submit()
 		dl.load_from_db()
 						
@@ -138,11 +148,10 @@ class TestPurchaseReceipt(unittest.TestCase):
 		self.assertEquals(gle_map[credit_account], (credit_account, 0.0, stock_value))
 		
 	def atest_subcontracting(self):
-		item = base_purchase_receipt_item.copy()
-		item.update({"item_code": "Nebula 7"})
+		pr = base_purchase_receipt.copy()
+		pr[1].update({"item_code": "Nebula 7"})
 		
-		self.run_purchase_receipt_test([base_purchase_receipt.copy(), item,
-			shipping_charges, vat, customs_duty], 
+		self.run_purchase_receipt_test(pr, 
 			"Stock In Hand - %s" % (abbr,), 
 			"Stock Received But Not Billed - %s" % (abbr,), 1750.0)
 		

@@ -78,10 +78,6 @@ class DocType:
 
 				msgprint(msg, raise_exception=1)
 
-	# --------------------------------
-	# get first stock ledger entry
-	# --------------------------------
-	
 	def get_first_sle(self):
 		sle = sql("""
 			select * from `tabStock Ledger Entry`
@@ -171,24 +167,6 @@ class DocType:
 				(opening_qty + actual_qty)
 		return val_rate, in_rate
 
-	def get_moving_average_inventory_values(self, val_rate, in_rate, opening_qty, actual_qty, is_cancelled):
-		if flt(in_rate) == 0 or flt(actual_qty) < 0: 
-			# In case of delivery/stock issue in_rate = 0 or wrong incoming rate
-			in_rate = val_rate
-
-		# val_rate is same as previous entry if :
-		# 1. actual qty is negative(delivery note / stock entry)
-		# 2. cancelled entry
-		# 3. val_rate is negative
-		# Otherwise it will be calculated as per moving average
-		if actual_qty > 0 and (opening_qty + actual_qty) > 0 and is_cancelled == 'No' \
-				and ((opening_qty * val_rate) + (actual_qty * in_rate)) > 0:
-			opening_qty = opening_qty > 0 and opening_qty or 0
-			val_rate = ((opening_qty *val_rate) + (actual_qty * in_rate)) / \
-				(opening_qty + actual_qty)
-		elif (opening_qty + actual_qty) <= 0:
-			val_rate = 0
-		return val_rate, in_rate
 
 	def get_fifo_inventory_values(self, in_rate, actual_qty):
 		# add batch to fcfs balance
@@ -226,26 +204,20 @@ class DocType:
 		
 		return val_rate, in_rate
 
-	def get_valuation_rate(self, val_method, serial_nos, val_rate, in_rate, stock_val, cqty, s):
+	def get_valuation_rate(self, serial_nos, val_rate, in_rate, stock_val, cqty, s):
 		if serial_nos:
 			val_rate, in_rate = self.get_serialized_inventory_values( \
 				val_rate, in_rate, opening_qty = cqty, actual_qty = s['actual_qty'], \
 				is_cancelled = s['is_cancelled'], serial_nos = serial_nos)
-		elif val_method == 'Moving Average':
-			val_rate, in_rate = self.get_moving_average_inventory_values( \
-				val_rate, in_rate, opening_qty = cqty, actual_qty = s['actual_qty'], \
-				is_cancelled = s['is_cancelled'])
-		elif val_method == 'FIFO':
+		else:
 			val_rate, in_rate = self.get_fifo_inventory_values(in_rate, \
 				actual_qty = s['actual_qty'])
 		return val_rate, in_rate
 
-	def get_stock_value(self, val_method, cqty, val_rate, serial_nos):
+	def get_stock_value(self, cqty, val_rate, serial_nos):
 		if serial_nos:
 			stock_val = flt(val_rate) * flt(cqty)
-		elif val_method == 'Moving Average':
-			stock_val = flt(cqty) > 0 and flt(val_rate) * flt(cqty) or 0
-		elif val_method == 'FIFO':
+		else:
 			stock_val = sum([flt(d[0])*flt(d[1]) for d in self.fcfs_bal])
 		return stock_val
 
@@ -269,11 +241,8 @@ class DocType:
 			val_rate = flt(prev_sle.get('valuation_rate', 0))
 			self.fcfs_bal = eval(prev_sle.get('fcfs_stack', '[]') or '[]')
 
-		# get valuation method
-		val_method = 'FIFO'
 
-		# allow negative stock (only for moving average method)
-		from webnotes.utils import get_defaults
+		# allow negative stock
 		allow_negative_stock = get_defaults().get('allow_negative_stock', 0)
 
 
@@ -293,19 +262,19 @@ class DocType:
 					
 		for sle in sll:
 			# block if stock level goes negative on any date
-			if val_method != 'Moving Average' or flt(allow_negative_stock) == 0:
+			if cint(allow_negative_stock) == 0:
 				self.validate_negative_stock(cqty, sle)
 
 			stock_val, in_rate = 0, sle['incoming_rate'] # IN
 			serial_nos = sle["serial_no"] and ("'"+"', '".join(cstr(sle["serial_no"]).split('\n')) \
 				+ "'") or ''
 			# Get valuation rate
-			val_rate, in_rate = self.get_valuation_rate(val_method, serial_nos, \
-				val_rate, in_rate, stock_val, cqty, sle)		
+			val_rate, in_rate = self.get_valuation_rate(serial_nos, val_rate, in_rate, 
+				stock_val, cqty, sle)		
 			# Qty upto the sle
 			cqty += sle['actual_qty'] 
 			# Stock Value upto the sle
-			stock_val = self.get_stock_value(val_method, cqty, val_rate, serial_nos) 
+			stock_val = self.get_stock_value(cqty, val_rate, serial_nos) 
 			# update current sle 
 			sql("""update `tabStock Ledger Entry` 
 				set bin_aqat=%s, valuation_rate=%s, fcfs_stack=%s, stock_value=%s, 

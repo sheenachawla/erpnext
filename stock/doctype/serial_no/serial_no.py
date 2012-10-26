@@ -23,10 +23,9 @@ import datetime
 sql = webnotes.conn.sql
 msgprint = webnotes.msgprint
 	
+from controllers.stock import StockControllers
 
-from utilities.transaction_base import TransactionBase
-
-class DocType(TransactionBase):
+class DocType(StockControllers):
 	def __init__(self, doc, doclist=[]):
 		self.doc = doc
 		self.doclist = doclist
@@ -58,12 +57,9 @@ class DocType(TransactionBase):
 		if not item:
 			msgprint("Item is not exists in the system", raise_exception=1)
 		elif item[0][1] == 'No':
-			msgprint("To proceed please select 'Yes' in 'Has Serial No' in Item master: '%s'" % self.doc.item_code, raise_exception=1)
+			msgprint("""To proceed please select 'Yes' in 'Has Serial No' in Item master: '%s'""" 
+				% self.doc.item_code, raise_exception=1)
 			
-
-	# ---------
-	# validate
-	# ---------
 	def validate(self):
 		self.validate_warranty_status()
 		self.validate_amc_status()
@@ -71,11 +67,29 @@ class DocType(TransactionBase):
 		self.validate_item()
 
 	def on_update(self):
-		if self.doc.warehouse and self.doc.status == 'In Store' and cint(self.doc.sle_exists) == 0 and \
-			not sql("select name from `tabStock Ledger Entry` where serial_no = %s and ifnull(is_cancelled, 'No') = 'No'", self.doc.name):
+		if self.doc.warehouse and self.doc.status == 'In Store' and \
+				cint(self.doc.sle_exists) == 0 and \
+				not sql("""select name from `tabStock Ledger Entry` where serial_no = %s and
+				ifnull(is_cancelled, 'No') = 'No'""", self.doc.name):
 			self.make_stock_ledger_entry(1)
+			self.make_gl_entries()
 			webnotes.conn.set(self.doc, 'sle_exists', 1)
 
+	def on_trash(self):
+		if self.doc.status == 'Delivered':
+			msgprint("Cannot trash Serial No : %s as it is already Delivered" % (self.doc.name), raise_exception = 1)
+		elif self.doc.status == 'In Store': 
+			webnotes.conn.set(self.doc, 'status', 'Not in Use')
+			self.make_stock_ledger_entry(-1)
+			self.make_gl_entries(cancel="Yes")
+
+
+	def on_cancel(self):
+		self.on_trash()
+
+	def on_restore(self):
+		self.make_stock_ledger_entry(1)
+		self.make_gl_entries()
 
 	def make_stock_ledger_entry(self, qty):
 		from webnotes.model.code import get_obj
@@ -97,24 +111,32 @@ class DocType(TransactionBase):
 			'serial_no'				: self.doc.name
 		}]
 		get_obj('Stock Ledger', 'Stock Ledger').update_stock(values)
+		
+	def make_gl_entries(self, cancel="No"):
+		if webnotes.conn.get_value("Global Defaults", None, "automatic_inventory_accounting"):
+			abbr = self.get_company_abbr()
+			stock_in_hand = self.get_stock_in_hand_account()
+			purchase_cost = cancel == "No" and self.doc.purchase_rate or -1*purchase_rate
+			gl_entries = []
+			# stock in hand 
+			gl_entries.append(
+				self.get_gl_dict({
+					"account": stock_in_hand,
+					"against": "Stock Adjustment - %s" % abbr,
+					"debit": purchase_cost,
+					"remarks": self.doc.remarks or "Accounting Entry for Stock"
+				}, cancel)
+			)
 
+			# stock received but not billed
+			gl_entries.append(
+				self.get_gl_dict({
+					"account": "Stock Adjustment - %s" % abbr,
+					"against": stock_in_hand,
+					"credit": purchase_cost,
+					"cost_center": "Default Cost Center for stock adjustment", # to-do
+					"remarks": self.doc.remarks or "Accounting Entry for Stock"
+				}, cancel)
+			)
 
-	# ---------
-	# on trash
-	# ---------
-	def on_trash(self):
-		if self.doc.status == 'Delivered':
-			msgprint("Cannot trash Serial No : %s as it is already Delivered" % (self.doc.name), raise_exception = 1)
-		elif self.doc.status == 'In Store': 
-			webnotes.conn.set(self.doc, 'status', 'Not in Use')
-			self.make_stock_ledger_entry(-1)
-
-
-	def on_cancel(self):
-		self.on_trash()
-
-	# -----------
-	# on restore
-	# -----------
-	def on_restore(self):
-		self.make_stock_ledger_entry(1)
+			super(DocType, self).make_gl_entries(cancel=cancel, gl_map=gl_entries)

@@ -277,16 +277,18 @@ class DocType(StockController):
 		self.make_gl_entries()
 
 	def make_gl_entries(self, cancel=False):
-		abbr, stock_in_hand = self.get_company_details()
+		if webnotes.conn.get_value("Global Defaults", None, "automatic_inventory_accounting"):
+			abbr = self.get_company_abbr()
+			stock_in_hand = self.get_stock_in_hand_account()
+			gl_entries = []
+			total_valuation_amount = self.get_total_valuation_amount()
 			
-		gl_entries = []
-		for item in getlist(self.doclist, 'purchase_receipt_details'):
 			# debit stock in hand 
 			gl_entries.append(
 				self.get_gl_dict({
 					"account": stock_in_hand,
 					"against": "Stock Received But Not Billed - %s" % (abbr,),
-					"debit": item.valuation_rate * item.conversion_factor * item.qty,
+					"debit": total_valuation_amount,
 					"remarks": self.doc.remarks or "Accounting Entry for Stock"
 				}, cancel)
 			)
@@ -296,12 +298,21 @@ class DocType(StockController):
 				self.get_gl_dict({
 					"account": "Stock Received But Not Billed - %s" % (abbr,),
 					"against": stock_in_hand,
-					"credit": item.valuation_rate * item.conversion_factor * item.qty,
+					"credit": total_valuation_amount,
 					"remarks": self.doc.remarks or "Accounting Entry for Stock"
 				}, cancel)
 			)
 
-		super(DocType, self).make_gl_entries(cancel=cancel, gl_map=gl_entries)
+			super(DocType, self).make_gl_entries(cancel=cancel, gl_map=gl_entries)
+			
+	def get_total_valuation_amount(self):
+		total_valuation_amount = 0
+		for item in getlist(self.doclist, 'purchase_receipt_details'):
+			if webnotes.conn.get_value("Item", item.item_code, "is_stock_item")=="Yes":
+				total_valuation_amount += flt(item.valuation_rate) * \
+					flt(item.conversion_factor) * flt(item.qty)
+					
+		return total_valuation_amount
 				
 	def check_next_docstatus(self):
 		submit_rv = sql("select t1.name from `tabPurchase Invoice` t1,`tabPurchase Invoice Item` t2 where t1.name = t2.parent and t2.purchase_receipt = '%s' and t1.docstatus = 1" % (self.doc.name))
