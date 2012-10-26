@@ -1,0 +1,23 @@
+[
+ {
+  "owner": "Administrator", 
+  "docstatus": 0, 
+  "creation": "2012-10-26 15:51:55", 
+  "modified_by": "Administrator", 
+  "modified": "2012-10-26 16:14:38"
+ }, 
+ {
+  "style": "sprite-image sprite-todo", 
+  "is_custom": "No", 
+  "name": "__common__", 
+  "gradient": "#ffd65e, #febf04, #ed9017", 
+  "route": "todo", 
+  "module": "Utilities", 
+  "doctype": "Desktop Item", 
+  "label": "To Do"
+ }, 
+ {
+  "name": "To Do", 
+  "doctype": "Desktop Item"
+ }
+]

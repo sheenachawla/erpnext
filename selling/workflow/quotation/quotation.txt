@@ -1,0 +1,72 @@
+[
+ {
+  "owner": "Administrator", 
+  "docstatus": 0, 
+  "creation": "2012-10-24 15:26:35", 
+  "modified_by": "Administrator", 
+  "modified": "2012-10-26 11:06:40"
+ }, 
+ {
+  "name": "__common__", 
+  "parent": "Quotation", 
+  "doctype": "Workflow Transition", 
+  "parenttype": "Workflow", 
+  "state": "Under Revision", 
+  "allowed": "Sales Manager", 
+  "parentfield": "workflow_transitions"
+ }, 
+ {
+  "name": "__common__", 
+  "parent": "Quotation", 
+  "doctype": "Workflow Document State", 
+  "parenttype": "Workflow", 
+  "parentfield": "workflow_document_states"
+ }, 
+ {
+  "parent": null, 
+  "is_active": null, 
+  "doctype": "Workflow", 
+  "is_default": null, 
+  "workflow_state_field": "status", 
+  "document_type": "Quotation", 
+  "is_custom": "No", 
+  "name": "__common__", 
+  "parenttype": null, 
+  "parentfield": null
+ }, 
+ {
+  "name": "Quotation", 
+  "doctype": "Workflow"
+ }, 
+ {
+  "allow_edit": "Sales User", 
+  "doctype": "Workflow Document State", 
+  "state": "Under Revision", 
+  "message": "Under revision", 
+  "doc_status": "0"
+ }, 
+ {
+  "allow_edit": null, 
+  "doctype": "Workflow Document State", 
+  "state": "Approved", 
+  "message": "Approved", 
+  "doc_status": "1"
+ }, 
+ {
+  "allow_edit": null, 
+  "doctype": "Workflow Document State", 
+  "state": "Rejected", 
+  "message": "Rejected", 
+  "doc_status": "1"
+ }, 
+ {
+  "action": "Approve", 
+  "doctype": "Workflow Transition", 
+  "next_state": "Approved"
+ }, 
+ {
+  "action": "Reject", 
+  "doctype": "Workflow Transition", 
+  "next_state": "Rejected"
+ }
+]

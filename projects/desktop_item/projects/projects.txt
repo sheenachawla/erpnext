@@ -1,0 +1,23 @@
+[
+ {
+  "owner": "Administrator", 
+  "docstatus": 0, 
+  "creation": "2012-10-26 15:40:53", 
+  "modified_by": "Administrator", 
+  "modified": "2012-10-26 16:14:55"
+ }, 
+ {
+  "style": "sprite-image sprite-project", 
+  "is_custom": "No", 
+  "name": "__common__", 
+  "gradient": "#50448e, #473b7f, #3a3169", 
+  "route": "Module/Project", 
+  "module": "Projects", 
+  "doctype": "Desktop Item", 
+  "label": "Projects"
+ }, 
+ {
+  "name": "Projects", 
+  "doctype": "Desktop Item"
+ }
+]

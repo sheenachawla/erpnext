@@ -1,0 +1,23 @@
+[
+ {
+  "owner": "Administrator", 
+  "docstatus": 0, 
+  "creation": "2012-10-26 15:44:40", 
+  "modified_by": "Administrator", 
+  "modified": "2012-10-26 16:15:19"
+ }, 
+ {
+  "style": "sprite-image sprite-selling", 
+  "is_custom": "No", 
+  "name": "__common__", 
+  "gradient": "#4b5602, #3f4901, #313800", 
+  "route": "Module/Selling", 
+  "module": "Selling", 
+  "doctype": "Desktop Item", 
+  "label": "Selling"
+ }, 
+ {
+  "name": "Selling", 
+  "doctype": "Desktop Item"
+ }
+]

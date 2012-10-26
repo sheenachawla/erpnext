@@ -1,0 +1,23 @@
+[
+ {
+  "owner": "Administrator", 
+  "docstatus": 0, 
+  "creation": "2012-10-26 15:56:55", 
+  "modified_by": "Administrator", 
+  "modified": "2012-10-26 16:14:27"
+ }, 
+ {
+  "style": "sprite-image sprite-kb", 
+  "is_custom": "No", 
+  "name": "__common__", 
+  "gradient": "#014333, #01372b, #002a20", 
+  "route": "questions", 
+  "module": "Utilities", 
+  "doctype": "Desktop Item", 
+  "label": "Knowledge Base"
+ }, 
+ {
+  "name": "Knowledge Base", 
+  "doctype": "Desktop Item"
+ }
+]

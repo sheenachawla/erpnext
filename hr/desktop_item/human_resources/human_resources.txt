@@ -1,0 +1,23 @@
+[
+ {
+  "owner": "Administrator", 
+  "docstatus": 0, 
+  "creation": "2012-10-26 15:44:20", 
+  "modified_by": "Administrator", 
+  "modified": "2012-10-26 16:15:24"
+ }, 
+ {
+  "style": "sprite-image sprite-hr", 
+  "is_custom": "No", 
+  "name": "__common__", 
+  "gradient": "#02a47e, #018d6c, #006a51", 
+  "route": "Module/HR", 
+  "module": "HR", 
+  "doctype": "Desktop Item", 
+  "label": "Human Resources"
+ }, 
+ {
+  "name": "Human Resources", 
+  "doctype": "Desktop Item"
+ }
+]

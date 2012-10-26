@@ -1,0 +1,23 @@
+[
+ {
+  "owner": "Administrator", 
+  "docstatus": 0, 
+  "creation": "2012-10-26 15:49:25", 
+  "modified_by": "Administrator", 
+  "modified": "2012-10-26 16:15:00"
+ }, 
+ {
+  "style": "sprite-image sprite-production", 
+  "is_custom": "No", 
+  "name": "__common__", 
+  "gradient": "#68021a, #590116, #440010", 
+  "route": "Module/Production", 
+  "module": "Production", 
+  "doctype": "Desktop Item", 
+  "label": "Production"
+ }, 
+ {
+  "name": "Production", 
+  "doctype": "Desktop Item"
+ }
+]

@@ -1,0 +1,23 @@
+[
+ {
+  "owner": "Administrator", 
+  "docstatus": 0, 
+  "creation": "2012-10-26 15:43:42", 
+  "modified_by": "Administrator", 
+  "modified": "2012-10-26 16:15:27"
+ }, 
+ {
+  "style": "sprite-image sprite-support", 
+  "is_custom": "No", 
+  "name": "__common__", 
+  "gradient": "#4d017d, #410169, #310050", 
+  "route": "Module/Support", 
+  "module": "Support", 
+  "doctype": "Desktop Item", 
+  "label": "Support"
+ }, 
+ {
+  "name": "Support", 
+  "doctype": "Desktop Item"
+ }
+]

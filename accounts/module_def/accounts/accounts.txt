@@ -1,0 +1,23 @@
+[
+ {
+  "owner": "Administrator", 
+  "docstatus": 0, 
+  "creation": "2010-09-25 10:50:37", 
+  "modified_by": "Administrator", 
+  "modified": "2012-10-26 12:43:53"
+ }, 
+ {
+  "style": "case-account", 
+  "is_custom": "No", 
+  "name": "__common__", 
+  "module_name": "Accounts", 
+  "gradient": "#026584, #025770, #004256", 
+  "doctype": "Module Def", 
+  "label": "Accounts", 
+  "disabled": "No"
+ }, 
+ {
+  "name": "Accounts", 
+  "doctype": "Module Def"
+ }
+]

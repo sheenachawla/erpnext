@@ -1,0 +1,23 @@
+[
+ {
+  "owner": "Administrator", 
+  "docstatus": 0, 
+  "creation": "2010-09-01 15:48:10", 
+  "modified_by": "Administrator", 
+  "modified": "2012-10-26 12:56:26"
+ }, 
+ {
+  "style": "case-project", 
+  "is_custom": "No", 
+  "name": "__common__", 
+  "module_name": "Projects", 
+  "gradient": "#50448e, #473b7f, #3a3169", 
+  "doctype": "Module Def", 
+  "label": "Projects", 
+  "disabled": "No"
+ }, 
+ {
+  "name": "Projects", 
+  "doctype": "Module Def"
+ }
+]

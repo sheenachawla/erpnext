@@ -1,0 +1,23 @@
+[
+ {
+  "owner": "Administrator", 
+  "docstatus": 0, 
+  "creation": "2011-07-01 17:39:08", 
+  "modified_by": "Administrator", 
+  "modified": "2012-10-26 12:46:25"
+ }, 
+ {
+  "style": "case-selling", 
+  "is_custom": "No", 
+  "name": "__common__", 
+  "module_name": "Selling", 
+  "gradient": "#4b5602, #3f4901, #313800", 
+  "doctype": "Module Def", 
+  "label": "Selling", 
+  "disabled": "No"
+ }, 
+ {
+  "name": "Selling", 
+  "doctype": "Module Def"
+ }
+]
