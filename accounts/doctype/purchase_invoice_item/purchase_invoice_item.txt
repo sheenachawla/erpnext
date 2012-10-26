@@ -3,9 +3,9 @@
 
 	# These values are common in all dictionaries
 	{
-		u'creation': '2012-10-10 16:02:33',
+		u'creation': '2012-10-24 15:40:22',
 		u'docstatus': 0,
-		u'modified': '2012-10-12 18:31:49',
+		u'modified': '2012-10-24 16:21:42',
 		u'modified_by': u'Administrator',
 		u'owner': u'Administrator'
 	},
@@ -349,5 +349,25 @@
 		'permlevel': 0,
 		'print_hide': 1,
 		'report_hide': 1
+	},
+
+	# DocField
+	{
+		u'doctype': u'DocField',
+		'fieldname': u'valuation_rate',
+		'fieldtype': u'Currency',
+		'hidden': 1,
+		'label': u'Valuation Rate',
+		'permlevel': 0
+	},
+
+	# DocField
+	{
+		u'doctype': u'DocField',
+		'fieldname': u'rm_supp_cost',
+		'fieldtype': u'Currency',
+		'hidden': 1,
+		'label': u'Raw Materials Supplied Cost',
+		'permlevel': 0
 	}
 ]

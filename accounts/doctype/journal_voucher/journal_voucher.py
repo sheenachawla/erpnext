@@ -282,6 +282,16 @@ class DocType(AccountsController):
 		get_obj('Sales Common').validate_fiscal_year(self.doc.fiscal_year, \
 			self.doc.posting_date, 'Posting Date')
 
+	def validate_against_jv(self):
+		for d in getlist(self.doclist, 'entries'):
+			if d.against_jv:
+				if d.against_jv == self.doc.name:
+					msgprint("You can not enter current voucher in 'Against JV' column")
+					raise Exception
+				elif not sql("select name from `tabJournal Voucher Detail` where account = '%s' and docstatus = 1 and parent = '%s'" % (d.account, d.against_jv)):
+					msgprint("Against JV: "+ d.against_jv + " is not valid. Please check")
+					raise Exception
+
 	def validate_debit_credit(self):
 		for d in getlist(self.doclist, 'entries'):
 			if d.debit and d.credit:
@@ -296,16 +306,26 @@ class DocType(AccountsController):
 			self.check_credit_days()
 		self.check_account_against_entries()
 		self.make_gl_entries()
-
-	def validate_against_jv(self):
-		for d in getlist(self.doclist, 'entries'):
-			if d.against_jv:
-				if d.against_jv == self.doc.name:
-					msgprint("You can not enter current voucher in 'Against JV' column")
-					raise Exception
-				elif not sql("select name from `tabJournal Voucher Detail` where account = '%s' and docstatus = 1 and parent = '%s'" % (d.account, d.against_jv)):
-					msgprint("Against JV: "+ d.against_jv + " is not valid. Please check")
-					raise Exception
 	
 	def on_cancel(self):
 		self.make_gl_entries(cancel=1)
+		
+	def make_gl_entries(self, cancel=0):
+		gl_entries = []
+		for d in self.doclist.get({"parentfield": "entries"}):
+			gl_entries.append(
+				self.get_gl_dict({
+					"account": d.account,
+					"against": d.against_account,
+					"debit": d.debit,
+					"credit": d.credit,
+					"against_voucher_type": ((d.against_voucher and "Purchase Invoice") 
+						or (d.against_invoice and "Sales Invoice") 
+						or (d.against_jv and "Journal Voucher")),
+					"against_voucher": d.against_voucher or d.against_invoice or d.against_jv,
+					"remarks": self.doc.remark,
+					"cost_center": d.cost_center
+				}, cancel)
+			)
+			
+		super(DocType, self).make_gl_entries(cancel=cancel, gl_map=gl_entries)

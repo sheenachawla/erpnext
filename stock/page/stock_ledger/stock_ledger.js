@@ -135,8 +135,7 @@ erpnext.StockLedger = erpnext.StockGridReport.extend({
 			sl.posting_datetime = sl.posting_date + " " + sl.posting_time;
 			var posting_datetime = dateutil.str_to_obj(sl.posting_datetime);
 			
-			var is_fifo = item.valuation_method ? item.valuation_method=="FIFO" 
-				: sys_defaults.valuation_method=="FIFO";
+			var is_fifo = true;
 			var value_diff = me.get_value_diff(wh, sl, is_fifo);
 
 			// opening, transactions, closing, total in, total out

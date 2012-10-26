@@ -141,7 +141,7 @@ cur_frm.cscript.is_opening = function(doc, dt, dn) {
 }
 
 cur_frm.cscript.write_off_amount = function(doc) {
-	doc.outstanding_amount = flt(doc.grand_total) - \
+	doc.outstanding_amount = flt(doc.grand_total) - 
 		flt(doc.total_advance) - flt(doc.write_off_amount);
 	refresh_field('outstanding_amount');
 }

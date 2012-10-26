@@ -21,11 +21,6 @@ def execute():
 	from webnotes.model import delete_doc
 	sql = webnotes.conn.sql
 	
-	# Production Planning Tool
-	#---------------------------------------------------------------
-	#delete_doc('DocType', 'Production Plan Item')
-	#delete_doc('DocType', 'Production Plan Sales Order')
-	#delete_doc('DocType', 'Production Planning Tool')
 	sql("delete from `tabDocField` where parent in ('Production Planning Tool', 'Production Plan Item', 'Production Plan Sales Order')")
 	
 	reload_doc('production', 'doctype', 'production_planning_tool')

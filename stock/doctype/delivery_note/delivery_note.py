@@ -265,20 +265,18 @@ class DocType(StockController):
 	
 		
 	def make_gl_entries(self, cancel=False):
-		abbr, stock_in_hand = self.get_company_details()
-		gl_entries = []
+		if webnotes.conn.get_value("Global Defaults", None, "automatic_inventory_accounting"):
+			abbr = self.get_company_abbr()
+			stock_in_hand = self.get_stock_in_hand_account()
+			total_valuation_amount = self.get_total_valuation_amount()
+			gl_entries = []
 			
-		for item in getlist(self.doclist, 'delivery_note_details'):
-			# get valuation rate as per FIFO
-			valuation_rate = self.get_valuation_rate(self.doc.posting_date, self.doc.posting_time, 	
-				d.item_code, d.warehouse, d.qty, d.serial_no)
-				
 			# debit stock in hand 
 			gl_entries.append(
 				self.get_gl_dict({
 					"account": stock_in_hand,
 					"against": "Stock Delivered But Not Billed - %s" % abbr,
-					"credit": valuation_rate * item.qty,
+					"credit": total_valuation_amount,
 					"remarks": self.doc.remarks or "Accounting Entry for Stock"
 				}, cancel)
 			)
@@ -288,13 +286,22 @@ class DocType(StockController):
 				self.get_gl_dict({
 					"account": "Stock Delivered But Not Billed - %s" % abbr,
 					"against": stock_in_hand,
-					"debit": valuation_rate * item.qty,
+					"debit": total_valuation_amount,
 					"remarks": self.doc.remarks or "Accounting Entry for Stock"
 				}, cancel)
 			)
 
-		super(DocType, self).make_gl_entries(cancel=cancel, gl_map=gl_entries)
+			super(DocType, self).make_gl_entries(cancel=cancel, gl_map=gl_entries)
+		
+	def get_total_valuation_amount(self):
+		total_valuation_amount = 0
+		for item in getlist(self.doclist, 'delivery_note_details'):
+			if webnotes.conn.get_value("Item", item.item_code, "is_stock_item") == "Yes":
+				total_valuation_amount += self.get_valuation_rate(self.doc.posting_date, 
+					self.doc.posting_time, item.item_code, item.warehouse, item.qty, 
+					item.serial_no) * flt(item.qty)
 
+		return total_valuation_amount
 	
 	def validate_packed_qty(self):
 		"""
@@ -433,4 +440,3 @@ class DocType(StockController):
 		sl = get_obj('Stock Ledger')
 		sl.scrub_serial_nos(self)
 		sl.scrub_serial_nos(self, 'packing_details')
-

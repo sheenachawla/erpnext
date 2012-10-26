@@ -476,6 +476,7 @@ class DocType(StockControllers):
 		self.update_stock_ledger(0)
 		# update Production Order
 		self.update_production_order(1)
+		self.make_gl_entries()
 
 
 	def on_cancel(self):
@@ -483,7 +484,51 @@ class DocType(StockControllers):
 		self.update_stock_ledger(1)
 		# update Production Order
 		self.update_production_order(0)
+		self.make_gl_entries()
 		
+	def make_gl_entries(self, cancel=0):
+		if webnotes.conn.get_value("Global Defaults", None, "automatic_inventory_accounting"):
+			abbr = self.get_company_abbr()
+			stock_in_hand = self.get_stock_in_hand_account()
+			stock_adjustment_cost = self.get_stock_adjustment_cost()
+			gl_entries = []
+
+			# debit stock in hand 
+			gl_entries.append(
+				self.get_gl_dict({
+					"account": stock_in_hand,
+					"against": "Stock Adjustment - %s" % abbr,
+					"debit": stock_adjustment_cost,
+					"remarks": self.doc.remarks or "Accounting Entry for Stock"
+				}, cancel)
+			)
+
+			# credit stock received but not billed
+			gl_entries.append(
+				self.get_gl_dict({
+					"account": "Stock Adjustment - %s" % abbr,
+					"against": stock_in_hand,
+					"credit": stock_adjustment_cost,
+					"cost_center": "Default Cost Center for stock adjustment", # to-do
+					"remarks": self.doc.remarks or "Accounting Entry for Stock"
+				}, cancel)
+			)
+
+			super(DocType, self).make_gl_entries(cancel=cancel, gl_map=gl_entries)
+		
+	def get_stock_adjustment_cost(self):
+		total_cost = 0
+		for item in getlist(self.doclist, 'mtn_details'):
+			if webnotes.conn.get_value("Item", item.item_code, "is_stock_item") == "Yes":
+				if item.from_warehouse and not item.to_warehouse:
+					total_cost -= self.get_valuation_rate(self.doc.posting_date, 
+						self.doc.posting_time, d.item_code, d.from_warehouse, d.qty, d.serial_no) \
+						* flt(item.qty)
+				elif item.to_warehouse and not item.from_warehouse:
+					total_cost += item.incoming_rate
+
+		return total_cost
+
 
 	def get_cust_values(self):
 		tbl = self.doc.delivery_note_no and 'Delivery Note' or 'Sales Invoice'
@@ -505,7 +550,6 @@ class DocType(StockControllers):
 			'customer_address' : addr and addr[0] or ''}
 
 		return ret
-
 
 		
 	def get_supp_values(self):
