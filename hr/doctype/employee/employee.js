@@ -43,7 +43,7 @@ cur_frm.cscript.refresh = function(doc, dt, dn) {
 //Make Salary Structure
 //========================================================
 cur_frm.cscript['Make Salary Structure']=function(){
-  $c_obj(make_doclist (doc.doctype,doc.name),'check_sal_structure',cur_frm.doc.name,function(r, rt) {
+  $c_obj(wn.model.get_doclist (doc.doctype,doc.name),'check_sal_structure',cur_frm.doc.name,function(r, rt) {
     if(r.message)
       alert("You have already created Active salary structure.\nIf you want to create new one, please ensure that no active salary structure exist.\nTo inactive salary structure select 'Is Active' as 'No'.");
     else
@@ -54,7 +54,7 @@ cur_frm.cscript['Make Salary Structure']=function(){
 // Load sal structure
 //========================================================
 cur_frm.cscript.make_salary_structure = function(doc,dt,dn,det){
-  var st = LocalDB.create('Salary Structure');
+  var st = wn.model.make_new_doc_and_get_name('Salary Structure');
   st = locals['Salary Structure'][st];
   st.employee = doc.name;
   st.employee_name = doc.employee_name;

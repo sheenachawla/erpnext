@@ -49,7 +49,7 @@ erpnext.buying.PurchaseRequest = erpnext.Buying.extend({
 	get_item_defaults: function() {
 		if(this.frm.doc.__islocal && wn.model.has_children(this.frm.doc.doctype,
 				this.frm.doc.name, "purchase_request_items")) {
-			$c_obj(make_doclist(this.frm.doc.doctype, this.frm.doc.name),
+			$c_obj(wn.model.get_doclist(this.frm.doc.doctype, this.frm.doc.name),
 				"set_item_defaults", null, function(r) {
 					refresh_field("purchase_request_items");
 				});

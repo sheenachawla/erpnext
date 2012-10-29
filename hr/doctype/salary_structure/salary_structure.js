@@ -22,7 +22,7 @@ cur_frm.cscript.onload = function(doc, dt, dn){
   e_tbl = getchildren('Salary Structure Earning', doc.name, 'earning_details', doc.doctype);
   d_tbl = getchildren('Salary Structure Deduction', doc.name, 'deduction_details', doc.doctype);
   if (e_tbl.length == 0 && d_tbl.length == 0)
-    $c_obj(make_doclist(doc.doctype,doc.name),'make_earn_ded_table','', function(r, rt) { refresh_many(['earning_details', 'deduction_details']);});
+    $c_obj(wn.model.get_doclist(doc.doctype,doc.name),'make_earn_ded_table','', function(r, rt) { refresh_many(['earning_details', 'deduction_details']);});
 }
 
 // On refresh
@@ -42,9 +42,9 @@ cur_frm.cscript['Make Salary Slip'] = function(){
   var doc = cur_frm.doc;  
   var callback = function(r,rt){
     ret = r.message;
-    n = createLocal("Salary Slip");
+    n = wn.model.make_new_doc_and_get_name("Salary Slip");
     $c('dt_map', args={
-      'docs':compress_doclist([locals["Salary Slip"][n]]),
+      'docs':wn.model.compress([locals["Salary Slip"][n]]),
       'from_doctype':'Salary Structure',
       'to_doctype':'Salary Slip',
       'from_docname':doc.name,
@@ -60,7 +60,7 @@ cur_frm.cscript['Make Salary Slip'] = function(){
       }
     );
   }
-  $c_obj(make_doclist(doc.doctype,doc.name),'get_ss_values',cur_frm.doc.employee, callback); 
+  $c_obj(wn.model.get_doclist(doc.doctype,doc.name),'get_ss_values',cur_frm.doc.employee, callback); 
 }
 
 

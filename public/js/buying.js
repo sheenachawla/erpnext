@@ -21,7 +21,7 @@ erpnext.Buying = erpnext.Transaction.extend({
 	set_schedule_date: function(table_field) {
 		// if children, then set schedule date based on lead time days
 		if(wn.model.has_children(this.frm.doc.doctype, this.frm.doc.name, table_field)) {
-			$c_obj(make_doclist(this.frm.doc.doctype, this.frm.doc.name),
+			$c_obj(wn.model.get_doclist(this.frm.doc.doctype, this.frm.doc.name),
 				"set_schedule_date", { table_field: table_field }, function(r) {
 					refresh_field(table_field);
 				})

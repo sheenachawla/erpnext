@@ -50,7 +50,7 @@ cur_frm.cscript.refresh_appraisal_details = function(doc, cdt, cdn){
 
 cur_frm.cscript.employee = function(doc,cdt,cdn){
 	if(doc.employee){
-		$c_obj(make_doclist(doc.doctype, doc.name),'set_approver','', function(r,rt){
+		$c_obj(wn.model.get_doclist(doc.doctype, doc.name),'set_approver','', function(r,rt){
 			if(r.message){
 				doc.employee_name = r.message['emp_nm'];
 				Meta.get_field(doc.doctype, 'kra_approver' , doc.name).options = r.message['app_lst'];				
@@ -72,7 +72,7 @@ cur_frm.cscript.calculate_total_score = function(doc,cdt,cdn){
 }
 
 /*cur_frm.cscript.declare_completed = function(doc,cdt,cdn){
-	$c_obj(make_doclist(doc.doctype, doc.name),'declare_completed','', function(r,rt){
+	$c_obj(wn.model.get_doclist(doc.doctype, doc.name),'declare_completed','', function(r,rt){
 		if(r.message){
 			refresh_field('Status');
 			cur_frm.cscript.refresh(doc,cdt,cdn);
@@ -113,7 +113,7 @@ cur_frm.cscript.declare_completed = function(doc,cdt,cdn){
 			$i('declare_completed_dialog_response').innerHTML = 'Processing...';
 			var m_arg = user+ '~~' + this.msg_nm_lst;
 			
-			$c_obj(make_doclist(this.doc.doctype, this.doc.name),'declare_completed','', function(r,rt){
+			$c_obj(wn.model.get_doclist(this.doc.doctype, this.doc.name),'declare_completed','', function(r,rt){
 				
 				if(r.message.status == 'Completed'){
 					$i('declare_completed_dialog_response').innerHTML = 'Done';

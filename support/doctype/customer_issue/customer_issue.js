@@ -34,7 +34,7 @@ cur_frm.cscript.customer = function(doc,dt,dn) {
 			cur_frm.refresh();
 	}
 
-	if(doc.customer) $c_obj(make_doclist(doc.doctype, doc.name), 'get_default_customer_address', '', callback);
+	if(doc.customer) $c_obj(wn.model.get_doclist(doc.doctype, doc.name), 'get_default_customer_address', '', callback);
 	if(doc.customer) unhide_field(['customer_address','contact_person']);
 }
 
@@ -68,12 +68,12 @@ cur_frm.fields_dict['contact_person'].get_query = function(doc, cdt, cdn) {
 cur_frm.cscript['Make Maintenance Visit'] = function() {
 	var doc = cur_frm.doc;
 	if (doc.docstatus == 1) { 
-		$c_obj(make_doclist(doc.doctype, doc.name),'check_maintenance_visit','',
+		$c_obj(wn.model.get_doclist(doc.doctype, doc.name),'check_maintenance_visit','',
 			function(r,rt){
 				if(r.message == 'No'){
-					n = createLocal("Maintenance Visit");
+					n = wn.model.make_new_doc_and_get_name("Maintenance Visit");
 					$c('dt_map', args={
-						'docs':compress_doclist([locals["Maintenance Visit"][n]]),
+						'docs':wn.model.compress([locals["Maintenance Visit"][n]]),
 						'from_doctype':'Customer Issue',
 						'to_doctype':'Maintenance Visit',
 						'from_docname':doc.name,

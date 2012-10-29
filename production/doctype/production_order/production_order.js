@@ -61,7 +61,7 @@ cur_frm.cscript['Stop Production Order'] = function() {
   var doc = cur_frm.doc;
   var check = confirm("Do you really want to stop production order: " + doc.name);
   if (check) {
-    $c_obj(make_doclist(doc.doctype, doc.name), 'stop_unstop', 'Stopped', function(r, rt) {cur_frm.refresh();});
+    $c_obj(wn.model.get_doclist(doc.doctype, doc.name), 'stop_unstop', 'Stopped', function(r, rt) {cur_frm.refresh();});
 	}
 }
 
@@ -71,7 +71,7 @@ cur_frm.cscript['Unstop Production Order'] = function() {
   var doc = cur_frm.doc;
   var check = confirm("Do really want to unstop production order: " + doc.name);
   if (check)
-      $c_obj(make_doclist(doc.doctype, doc.name), 'stop_unstop', 'Unstopped', function(r, rt) {cur_frm.refresh();});
+      $c_obj(wn.model.get_doclist(doc.doctype, doc.name), 'stop_unstop', 'Unstopped', function(r, rt) {cur_frm.refresh();});
 }
 
 cur_frm.cscript['Transfer Material'] = function() {
@@ -85,7 +85,7 @@ cur_frm.cscript['Backflush'] = function() {
 }
 
 cur_frm.cscript.make_se = function(doc, process) {
-  var se = LocalDB.create('Stock Entry');
+  var se = wn.model.make_new_doc_and_get_name('Stock Entry');
   se = locals['Stock Entry'][se];
   se.purpose = 'Production Order';
   se.process = process;
