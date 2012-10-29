@@ -30,7 +30,7 @@ class DocType(StockController):
 		self.doclist = doclist
 		self.defaults = get_defaults()
 		self.tname = 'Purchase Receipt Item'
-		self.fname = 'purchase_receipt_details'
+		self.fname = 'purchase_receipt_items'
 		self.count = 0
 
 	def autoname(self):
@@ -81,13 +81,13 @@ class DocType(StockController):
 
 	# validate if PO has been pulled twice
 	def validate_prev_docname(self):
-		for d in getlist(self.doclist, 'purchase_receipt_details'):
+		for d in getlist(self.doclist, 'purchase_reciept_items'):
 			if self.doc.purchase_order_no and d.prevdoc_docname and self.doc.purchase_order_no == d.prevdoc_docname:
 				msgprint(cstr(self.doc.purchase_order_no) + " Purchase Order details have already been pulled. ")
 				raise Exception
 
 	def validate_accepted_rejected_qty(self):
-		for d in getlist(self.doclist, "purchase_receipt_details"):
+		for d in getlist(self.doclist, "purchase_reciept_items"):
 
 			# If Reject Qty than Rejected warehouse is mandatory
 			if flt(d.rejected_qty) and (not self.doc.rejected_warehouse):
@@ -116,7 +116,7 @@ class DocType(StockController):
 	# Check for Stopped status
 	def check_for_stopped_status(self, pc_obj):
 		check_list =[]
-		for d in getlist(self.doclist, 'purchase_receipt_details'):
+		for d in getlist(self.doclist, 'purchase_reciept_items'):
 			if d.fields.has_key('prevdoc_docname') and d.prevdoc_docname and d.prevdoc_docname not in check_list:
 				check_list.append(d.prevdoc_docname)
 				pc_obj.check_for_stopped_status( d.prevdoc_doctype, d.prevdoc_docname)
@@ -125,7 +125,7 @@ class DocType(StockController):
 		"""check in manage account if purchase order required or not."""
 		res = sql("select value from `tabSingles` where doctype = 'Global Defaults' and field = 'po_required'")
 		if res and res[0][0]== 'Yes':
-			 for d in getlist(self.doclist,'purchase_receipt_details'):
+			 for d in getlist(self.doclist,'purchase_reciept_items'):
 				 if not d.prevdoc_docname:
 					 msgprint("Purchse Order No. required against item %s"%d.item_code)
 					 raise Exception
@@ -138,7 +138,7 @@ class DocType(StockController):
 		webnotes.conn.set(self.doc, 'status', 'Draft')			 # set status as "Draft"
 		self.validate_accepted_rejected_qty()
 		self.validate_inspection()						 # Validate Inspection
-		get_obj('Stock Ledger').validate_serial_no(self, 'purchase_receipt_details')
+		get_obj('Stock Ledger').validate_serial_no(self, 'purchase_reciept_items')
 		self.validate_challan_no()
 		
 		pc_obj = get_obj(dt='Purchase Common')
@@ -159,7 +159,7 @@ class DocType(StockController):
 
 	def on_update(self):
 		if self.doc.rejected_warehouse:
-			for d in getlist(self.doclist,'purchase_receipt_details'):
+			for d in getlist(self.doclist,'purchase_reciept_items'):
 				d.rejected_warehouse = self.doc.rejected_warehouse
 
 		get_obj("Purchase Common").update_subcontracting_raw_materials(self)
@@ -167,7 +167,7 @@ class DocType(StockController):
 		self.scrub_rejected_serial_nos()
 
 	def scrub_rejected_serial_nos(self):
-		for d in getlist(self.doclist, 'purchase_receipt_details'):
+		for d in getlist(self.doclist, 'purchase_reciept_items'):
 			if d.rejected_serial_no:
 				d.rejected_serial_no = d.rejected_serial_no.replace(',', '\n')
 				d.save()
@@ -176,7 +176,7 @@ class DocType(StockController):
 	def update_stock(self, is_submit):
 		pc_obj = get_obj('Purchase Common')
 		self.values = []
-		for d in getlist(self.doclist, 'purchase_receipt_details'):
+		for d in getlist(self.doclist, 'purchase_reciept_items'):
 			if webnotes.conn.get_value("Item", d.item_code, "is_stock_item") == "Yes":
 				ord_qty = 0
 				pr_qty = flt(d.qty) * flt(d.conversion_factor)
@@ -245,7 +245,7 @@ class DocType(StockController):
 
 
 	def validate_inspection(self):
-		for d in getlist(self.doclist, 'purchase_receipt_details'):		 #Enter inspection date for all items that require inspection
+		for d in getlist(self.doclist, 'purchase_reciept_items'):		 #Enter inspection date for all items that require inspection
 			ins_reqd = sql("select inspection_required from `tabItem` where name = %s", (d.item_code), as_dict = 1)
 			ins_reqd = ins_reqd and ins_reqd[0]['inspection_required'] or 'No'
 			if ins_reqd == 'Yes' and not d.qa_no:
@@ -254,7 +254,7 @@ class DocType(StockController):
 	# Check for Stopped status
 	def check_for_stopped_status(self, pc_obj):
 		check_list =[]
-		for d in getlist(self.doclist, 'purchase_receipt_details'):
+		for d in getlist(self.doclist, 'purchase_reciept_items'):
 			if d.fields.has_key('prevdoc_docname') and d.prevdoc_docname and d.prevdoc_docname not in check_list:
 				check_list.append(d.prevdoc_docname)
 				pc_obj.check_for_stopped_status( d.prevdoc_doctype, d.prevdoc_docname)
@@ -273,7 +273,7 @@ class DocType(StockController):
 		pc_obj.update_prevdoc_detail(self, is_submit = 1)
 
 		# Update Serial Record
-		get_obj('Stock Ledger').update_serial_record(self, 'purchase_receipt_details', is_submit = 1, is_incoming = 1)
+		get_obj('Stock Ledger').update_serial_record(self, 'purchase_reciept_items', is_submit = 1, is_incoming = 1)
 
 		# Update Stock
 		self.update_stock(is_submit = 1)
@@ -315,7 +315,7 @@ class DocType(StockController):
 			
 	def get_total_valuation_amount(self):
 		total_valuation_amount = 0
-		for item in getlist(self.doclist, 'purchase_receipt_details'):
+		for item in self.doclist.get({"parentfield":"purchase_receipt_items"}):
 			if webnotes.conn.get_value("Item", item.item_code, "is_stock_item")=="Yes":
 				total_valuation_amount += flt(item.valuation_rate) * \
 					flt(item.conversion_factor) * flt(item.qty)
@@ -343,7 +343,7 @@ class DocType(StockController):
 		webnotes.conn.set(self.doc,'status','Cancelled')
 
 		# 3. Cancel Serial No
-		get_obj('Stock Ledger').update_serial_record(self, 'purchase_receipt_details', is_submit = 0, is_incoming = 1)
+		get_obj('Stock Ledger').update_serial_record(self, 'purchase_reciept_items', is_submit = 0, is_incoming = 1)
 
 		# 4.Update Bin
 		self.update_stock(is_submit = 0)
