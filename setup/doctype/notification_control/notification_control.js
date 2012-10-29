@@ -21,13 +21,13 @@ cur_frm.cscript.select_transaction = function(doc, cdt, cdn) {
       doc.custom_message = r.message;
       refresh_field('custom_message');
     }
-    $c_obj(make_doclist(cdt, cdn),'get_message',doc.select_transaction, callback)
+    $c_obj(wn.model.get_doclist(cdt, cdn),'get_message',doc.select_transaction, callback)
 }
 }
 
 cur_frm.cscript.notify = function(doc, args) {
 	var doc = locals[doc.doctype][doc.name];
-	$c_obj(make_doclist(doc.doctype, doc.name), 'get_formatted_message', {
+	$c_obj(wn.model.get_doclist(doc.doctype, doc.name), 'get_formatted_message', {
 		type: args['type'],
 		doctype: args['doctype'],
 		contact_name: args['contact_name'] || doc.contact_display

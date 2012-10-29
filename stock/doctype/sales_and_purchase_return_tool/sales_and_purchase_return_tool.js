@@ -76,7 +76,7 @@ cur_frm.cscript.get_items = function(doc, cdt, cdn) {
 		flag = 1;
 	}
 	if (!flag)
-		$c_obj(make_doclist(doc.doctype, doc.name),'pull_item_details','', function(r, rt) {
+		$c_obj(wn.model.get_doclist(doc.doctype, doc.name),'pull_item_details','', function(r, rt) {
 			refresh_many(['return_details', 'cust_supp', 'cust_supp_name', 'cust_supp_address']);
 		});
 }
@@ -86,7 +86,7 @@ cur_frm.cscript.get_items = function(doc, cdt, cdn) {
 cur_frm.cscript.clear_fields = function(doc) {
 	doc.purchase_receipt_no, doc.delivery_note_no, doc.sales_invoice_no = '', '', '';
 	var cl = getchildren('Sales and Purchase Return Item', doc.name, 'return_details')
-	if(cl.length) $c_obj(make_doclist(doc.doctype, doc.name),'clear_return_table','', function(r, rt) {refresh_field('return_details')});
+	if(cl.length) $c_obj(wn.model.get_doclist(doc.doctype, doc.name),'clear_return_table','', function(r, rt) {refresh_field('return_details')});
 	refresh_many(['delivery_note_no', 'sales_invoice_no', 'purchase_receipt_no', 'return_details']);
 }
 
@@ -120,7 +120,7 @@ cur_frm.cscript.validate_returned_qty = function(cl) {
 // map parent fields of stock entry
 //----------------------------------
 cur_frm.cscript.map_parent_fields = function(doc, cdt, cdn) {
-	var se = LocalDB.create('Stock Entry');
+	var se = wn.model.make_new_doc_and_get_name('Stock Entry');
 	se = locals['Stock Entry'][se];
 	se.posting_date = dateutil.obj_to_str(new Date());
 	se.transfer_date = dateutil.obj_to_str(new Date());
@@ -148,7 +148,7 @@ cur_frm.cscript.map_parent_fields = function(doc, cdt, cdn) {
 cur_frm.cscript.map_child_fields = function(cl, se) {
 	for(var i = 0; i<cl.length; i++){
 		if (cl[i].returned_qty) {
-			var d1 = LocalDB.add_child(se, 'Stock Entry Detail', 'mtn_details');
+			var d1 = wn.model.add_child(se, 'Stock Entry Detail', 'mtn_details');
 			d1.detail_name = cl[i].detail_name;
 			d1.item_code = cl[i].item_code;
 			d1.description = cl[i].description;
@@ -167,7 +167,7 @@ cur_frm.cscript.map_child_fields = function(cl, se) {
 // Make excise voucher
 //-------------------------------
 cur_frm.cscript.make_excise_invoice = function(doc) {
-	var excise = LocalDB.create('Journal Voucher');
+	var excise = wn.model.make_new_doc_and_get_name('Journal Voucher');
 	excise = locals['Journal Voucher'][excise];
 	excise.voucher_type = 'Excise Voucher';
 	loaddoc('Journal Voucher',excise.name);
@@ -175,7 +175,7 @@ cur_frm.cscript.make_excise_invoice = function(doc) {
 // Make debit note
 //------------------------------
 cur_frm.cscript.make_debit_note = function(doc) {
-	var doclist = make_doclist(doc.doctype, doc.name);
+	var doclist = wn.model.get_doclist(doc.doctype, doc.name);
 	$c('accounts.get_new_jv_details', {
 			doclist: JSON.stringify(doclist),
 			fiscal_year: sys_defaults.fiscal_year
@@ -188,7 +188,7 @@ cur_frm.cscript.make_debit_note = function(doc) {
 // Make credit note
 //------------------------------
 cur_frm.cscript.make_credit_note = function(doc) {
-	var doclist = make_doclist(doc.doctype, doc.name);
+	var doclist = wn.model.get_doclist(doc.doctype, doc.name);
 	$c('accounts.get_new_jv_details', {
 			doclist: JSON.stringify(doclist),
 			fiscal_year: sys_defaults.fiscal_year,
@@ -203,7 +203,7 @@ cur_frm.cscript.make_credit_note = function(doc) {
 // Make JV
 //--------------------------------
 cur_frm.cscript.make_jv = function(doc, dr_or_cr, children) {
-	var jv = LocalDB.create('Journal Voucher');
+	var jv = wn.model.make_new_doc_and_get_name('Journal Voucher');
 	jv = locals['Journal Voucher'][jv];
 	
 	jv.voucher_type = dr_or_cr;
@@ -216,7 +216,7 @@ cur_frm.cscript.make_jv = function(doc, dr_or_cr, children) {
 	// Add children
 	if(children) {
 		for(var i=0; i<children.length; i++) {
-			var ch = LocalDB.add_child(jv, 'Journal Voucher Detail', 'entries');
+			var ch = wn.model.add_child(jv, 'Journal Voucher Detail', 'entries');
 			$.extend(ch, children[i]);
 			ch.balance = fmt_money(ch.balance);
 		}

@@ -16,8 +16,8 @@
 
 // Module CRM
 cur_frm.cscript.tname = "Quotation Item";
-cur_frm.cscript.fname = "quotation_items";
-cur_frm.cscript.other_fname = "taxes_and_charges";
+cur_frm.cscript.fname = "quotation_details";
+cur_frm.cscript.other_fname = "other_charges";
 cur_frm.cscript.sales_team_fname = "sales_team";
 
 // =====================================================================================
@@ -112,7 +112,7 @@ cur_frm.cscript.customer = function(doc,dt,dn) {
 		if (pl != doc.price_list_name) cur_frm.cscript.price_list_name(doc, dt, dn); 
 	}
 
-	if(doc.customer) $c_obj(make_doclist(doc.doctype, doc.name), 
+	if(doc.customer) $c_obj(wn.model.get_doclist(doc.doctype, doc.name), 
 		'get_default_customer_address', '', callback);
 	if(doc.customer) unhide_field(['customer_address','contact_person','territory', 'customer_group']);
 }
@@ -173,9 +173,9 @@ cur_frm.cscript['Make Sales Order'] = function() {
 	var doc = cur_frm.doc;
 
 	if (doc.docstatus == 1) {
-		var n = createLocal("Sales Order");
+		var n = wn.model.make_new_doc_and_get_name("Sales Order");
 		$c('dt_map', args={
-			'docs':compress_doclist([locals["Sales Order"][n]]),
+			'docs':wn.model.compress([locals["Sales Order"][n]]),
 			'from_doctype':'Quotation',
 			'to_doctype':'Sales Order',
 			'from_docname':doc.name,
@@ -199,11 +199,11 @@ cur_frm.cscript.pull_enquiry_detail = function(doc,cdt,cdn){
 			else if(doc.quotation_to == 'Customer') {
 				unhide_field(['customer','customer_address','contact_person','territory','customer_group']);
 			}
-			refresh_many(['quotation_items','quotation_to','customer','customer_address','contact_person','lead','lead_name','address_display','contact_display','contact_mobile','contact_email','territory','customer_group','order_type']);
+			refresh_many(['quotation_details','quotation_to','customer','customer_address','contact_person','lead','lead_name','address_display','contact_display','contact_mobile','contact_email','territory','customer_group','order_type']);
 		}
 	}
 
-	$c_obj(make_doclist(doc.doctype, doc.name),'pull_enq_details','',callback);
+	$c_obj(wn.model.get_doclist(doc.doctype, doc.name),'pull_enq_details','',callback);
 
 }
 
@@ -245,7 +245,7 @@ cur_frm.cscript['Declare Order Lost'] = function(){
 					qtn_lost_dialog.hide();
 				}
 			}
-			if(arg) $c_obj(make_doclist(cur_frm.doc.doctype, cur_frm.doc.name),'declare_order_lost',arg,call_back);
+			if(arg) $c_obj(wn.model.get_doclist(cur_frm.doc.doctype, cur_frm.doc.name),'declare_order_lost',arg,call_back);
 			else msgprint("Please add Quotation lost reason");
 		}
 	}
@@ -282,7 +282,7 @@ cur_frm.cscript.validate = function(doc,cdt,cdn){
 }
 
 //================ Last Quoted Price and Last Sold Price suggestion ======================
-cur_frm.fields_dict['quotation_items'].grid.get_field('item_code').get_query= function(doc, cdt, cdn) {
+cur_frm.fields_dict['quotation_details'].grid.get_field('item_code').get_query= function(doc, cdt, cdn) {
 	var d = locals[cdt][cdn];
 	var cond = (doc.order_type == 'Maintenance') ? " and item.is_service_item = 'Yes'" : " and item.is_sales_item = 'Yes'";
 	if(doc.customer) {

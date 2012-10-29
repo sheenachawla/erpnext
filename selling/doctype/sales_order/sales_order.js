@@ -110,7 +110,7 @@ cur_frm.cscript.customer = function(doc,dt,dn) {
 		get_server_fields('get_shipping_address',doc.customer,'',doc, dt, dn, 0, callback2);
 			
 	}	 
-	if(doc.customer) $c_obj(make_doclist(doc.doctype, doc.name), 'get_default_customer_address', '', callback);
+	if(doc.customer) $c_obj(wn.model.get_doclist(doc.doctype, doc.name), 'get_default_customer_address', '', callback);
 }
 
 cur_frm.cscript.customer_address = cur_frm.cscript.contact_person = function(doc,dt,dn) {		
@@ -148,13 +148,13 @@ cur_frm.cscript.pull_quotation_items = function(doc,dt,dn) {
 		}
 	} 
 
- $c_obj(make_doclist(doc.doctype, doc.name),'pull_quotation_items','',callback);
+ $c_obj(wn.model.get_doclist(doc.doctype, doc.name),'pull_quotation_items','',callback);
 }
 
 
 //================ create new contact ============================================================================
 cur_frm.cscript.new_contact = function(){
-	tn = createLocal('Contact');
+	tn = wn.model.make_new_doc_and_get_name('Contact');
 	locals['Contact'][tn].is_customer = 1;
 	if(doc.customer) locals['Contact'][tn].customer = doc.customer;
 	loaddoc('Contact', tn);
@@ -173,7 +173,7 @@ cur_frm.fields_dict['project_name'].get_query = function(doc, cdt, cdn) {
 
 //---- get customer details ----------------------------
 cur_frm.cscript.project_name = function(doc,cdt,cdn){
-	$c_obj(make_doclist(doc.doctype, doc.name),'pull_project_customer','', function(r,rt){
+	$c_obj(wn.model.get_doclist(doc.doctype, doc.name),'pull_project_customer','', function(r,rt){
 		refresh_many(['customer','customer_name', 'customer_address', 'contact_person', 'territory', 'contact_no', 'email_id', 'customer_group']);
 	});
 	
@@ -208,12 +208,12 @@ cur_frm.cscript['Make Maintenance Schedule'] = function() {
 	var doc = cur_frm.doc;
 
 	if (doc.docstatus == 1) { 
-		$c_obj(make_doclist(doc.doctype, doc.name),'check_maintenance_schedule','',
+		$c_obj(wn.model.get_doclist(doc.doctype, doc.name),'check_maintenance_schedule','',
 			function(r,rt){
 				if(r.message == 'No'){
-					n = createLocal("Maintenance Schedule");
+					n = wn.model.make_new_doc_and_get_name("Maintenance Schedule");
 					$c('dt_map', args={
-									'docs':compress_doclist([locals["Maintenance Schedule"][n]]),
+									'docs':wn.model.compress([locals["Maintenance Schedule"][n]]),
 									'from_doctype':'Sales Order',
 									'to_doctype':'Maintenance Schedule',
 									'from_docname':doc.name,
@@ -237,12 +237,12 @@ cur_frm.cscript.make_maintenance_visit = function() {
 	var doc = cur_frm.doc;
 
 	if (doc.docstatus == 1) { 
-		$c_obj(make_doclist(doc.doctype, doc.name),'check_maintenance_visit','',
+		$c_obj(wn.model.get_doclist(doc.doctype, doc.name),'check_maintenance_visit','',
 			function(r,rt){
 				if(r.message == 'No'){
-					n = createLocal("Maintenance Visit");
+					n = wn.model.make_new_doc_and_get_name("Maintenance Visit");
 					$c('dt_map', args={
-									'docs':compress_doclist([locals["Maintenance Visit"][n]]),
+									'docs':wn.model.compress([locals["Maintenance Visit"][n]]),
 									'from_doctype':'Sales Order',
 									'to_doctype':'Maintenance Visit',
 									'from_docname':doc.name,
@@ -266,9 +266,9 @@ cur_frm.cscript.make_maintenance_visit = function() {
 cur_frm.cscript['Make Purchase Request'] = function() {
 	var doc = cur_frm.doc;
 	if (doc.docstatus == 1) { 
-	n = createLocal("Purchase Request");
+	n = wn.model.make_new_doc_and_get_name("Purchase Request");
 	$c('dt_map', args={
-					'docs':compress_doclist([locals["Purchase Request"][n]]),
+					'docs':wn.model.compress([locals["Purchase Request"][n]]),
 					'from_doctype':'Sales Order',
 					'to_doctype':'Purchase Request',
 					'from_docname':doc.name,
@@ -287,9 +287,9 @@ cur_frm.cscript['Make Purchase Request'] = function() {
 cur_frm.cscript['Make Delivery Note'] = function() {
 	var doc = cur_frm.doc;
 	if (doc.docstatus == 1) { 
-	n = createLocal("Delivery Note");
+	n = wn.model.make_new_doc_and_get_name("Delivery Note");
 	$c('dt_map', args={
-					'docs':compress_doclist([locals["Delivery Note"][n]]),
+					'docs':wn.model.compress([locals["Delivery Note"][n]]),
 					'from_doctype':'Sales Order',
 					'to_doctype':'Delivery Note',
 					'from_docname':doc.name,
@@ -308,9 +308,9 @@ cur_frm.cscript['Make Delivery Note'] = function() {
 cur_frm.cscript['Make Sales Invoice'] = function() {
 	var doc = cur_frm.doc;
 
-	n = createLocal('Sales Invoice');
+	n = wn.model.make_new_doc_and_get_name('Sales Invoice');
 	$c('dt_map', args={
-		'docs':compress_doclist([locals['Sales Invoice'][n]]),
+		'docs':wn.model.compress([locals['Sales Invoice'][n]]),
 		'from_doctype':doc.doctype,
 		'to_doctype':'Sales Invoice',
 		'from_docname':doc.name,
@@ -330,7 +330,7 @@ cur_frm.cscript['Stop Sales Order'] = function() {
 	var check = confirm("Are you sure you want to STOP " + doc.name);
 
 	if (check) {
-		$c('runserverobj', args={'method':'stop_sales_order', 'docs': compress_doclist(make_doclist(doc.doctype, doc.name))}, function(r,rt) {
+		$c('runserverobj', args={'method':'stop_sales_order', 'docs': wn.model.compress(wn.model.get_doclist(doc.doctype, doc.name))}, function(r,rt) {
 			cur_frm.refresh();
 		});
 	}
@@ -344,7 +344,7 @@ cur_frm.cscript['Unstop Sales Order'] = function() {
 	var check = confirm("Are you sure you want to UNSTOP " + doc.name);
 
 	if (check) {
-		$c('runserverobj', args={'method':'unstop_sales_order', 'docs': compress_doclist(make_doclist(doc.doctype, doc.name))}, function(r,rt) {
+		$c('runserverobj', args={'method':'unstop_sales_order', 'docs': wn.model.compress(wn.model.get_doclist(doc.doctype, doc.name))}, function(r,rt) {
 			cur_frm.refresh();
 		});
 	}

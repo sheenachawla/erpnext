@@ -31,7 +31,7 @@ cur_frm.cscript.customer = function(doc,dt,dn) {
       cur_frm.refresh();
   }   
 
-  if(doc.customer) $c_obj(make_doclist(doc.doctype, doc.name), 'get_default_customer_address', '', callback);
+  if(doc.customer) $c_obj(wn.model.get_doclist(doc.doctype, doc.name), 'get_default_customer_address', '', callback);
   if(doc.customer) unhide_field(['customer_address','contact_person','customer_name','address_display','contact_display','contact_mobile','contact_email','territory','customer_group']);
 }
 
@@ -116,7 +116,7 @@ cur_frm.cscript.periodicity = function(doc, cdt, cdn){
 
 cur_frm.cscript.generate_schedule = function(doc, cdt, cdn) {
   if (!doc.__islocal) {
-    $c('runserverobj', args={'method':'generate_schedule', 'docs':compress_doclist(make_doclist(cdt,cdn))},
+    $c('runserverobj', args={'method':'generate_schedule', 'docs':wn.model.compress(wn.model.get_doclist(cdt,cdn))},
       function(r,rt){
         refresh_field('maintenance_schedule_detail');
       }

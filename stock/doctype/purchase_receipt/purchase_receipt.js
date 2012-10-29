@@ -107,14 +107,14 @@ cur_frm.cscript.pull_purchase_order_details = function(doc, dt, dn) {
 		//unhide_field(['supplier_address','contact_person','supplier_name','address_display', 'contact_display', 'contact_mobile','contact_email']);				
 		refresh_many(['supplier','supplier_address','contact_person', 'supplier_name', 'address_display', 'contact_display','contact_mobile', 'contact_email', 'purchase_receipt_details', 'taxes_and_charges']);
 	}
-	$c_obj(make_doclist(dt,dn),'get_purchase_order_items','',callback);
+	$c_obj(wn.model.get_doclist(dt,dn),'get_purchase_order_items','',callback);
 }
 
 
 
 //================ create new contact ============================================================================
 cur_frm.cscript.new_contact = function(){
-	tn = createLocal('Contact');
+	tn = wn.model.make_new_doc_and_get_name('Contact');
 	locals['Contact'][tn].is_supplier = 1;
 	if(doc.supplier) locals['Contact'][tn].supplier = doc.supplier;
 	loaddoc('Contact', tn);
@@ -252,9 +252,9 @@ cur_frm.fields_dict.purchase_receipt_details.grid.get_field("qa_no").get_query =
 
 // ================================ Make Purchase Invoice ==========================================
 cur_frm.cscript['Make Purchase Invoice'] = function() {
-	n = createLocal('Purchase Invoice');
+	n = wn.model.make_new_doc_and_get_name('Purchase Invoice');
 	$c('dt_map', args={
-		'docs':compress_doclist([locals['Purchase Invoice'][n]]),
+		'docs':wn.model.compress([locals['Purchase Invoice'][n]]),
 		'from_doctype': cur_frm.doc.doctype,
 		'to_doctype':'Purchase Invoice',
 		'from_docname': cur_frm.doc.name,

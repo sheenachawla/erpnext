@@ -36,5 +36,5 @@ cur_frm.cscript.refresh = function(doc) {
 }
 
 cur_frm.cscript.download_template = function(doc, cdt, cdn) {
-	$c_obj_csv(make_doclist(cdt, cdn), 'get_template', '');
+	$c_obj_csv(wn.model.get_doclist(cdt, cdn), 'get_template', '');
 }

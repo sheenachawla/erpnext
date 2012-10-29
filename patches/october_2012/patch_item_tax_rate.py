@@ -13,7 +13,6 @@ def execute():
 			try:
 				json.loads(d["item_tax_rate"])
 			except ValueError, e:
-				print "error", d["name"]
 				webnotes.conn.sql("""update `tab%s` set item_tax_rate=%s
 					where name=%s""" % (dt, "%s", "%s"),
 					(json.dumps(eval(d["item_tax_rate"])), d["name"]))

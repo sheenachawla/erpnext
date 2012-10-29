@@ -40,7 +40,7 @@ cur_frm.cscript.select_doc_for_series = function(doc, cdt, cdn) {
 	}
 
 	if(doc.select_doc_for_series)
-		$c_obj(make_doclist(doc.doctype, doc.name),'get_options','',callback)
+		$c_obj(wn.model.get_doclist(doc.doctype, doc.name),'get_options','',callback)
 }
 
 cur_frm.cscript.update = function() {

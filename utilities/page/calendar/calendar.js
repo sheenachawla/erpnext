@@ -151,7 +151,7 @@ Calendar.prototype.show_event = function(ev, cal_ev) {
 
 Calendar.prototype.save_event = function(doc) {
 	var me = this;
-	save_doclist('Event', doc.name, 'Save', function(r) { 
+	new wn.model.DocList('Event', doc.name).save(function(r) { 
 		var doc = locals['Event'][r.docname];
 		var cal = erpnext.calendar;
 		cal.cur_view.refresh();
@@ -167,7 +167,7 @@ Calendar.prototype.save_event = function(doc) {
 
 Calendar.prototype.add_event = function() {
 		
-	var ev = LocalDB.create('Event');
+	var ev = wn.model.make_new_doc_and_get_name('Event');
 	ev = locals['Event'][ev];
 	
 	ev.event_date = dateutil.obj_to_str(this.selected_date);

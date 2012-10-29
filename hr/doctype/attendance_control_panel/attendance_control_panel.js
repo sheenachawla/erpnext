@@ -33,7 +33,7 @@ cur_frm.cscript.get_template = function(doc,cdt,cdn){
   else if(doc.att_to_date && doc.att_fr_date && doc.att_to_date < doc.att_fr_date)
     alert("Attendance to date cannot be less than from date.");
   else
-    $c_obj_csv(make_doclist(cdt,cdn),'get_att_list','');
+    $c_obj_csv(wn.model.get_doclist(cdt,cdn),'get_att_list','');
 }
 
 //---------------------------------------------------------
@@ -50,7 +50,7 @@ cur_frm.cscript.import = function(doc,cdt,cdn){
       cur_frm.cscript.refresh(doc,cdt,cdn);
     }
 
-    $c_obj(make_doclist(cdt,cdn),'import_att_data','',call_back);
+    $c_obj(wn.model.get_doclist(cdt,cdn),'import_att_data','',call_back);
   }
   cur_frm.cscript.refresh(doc,cdt,cdn);
 }

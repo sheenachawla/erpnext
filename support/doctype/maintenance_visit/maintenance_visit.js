@@ -37,7 +37,7 @@ cur_frm.cscript.customer = function(doc,dt,dn) {
       cur_frm.refresh();
   }   
 
-  if(doc.customer) $c_obj(make_doclist(doc.doctype, doc.name), 'get_default_customer_address', '', callback);
+  if(doc.customer) $c_obj(wn.model.get_doclist(doc.doctype, doc.name), 'get_default_customer_address', '', callback);
   hide_contact_info(doc);
 }
 

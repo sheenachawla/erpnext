@@ -15,7 +15,7 @@
 // along with this program.	If not, see <http://www.gnu.org/licenses/>.
 
 cur_frm.cscript.onload = function(doc,cdt,cdn){
-	$c_obj(make_doclist(cdt,cdn),'get_series','',function(r,rt){
+	$c_obj(wn.model.get_doclist(cdt,cdn),'get_series','',function(r,rt){
 		if(r.message) set_field_options('naming_series', r.message);
 	});
  
