@@ -59,7 +59,7 @@ def set_accounts():
 	stock_delivered_but_not_billed = dn_amount - si_amount
 	
 	gl_entries = []
-	from controllers.accounts import *
+	from controllers.accounts_controller import *
 	stock_in_hand = get_stock_in_hand_account()
 	
 	gl_entries.append(

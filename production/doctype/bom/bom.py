@@ -127,7 +127,7 @@ class DocType:
 			as per valuation method (MAR/FIFO) 
 			as on costing date	
 		"""
-		from controllers.stock import StockControllers
+		from controllers.stock_controller import StockControllers
 		dt = self.doc.costing_date or nowdate()
 		time = self.doc.costing_date == nowdate() and now().split()[1] or '23:59'
 		warehouse = sql("select warehouse from `tabBin` where item_code = %s", arg['item_code'])

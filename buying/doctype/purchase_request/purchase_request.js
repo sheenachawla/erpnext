@@ -42,8 +42,8 @@ erpnext.buying.PurchaseRequest = erpnext.Buying.extend({
 		if(flt(child.qty) < flt(child.min_order_qty)) {
 			msgprint(repl("Warning: \
 				Requested Quantity is less than Minimum Order Quantity \
-				for Item: %(item_code)s at row # %(row_idx)s", 
-				{ item_code: child.item_code, row_idx: child.idx + 1 }));
+				for Item: %(item_code)s at row # %(idx)s", 
+				{ item_code: child.item_code, idx: child.idx }));
 		}
 	},
 	get_item_defaults: function() {

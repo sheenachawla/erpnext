@@ -25,7 +25,7 @@ from pprint import pprint
 
 sql = webnotes.conn.sql
 	
-from controllers.accounts import AccountsController
+from controllers.accounts_controller import AccountsController
 
 class DocType(AccountsController):
 	def __init__(self,d,dl):

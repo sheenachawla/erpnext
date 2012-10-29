@@ -184,18 +184,18 @@ cur_frm.cscript.update_stock_qty = function(doc,cdt,cdn){
 }
 
 //==================== UOM ======================================================================
-cur_frm.cscript.uom = function(doc, cdt, cdn) {
-	var d = locals[cdt][cdn];
-	if (d.item_code && d.uom) {
-		call_back = function(doc, cdt, cdn){
-			cur_frm.cscript.calc_amount(doc, 2);
-		}
-		str_arg = {'item_code':d.item_code, 'uom':d.uom, 'stock_qty':flt(d.stock_qty), 'qty': flt(d.qty), 'exchange_rate':doc.exchange_rate, 'doc_name': doc.name}
-		// Updates Conversion Factor, Qty and Purchase Rate
-		get_server_fields('get_uom_details',JSON.stringify(str_arg), fname, doc,cdt,cdn,1, call_back);
-		// don't make mistake of calling update_stock_qty() the get_uom_details returns stock_qty as per conversion factor properly
-	}
-}
+// cur_frm.cscript.uom = function(doc, cdt, cdn) {
+// 	var d = locals[cdt][cdn];
+// 	if (d.item_code && d.uom) {
+// 		call_back = function(doc, cdt, cdn){
+// 			cur_frm.cscript.calc_amount(doc, 2);
+// 		}
+// 		str_arg = {'item_code':d.item_code, 'uom':d.uom, 'stock_qty':flt(d.stock_qty), 'qty': flt(d.qty), 'exchange_rate':doc.exchange_rate, 'doc_name': doc.name}
+// 		// Updates Conversion Factor, Qty and Purchase Rate
+// 		get_server_fields('get_uom_details',JSON.stringify(str_arg), fname, doc,cdt,cdn,1, call_back);
+// 		// don't make mistake of calling update_stock_qty() the get_uom_details returns stock_qty as per conversion factor properly
+// 	}
+// }
 
 
 //==================== Conversion factor =========================================================
@@ -213,13 +213,13 @@ cur_frm.cscript.stock_qty = function(doc, cdt, cdn) {
 }
 
 //==================== Warehouse ================================================================
-cur_frm.cscript.warehouse = function(doc, cdt, cdn) {
-	var d = locals[cdt][cdn];
-	if (d.item_code && d.warehouse) {
-		str_arg = "{'item_code':'" +	(d.item_code?d.item_code:'') + "', 'warehouse':'" + (d.warehouse?d.warehouse:'') + "'}"
-		get_server_fields('get_bin_details', str_arg, fname, doc, cdt, cdn, 1);
-	}	
-}
+// cur_frm.cscript.warehouse = function(doc, cdt, cdn) {
+// 	var d = locals[cdt][cdn];
+// 	if (d.item_code && d.warehouse) {
+// 		str_arg = "{'item_code':'" +	(d.item_code?d.item_code:'') + "', 'warehouse':'" + (d.warehouse?d.warehouse:'') + "'}"
+// 		get_server_fields('get_bin_details', str_arg, fname, doc, cdt, cdn, 1);
+// 	}	
+// }
 
 //=================== Quantity ===================================================================
 cur_frm.cscript.qty = function(doc, cdt, cdn) {

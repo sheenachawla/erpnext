@@ -97,9 +97,9 @@ class DocType(TransactionBase):
 	
 	# Get TERMS AND CONDITIONS
 	# =======================================================================================
-	def get_tc_details(self,obj):
-		r = sql("select terms from `tabTerms and Conditions` where name = %s", obj.doc.tc_name)
-		if r: obj.doc.terms = r[0][0]
+	# def get_tc_details(self,obj):
+	# 	r = sql("select terms from `tabTerms and Conditions` where name = %s", obj.doc.tc_name)
+	# 	if r: obj.doc.terms = r[0][0]
 
 	# Get Item Details
 	def get_item_details(self, obj, arg =''):
@@ -177,11 +177,11 @@ class DocType(TransactionBase):
 		return ret
 
 	# Get Available Qty at Warehouse
-	def get_bin_details( self, arg = ''):
-		arg = eval(arg)
-		bin = sql("select projected_qty from `tabBin` where item_code = %s and warehouse = %s", (arg['item_code'], arg['warehouse']), as_dict=1)
-		ret = { 'projected_qty' : bin and flt(bin[0]['projected_qty']) or 0 }
-		return ret
+	# def get_bin_details( self, arg = ''):
+	# 	arg = eval(arg)
+	# 	bin = sql("select projected_qty from `tabBin` where item_code = %s and warehouse = %s", (arg['item_code'], arg['warehouse']), as_dict=1)
+	# 	ret = { 'projected_qty' : bin and flt(bin[0]['projected_qty']) or 0 }
+	# 	return ret
 
 	def get_conversion_factor(self, item_code, uom):
 		return 
@@ -267,57 +267,57 @@ class DocType(TransactionBase):
 						d.ref_rate = d.rate = d.print_ref_rate \
 							= d.print_rate = item_last_purchase_rate
 			
-	def get_last_purchase_details(self, item_code, doc_name):
-		import webnotes
-		import webnotes.utils
-
-		# get last purchase order item details
-		last_po_item = webnotes.conn.sql("""\
-			select po.name, po.posting_date, po_item.conversion_factor, po_item.ref_rate, 
-				po_item.discount, po_item.rate
-			from `tabPurchase Order` po, `tabPurchase Order Item` po_item
-			where po.docstatus = 1 and po_item.item_code = %s and po.name != %s and 
-				po.name = po_item.parent
-			order by po.posting_date desc, po.name desc
-			limit 1""", (item_code, doc_name), as_dict=1)
-		
-		# get last purchase receipt item details		
-		last_pr_item = webnotes.conn.sql("""\
-			select pr.name, pr.posting_date, pr.posting_time, pr_item.conversion_factor,
-				pr_item.ref_rate, pr_item.discount, pr_item.rate
-			from `tabPurchase Receipt` pr, `tabPurchase Receipt Item` pr_item
-			where pr.docstatus = 1 and pr_item.item_code = %s and pr.name != %s and
-				pr.name = pr_item.parent
-			order by pr.posting_date desc, pr.posting_time desc, pr.name desc
-			limit 1""", (item_code, doc_name), as_dict=1)
-
-		# get the latest of the two
-		po_date_obj = webnotes.utils.getdate(last_po_item and last_po_item[0]['posting_date'] or '2000-01-01')
-		pr_date_obj = webnotes.utils.getdate(last_pr_item and last_pr_item[0]['posting_date'] or '2000-01-01')
-		
-		# if both exists, return true
-		both_exists = last_po_item and last_pr_item
-		
-		# get the last purchased item, by comparing dates		
-		if (both_exists and po_date_obj > pr_date_obj) or (not both_exists and last_po_item):
-			last_purchase_item = last_po_item[0]
-			last_purchase_date = po_date_obj
-		elif both_exists or (not both_exists and last_pr_item):
-			last_purchase_item = last_pr_item[0]
-			last_purchase_date = pr_date_obj
-		else:
-			# if none exists
-			return None, webnotes.utils.getdate('2000-01-01')
-			
-		# prepare last purchase details, dividing by conversion factor
-		conversion_factor = flt(last_purchase_item['conversion_factor'])
-		last_purchase_details = {
-			'ref_rate': flt(last_purchase_item['ref_rate']) / conversion_factor,
-			'rate': flt(last_purchase_item['rate']) / conversion_factor,
-			'discount': flt(last_purchase_item['discount']),
-		}
-		
-		return last_purchase_details, last_purchase_date	
+	# def get_last_purchase_details(self, item_code, doc_name):
+	# 	import webnotes
+	# 	import webnotes.utils
+	# 
+	# 	# get last purchase order item details
+	# 	last_po_item = webnotes.conn.sql("""\
+	# 		select po.name, po.posting_date, po_item.conversion_factor, po_item.ref_rate, 
+	# 			po_item.discount, po_item.rate
+	# 		from `tabPurchase Order` po, `tabPurchase Order Item` po_item
+	# 		where po.docstatus = 1 and po_item.item_code = %s and po.name != %s and 
+	# 			po.name = po_item.parent
+	# 		order by po.posting_date desc, po.name desc
+	# 		limit 1""", (item_code, doc_name), as_dict=1)
+	# 	
+	# 	# get last purchase receipt item details		
+	# 	last_pr_item = webnotes.conn.sql("""\
+	# 		select pr.name, pr.posting_date, pr.posting_time, pr_item.conversion_factor,
+	# 			pr_item.ref_rate, pr_item.discount, pr_item.rate
+	# 		from `tabPurchase Receipt` pr, `tabPurchase Receipt Item` pr_item
+	# 		where pr.docstatus = 1 and pr_item.item_code = %s and pr.name != %s and
+	# 			pr.name = pr_item.parent
+	# 		order by pr.posting_date desc, pr.posting_time desc, pr.name desc
+	# 		limit 1""", (item_code, doc_name), as_dict=1)
+	# 
+	# 	# get the latest of the two
+	# 	po_date_obj = webnotes.utils.getdate(last_po_item and last_po_item[0]['posting_date'] or '2000-01-01')
+	# 	pr_date_obj = webnotes.utils.getdate(last_pr_item and last_pr_item[0]['posting_date'] or '2000-01-01')
+	# 	
+	# 	# if both exists, return true
+	# 	both_exists = last_po_item and last_pr_item
+	# 	
+	# 	# get the last purchased item, by comparing dates		
+	# 	if (both_exists and po_date_obj > pr_date_obj) or (not both_exists and last_po_item):
+	# 		last_purchase_item = last_po_item[0]
+	# 		last_purchase_date = po_date_obj
+	# 	elif both_exists or (not both_exists and last_pr_item):
+	# 		last_purchase_item = last_pr_item[0]
+	# 		last_purchase_date = pr_date_obj
+	# 	else:
+	# 		# if none exists
+	# 		return None, webnotes.utils.getdate('2000-01-01')
+	# 		
+	# 	# prepare last purchase details, dividing by conversion factor
+	# 	conversion_factor = flt(last_purchase_item['conversion_factor'])
+	# 	last_purchase_details = {
+	# 		'ref_rate': flt(last_purchase_item['ref_rate']) / conversion_factor,
+	# 		'rate': flt(last_purchase_item['rate']) / conversion_factor,
+	# 		'discount': flt(last_purchase_item['discount']),
+	# 	}
+	# 	
+	# 	return last_purchase_details, last_purchase_date	
 
 	# validation
 	# -------------------------------------------------------------------------------------------------------
@@ -617,13 +617,13 @@ class DocType(TransactionBase):
 			sql("update `tab%s` set %s = '%s', modified = '%s' where name = '%s'" % (self.ref_doctype_dict[ref_dn][0], self.update_percent_field[self.ref_doctype_dict[ref_dn][2]], percent_complete, obj.doc.modified, ref_dn))
 			
 			
-	def validate_fiscal_year(self, fiscal_year, posting_date, dn):
-		fy=sql("select year_start_date from `tabFiscal Year` where name='%s'"%fiscal_year)
-		ysd=fy and fy[0][0] or ""
-		yed=add_days(str(ysd),365)		
-		if str(posting_date) < str(ysd) or str(posting_date) > str(yed):
-			msgprint("'%s' Not Within The Fiscal Year"%(dn))
-			raise Exception			
+	# def validate_fiscal_year(self, fiscal_year, posting_date, dn):
+	# 	fy=sql("select year_start_date from `tabFiscal Year` where name='%s'"%fiscal_year)
+	# 	ysd=fy and fy[0][0] or ""
+	# 	yed=add_days(str(ysd),365)		
+	# 	if str(posting_date) < str(ysd) or str(posting_date) > str(yed):
+	# 		msgprint("'%s' Not Within The Fiscal Year"%(dn))
+	# 		raise Exception			
 
 	def load_default_taxes(self, obj):
 		return self.get_purchase_tax_details(obj, 1)

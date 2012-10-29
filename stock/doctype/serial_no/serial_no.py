@@ -23,7 +23,7 @@ import datetime
 sql = webnotes.conn.sql
 msgprint = webnotes.msgprint
 	
-from controllers.stock import StockControllers
+from controllers.stock_controller import StockControllers
 
 class DocType(StockControllers):
 	def __init__(self, doc, doclist=[]):

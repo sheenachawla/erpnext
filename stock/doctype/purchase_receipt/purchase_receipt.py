@@ -22,7 +22,7 @@ from webnotes.model.utils import getlist
 from webnotes.model.code import get_obj
 from webnotes import msgprint
 sql = webnotes.conn.sql
-from controllers.stock import StockController
+from controllers.stock_controller import StockController
 
 class DocType(StockController):
 	def __init__(self, doc, doclist=[]):
