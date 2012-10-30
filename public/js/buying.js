@@ -25,7 +25,7 @@ erpnext.Buying = erpnext.Transaction.extend({
 			wn.call({
 				method: "runserverobj",
 				args: {
-					docs: compress_doclist(make_doclist(me.frm.doc.doctype,
+					docs: wn.model.compress(wn.model.get_doclist(me.frm.doc.doctype,
 						me.frm.doc.name)),
 					method: "get_item_details",
 					args: {
@@ -65,7 +65,7 @@ erpnext.Buying = erpnext.Transaction.extend({
 			wn.call({
 				method: "runserverobj",
 				args: {
-					docs: compress_doclist(make_doclist(me.frm.doc.doctype,
+					docs: wn.model.compress(wn.model.get_doclist(me.frm.doc.doctype,
 						me.frm.doc.name)),
 					method: "get_uom_details",
 					args: {
@@ -99,7 +99,7 @@ erpnext.Buying = erpnext.Transaction.extend({
 		// if children, then set schedule date based on lead time days
 		if(wn.model.has_children(this.frm.doc.doctype, this.frm.doc.name,
 				item_table_field)) {
-			$c_obj(make_doclist(this.frm.doc.doctype, this.frm.doc.name),
+			$c_obj(wn.model.get_doclist(this.frm.doc.doctype, this.frm.doc.name),
 				"set_schedule_date", { item_table_field: item_table_field }, function(r) {
 					refresh_field(item_table_field);
 				});

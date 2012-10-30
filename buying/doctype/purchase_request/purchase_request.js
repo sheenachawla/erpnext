@@ -88,11 +88,11 @@ erpnext.buying.PurchaseRequest = erpnext.Buying.extend({
 	},
 	stop_purchase_request: function() {
 		this.frm.doc.is_stopped = 1;
-		this.frm.saveupdate();
+		this.frm.save();
 	},
 	resume_purchase_request: function() {
 		this.frm.doc.is_stopped = 0;
-		this.frm.saveupdate();
+		this.frm.save();
 	},
 	send_sms: function(me) {
 		// TODO

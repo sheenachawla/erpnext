@@ -467,4 +467,8 @@ patch_list = [
 		'patch_module': 'patches.october_2012',
 		'patch_file': 'import_desktop_items',
 	},
+	{
+		'patch_module': 'patches.october_2012',
+		'patch_file': 'purchase_sales_field_rename',
+	}
 ]
