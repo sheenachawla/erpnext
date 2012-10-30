@@ -65,8 +65,6 @@ class BuyingController(TransactionController):
 			# validations for stock item
 			self.validate_stock_item(item_controller.doc, item)
 			
-			# TODO validate with prevdoc
-			
 			# separate out stock and non-stop items for duplicate checking
 			if item_controller.doc.is_stock_item == "Yes":
 				stock_items.append(item_controller.doc.name)
@@ -74,6 +72,9 @@ class BuyingController(TransactionController):
 				non_stock_items.append(item_controller.doc.name)
 		
 		self.check_duplicate(item_doclist, stock_items, non_stock_items)
+		
+		# to be overridden in each controller
+		self.validate_prevdoclist()
 			
 	def validate_stock_item(self, item, child):
 		stock.validate_end_of_life(item.name, item.end_of_life)

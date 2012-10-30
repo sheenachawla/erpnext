@@ -19,7 +19,6 @@ import webnotes
 from webnotes import _, msgprint
 from webnotes.utils import cint, flt
 from webnotes.model.code import get_obj
-import webnotes.model.doctype
 
 from controllers.buying_controller import BuyingController
 
@@ -115,7 +114,7 @@ class DocType(BuyingController):
 	def validate_schedule_date(self):
 		for item in self.doclist.get({"parentfield": "purchase_request_items"}):
 			if item.schedule_date < self.doc.posting_date:
-				doctypelist = webnotes.model.doctype.get(self.doc.doctype)
+				doctypelist = webnotes.get_doctype(self.doc.doctype)
 				msgprint(_("""Row # %(idx)s [Item: %(item_code)s]: 
 					%(schedule_date)s cannot be before %(posting_date)s""") % {
 					"idx": item.idx,
@@ -146,8 +145,8 @@ class DocType(BuyingController):
 			sales_order_items = _get_sales_order_items(sales_order)
 			
 			for item_code, qty in item_qty_map.items():
-				qty_already_requested = webnotes.conn.sql("""select sum(ifnull(qty, 0)),
-					uom from `tabPurchase Request Item` where sales_order=%s and 
+				qty_already_requested = webnotes.conn.sql("""select sum(ifnull(qty, 0))
+					from `tabPurchase Request Item` where sales_order=%s and 
 					item_code=%s and docstatus=1 and parent!=%s""", 
 					(sales_order, item_code, self.doc.name))
 				qty_already_requested = qty_already_requested and \
@@ -158,7 +157,7 @@ class DocType(BuyingController):
 				if (qty + qty_already_requested) > sales_order_item_qty:
 					item = self.doclist.getone({"parentfield": "purchase_request_items",
 						"item_code": item_code, "sales_order": sales_order})
-					from webnotes.model import doctype
+					
 					msgprint(_("""Row # %(idx)s, Item %(item_code)s: \
 						%(qty_label)s cannot be greater than %(diff)s, \
 						against Sales Order: \
@@ -168,11 +167,15 @@ class DocType(BuyingController):
 						You can create an additional row to request more.""") % {
 							"idx": item.idx,
 							"item_code": item.item_code,
-							"qty_label": doctype.get("Purchase Request")\
-								.get_label("qty", parentfield="purchase_request_items"),
+							"qty_label": webnotes.get_label("Purchase Request", "qty",
+								parentfield="purchase_request_items"),
 							"diff": sales_order_item_qty - qty_already_requested,
 							"sales_order": sales_order,
 							"qty_already_requested": qty_already_requested,
 							"uom": item.uom,
 						}, raise_exception=1)
+						
+	def validate_prevdoclist(self):
+		from webnotes.model.mapper import validate_prev_doclist
+		validate_prev_doclist("Sales Order", "Purchase Request", self.doclist)
 

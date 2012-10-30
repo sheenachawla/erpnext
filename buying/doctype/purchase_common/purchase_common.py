@@ -323,11 +323,11 @@ class DocType(TransactionBase):
 	# -------------------------------------------------------------------------------------------------------
 	
 	# validate fields
-	def validate_mandatory(self, obj):
-		# check amendment date
-		if obj.doc.amended_from and not obj.doc.amendment_date:
-			msgprint("Please enter amendment date")
-			raise Exception
+	# def validate_mandatory(self, obj):
+	# 	# check amendment date
+	# 	if obj.doc.amended_from and not obj.doc.amendment_date:
+	# 		msgprint("Please enter amendment date")
+	# 		raise Exception
 
 	# validate for same items and	validate is_stock_item , is_purchase_item also validate uom and conversion factor
 	def validate_for_items(self, obj):
@@ -484,29 +484,29 @@ class DocType(TransactionBase):
 
 
 	# Check for Stopped status 
-	def check_for_stopped_status(self, doctype, docname):
-		stopped = sql("select name from `tab%s` where name = '%s' and status = 'Stopped'" % ( doctype, docname))
-		if stopped:
-			msgprint("One cannot do any transaction against %s : %s, it's status is 'Stopped'" % ( doctype, docname))
-			raise Exception
+	# def check_for_stopped_status(self, doctype, docname):
+	# 	stopped = sql("select name from `tab%s` where name = '%s' and status = 'Stopped'" % ( doctype, docname))
+	# 	if stopped:
+	# 		msgprint("One cannot do any transaction against %s : %s, it's status is 'Stopped'" % ( doctype, docname))
+	# 		raise Exception
 			
 	# Check Docstatus of Next DocType on Cancel AND of Previous DocType on Submit
-	def check_docstatus(self, check, doctype, docname , detail_doctype = ''):
-		
-		if check == 'Next':
-			# Convention := doctype => Next Doctype, docname = current_docname , detail_doctype = Next Doctype Detail Table
-
-			submitted = sql("select t1.name from `tab%s` t1,`tab%s` t2 where t1.name = t2.parent and t2.prevdoc_docname = '%s' and t1.docstatus = 1" % ( doctype, detail_doctype, docname))
-			if submitted:
-				msgprint(cstr(doctype) + " : " + cstr(submitted[0][0]) + " has already been submitted !")
-				raise Exception
-
-		if check == 'Previous':
-			# Convention := doctype => Previous Doctype, docname = Previous Docname 
-			submitted = sql("select name from `tab%s` where docstatus = 1 and name = '%s'" % (doctype, docname))
-			if not submitted:
-				msgprint(cstr(doctype) + " : " + cstr(submitted[0][0]) + " not submitted !")
-				raise Exception
+	# def check_docstatus(self, check, doctype, docname , detail_doctype = ''):
+	# 	
+	# 	if check == 'Next':
+	# 		# Convention := doctype => Next Doctype, docname = current_docname , detail_doctype = Next Doctype Detail Table
+	# 
+	# 		submitted = sql("select t1.name from `tab%s` t1,`tab%s` t2 where t1.name = t2.parent and t2.prevdoc_docname = '%s' and t1.docstatus = 1" % ( doctype, detail_doctype, docname))
+	# 		if submitted:
+	# 			msgprint(cstr(doctype) + " : " + cstr(submitted[0][0]) + " has already been submitted !")
+	# 			raise Exception
+	# 
+	# 	if check == 'Previous':
+	# 		# Convention := doctype => Previous Doctype, docname = Previous Docname 
+	# 		submitted = sql("select name from `tab%s` where docstatus = 1 and name = '%s'" % (doctype, docname))
+	# 		if not submitted:
+	# 			msgprint(cstr(doctype) + " : " + cstr(submitted[0][0]) + " not submitted !")
+	# 			raise Exception
 				
 	# Update Ref Doc
 	# =======================================================
