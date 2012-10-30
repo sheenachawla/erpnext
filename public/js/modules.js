@@ -14,15 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-wn.get_module_color = function(module) {
-	try {
-		var color = wn.model.get("Desktop Item", {label:module}).gradient.split(",")[1];
-	} catch(e) {
-		var color = "#000";
-	}
-	return color;
-}
-
 wn.provide("erpnext.module_page");
 
 erpnext.module_page.setup_page = function(module, wrapper) {
