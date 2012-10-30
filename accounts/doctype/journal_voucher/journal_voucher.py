@@ -22,7 +22,7 @@ from webnotes.model.utils import getlist
 from webnotes.model.code import get_obj
 from webnotes import msgprint
 from utilities.transaction_base import TransactionBase
-from controllers.accounts import AccountsController
+from controllers.accounts_controller import AccountsController
 sql = webnotes.conn.sql
 
 

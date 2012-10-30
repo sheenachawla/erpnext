@@ -18,6 +18,7 @@ from __future__ import unicode_literals
 
 import webnotes
 from webnotes.utils import nowdate
+from webnotes import _, msgprint
 
 class FiscalYearError(webnotes.ValidationError): pass
 
@@ -32,8 +33,8 @@ def get_fiscal_year(date, verbose=1):
 		(date, date))
 	
 	if not fy:
-		error_msg = """%s not in any Fiscal Year""" % formatdate(date)
-		if verbose: webnotes.msgprint(error_msg)
+		error_msg = _("""%(date)s not in any Fiscal Year""") % {"date": formatdate(date)}
+		if verbose: msgprint(error_msg)
 		raise FiscalYearError, error_msg
 	
 	return fy[0]

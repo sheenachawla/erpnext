@@ -16,84 +16,163 @@
 
 from __future__ import unicode_literals
 import webnotes
+from webnotes import _, msgprint
+from webnotes.utils import cint, flt
+from webnotes.model.code import get_obj
+import webnotes.model.doctype
 
-from controllers.transaction import TransactionController
+from controllers.buying_controller import BuyingController
 
-class DocType(TransactionController):
-	def __init__(self, doc, doclist):
-		self.doc, self.doclist = doc, doclist
+class DocType(BuyingController):
+	def setup(self):
+		self.item_table_field = "purchase_request_items"
 		
 	def validate(self):
-		if self.doc.status == "Stopped":
-			# stop purchase request
-			# kba update_status
-			pass
+		super(DocType, self).validate()
+		self.validate_schedule_date()
+		
+		if self.doc.docstatus == 1:
+			self.stop_resume_transaction()
 			
-		elif self.doc.status == "Submitted":
-			# resume purchase request
-			# kba update_status
-			pass
+		self.validate_qty_against_sales_order()
 		
 	def on_update(self):
 		pass
 		
 	def on_submit(self):
-		pass
+		# super(DocType, self).on_submit()
+		self.update_bin()
 		
 	def on_cancel(self):
-		pass
+		super(DocType, self).on_cancel()
+		self.update_bin()
 		
 	def on_trash(self):
 		pass
 		
+	def set_item_defaults(self):
+		"""set schedule date and min order qty"""
+		self.set_schedule_date()
+		
+		for item in self.doclist.get({"parentfield": "purchase_request_items"}):
+			item.min_order_qty = flt(webnotes.conn.get_value("Item", item.item_code,
+				"min_order_qty"), self.precision.item.min_order_qty) or 0
+				
+	def update_item_details(self):
+		"""updates item details, if value is missing"""
+		for item in self.doclist.get({"parentfield": "purchase_request_items"}):
+			if item.item_code:
+				result = self.get_item_details(self, {"item_code": item.item_code,
+					"warehouse": item.warehouse})
+				for field, val in result.items():
+					if not item.get(field):
+						item[field] = val
 	
-# =======
-# 		# Validate qty against SO
-# 		self.validate_qty_against_so()
-# 
-# 	
-# 	def update_bin(self, is_submit, is_stopped):
-# 		""" Update Quantity Requested for Purchase in Bin"""
-# 		
-# 		for d in getlist(self.doclist, 'indent_details'):
-# 			if webnotes.conn.get_value("Item", d.item_code, "is_stock_item") == "Yes":
-# 				if not d.warehouse:
-# 					msgprint("Please Enter Warehouse for Item %s as it is stock item" 
-# 						% cstr(d.item_code), raise_exception=1)
-# 						
-# 				qty =flt(d.qty)
-# 				if is_stopped:
-# 					qty = (d.qty > d.ordered_qty) and flt(flt(d.qty) - flt(d.ordered_qty)) or 0
-# 				
-# 				args = {
-# 					"item_code": d.item_code,
-# 					"indented_qty": (is_submit and 1 or -1) * flt(qty),
-# 					"posting_date": self.doc.transaction_date
-# 				}
-# 				get_obj('Warehouse', d.warehouse).update_bin(args)		
-# 		
-# 	def on_submit(self):
-# 		set(self.doc,'status','Submitted')
-# 		self.update_bin(is_submit = 1, is_stopped = 0)
-# 	
-# 	def check_modified_date(self):
-# 		mod_db = sql("select modified from `tabPurchase Request` where name = '%s'" % self.doc.name)
-# 		date_diff = sql("select TIMEDIFF('%s', '%s')" % ( mod_db[0][0],cstr(self.doc.modified)))
-# 		
-# 		if date_diff and date_diff[0][0]:
-# 			msgprint(cstr(self.doc.doctype) +" => "+ cstr(self.doc.name) +" has been modified. Please Refresh. ")
-# 			raise Exception
-# 
-# 	def update_status(self, status):
-# 		self.check_modified_date()
-# 		# Step 1:=> Update Bin
-# 		self.update_bin(is_submit = (status == 'Submitted') and 1 or 0, is_stopped = 1)
-# 
-# 		# Step 2:=> Set status 
-# 		set(self.doc,'status',cstr(status))
-# 		
-# 		# Step 3:=> Acknowledge User
-# 		msgprint(self.doc.doctype + ": " + self.doc.name + " has been %s." % ((status == 'Submitted') and 'Unstopped' or cstr(status)) )
-#  
-# 
-# >>>>>>> master
+	def pull_sales_order_items(self):
+		if self.doc.sales_order:
+			mapper = get_obj("DocType Mapper", "Sales Order-Purchase Request")
+			
+			import json
+			from_to_list = [["Sales Order", "Purchase Request"],
+				["Sales Order Item", "Purchase Request Item"]]
+			
+			mapper.dt_map("Sales Order", "Purchase Request", self.doc.sales_order,
+				self.doc, self.doclist, json.dumps(from_to_list))
+
+			self.set_item_defaults()
+	
+	def update_bin(self):
+		"""update quantity requested for purchase in bin"""
+		for item in self.doclist.get({"parentfield": "purchase_request_items"}):
+			if webnotes.conn.get_value("Item", item.item_code, "is_stock_item") == "Yes":
+				# bin exists only for a stock item
+				if not item.warehouse:
+					# bin is a unique combination of (warehouse, item_code)
+					msgprint(_("""Row # %(idx)s [Item: %(item_code)s]:
+						Warehouse mandatory for a stock item.""") % {
+							"idx": item.idx,
+							"item_code": item.item_code,
+						}, raise_exception=True)
+				
+				# calculate quantity to be updated in bin
+				item.qty = flt(item.qty, self.precision.item.qty)
+				item.ordered_qty = flt(item.ordered_qty, self.precision.item.ordered_qty)
+				if item.qty > item.ordered_qty:
+					qty = flt(item.qty - item.ordered_qty, self.precision.item.qty)
+				else:
+					qty = 0
+				
+				# if submit and not stopped, then +ve, else -ve
+				qty *= (self.doc.docstatus == 1 and self.doc.is_stopped != 1) and 1 or -1					
+
+				# finally, update the requested qty
+				get_obj("Warehouse", item.warehouse).update_bin({
+					"item_code": item.item_code,
+					"indented_qty": qty,
+					"posting_date": self.doc.posting_date
+				})
+				
+	def validate_schedule_date(self):
+		for item in self.doclist.get({"parentfield": "purchase_request_items"}):
+			if item.schedule_date < self.doc.posting_date:
+				doctypelist = webnotes.model.doctype.get(self.doc.doctype)
+				msgprint(_("""Row # %(idx)s [Item: %(item_code)s]: 
+					%(schedule_date)s cannot be before %(posting_date)s""") % {
+					"idx": item.idx,
+					"item_code": item.item_code,
+					"schedule_date": doctypelist.get_label("schedule_date",
+						parentfield="purchase_request_items"),
+					"posting_date": doctypelist.get_label("posting_date")
+				}, raise_exception=1)
+	
+	def validate_qty_against_sales_order(self):
+		def _build_map():
+			"""build sales order item qty map"""
+			out_map = {}
+			for item in self.doclist.get({"parentfield": "purchase_request_items"}):
+				if item.sales_order:
+					out_map[item.sales_order][item.item_code] = \
+						out_map.setdefault(item.sales_order, {})\
+							.setdefault(item.item_code, 0) + \
+						flt(item.qty, self.precision.item.qty)
+			return out_map
+			
+		def _get_sales_order_items(sales_order):
+			return dict(webnotes.conn.sql("""select item_code,
+				sum(ifnull(qty, 0)) from `tabSales Order Item`
+				where parent=%s and docstatus=1 group by item_code""", (sales_order,)))
+		
+		for sales_order, item_qty_map in _build_map().items():
+			sales_order_items = _get_sales_order_items(sales_order)
+			
+			for item_code, qty in item_qty_map.items():
+				qty_already_requested = webnotes.conn.sql("""select sum(ifnull(qty, 0)),
+					uom from `tabPurchase Request Item` where sales_order=%s and 
+					item_code=%s and docstatus=1 and parent!=%s""", 
+					(sales_order, item_code, self.doc.name))
+				qty_already_requested = qty_already_requested and \
+					flt(qty_already_requested[0][0], self.precision.item.qty) or 0
+				sales_order_item_qty = flt(sales_order_items.get(item_code),
+					self.precision.item.qty)
+
+				if (qty + qty_already_requested) > sales_order_item_qty:
+					item = self.doclist.getone({"parentfield": "purchase_request_items",
+						"item_code": item_code, "sales_order": sales_order})
+					from webnotes.model import doctype
+					msgprint(_("""Row # %(idx)s, Item %(item_code)s: \
+						%(qty_label)s cannot be greater than %(diff)s, \
+						against Sales Order: \
+						<a href="#Form/Sales Order/%(sales_order)s">%(sales_order)s</a>.
+						Purchase Request has already been raised for \
+						%(qty_already_requested)s %(uom)s.
+						You can create an additional row to request more.""") % {
+							"idx": item.idx,
+							"item_code": item.item_code,
+							"qty_label": doctype.get("Purchase Request")\
+								.get_label("qty", parentfield="purchase_request_items"),
+							"diff": sales_order_item_qty - qty_already_requested,
+							"sales_order": sales_order,
+							"qty_already_requested": qty_already_requested,
+							"uom": item.uom,
+						}, raise_exception=1)
+

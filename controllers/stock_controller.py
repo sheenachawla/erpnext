@@ -19,7 +19,7 @@
 from __future__ import unicode_literals
 import webnotes
 from webnotes.model.code import get_obj
-from controllers.accounts import AccountsController
+from controllers.accounts_controller import AccountsController
 
 class StockController(AccountsController):
 	def get_valuation_rate(self, posting_date, posting_time, item, 
