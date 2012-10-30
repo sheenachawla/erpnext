@@ -19,30 +19,31 @@
 .sprite-image { background-image: url("app/images/sprite-desktop.png"); }
 
 
-.sprite-account{ margin-top: 8px; margin-left: 12px; } 
-.sprite-selling{ margin-top: 8px; margin-left: 12px; } 
-.sprite-stock{ margin-top: 8px; margin-left: 8px; } 
-.sprite-buying{ margin-top: 8px; margin-left: 8px; } 
-.sprite-support{ margin-top: 8px; margin-left: 8px; } 
-.sprite-hr{ margin-top: 12px; margin-left: 8px; } 
-.sprite-project{ margin-top: 16px; margin-left: 8px; } 
-.sprite-production{ margin-top: 10px; margin-left: 8px; } 
-.sprite-website{ margin-top: 8px; margin-left: 8px; } 
-.sprite-setting{ margin-top: 8px; margin-left: 8px; } 
-.sprite-report{ margin-top: 8px; margin-left: 14px; } 
+.sprite-account{ margin-top: 12px; margin-left: 17px; } 
+.sprite-selling{ margin-top: 12px; margin-left: 16px; } 
+.sprite-stock{ margin-top: 14px; margin-left: 16px; } 
+.sprite-buying{ margin-top: 14px; margin-left: 12px; } 
+.sprite-support{ margin-top: 14px; margin-left: 14px; } 
+.sprite-hr{ margin-top: 17px; margin-left: 13px; } 
+.sprite-project{ margin-top: 22px; margin-left: 12px; } 
+.sprite-production{ margin-top: 14px; margin-left: 12px; } 
+.sprite-website{ margin-top: 12px; margin-left: 13px; } 
+.sprite-setting{ margin-top: 12px; margin-left: 14px; } 
+.sprite-report{ margin-top: 12px; margin-left: 18px; } 
 
-.sprite-messages{ margin-top: 14px; margin-left: 8px; } 
-.sprite-todo{ margin-top: 10px; margin-left: 10px; } 
-.sprite-calendar{ margin-top: 8px; margin-left: 10px; } 
-.sprite-kb{ margin-top: 8px; margin-left: 16px; } 
-.sprite-feed{ margin-top: 8px; margin-left: 14px; } 
+.sprite-messages{ margin-top: 18px; margin-left: 12px; } 
+.sprite-todo{ margin-top: 16px; margin-left: 16px; } 
+.sprite-calendar{ margin-top: 12px; margin-left: 16px; } 
+.sprite-kb{ margin-top: 12px; margin-left: 21px; } 
+.sprite-feed{ margin-top: 12px; margin-left: 21px; } 
 
 .case-border {
-	border-radius: 10px;
-	-moz-border-radius: 10px;
-	-webkit-border-radius: 10px;
-	width: 56px;
-	height: 56px;
+	border-radius: 100%;
+	-moz-border-radius: 100%;
+	-webkit-border-radius: 100%;
+
+	width: 66px;
+	height: 66px;
 	border: 4px solid white;
 	box-shadow: 0 0 4px 1px black;
 	-moz-box-shadow: 0 0 4px 1px black;
