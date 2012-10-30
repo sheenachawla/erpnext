@@ -14,21 +14,26 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-pscript['onload_Trash'] = function() {
-
-  // header and toolbar
-  var h = new PageHeader('trash_header','Trash Bin','Restore the documents that you have trashed')
+pscript['onload_Trash'] = function(wrapper) {
+	wn.ui.make_app_page({
+		parent: wrapper,
+		title: "Recycle Bin",
+		single_column: true
+	})
   
-  if(!pscript.trash_bin) pscript.trash_bin = new pscript.Trash();
+	if(!pscript.trash_bin) 
+		pscript.trash_bin = new pscript.Trash(wrapper);
 }
 
-pscript.Trash = function() {
+pscript.Trash = function(wrapper) {
   // create UI elements
-  this.wrapper = $i('trash_div');
+  this.wrapper = $(wrapper).find(".layout-main").get(0);
   
   this.head = $a(this.wrapper, 'div');
   this.body = $a(this.wrapper, 'div');
+
   $y(this.body, {margin:'8px'})
+  $(this.head).html("<div class='alert'>Recover records from Recycle Bin.</div>")
 
   this.make_head();
   this.load_masters();

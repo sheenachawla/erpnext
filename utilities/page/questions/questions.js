@@ -21,21 +21,18 @@ pscript.onload_questions = function(wrapper) {
 	wrapper.appframe.title('Knowledge Base');
 	
 	// kb
-	var kb = new KnowledgeBase(body);
-	
-	// sidebar
-	this.sidebar = new wn.widgets.PageSidebar($(wrapper).find('.questions-tags').get(0), {
-		sections: [
-			{
-				title: 'Top Tags',
-				render: function(body) {
-					new wn.widgets.TagCloud(body, 'Question', function(tag) 
-						{ kb.set_tag_filter(tag) });
-				}				
-			}
-		]
-	});
-	set_title('Knowledge Base');
+	wn.model.with_doctype("Question", function() {
+		var kb = new KnowledgeBase(body);
+
+		// make sidebar
+		var list_stats = new wn.views.ListViewStats({
+			doctype:"Question",
+			$page: $(wrapper),
+			set_filter: function(fieldname, label) {
+				kb.set_tag_filter(label);
+			}			
+		});		
+	})
 }
 
 // knowledge base object
@@ -137,36 +134,26 @@ function KnowledgeBase(w) {
 
 	// add a tag filter to the search in the
 	// main page
-	this.set_tag_filter = function(tag) {
+	this.set_tag_filter = function(label) {
 
 		// check if exists
-		if(in_list(keys(me.tag_filter_dict), tag.label)) return;
+		if(in_list(keys(me.tag_filter_dict), label)) return;
 
-		// create a tag in filters
-		var filter_tag = new SingleTag({
-			parent: me.tag_area,
-			label: tag.label,
-			dt: 'Question',
-			color: tag.color
-		});
-
-		// remove tag from filters
-		filter_tag.remove = function(tag_remove) {
-			$(tag_remove.body).fadeOut();
-			delete me.tag_filter_dict[tag_remove.label];
-
-			// hide everything?
-			if(!keys(me.tag_filter_dict).length) {
-				$(me.tag_filters).slideUp(); // hide
-			}
-
-			// run
+		var tag_span = $(repl("<span class='label label-info tag-style'\
+			data-label='%(label)s'>%(label)s</span>", {label:label}))
+			.html(label)
+			.appendTo(me.tag_filters);
+			
+		$("<a class='close'>&times;</a>").appendTo(tag_span).click(function() {
+			var label = $(this).parent().attr("data-label");
+			delete me.tag_filter_dict[label];
+			$(this).parent().remove();
 			me.run();
-		}
+		})
 
 		// add to dict
-		me.tag_filter_dict[tag.label] = filter_tag;
-		$ds(me.tag_filters);
+		me.tag_filter_dict[label] = label;
+		$(me.tag_filters).toggle(true);
 
 		// run
 		me.run();
@@ -215,5 +202,4 @@ KBQuestion = function(parent, det, kb) {
 	this.make()
 }
 
-wn.require('lib/js/legacy/widgets/tags.js');
 wn.require('app/js/kb_common.js');

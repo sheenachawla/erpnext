@@ -18,6 +18,7 @@
 // contains - voting widget / tag list and user info / timestamp
 // By XXXXXX on YYYYY
 
+
 KBItemToolbar = function(args, kb) {
 	$.extend(this, args);
 	var me = this;
@@ -58,10 +59,20 @@ KBItemToolbar = function(args, kb) {
 	
 	this.make_tags = function() {
 		this.line1.innerHTML += ' | '
-		this.tags_area = $a(this.line1, 'span', 'kb-tags')
-		this.tags = new TagList(this.tags_area, 
-			this.det._user_tags && (this.det._user_tags.split(',')), 
-			this.doctype, this.det.name, 0, kb.set_tag_filter)		
+		this.tags_area = $a(this.line1, 'span', 'kb-tags');
+		
+		var me = this;
+		this.tags = new wn.ui.TagEditor({
+			parent: this.tags_area,
+			doctype: this.doctype,
+			set_opts: function() {
+				this.docname = me.det.name;
+				this.user_tags = me.det._user_tags;
+			},
+			callback: function(r) {
+				//
+			}
+		}).refresh()
 	}
 
 	this.setup_del = function() {
@@ -92,8 +103,8 @@ EditableText = function(args) {
 	me.$w = $(repl('<div class="ed-text">\
 		<div class="ed-text-display %(disp_class)s"></div>\
 		<a class="ed-text-edit" style="cursor: pointer; float: right; margin-top: -16px;">[edit]</a>\
-		<textarea class="ed-text-input %(inp_class)s hide"></textarea>\
-		<div class="help hide"><br>Formatted as <a href="#markdown-reference"\
+		<textarea class="ed-text-input %(inp_class)s hide" style="width: 100%;"></textarea>\
+		<div class="help hide" style="text-align: right;">Formatted as <a href="#markdown-reference"\
 		 	target="_blank">markdown</a></div>\
 		<button class="btn btn-small btn-info hide ed-text-save">Save</button>\
 		<a class="ed-text-cancel hide" style="cursor: pointer;">Cancel</a>\

@@ -14,13 +14,24 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-pscript['onload_Financial Statements'] = function() {
+pscript['onload_Financial Statements'] = function(wrapper) {
+	wn.ui.make_app_page({
+		parent: wrapper,
+		title: "Financial Statements",
+		single_column: true
+	});
 	
-	// header and toolbar
-	var h = new PageHeader('fs_header','Financial Statements','Profit & Loss and Balance Sheet Builder across multiple years');
-	//$y(h.toolbar_area,{padding:'8px'});
-	
-	var dv = $a(h.toolbar_area,'div','',{margin:'4px 0px'});
+	$(wrapper).find(".layout-main").html('<div class="alert alert-info"></div>\
+		<div id="print_html">\
+		<div id="stmt_title1" style="margin:16px 0px 4px 0px; \
+			font-size: 16px; font-weight: bold; color: #888;"></div>\
+		<div id="stmt_title2" style="margin:0px 0px 8px 0px; \
+			font-size: 16px; font-weight: bold;"></div>\
+		<div id="stmt_tree" style="margin: 0px 0px 16px; \
+			overflow: auto; display: none; width: 100%;"></div>\
+	</div>');
+		
+	var dv = $a($(wrapper).find(".alert-info").get(0), 'div','',{margin:'4px 0px'});
 	
 	var t = make_table(dv,1,4,'640px', [], {padding:'4px', width:'160px'});
 	
@@ -36,21 +47,9 @@ pscript['onload_Financial Statements'] = function() {
 	var sel = $a($td(t,0,3),'select','',{width:'160px'});
 	sel.id = 'stmt_fiscal_year';
 
-	h.add_button('Create',function(){ pscript.stmt_new(); },0,'ui-icon-document');
-	h.add_button('Print', function(){ _p.go($i('print_html').innerHTML); }, 0, 'ui-icon-print');
-/*	
-	var btn = $a($td(t,1,0),'button');
-	btn.onclick = function(){ pscript.stmt_new(); }
-	btn.innerHTML = 'Create';
-	
-	var btn = $a($td(t,1,1),'button');
-	btn.onclick = function(){ alert('print'); }
-	btn.innerHTML = 'Print';
-
-  //Button to create new
-  var btn = $a('stmt_new', 'button');
-  btn.onclick = function() { pscript.stmt_new(); }
-  btn.innerHTML = 'Create';*/
+	wrapper.appframe.add_button('Create',function(){ pscript.stmt_new(); },'icon-play');
+	wrapper.appframe.add_button('Print', function(){ _p.go($i('print_html').innerHTML); },
+	 	'icon-print');
 
   // select for statement
   add_sel_options($i('stmt_type'), ['Select Statement...','Balance Sheet','Profit & Loss']);

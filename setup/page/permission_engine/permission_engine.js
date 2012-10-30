@@ -14,21 +14,32 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-pscript['onload_Permission Engine'] = function() {
-	// header and toolbar
-	var h = new PageHeader('pe_header','Permissions Manager','Set specific permissions for Roles')
+pscript['onload_Permission Engine'] = function(wrapper) {
+	wn.ui.make_app_page({
+		parent: wrapper,
+		title: "Permissions Manager",
+		single_column: true
+	})
 	
-	if(!pscript.perm_engine) pscript.perm_engine = new pscript.PermEngine();
+	// header and toolbar
+	if(!pscript.perm_engine) 
+		pscript.perm_engine = new pscript.PermEngine(wrapper);
 }
 
 
-pscript.PermEngine = function() {
+pscript.PermEngine = function(wrapper) {
 	// create UI elements
-	this.wrapper = $i('perm_engine_div');
+	this.wrapper = $(wrapper).find(".layout-main").get(0);
 	
 	this.head = $a(this.wrapper, 'div');
 	this.body = $a(this.wrapper, 'div');
 	this.footer = $a(this.wrapper, 'div');
+
+	$(this.head).html('<div id="submittable_warning" class="alert" \
+		style="display: None">\
+		One of the Roles has <b>Submit</b> permission. \
+		You will have to <b>Cancel</b> and then <b>Amend</b> a submitted Document for making changes.\
+	</div>')
 
 	var lab = $a(this.body,'div', '', {backgroundColor:'#FFD', padding:'8px', margin:'16px 0px'});
 	lab.innerHTML = 'Please select the item for which you want to set permissions';

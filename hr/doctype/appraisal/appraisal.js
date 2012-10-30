@@ -53,7 +53,7 @@ cur_frm.cscript.employee = function(doc,cdt,cdn){
 		$c_obj(wn.model.get_doclist(doc.doctype, doc.name),'set_approver','', function(r,rt){
 			if(r.message){
 				doc.employee_name = r.message['emp_nm'];
-				Meta.get_field(doc.doctype, 'kra_approver' , doc.name).options = r.message['app_lst'];				
+				wn.meta.get_docfield(doc.doctype, 'kra_approver' , doc.name).options = r.message['app_lst'];				
 				refresh_many(['kra_approver','employee_name']);
 			}		
 		});

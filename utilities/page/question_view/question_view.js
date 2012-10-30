@@ -16,8 +16,8 @@
 
 pscript['onload_question-view'] = function(wrapper) {
 	wrapper.appframe = new wn.ui.AppFrame($(wrapper).find('.layout-appframe'));
-	wrapper.appframe.set_title('Knowledge Base');
-	wrapper.appframe.set_module("Knowledge Base");
+	wrapper.appframe.set_title('Question');
+	wrapper.appframe.add_module_tab('Knowledge Base');
 
 	wrapper.add_answer_area = $('.add-answer-area').get(0);
 }
@@ -33,6 +33,7 @@ pscript['refresh_question-view'] = function(wrapper) {
 pscript.question_view = function(qid, qtext) {
 	var w = wn.pages['question-view'];
 	new KBQuestionView(w, qid, qtext);
+	w.appframe.set_title(qtext || 'Question');
 }
 
 KBQuestionView = function(w, qid, qtext) {
@@ -85,10 +86,11 @@ KBQuestionView = function(w, qid, qtext) {
 	// text area + add button
 	this.make_answer_box = function() {
 		$ds(w.add_answer_area);
-		$(w.add_answer_area, '<h3>Add your Answer</h3>\
+		$(w.add_answer_area).html('<h3>Add your Answer</h3>\
 			<div class="help">In markdown format</div>');
-		this.input = $a(w.add_answer_area, 'textarea');
-		//wn.tinymce.add_simple(this.input);
+			
+		this.input = $("<textarea style='width: 500px; height: 300px;'>")
+			.appendTo(w.add_answer_area).get(0);
 		
 		this.btn = $btn($a(w.add_answer_area, 'div'), 'Post', function() {
 			var v = $(me.input).val();
