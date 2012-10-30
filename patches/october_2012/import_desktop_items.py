@@ -20,7 +20,7 @@ import webnotes, os
 def execute():
 	from webnotes.modules.import_file import import_file_by_path
 	for basepath, dirs, files in os.walk("."):
-		if os.path.split(basepath)[-1]=='desktop_item':
+		if os.path.basename(os.path.dirname(basepath))=="desktop_item":
 			for f in files:
 				if f.endswith('.txt'):
 					import_file_by_path(os.path.join(basepath, f))
