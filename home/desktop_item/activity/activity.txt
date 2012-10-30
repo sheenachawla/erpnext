@@ -4,7 +4,7 @@
   "docstatus": 0, 
   "creation": "2012-10-26 15:50:58", 
   "modified_by": "Administrator", 
-  "modified": "2012-10-26 16:14:50"
+  "modified": "2012-10-30 13:52:08"
  }, 
  {
   "style": "sprite-image sprite-feed", 
@@ -17,7 +17,42 @@
   "label": "Activity"
  }, 
  {
+  "name": "__common__", 
+  "parent": "Activity", 
+  "doctype": "Desktop Item Role", 
+  "parenttype": "Desktop Item", 
+  "parentfield": "desktop_item_roles"
+ }, 
+ {
   "name": "Activity", 
   "doctype": "Desktop Item"
+ }, 
+ {
+  "role": "HR User", 
+  "doctype": "Desktop Item Role"
+ }, 
+ {
+  "role": "Material User", 
+  "doctype": "Desktop Item Role"
+ }, 
+ {
+  "role": "Production User", 
+  "doctype": "Desktop Item Role"
+ }, 
+ {
+  "role": "Projects User", 
+  "doctype": "Desktop Item Role"
+ }, 
+ {
+  "role": "Purchase User", 
+  "doctype": "Desktop Item Role"
+ }, 
+ {
+  "role": "Sales User", 
+  "doctype": "Desktop Item Role"
+ }, 
+ {
+  "role": "System Manager", 
+  "doctype": "Desktop Item Role"
  }
 ]

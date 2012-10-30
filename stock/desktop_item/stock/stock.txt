@@ -4,7 +4,7 @@
   "docstatus": 0, 
   "creation": "2012-10-26 15:46:06", 
   "modified_by": "Administrator", 
-  "modified": "2012-10-26 16:15:08"
+  "modified": "2012-10-30 13:50:11"
  }, 
  {
   "style": "sprite-image sprite-stock", 
@@ -17,7 +17,22 @@
   "label": "Stock"
  }, 
  {
+  "name": "__common__", 
+  "parent": "Stock", 
+  "doctype": "Desktop Item Role", 
+  "parenttype": "Desktop Item", 
+  "parentfield": "desktop_item_roles"
+ }, 
+ {
   "name": "Stock", 
   "doctype": "Desktop Item"
+ }, 
+ {
+  "role": "Material User", 
+  "doctype": "Desktop Item Role"
+ }, 
+ {
+  "role": "System Manager", 
+  "doctype": "Desktop Item Role"
  }
 ]

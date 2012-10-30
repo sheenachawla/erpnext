@@ -4,7 +4,7 @@
   "docstatus": 0, 
   "creation": "2012-10-26 15:40:53", 
   "modified_by": "Administrator", 
-  "modified": "2012-10-29 18:18:08"
+  "modified": "2012-10-30 13:48:32"
  }, 
  {
   "style": "sprite-image sprite-project", 
@@ -17,7 +17,22 @@
   "label": "Projects"
  }, 
  {
+  "name": "__common__", 
+  "parent": "Projects", 
+  "doctype": "Desktop Item Role", 
+  "parenttype": "Desktop Item", 
+  "parentfield": "desktop_item_roles"
+ }, 
+ {
   "name": "Projects", 
   "doctype": "Desktop Item"
+ }, 
+ {
+  "role": "Projects User", 
+  "doctype": "Desktop Item Role"
+ }, 
+ {
+  "role": "System Manager", 
+  "doctype": "Desktop Item Role"
  }
 ]

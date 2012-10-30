@@ -4,7 +4,7 @@
   "docstatus": 0, 
   "creation": "2012-10-26 15:42:52", 
   "modified_by": "Administrator", 
-  "modified": "2012-10-26 16:15:32"
+  "modified": "2012-10-30 13:48:58"
  }, 
  {
   "style": "sprite-image sprite-buying", 
@@ -17,7 +17,22 @@
   "label": "Buying"
  }, 
  {
+  "name": "__common__", 
+  "parent": "Buying", 
+  "doctype": "Desktop Item Role", 
+  "parenttype": "Desktop Item", 
+  "parentfield": "desktop_item_roles"
+ }, 
+ {
   "name": "Buying", 
   "doctype": "Desktop Item"
+ }, 
+ {
+  "role": "Purchase User", 
+  "doctype": "Desktop Item Role"
+ }, 
+ {
+  "role": "System Manager", 
+  "doctype": "Desktop Item Role"
  }
 ]

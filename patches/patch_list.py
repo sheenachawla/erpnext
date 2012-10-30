@@ -463,4 +463,8 @@ patch_list = [
 		'patch_module': 'patches.october_2012',
 		'patch_file': 'custom_script_delete_permission',
 	},
+	{
+		'patch_module': 'patches.october_2012',
+		'patch_file': 'import_desktop_items',
+	},
 ]

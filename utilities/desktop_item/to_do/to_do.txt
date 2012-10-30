@@ -4,7 +4,7 @@
   "docstatus": 0, 
   "creation": "2012-10-26 15:51:55", 
   "modified_by": "Administrator", 
-  "modified": "2012-10-26 16:14:38"
+  "modified": "2012-10-30 13:55:47"
  }, 
  {
   "style": "sprite-image sprite-todo", 
@@ -17,7 +17,18 @@
   "label": "To Do"
  }, 
  {
+  "name": "__common__", 
+  "parent": "To Do", 
+  "doctype": "Desktop Item Role", 
+  "parenttype": "Desktop Item", 
+  "role": "All", 
+  "parentfield": "desktop_item_roles"
+ }, 
+ {
   "name": "To Do", 
   "doctype": "Desktop Item"
+ }, 
+ {
+  "doctype": "Desktop Item Role"
  }
 ]

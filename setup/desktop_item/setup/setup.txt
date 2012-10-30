@@ -4,7 +4,7 @@
   "docstatus": 0, 
   "creation": "2012-10-26 15:48:17", 
   "modified_by": "Administrator", 
-  "modified": "2012-10-26 16:15:04"
+  "modified": "2012-10-30 13:50:23"
  }, 
  {
   "style": "sprite-image sprite-setting", 
@@ -17,7 +17,18 @@
   "label": "Setup"
  }, 
  {
+  "name": "__common__", 
+  "parent": "Setup", 
+  "doctype": "Desktop Item Role", 
+  "parenttype": "Desktop Item", 
+  "role": "System Manager", 
+  "parentfield": "desktop_item_roles"
+ }, 
+ {
   "name": "Setup", 
   "doctype": "Desktop Item"
+ }, 
+ {
+  "doctype": "Desktop Item Role"
  }
 ]

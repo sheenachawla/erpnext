@@ -4,7 +4,7 @@
   "docstatus": 0, 
   "creation": "2012-10-26 15:49:25", 
   "modified_by": "Administrator", 
-  "modified": "2012-10-26 16:15:00"
+  "modified": "2012-10-30 13:50:33"
  }, 
  {
   "style": "sprite-image sprite-production", 
@@ -17,7 +17,22 @@
   "label": "Production"
  }, 
  {
+  "name": "__common__", 
+  "parent": "Production", 
+  "doctype": "Desktop Item Role", 
+  "parenttype": "Desktop Item", 
+  "parentfield": "desktop_item_roles"
+ }, 
+ {
   "name": "Production", 
   "doctype": "Desktop Item"
+ }, 
+ {
+  "role": "Production User", 
+  "doctype": "Desktop Item Role"
+ }, 
+ {
+  "role": "System Manager", 
+  "doctype": "Desktop Item Role"
  }
 ]

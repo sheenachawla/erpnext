@@ -4,7 +4,7 @@
   "docstatus": 0, 
   "creation": "2012-10-26 15:53:35", 
   "modified_by": "Administrator", 
-  "modified": "2012-10-26 16:14:46"
+  "modified": "2012-10-30 13:55:29"
  }, 
  {
   "style": "sprite-image sprite-messages", 
@@ -17,7 +17,18 @@
   "label": "Messages"
  }, 
  {
+  "name": "__common__", 
+  "parent": "Messages", 
+  "doctype": "Desktop Item Role", 
+  "parenttype": "Desktop Item", 
+  "role": "All", 
+  "parentfield": "desktop_item_roles"
+ }, 
+ {
   "name": "Messages", 
   "doctype": "Desktop Item"
+ }, 
+ {
+  "doctype": "Desktop Item Role"
  }
 ]

@@ -4,7 +4,7 @@
   "docstatus": 0, 
   "creation": "2012-10-26 15:45:32", 
   "modified_by": "Administrator", 
-  "modified": "2012-10-29 17:47:06"
+  "modified": "2012-10-30 13:48:48"
  }, 
  {
   "style": "sprite-image sprite-account", 
@@ -28,15 +28,11 @@
   "doctype": "Desktop Item"
  }, 
  {
-  "role": "Accounts Manager", 
+  "role": "Accounts User", 
   "doctype": "Desktop Item Role"
  }, 
  {
-  "role": "HR Manager", 
-  "doctype": "Desktop Item Role"
- }, 
- {
-  "role": "Maintenance Manager", 
+  "role": "System Manager", 
   "doctype": "Desktop Item Role"
  }
 ]

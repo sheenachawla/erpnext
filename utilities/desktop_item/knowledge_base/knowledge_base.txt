@@ -4,7 +4,7 @@
   "docstatus": 0, 
   "creation": "2012-10-26 15:56:55", 
   "modified_by": "Administrator", 
-  "modified": "2012-10-26 16:14:27"
+  "modified": "2012-10-30 13:55:58"
  }, 
  {
   "style": "sprite-image sprite-kb", 
@@ -17,7 +17,18 @@
   "label": "Knowledge Base"
  }, 
  {
+  "name": "__common__", 
+  "parent": "Knowledge Base", 
+  "doctype": "Desktop Item Role", 
+  "parenttype": "Desktop Item", 
+  "role": "All", 
+  "parentfield": "desktop_item_roles"
+ }, 
+ {
   "name": "Knowledge Base", 
   "doctype": "Desktop Item"
+ }, 
+ {
+  "doctype": "Desktop Item Role"
  }
 ]

@@ -4,7 +4,7 @@
   "docstatus": 0, 
   "creation": "2012-10-26 15:44:20", 
   "modified_by": "Administrator", 
-  "modified": "2012-10-26 16:15:24"
+  "modified": "2012-10-30 13:49:24"
  }, 
  {
   "style": "sprite-image sprite-hr", 
@@ -17,7 +17,26 @@
   "label": "Human Resources"
  }, 
  {
+  "name": "__common__", 
+  "parent": "Human Resources", 
+  "doctype": "Desktop Item Role", 
+  "parenttype": "Desktop Item", 
+  "parentfield": "desktop_item_roles"
+ }, 
+ {
   "name": "Human Resources", 
   "doctype": "Desktop Item"
+ }, 
+ {
+  "role": "Employee", 
+  "doctype": "Desktop Item Role"
+ }, 
+ {
+  "role": "HR User", 
+  "doctype": "Desktop Item Role"
+ }, 
+ {
+  "role": "System Manager", 
+  "doctype": "Desktop Item Role"
  }
 ]
