@@ -40,7 +40,7 @@ cur_frm.cscript.load_defaults = function(doc, dt, dn) {
 	doc = locals[doc.doctype][doc.name];
 	if(!(doc.__islocal && doc.lead_name)) { return; }
 
-	var fields_to_refresh = LocalDB.set_default_values(doc);
+	var fields_to_refresh = wn.model.set_default_values(doc);
 	if(fields_to_refresh) { refresh_many(fields_to_refresh); }
 }
 

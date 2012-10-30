@@ -868,7 +868,7 @@ class StatusUpdater:
 					""" % args)			
 		
 		# get unique transactions to update
-		for name in webnotes.conn.set([d.fields.get(args['percent_join_field']) for d in self.obj.doclist if d.doctype == args['source_dt']]):
+		for name in set([d.fields.get(args['percent_join_field']) for d in self.obj.doclist if d.doctype == args['source_dt']]):
 			if name:
 				args['name'] = name
 				

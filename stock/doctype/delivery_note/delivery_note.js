@@ -88,7 +88,7 @@ cur_frm.cscript.customer = function(doc,dt,dn,onload) {
 			if(!onload && (pl != doc.price_list_name)) cur_frm.cscript.price_list_name(doc, dt, dn); 
 	} 
 	var args = onload ? 'onload':''
-	if(doc.customer) $c_obj(make_doclist(doc.doctype, doc.name), 'get_default_customer_shipping_address', args, callback);
+	if(doc.customer) $c_obj(wn.model.get_doclist(doc.doctype, doc.name), 'get_default_customer_shipping_address', args, callback);
 }
 
 cur_frm.cscript.customer_address = cur_frm.cscript.contact_person = function(doc,dt,dn) {		
@@ -124,13 +124,13 @@ cur_frm.cscript.get_items = function(doc,dt,dn) {
 			refresh_many(['delivery_note_items','customer','customer_address','contact_person','customer_name','address_display','contact_display','contact_mobile','contact_email','territory','customer_group']);
 		}
 	} 
- $c_obj(make_doclist(doc.doctype, doc.name),'pull_sales_order_items','',callback); 
+ $c_obj(wn.model.get_doclist(doc.doctype, doc.name),'pull_sales_order_items','',callback); 
 }
 
 
 //================ create new contact ============================================================================
 cur_frm.cscript.new_contact = function(){
-	tn = createLocal('Contact');
+	tn = wn.model.make_new_doc_and_get_name('Contact');
 	locals['Contact'][tn].is_customer = 1;
 	if(doc.customer) locals['Contact'][tn].customer = doc.customer;
 	loaddoc('Contact', tn);
@@ -201,9 +201,9 @@ cur_frm.fields_dict['transporter_name'].get_query = function(doc) {
 //-----------------------------------Make Sales Invoice----------------------------------------------
 cur_frm.cscript['Make Sales Invoice'] = function() {
 	var doc = cur_frm.doc
-	n = createLocal('Sales Invoice');
+	n = wn.model.make_new_doc_and_get_name('Sales Invoice');
 	$c('dt_map', args={
-		'docs':compress_doclist([locals['Sales Invoice'][n]]),
+		'docs':wn.model.compress([locals['Sales Invoice'][n]]),
 		'from_doctype':doc.doctype,
 		'to_doctype':'Sales Invoice',
 		'from_docname':doc.name,
@@ -218,9 +218,9 @@ cur_frm.cscript['Make Sales Invoice'] = function() {
 cur_frm.cscript['Make Installation Note'] = function() {
 	var doc = cur_frm.doc;
 	if(doc.per_installed < 100){
-		n = createLocal('Installation Note');
+		n = wn.model.make_new_doc_and_get_name('Installation Note');
 		$c('dt_map', args={
-			'docs':compress_doclist([locals['Installation Note'][n]]),
+			'docs':wn.model.compress([locals['Installation Note'][n]]),
 			'from_doctype':doc.doctype,
 			'to_doctype':'Installation Note',
 			'from_docname':doc.name,
@@ -237,9 +237,9 @@ cur_frm.cscript['Make Installation Note'] = function() {
 //-----------------------------------Make Sales Invoice----------------------------------------------
 cur_frm.cscript['Make Packing Slip'] = function() {
 	var doc = cur_frm.doc
-	n = createLocal('Packing Slip');
+	n = wn.model.make_new_doc_and_get_name('Packing Slip');
 	$c('dt_map', args={
-		'docs':compress_doclist([locals['Packing Slip'][n]]),
+		'docs':wn.model.compress([locals['Packing Slip'][n]]),
 		'from_doctype':doc.doctype,
 		'to_doctype':'Packing Slip',
 		'from_docname':doc.name,

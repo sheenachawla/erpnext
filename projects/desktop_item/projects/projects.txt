@@ -4,14 +4,14 @@
   "docstatus": 0, 
   "creation": "2012-10-26 15:40:53", 
   "modified_by": "Administrator", 
-  "modified": "2012-10-26 16:14:55"
+  "modified": "2012-10-29 18:18:08"
  }, 
  {
   "style": "sprite-image sprite-project", 
   "is_custom": "No", 
   "name": "__common__", 
   "gradient": "#50448e, #473b7f, #3a3169", 
-  "route": "Module/Project", 
+  "route": "Module/Projects", 
   "module": "Projects", 
   "doctype": "Desktop Item", 
   "label": "Projects"

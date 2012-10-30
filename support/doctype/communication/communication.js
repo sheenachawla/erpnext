@@ -64,7 +64,7 @@ cur_frm.cscript.render_communication_list = function(doc, dt, dn) {
 	
 	cur_frm.cscript.render_list(doc, 'Communication', cur_frm.communication_html,
 		ListView, function(doctype) {
-			var new_doc = LocalDB.create(doctype);
+			var new_doc = wn.model.make_new_doc_and_get_name(doctype);
 			new_doc = locals[doctype][new_doc];
 			new_doc[doc.doctype.toLowerCase().replace(" ", "_")] = doc.name;
 			loaddoc(new_doc.doctype, new_doc.name);

@@ -133,9 +133,9 @@ cur_frm.fields_dict['opportunity_items'].grid.get_field('item_code').get_query =
 
 // Create New Quotation
 cur_frm.cscript['Create Quotation'] = function(){
-	n = createLocal("Quotation");
+	n = wn.model.make_new_doc_and_get_name("Quotation");
 	$c('dt_map', args={
-		'docs':compress_doclist([locals["Quotation"][n]]),
+		'docs':wn.model.compress([locals["Quotation"][n]]),
 		'from_doctype':'Opportunity',
 		'to_doctype':'Quotation',
 		'from_docname':cur_frm.docname,
@@ -187,7 +187,7 @@ cur_frm.cscript['Declare Opportunity Lost'] = function(){
 				}
 			}
 			if(arg) {
-				$c_obj(make_doclist(cur_frm.doc.doctype, cur_frm.doc.name),'declare_enquiry_lost',arg,call_back);
+				$c_obj(wn.model.get_doclist(cur_frm.doc.doctype, cur_frm.doc.name),'declare_enquiry_lost',arg,call_back);
 			}
 			else{
 				msgprint("Please add enquiry lost reason");

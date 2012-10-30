@@ -25,7 +25,7 @@ cur_frm.cscript.refresh = function(doc) {
 			var enabled = (r.message == 'exists') ? false : true;				
 			cur_frm.toggle_enable(['has_serial_no', 'is_stock_item'], enabled);
 		}
-		$c_obj(make_doclist(doc.doctype, doc.name),'check_if_sle_exists','',callback);
+		$c_obj(wn.model.get_doclist(doc.doctype, doc.name),'check_if_sle_exists','',callback);
 	}
 	
 	cur_frm.cscript.hide_website_fields(doc);

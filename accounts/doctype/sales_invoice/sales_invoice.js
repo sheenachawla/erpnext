@@ -30,7 +30,7 @@ wn.require('app/setup/doctype/notification_control/notification_control.js');
 // On Load
 // -------
 cur_frm.cscript.onload = function(doc,dt,dn) {
-	if(!doc.customer && doc.debit_to) Meta.get_field(dt, 'debit_to', dn).print_hide = 0;
+	if(!doc.customer && doc.debit_to) wn.meta.get_docfield(dt, 'debit_to', dn).print_hide = 0;
 	if (doc.__islocal) {
 		//if(!doc.voucher_date) set_multiple(dt,dn,{voucher_date:get_today()});
 		if(!doc.due_date) set_multiple(dt,dn,{due_date:get_today()});
@@ -46,7 +46,7 @@ cur_frm.cscript.onload_post_render = function(doc, dt, dn) {
 		// called from mapper, update the account names for items and customer
 		var callback2 = function(doc, dt, dn) {
 			if(doc.customer && doc.__islocal) {
-				$c_obj(make_doclist(doc.doctype,doc.name),
+				$c_obj(wn.model.get_doclist(doc.doctype,doc.name),
 					'load_default_accounts','',
 					function(r,rt) {
 						refresh_field('sales_invoice_items');
@@ -146,7 +146,7 @@ cur_frm.cscript.is_pos = function(doc,dt,dn,callback){
 				if(callback) callback(doc, dt, dn);
 				cur_frm.refresh();
 			}
-			$c_obj(make_doclist(dt,dn),'set_pos_fields','',callback1);
+			$c_obj(wn.model.get_doclist(dt,dn),'set_pos_fields','',callback1);
 		}
 	}
 }
@@ -187,7 +187,7 @@ cur_frm.cscript.customer = function(doc,dt,dn,onload) {
 			get_server_fields('get_debit_to','','',doc, dt, dn, 0, callback2);
 	}
 	var args = onload ? 'onload':''
-	if(doc.customer) $c_obj(make_doclist(doc.doctype, doc.name), 'get_default_customer_address', args, callback);
+	if(doc.customer) $c_obj(wn.model.get_doclist(doc.doctype, doc.name), 'get_default_customer_address', args, callback);
 
 	if(doc.customer) unhide_field('contact_section');
 	
@@ -228,7 +228,7 @@ cur_frm.cscript.debit_to = function(doc,dt,dn) {
 
 	var callback = function(r,rt) {
 			var doc = locals[cur_frm.doctype][cur_frm.docname];
-			if(doc.customer) $c_obj(make_doclist(dt,dn), 'get_default_customer_address', '', callback2);
+			if(doc.customer) $c_obj(wn.model.get_doclist(dt,dn), 'get_default_customer_address', '', callback2);
 			if(doc.customer) unhide_field('contact_section');
 			cur_frm.refresh();
 	}
@@ -263,7 +263,7 @@ cur_frm.cscript.write_off_amount = function(doc) {
 
 //---- get customer details ----------------------------
 cur_frm.cscript.project_name = function(doc,cdt,cdn){
-	$c_obj(make_doclist(doc.doctype, doc.name),'pull_project_customer','', function(r,rt){
+	$c_obj(wn.model.get_doclist(doc.doctype, doc.name),'pull_project_customer','', function(r,rt){
 		refresh_many(['customer', 'customer_name','customer_address', 'territory']);
 	});
 }
@@ -319,9 +319,9 @@ cur_frm.cscript.allocated_amount = function(doc,cdt,cdn){
 cur_frm.cscript['Make Delivery Note'] = function() {
 
 	var doc = cur_frm.doc
-	n = createLocal('Delivery Note');
+	n = wn.model.make_new_doc_and_get_name('Delivery Note');
 	$c('dt_map', args={
-		'docs':compress_doclist([locals['Delivery Note'][n]]),
+		'docs':wn.model.compress([locals['Delivery Note'][n]]),
 		'from_doctype':doc.doctype,
 		'to_doctype':'Delivery Note',
 		'from_docname':doc.name,
@@ -467,7 +467,7 @@ cur_frm.cscript.calc_adjustment_amount = function(doc,cdt,cdn) {
 // Make Journal Voucher
 // --------------------
 cur_frm.cscript.make_jv = function(doc, dt, dn, bank_account) {
-	var jv = LocalDB.create('Journal Voucher');
+	var jv = wn.model.make_new_doc_and_get_name('Journal Voucher');
 	jv = locals['Journal Voucher'][jv];
 	jv.voucher_type = 'Bank Voucher';
 
@@ -476,14 +476,14 @@ cur_frm.cscript.make_jv = function(doc, dt, dn, bank_account) {
 	jv.fiscal_year = doc.fiscal_year;
 
 	// debit to creditor
-	var d1 = LocalDB.add_child(jv, 'Journal Voucher Detail', 'entries');
+	var d1 = wn.model.add_child(jv, 'Journal Voucher Detail', 'entries');
 	d1.account = doc.debit_to;
 	d1.credit = doc.outstanding_amount;
 	d1.against_invoice = doc.name;
 
 
 	// credit to bank
-	var d1 = LocalDB.add_child(jv, 'Journal Voucher Detail', 'entries');
+	var d1 = wn.model.add_child(jv, 'Journal Voucher Detail', 'entries');
 	d1.account = bank_account;
 	d1.debit = doc.outstanding_amount;
 

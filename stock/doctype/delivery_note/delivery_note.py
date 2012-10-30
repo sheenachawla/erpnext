@@ -294,11 +294,14 @@ class DocType(StockController):
 		
 	def get_total_valuation_amount(self):
 		total_valuation_amount = 0
-		for item in getlist(self.doclist, 'delivery_note_details'):
+		for item in getlist(self.doclist, 'delivery_note_items'):
 			if webnotes.conn.get_value("Item", item.item_code, "is_stock_item") == "Yes":
-				total_valuation_amount += self.get_valuation_rate(self.doc.posting_date, 
+				purchase_rate = self.get_valuation_rate(self.doc.posting_date,
 					self.doc.posting_time, item.item_code, item.warehouse, item.qty, 
-					item.serial_no) * flt(item.qty)
+					item.serial_no)
+				item.purchase_rate = purchase_rate
+				total_valuation_amount +=  purchase_rate * flt(item.qty)
+				item.save()
 
 		return total_valuation_amount
 	

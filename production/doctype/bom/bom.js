@@ -91,13 +91,13 @@ cur_frm.cscript.rate = cur_frm.cscript.qty;
 
 cur_frm.cscript.is_default = function(doc, dt, dn) {
 	if (doc.docstatus == 1)
-		$c_obj(make_doclist(dt, dn), 'manage_default_bom', '', '');
+		$c_obj(wn.model.get_doclist(dt, dn), 'manage_default_bom', '', '');
 }
 
 
 cur_frm.cscript.is_active = function(doc, dt, dn) {
 	if (!doc.__islocal)
-		$c_obj(make_doclist(dt, dn), 'manage_active_bom', '', '');
+		$c_obj(wn.model.get_doclist(dt, dn), 'manage_active_bom', '', '');
 }
 
 

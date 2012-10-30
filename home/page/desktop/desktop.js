@@ -28,7 +28,7 @@ erpnext.desktop.refresh = function() {
 }
 
 erpnext.desktop.add_classes = function() {
-	$.each(wn.model.get("Desktop Item"), function(i, v) {
+	$.each(wn.meta.get("Desktop Item"), function(i, v) {
 		var g = v.gradient.split(",");
 		v.start = g[0];
 		v.middle = g[1];

@@ -96,24 +96,24 @@ base_purchase_receipt = [
 		"item_code": "Home Desktop 100",
 		"qty": 10, "received_qty": 10, "rejected_qty": 0, "rate": 50, 
 		"amount": 500, "warehouse": "Default Warehouse", "item_tax_amount": 250,
-		"parentfield": "purchase_receipt_details",
+		"parentfield": "purchase_receipt_items",
 		"conversion_factor": 1, "uom": "Nos", "stock_uom": "Nos"
 	},
 	{
 		"doctype": "Purchase Taxes and Charges", "charge_type": "Actual",
 		"account_head": "Shipping Charges - %s" % abbr, "rate": 100, "tax_amount": 100,
-		"category": "Valuation and Total", "parentfield": "purchase_tax_details",
+		"category": "Valuation and Total", "parentfield": "taxes_and_charges",
 		"cost_center": "Default Cost Center - %s" % abbr
 	}, 
 	{
 		"doctype": "Purchase Taxes and Charges", "charge_type": "Actual",
 		"account_head": "VAT - Test - %s" % abbr, "rate": 120, "tax_amount": 120,
-		"category": "Total", "parentfield": "purchase_tax_details"
+		"category": "Total", "parentfield": "taxes_and_charges"
 	},
 	{
 		"doctype": "Purchase Taxes and Charges", "charge_type": "Actual",
 		"account_head": "Customs Duty - %s" % abbr, "rate": 150, "tax_amount": 150,
-		"category": "Valuation", "parentfield": "purchase_tax_details",
+		"category": "Valuation", "parentfield": "taxes_and_charges",
 		"cost_center": "Default Cost Center - %s" % abbr
 	}
 ]
@@ -143,7 +143,6 @@ class TestPurchaseReceipt(unittest.TestCase):
 			from `tabGL Entry` where voucher_no = %s""", dl.doclist[0].name)
 		
 		gle_map = dict(((entry[0], entry) for entry in gle))
-		
 		self.assertEquals(gle_map[debit_account], (debit_account, stock_value, 0.0))
 		self.assertEquals(gle_map[credit_account], (credit_account, 0.0, stock_value))
 		

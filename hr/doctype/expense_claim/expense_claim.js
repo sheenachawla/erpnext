@@ -48,7 +48,7 @@ cur_frm.cscript.refresh = function(doc,cdt,cdn){
 
 cur_frm.cscript.employee = function(doc,cdt,cdn){
 	if(doc.employee){
-		$c_obj(make_doclist(doc.doctype, doc.name),'set_approver','', function(r,rt){
+		$c_obj(wn.model.get_doclist(doc.doctype, doc.name),'set_approver','', function(r,rt){
 			if(r.message){
 				doc.employee_name = r.message['emp_nm'];
 				wn.meta.get_docfield(doc.doctype, 'exp_approver' , doc.name).options = r.message['app_lst'];				
@@ -126,7 +126,7 @@ cur_frm.cscript.approve = function(doc,cdt,cdn){
 				// sending...
 				$i('approve_voucher_dialog_response').innerHTML = 'Processing...';
 				
-				$c_obj(make_doclist(this.doc.doctype, this.doc.name),'approve_voucher','', function(r,rt){
+				$c_obj(wn.model.get_doclist(this.doc.doctype, this.doc.name),'approve_voucher','', function(r,rt){
 					if(r.message == 'Approved'){
 						$i('approve_voucher_dialog_response').innerHTML = 'Approved';
 						refresh_field('approval_status');
@@ -194,7 +194,7 @@ cur_frm.cscript.reject = function(doc,cdt,cdn){
 				// sending...
 				$i('reject_voucher_dialog_response').innerHTML = 'Processing...';
 				
-				$c_obj(make_doclist(this.doc.doctype, this.doc.name),'reject_voucher','', function(r,rt){
+				$c_obj(wn.model.get_doclist(this.doc.doctype, this.doc.name),'reject_voucher','', function(r,rt){
 					if(r.message == 'Rejected'){
 						$i('reject_voucher_dialog_response').innerHTML = 'Rejected';
 						refresh_field('approval_status');
@@ -231,7 +231,7 @@ cur_frm.cscript.reject = function(doc,cdt,cdn){
 //=================================================================================
 cur_frm.cscript.update_voucher = function(doc){
 
-	$c_obj(make_doclist(doc.doctype, doc.name),'update_voucher','',function(r, rt){
+	$c_obj(wn.model.get_doclist(doc.doctype, doc.name),'update_voucher','',function(r, rt){
 		refresh_field('expense_voucher_details');
 		doc.__unsaved = 0;
 		cur_frm.refresh_header();

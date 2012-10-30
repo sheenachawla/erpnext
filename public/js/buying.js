@@ -97,11 +97,12 @@ erpnext.Buying = erpnext.Transaction.extend({
 	},
 	set_schedule_date: function(item_table_field) {
 		// if children, then set schedule date based on lead time days
-		if(wn.model.has_children(this.frm.doc.doctype, this.frm.doc.name, item_table_field)) {
+		if(wn.model.has_children(this.frm.doc.doctype, this.frm.doc.name,
+				item_table_field)) {
 			$c_obj(make_doclist(this.frm.doc.doctype, this.frm.doc.name),
 				"set_schedule_date", { item_table_field: item_table_field }, function(r) {
 					refresh_field(item_table_field);
-				})
+				});
 		}
 	},
 	setup_get_query: function() {

@@ -4,7 +4,7 @@
   "docstatus": 0, 
   "creation": "2012-10-26 15:45:32", 
   "modified_by": "Administrator", 
-  "modified": "2012-10-26 16:22:18"
+  "modified": "2012-10-29 17:47:06"
  }, 
  {
   "style": "sprite-image sprite-account", 
@@ -17,7 +17,26 @@
   "label": "Accounts"
  }, 
  {
+  "name": "__common__", 
+  "parent": "Accounts", 
+  "doctype": "Desktop Item Role", 
+  "parenttype": "Desktop Item", 
+  "parentfield": "desktop_item_roles"
+ }, 
+ {
   "name": "Accounts", 
   "doctype": "Desktop Item"
+ }, 
+ {
+  "role": "Accounts Manager", 
+  "doctype": "Desktop Item Role"
+ }, 
+ {
+  "role": "HR Manager", 
+  "doctype": "Desktop Item Role"
+ }, 
+ {
+  "role": "Maintenance Manager", 
+  "doctype": "Desktop Item Role"
  }
 ]

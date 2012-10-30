@@ -580,7 +580,7 @@ class DocType(TransactionBase):
 		)
 	
 		# tax table gl entries
-		for tax in getlist(self.doclist, "purchase_tax_details"):
+		for tax in self.doclist.get({"parentfield": "taxes_and_charges"}):
 			gl_entries.append(
 				self.get_gl_dict({
 					"account": tax.account_head,
@@ -592,7 +592,7 @@ class DocType(TransactionBase):
 			)
 		
 		# item gl entries
-		for item in getlist(self.doclist, 'entries'):
+		for item in getlist(self.doclist, 'sales_invoice_items'):
 			# income account gl entries
 			gl_entries.append(
 				self.get_gl_dict({
@@ -608,7 +608,9 @@ class DocType(TransactionBase):
 			if auto_inventory_accounting and item.delivery_note and \
 					webnotes.conn.get_value("Item", item.item_code, "is_stock_item")=="Yes":
 				# to-do
-				valuation_amount = 0 # as per delivery note
+				purchase_rate = webnotes.conn.get_value("Delivery Note Item", 
+					delivery_note_item, "purchase_rate")
+				valuation_amount =  purchase_rate * item.qty
 				# expense account gl entries
 				gl_entries.append(
 					self.get_gl_dict({
@@ -723,8 +725,8 @@ class DocType(TransactionBase):
 			if cint(self.doc.update_stock) == 1:
 				sl = get_obj('Stock Ledger')
 				sl.update_serial_record(self, 'entries', is_submit = 0, is_incoming = 0)
-				sl.update_serial_record(self, 'delivery_note_packing_items', is_submit = 0, is_incoming = 0)
-				
+				sl.update_serial_record(self, 'delivery_note_packing_items', 
+					is_submit = 0, is_incoming = 0)				
 				self.update_stock_ledger(update_stock = -1)
 		else:
 			sales_com_obj = get_obj(dt = 'Sales Common')
@@ -750,12 +752,13 @@ class DocType(TransactionBase):
 	def validate_notification_email_id(self):
 		if self.doc.notification_email_address:
 			from webnotes.utils import validate_email_add
-			for add in self.doc.notification_email_address.replace('\n', '').replace(' ', '').split(","):
+			for add in self.doc.notification_email_address.replace('\n', '').\
+					replace(' ', '').split(","):
 				if add and not validate_email_add(add):
 					msgprint("%s is not a valid email address" % add, raise_exception=1)
 		else:
-			msgprint("Notification Email Addresses not specified for recurring invoice",
-				raise_exception=1)
+			msgprint("Notification Email Addresses not specified for recurring invoice"
+				, raise_exception=1)
 		
 		
 	def on_update_after_submit(self):
@@ -769,19 +772,23 @@ class DocType(TransactionBase):
 			if not self.doc.recurring_type:
 				msgprint("Please select recurring type", raise_exception=1)
 			elif not self.doc.invoice_period_from_date or not self.doc.invoice_period_to_date:
-				msgprint("Invoice period from date and to date is mandatory for recurring invoice", raise_exception=1)
+				msgprint("Invoice period from date and to date is mandatory for recurring invoice"
+					, raise_exception=1)
 			self.set_next_date()
 			if not self.doc.recurring_id:
 				webnotes.conn.set(self.doc, 'recurring_id', make_autoname('RECINV/.#####'))
 		elif self.doc.recurring_id:
-			webnotes.conn.sql("""update `tabSales Invoice` set convert_into_recurring_invoice = 0 where recurring_id = %s""", self.doc.recurring_id)
+			webnotes.conn.sql("""update `tabSales Invoice` 
+				set convert_into_recurring_invoice = 0 where recurring_id = %s"""
+				, self.doc.recurring_id)
 
 	def set_next_date(self):
 		""" Set next date on which auto invoice will be created"""
 
 		if not self.doc.repeat_on_day_of_month:
-			msgprint("""Please enter 'Repeat on Day of Month' field value. \nThe day of the month on which auto invoice 
-						will be generated e.g. 05, 28 etc.""", raise_exception=1)
+			msgprint("""Please enter 'Repeat on Day of Month' field value. \n
+				The day of the month on which auto invoice 
+				will be generated e.g. 05, 28 etc.""", raise_exception=1)
 
 		import datetime
 		mcount = {'Monthly': 1, 'Quarterly': 3, 'Half-yearly': 6, 'Yearly': 12}

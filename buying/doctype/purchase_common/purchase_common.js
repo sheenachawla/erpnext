@@ -29,7 +29,7 @@ cur_frm.cscript.load_taxes = function(doc, cdt, cdn, callback) {
 			callback(doc, cdt, cdn);
 		}
 	} else {
-		$c_obj(make_doclist(doc.doctype, doc.name),'load_default_taxes','',function(r,rt){
+		$c_obj(wn.model.get_doclist(doc.doctype, doc.name),'load_default_taxes','',function(r,rt){
 			refresh_field('taxes_and_charges');
 			if(callback) callback(doc, cdt, cdn);
 		});
@@ -44,14 +44,14 @@ cur_frm.cscript.load_defaults = function(doc, dt, dn, callback) {
 	if(!cur_frm.doc.__islocal) { return; }
 
 	doc = locals[doc.doctype][doc.name];
-	var fields_to_refresh = LocalDB.set_default_values(doc);
+	var fields_to_refresh = wn.model.set_default_values(doc);
 	if(fields_to_refresh) { refresh_many(fields_to_refresh); }
 
 	fields_to_refresh = null;
 	var children = getchildren(cur_frm.cscript.tname, doc.name, cur_frm.cscript.fname);
 	if(!children) { return; }
 	for(var i=0; i<children.length; i++) {
-		LocalDB.set_default_values(children[i]);
+		wn.model.set_default_values(children[i]);
 	}
 	refresh_field(cur_frm.cscript.fname);
 	cur_frm.cscript.load_taxes(doc, dt, dn, callback);
@@ -62,7 +62,7 @@ cur_frm.cscript.update_item_details = function(doc, dt, dn, callback) {
 	if(!cur_frm.doc.__islocal) { return; }
 	var children = getchildren(cur_frm.cscript.tname, doc.name, cur_frm.cscript.fname);
 	if(children) {
-		$c_obj(make_doclist(doc.doctype, doc.name), 'get_item_details', '',
+		$c_obj(wn.model.get_doclist(doc.doctype, doc.name), 'get_item_details', '',
 		function(r, rt) {
 			if(!r.exc) {
 				refresh_field(cur_frm.cscript.fname);

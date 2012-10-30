@@ -32,7 +32,7 @@ cur_frm.fields_dict['packing_slip_items'].grid.get_field('item_code').get_query 
 // Fetch item details
 cur_frm.cscript.item_code = function(doc, cdt, cdn) {
 	if(locals[cdt][cdn].item_code) {
-		$c_obj(make_doclist(cdt, cdn), 'get_packing_slip_items', doc.delivery_note, function(r, rt) {
+		$c_obj(wn.model.get_doclist(cdt, cdn), 'get_packing_slip_items', doc.delivery_note, function(r, rt) {
 			if(r.exc) {
 				msgprint(r.exc);
 			} else {
@@ -62,7 +62,7 @@ cur_frm.cscript.refresh = function(doc, dt, dn) {
 
 
 cur_frm.cscript.update_packing_slip_items = function(doc) {
-	$c_obj(make_doclist(doc.doctype, doc.name), 'update_packing_slip_items', '', function(r, rt) {
+	$c_obj(wn.model.get_doclist(doc.doctype, doc.name), 'update_packing_slip_items', '', function(r, rt) {
 		if(r.exc) {
 			msgprint(r.exc);
 		} else {

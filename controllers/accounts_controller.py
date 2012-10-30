@@ -228,7 +228,8 @@ class AccountsController(TransactionBase):
 			
 			# calculate amount and net total
 			item.amount = flt((item.qty * item.rate) - \
-				((item.discount / 100.0) * item.rate), self.item_precision["amount"])
+				((flt(item.discount, self.item_precision["amount"]) / 100.0) * item.rate), 
+				self.item_precision["amount"])
 			self.doc.net_total += item.amount
 			
 		self.doc.net_total = flt(self.doc.net_total, self.main_precision["net_total"])

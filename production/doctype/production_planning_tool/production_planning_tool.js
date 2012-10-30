@@ -42,9 +42,9 @@ cur_frm.cscript.sales_order = function(doc,cdt,cdn) {
 cur_frm.cscript.download_raw_material = function(doc, cdt, cdn) {
 	var callback = function(r, rt){
 		if (r.message) 
-			$c_obj_csv(make_doclist(cdt, cdn), 'download_raw_materials', '', '');
+			$c_obj_csv(wn.model.get_doclist(cdt, cdn), 'download_raw_materials', '', '');
 	}
-	$c_obj(make_doclist(cdt, cdn), 'validate_data', '', callback)
+	$c_obj(wn.model.get_doclist(cdt, cdn), 'validate_data', '', callback)
 }
 
 //-------------------------------------------------------------------------------
