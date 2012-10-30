@@ -21,9 +21,9 @@ from webnotes.utils import cint, flt
 from webnotes.model.code import get_obj
 import webnotes.model.doctype
 
-from controllers.transaction_controller import TransactionController
+from controllers.buying_controller import BuyingController
 
-class DocType(TransactionController):
+class DocType(BuyingController):
 	def setup(self):
 		self.item_table_field = "purchase_request_items"
 		

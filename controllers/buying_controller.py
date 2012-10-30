@@ -1,0 +1,174 @@
+# ERPNext - web based ERP (http://erpnext.com)
+# Copyright (C) 2012 Web Notes Technologies Pvt Ltd
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+from __future__ import unicode_literals
+import webnotes
+import webnotes.model
+from webnotes import _, msgprint, DictObj
+from webnotes.utils import add_days, getdate, flt, cint
+from webnotes.model.code import get_obj
+
+import stock
+from controllers.transaction_controller import TransactionController
+
+class BuyingController(TransactionController):
+	def validate(self):
+		super(BuyingController, self).validate()
+		self.validate_mandatory()
+		self.validate_items()
+		
+	def validate_mandatory(self):
+		if self.doc.amended_from and not self.doc.amendment_date:
+			from webnotes.model import doctype
+			msgprint(_("Please specify: %(label)s") % {"label":
+				webnotes.model.doctype.get(self.doc.doctype).get_label("amendment_date")},
+				raise_exception=1)
+		
+	def validate_items(self):
+		"""
+			validate the following:
+			* qty
+			* is_stock_item
+			*
+		"""
+		import stock
+		from webnotes.model.utils import validate_condition
+		
+		item_doclist = self.doclist.get({"parentfield": self.item_table_field})
+		
+		stock_items = []
+		non_stock_items = []
+		
+		for item in item_doclist:
+			# validate qty
+			validate_condition(item, "qty", ">=", 0)
+			
+			# set projected qty
+			item.projected_qty = stock.get_projected_qty(item.item_code,
+				item.warehouse).get("projected_qty")
+			
+			item_controller = get_obj("Item", item.item_code)
+			
+			# validations for stock item
+			self.validate_stock_item(item_controller.doc, item)
+			
+			# TODO validate with prevdoc
+			
+			# separate out stock and non-stop items for duplicate checking
+			if item_controller.doc.is_stock_item == "Yes":
+				stock_items.append(item_controller.doc.name)
+			else:
+				non_stock_items.append(item_controller.doc.name)
+		
+		self.check_duplicate(item_doclist, stock_items, non_stock_items)
+			
+	def validate_stock_item(self, item, child):
+		stock.validate_end_of_life(item.name, item.end_of_life)
+		
+		msg = _("Row # %(idx)s, Item %(item_code)s: ") % {"idx": child.idx,
+			"item_code": item.name}
+		
+		if item.is_stock_item == "Yes" and not child.warehouse:
+			msgprint((msg + _("""Please specify Warehouse for Stock Item""")),
+				raise_exception=1)
+		
+		if item.is_purchase_item != "Yes" and item.is_subcontracted_item != "Yes":
+			msgprint((msg + _("""Not a Purchase / Sub-contracted Item""")),
+				raise_exception=1)
+				
+	def check_duplicate(self, item_doclist, stock_items, non_stock_items):
+		from webnotes.model.utils import check_duplicate
+		
+		# prepare stock item fields for duplicate checking
+		prevdoc_fields = webnotes.model.get_prevdoc_fields(self.doc.doctype)
+		prevdoc_detail_fields = [(f + "_item") for f in prevdoc_fields]
+		stock_item_fields = ["schedule_date", "item_code", "description", "warehouse",
+			"batch_no"] + prevdoc_fields + prevdoc_detail_fields
+		
+		# duplicate checking for stock items
+		check_duplicate(item_doclist.get({"item_code": ["in", stock_items]}),
+			stock_item_fields)
+		
+		# duplicate checking for non-stock items
+		check_duplicate(item_doclist.get({"item_code": ["in", non_stock_items]}),
+			["schedule_date", "item_code", "description"])
+	
+	def set_schedule_date(self, item_table_field=None):
+		"""set schedule date in items as posting_date + lead_time_days"""
+		prevdoc_fields = webnotes.model.get_prevdoc_fields(self.doc.doctype)
+		
+		if not item_table_field:
+			item_table_field = webnotes.form_dict.get("item_table_field") or \
+				self.item_table_field
+		
+		for d in self.doclist.get({"parenfield": item_table_field}):
+			lead_time_days = webnotes.conn.sql("""select ifnull(lead_time_days, 0)
+				from `tabItem` where name=%s and (ifnull(end_of_life, "")="" 
+				or end_of_life="0000-00-00" or end_of_life > now())""", (d.item_code,))
+			lead_time_days = lead_time_days and cint(lead_time_days[0][0]) or 0
+
+			if lead_time_days:
+				d.lead_time_date = add_days(self.doc.posting_date, lead_time_days)
+				if not any([d.fields.get(f) for f in prevdoc_fields]):
+					# i.e. if not mapped using doctype mapper
+					d.schedule_date = add_days(self.doc.posting_date, lead_time_days)
+					
+	def get_last_purchase_details(self, item_code, doc_name):
+		query = """select parent.name, parent.posting_date, item.conversion_factor,
+			item.ref_rate, item.discount, item.rate %s
+			from `tab%s` parent, `tab%s` item
+			where parent.name = item.parent and item.item_code = %s 
+			and parent.docstatus = 1 and parent.name != %s
+			order by parent.posting_date desc, %s parent.name desc limit 1"""
+			
+		last_purchase_order_item = webnotes.conn.sql(query % \
+			("Purchase Order", "Purchase Order Item", "%s", "%s", ""),
+			(item_code, doc_name), as_dict=1)
+		
+		last_purchase_receipt_item = webnotes.conn.sql(query % \
+			("Purchase Receipt", "Purchase Receipt Item", "%s", "%s",
+			"parent.posting_time desc, "), (item_code, doc_name), as_dict=1)
+		
+		# get the last purchased item, by comparing dates	
+		if last_purchase_order_item and last_purchase_receipt_item:
+			purchase_order_date = getdate(last_purchase_order_item[0].posting_date)
+			purchase_receipt_date = getdate(last_purchase_receipt_item[0].posting_date)
+			if purchase_order_date > purchase_receipt_date:
+				last_purchase_item = last_purchase_order_item[0]
+			else:
+				last_purchase_item = last_purchase_receipt_item[0]
+		elif last_purchase_order_item:
+			last_purchase_item = last_purchase_order_item[0]
+		elif last_purchase_receipt_item:
+			last_purchase_item = last_purchase_receipt_item[0]
+		else:
+			# if none exists
+			return DictObj(), getdate("2000-01-01")
+		
+		last_purchase_date = getdate(last_purchase_item.posting_date)
+		conversion_factor = flt(last_purchase_item.conversion_factor)
+		
+		# prepare last purchase details, dividing by conversion factor
+		last_purchase_details = DictObj({
+			"ref_rate": flt((last_purchase_item.ref_rate / conversion_factor),
+				self.precision.item.ref_rate),
+			"rate": flt((last_purchase_item.rate / conversion_factor),
+				self.precision.item.rate),
+			"discount": flt(last_purchase_item.discount, self.precision.item.discount),
+			"last_purchase_date": last_purchase_date
+		})
+		
+		return last_purchase_details

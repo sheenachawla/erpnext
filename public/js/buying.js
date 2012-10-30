@@ -87,6 +87,14 @@ erpnext.Buying = erpnext.Transaction.extend({
 			});
 		}
 	},
+	is_stopped: function() {
+		if(this.frm.doc.docstatus != 1) {
+			var msg = repl("%(doctype)s must be submitted to stop/resume it",
+				this.frm.doc);
+			msgprint(msg);
+			throw msg;
+		}
+	},
 	set_schedule_date: function(item_table_field) {
 		// if children, then set schedule date based on lead time days
 		if(wn.model.has_children(this.frm.doc.doctype, this.frm.doc.name, item_table_field)) {

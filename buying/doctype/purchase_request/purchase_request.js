@@ -60,7 +60,7 @@ erpnext.buying.PurchaseRequest = erpnext.Buying.extend({
 		this.frm.clear_custom_buttons();
 		
 		if(this.frm.doc.docstatus == 1) {
-			if(this.frm.doc.status == "Stopped") {
+			if(this.frm.doc.is_stopped == 1) {
 				this.frm.add_custom_button("Resume Purchase Request",
 					function() { me.resume_purchase_request(); }, "icon-play");
 			} else {
@@ -87,22 +87,21 @@ erpnext.buying.PurchaseRequest = erpnext.Buying.extend({
 			["Purchase Request Item", "Purchase Order Item"]], this.frm.doc.name);
 	},
 	stop_purchase_request: function() {
-		// TODO
-		// this.frm.doc.status = "Stopped";
-		// this.frm.save();
+		this.frm.doc.is_stopped = 1;
+		this.frm.saveupdate();
 	},
 	resume_purchase_request: function() {
-		// TODO
-		// this.frm.doc.status = "Submitted";
-		// this.frm.save();
+		this.frm.doc.is_stopped = 0;
+		this.frm.saveupdate();
 	},
 	send_sms: function(me) {
 		// TODO
 	},
 	load_precision_maps: function() {
 		// TODO
-		// this.frm.main_precision = wn.model.get_precision_map("Purchase Request");
-		// this.frm.item_precision = wn.model.get_precision_map("Purchase Request Item");
+		// if(!this.frm.precision) this.frm.precision = {};
+		// this.frm.precision.main = wn.model.get_precision_map("Purchase Request");
+		// this.frm.precision.item = wn.model.get_precision_map("Purchase Request Item");
 	}
 })
 
