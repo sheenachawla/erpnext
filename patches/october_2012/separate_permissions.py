@@ -17,6 +17,8 @@
 from __future__ import unicode_literals
 def execute():
 	import webnotes
-	webnotes.conn.sql("""update tabDocPerm set document_type = parent""")
+	webnotes.conn.sql("""update tabDocPerm set document_type = parent where parent is not null""")
 	webnotes.conn.sql("""update tabDocPerm set parent = null, 
 		parenttype = null, parentfield = null""")
+		
+	webnotes.get_controller("DocType", "DocPerm").reset_permissions()
