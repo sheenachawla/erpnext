@@ -28,13 +28,13 @@ abbr = webnotes.conn.get_value("Company", company, "abbr")
 def load_data():
 	# create default warehouse
 	if not webnotes.conn.exists("Warehouse", "Default Warehouse"):
-		webnotes.model.insert({"doctype": "Warehouse", 
+		webnotes.insert({"doctype": "Warehouse", 
 			"warehouse_name": "Default Warehouse",
 			"warehouse_type": "Stores"})
 	
 	# create UOM: Nos.
 	if not webnotes.conn.exists("UOM", "Nos"):
-		webnotes.model.insert({"doctype": "UOM", "uom_name": "Nos"})
+		webnotes.insert({"doctype": "UOM", "uom_name": "Nos"})
 	
 	from webnotes.tests import insert_test_data
 	# create item groups and items
@@ -43,37 +43,37 @@ def load_data():
 	insert_test_data("Item")
 
 	# create supplier type
-	webnotes.model.insert({"doctype": "Supplier Type", "supplier_type": "Manufacturing"})
+	webnotes.insert({"doctype": "Supplier Type", "supplier_type": "Manufacturing"})
 	
 	# create supplier
-	webnotes.model.insert({"doctype": "Supplier", "supplier_name": "East Wind Inc.",
+	webnotes.insert({"doctype": "Supplier", "supplier_name": "East Wind Inc.",
 		"supplier_type": "Manufacturing", "company": company})
 		
 	# create default cost center if not exists
 	if not webnotes.conn.exists("Cost Center", "Default Cost Center - %s" % abbr):
-		dl = webnotes.model.insert({"doctype": "Cost Center", "group_or_ledger": "Ledger",
+		dl = webnotes.insert({"doctype": "Cost Center", "group_or_ledger": "Ledger",
 			"cost_center_name": "Default Cost Center", 
 			"parent_cost_center": "Root - %s" % abbr,
 			"company_name": company, "company_abbr": abbr})
 		
 	# create account heads for taxes
 	
-	webnotes.model.insert({"doctype": "Account", "account_name": "Shipping Charges",
+	webnotes.insert({"doctype": "Account", "account_name": "Shipping Charges",
 		"parent_account": "Stock Expenses - %s" % abbr, "company": company,
 		"group_or_ledger": "Ledger"})
 		
-	webnotes.model.insert({"doctype": "Account", "account_name": "Customs Duty",
+	webnotes.insert({"doctype": "Account", "account_name": "Customs Duty",
 		"parent_account": "Stock Expenses - %s" % abbr, "company": company,
 		"group_or_ledger": "Ledger"})
-	webnotes.model.insert({"doctype": "Account", "account_name": "Tax Assets",
+	webnotes.insert({"doctype": "Account", "account_name": "Tax Assets",
 		"parent_account": "Current Assets - %s" % abbr, "company": company,
 		"group_or_ledger": "Group"})
-	webnotes.model.insert({"doctype": "Account", "account_name": "VAT - Test",
+	webnotes.insert({"doctype": "Account", "account_name": "VAT - Test",
 		"parent_account": "Tax Assets - %s" % abbr, "company": company,
 		"group_or_ledger": "Ledger"})
 		
 	# create BOM
-	webnotes.model.insert([
+	webnotes.insert([
 		{"doctype": "BOM", "item": "Nebula 7", "quantity": 1,
 			"is_active": "Yes", "is_default": 1, "uom": "Nos"},
 		{"doctype": "BOM Operation", "operation_no": 1, "parentfield": "bom_operations",
@@ -96,24 +96,24 @@ base_purchase_receipt = [
 		"item_code": "Home Desktop 100",
 		"qty": 10, "received_qty": 10, "rejected_qty": 0, "rate": 50, 
 		"amount": 500, "warehouse": "Default Warehouse", "item_tax_amount": 250,
-		"parentfield": "purchase_receipt_items",
+		"parentfield": "purchase_receipt_details",
 		"conversion_factor": 1, "uom": "Nos", "stock_uom": "Nos"
 	},
 	{
 		"doctype": "Purchase Taxes and Charges", "charge_type": "Actual",
 		"account_head": "Shipping Charges - %s" % abbr, "rate": 100, "tax_amount": 100,
-		"category": "Valuation and Total", "parentfield": "taxes_and_charges",
+		"category": "Valuation and Total", "parentfield": "purchase_tax_details",
 		"cost_center": "Default Cost Center - %s" % abbr
 	}, 
 	{
 		"doctype": "Purchase Taxes and Charges", "charge_type": "Actual",
 		"account_head": "VAT - Test - %s" % abbr, "rate": 120, "tax_amount": 120,
-		"category": "Total", "parentfield": "taxes_and_charges"
+		"category": "Total", "parentfield": "purchase_tax_details"
 	},
 	{
 		"doctype": "Purchase Taxes and Charges", "charge_type": "Actual",
 		"account_head": "Customs Duty - %s" % abbr, "rate": 150, "tax_amount": 150,
-		"category": "Valuation", "parentfield": "taxes_and_charges",
+		"category": "Valuation", "parentfield": "purchase_tax_details",
 		"cost_center": "Default Cost Center - %s" % abbr
 	}
 ]
@@ -135,7 +135,7 @@ class TestPurchaseReceipt(unittest.TestCase):
 	def run_purchase_receipt_test(self, purchase_receipt, debit_account, 
 			credit_account, stock_value):
 		from webnotes.model.doclist import DocList	
-		dl = webnotes.model.insert(DocList(purchase_receipt))
+		dl = webnotes.insert(DocList(purchase_receipt))
 		dl.submit()
 		dl.load_from_db()
 						
@@ -143,6 +143,7 @@ class TestPurchaseReceipt(unittest.TestCase):
 			from `tabGL Entry` where voucher_no = %s""", dl.doclist[0].name)
 		
 		gle_map = dict(((entry[0], entry) for entry in gle))
+		
 		self.assertEquals(gle_map[debit_account], (debit_account, stock_value, 0.0))
 		self.assertEquals(gle_map[credit_account], (credit_account, 0.0, stock_value))
 		

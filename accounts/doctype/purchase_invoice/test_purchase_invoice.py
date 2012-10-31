@@ -30,23 +30,23 @@ abbr = webnotes.conn.get_value("Company", company, "abbr")
 def load_data():
 	test_purchase_receipt.load_data()
 	
-	webnotes.model.insert({"doctype": "Account", "account_name": "Excise Duty",
+	webnotes.insert({"doctype": "Account", "account_name": "Excise Duty",
 		"parent_account": "Tax Assets - %s" % abbr, "company": company,
 		"group_or_ledger": "Ledger"})
 	
-	webnotes.model.insert({"doctype": "Account", "account_name": "Education Cess",
+	webnotes.insert({"doctype": "Account", "account_name": "Education Cess",
 		"parent_account": "Tax Assets - %s" % abbr, "company": company,
 		"group_or_ledger": "Ledger"})
 	
-	webnotes.model.insert({"doctype": "Account", "account_name": "S&H Education Cess",
+	webnotes.insert({"doctype": "Account", "account_name": "S&H Education Cess",
 		"parent_account": "Tax Assets - %s" % abbr, "company": company,
 		"group_or_ledger": "Ledger"})
 		
-	webnotes.model.insert({"doctype": "Account", "account_name": "CST",
+	webnotes.insert({"doctype": "Account", "account_name": "CST",
 		"parent_account": "Direct Expenses - %s" % abbr, "company": company,
 		"group_or_ledger": "Ledger"})
 		
-	webnotes.model.insert({"doctype": "Account", "account_name": "Discount",
+	webnotes.insert({"doctype": "Account", "account_name": "Discount",
 		"parent_account": "Direct Expenses - %s" % abbr, "company": company,
 		"group_or_ledger": "Ledger"})
 		
@@ -140,7 +140,7 @@ class TestPurchaseReceipt(unittest.TestCase):
 
 	def test_purchase_invoice(self):
 		from webnotes.model.doclist import DocList
-		controller = webnotes.model.insert(DocList(purchase_invoice_doclist))
+		controller = webnotes.insert(DocList(purchase_invoice_doclist))
 		controller.load_from_db()
 		dl = controller.doclist
 
@@ -184,7 +184,7 @@ class TestPurchaseReceipt(unittest.TestCase):
 		sample_purchase_invoice_doclist[2]["amount"] = 0
 		
 		
-		controller = webnotes.model.insert(DocList(sample_purchase_invoice_doclist))
+		controller = webnotes.insert(DocList(sample_purchase_invoice_doclist))
 		controller.load_from_db()
 		dl = controller.doclist
 		
@@ -219,7 +219,7 @@ class TestPurchaseReceipt(unittest.TestCase):
 		
 	def test_gl_entries(self):
 		from webnotes.model.doclist import DocList
-		controller = webnotes.model.insert(DocList(purchase_invoice_doclist))
+		controller = webnotes.insert(DocList(purchase_invoice_doclist))
 		controller.submit()
 		controller.load_from_db()
 		dl = controller.doclist
