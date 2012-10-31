@@ -22,3 +22,4 @@ def execute():
 		parenttype = null, parentfield = null""")
 		
 	webnotes.get_controller("DocType", "DocPerm").reset_permissions()
+	webnotes.get_controller("DocType", "DocType").reset_permissions()	

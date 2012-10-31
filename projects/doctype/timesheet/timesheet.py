@@ -24,9 +24,6 @@ from webnotes import msgprint
 
 sql = webnotes.conn.sql
 
-	
-
-
 class DocType:
   def __init__(self,doc,doclist=[]):
     self.doc = doc
@@ -82,10 +79,4 @@ class DocType:
   
   def on_update(self):
     self.calculate_total_hr()
-    webnotes.conn.set(self.doc, 'status', 'Draft')
-  
-  def on_submit(self):
-    webnotes.conn.set(self.doc, 'status', 'Submitted')
-  
-  def on_cancel(self):
-    webnotes.conn.set(self.doc, 'status', 'Cancelled')
+ 
