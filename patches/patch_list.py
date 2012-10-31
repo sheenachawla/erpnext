@@ -470,5 +470,9 @@ patch_list = [
 	{
 		'patch_module': 'patches.october_2012',
 		'patch_file': 'purchase_sales_field_rename',
+	},
+	{
+		'patch_module': 'patches.october_2012',
+		'patch_file': 'separate_permissions',
 	}
 ]
