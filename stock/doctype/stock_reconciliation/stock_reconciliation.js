@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-cur_frm.cscript.refresh = function(doc) {	
+cur_frm.cscript.refresh = function(doc) {
 	if (doc.docstatus) hide_field('steps');
 	
 	cur_frm.set_intro("");

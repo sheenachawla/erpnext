@@ -171,14 +171,20 @@ class DocType:
 	def get_fifo_inventory_values(self, in_rate, actual_qty):
 		# add batch to fcfs balance
 		if actual_qty > 0:
-			self.fcfs_bal.append([flt(actual_qty), flt(in_rate)])
-
+			if self.fcfs_bal[0][0] < 0: # if existing negative stock
+				qty = flt(actual_qty) + flt(self.fcfs_bal[0][0])
+				rate = qty > 0 and in_rate or 0
+				self.fcfs_bal[0] = [qty, rate]
+			else:
+				self.fcfs_bal.append([flt(actual_qty), flt(in_rate)])
+			
 		# remove from fcfs balance
 		else:
 			incoming_cost = 0
 			withdraw = flt(abs(actual_qty))
 			while withdraw:
 				if not self.fcfs_bal:
+					self.fcfs_bal.append([-withdraw, 0])
 					break # nothing in store
 				
 				batch = self.fcfs_bal[0]
@@ -189,18 +195,17 @@ class DocType:
 					withdraw -= batch[0]
 					self.fcfs_bal.pop(0)
 					
-
 				else:
 					# all from current batch
 					incoming_cost += flt(batch[1])*flt(withdraw)
 					batch[0] -= withdraw
 					withdraw = 0
 			
-			in_rate = incoming_cost / flt(abs(actual_qty))
+			in_rate = incoming_cost / flt(abs(actual_qty))				
 
 		fcfs_val = sum([flt(d[0])*flt(d[1]) for d in self.fcfs_bal])
 		fcfs_qty = sum([flt(d[0]) for d in self.fcfs_bal])
-		val_rate = fcfs_qty and fcfs_val / fcfs_qty or 0
+		val_rate = fcfs_qty > 0 and fcfs_val / fcfs_qty or 0
 		
 		return val_rate, in_rate
 

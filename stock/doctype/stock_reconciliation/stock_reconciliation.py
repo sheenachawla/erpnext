@@ -30,33 +30,43 @@ class DocType:
 		self.data = []
 
 	def get_template(self):
-		return [['Item Code', 'Warehouse', 'Quantity', 'Incoming Rate']]
+		return [['Item Code', 'Warehouse', 'Quantity', 'Incoming Rate', 'Valuation Rate']]
 
 
-	def read_csv_content(self, submit = 1):
-		"""Get csv data"""
-		if submit:
-			from webnotes.utils.datautils import read_csv_content_from_attached_file
-			data = read_csv_content_from_attached_file(self.doc)
-		else:
-			from webnotes.utils.datautils import read_csv_content
-			data = read_csv_content(self.doc.diff_info)
 
-		return data
+	def validate(self):
+		if self.doc.file_list:
+			self.get_data()
+			self.validate_data()
 
-	def convert_into_list(self, data, submit = 1):
-		"""Convert csv data into list"""
+	def get_data(self):
+		from webnotes.utils.datautils import read_csv_content_from_attached_file
+		rows = read_csv_content_from_attached_file(self.doc)
+
+		columns = [d.replace(" ", "_") for d in rows[0]]
+		for i in xrange(len(rows)):
+			if i > 1
+
+
+
+
+
+
+
+
+
+
+
+	def validate_data(self):
+		# validate header
+		if self.data[0]!=["Item Code", "Warehouse", "Quantity", "Incoming Rate", "Valuation Rate"]:
+			msgprint("""First row of the attachment always should be same as template( 
+				Item Code, Warehouse, Quantity, Incoming Rate, Valuation Rate)"""
+				, raise_exception=1)
+
 		count = 1
 		for s in data:
 			count += 1
-			if count == 2:
-				msgprint(s)
-				if s[0] != 'Item Code' or s[1] != 'Warehouse':
-					msgprint("""First row of the attachment always should be same as template( 
-						Item Code, Warehouse, Quantity and Incoming Rate)"""
-						, raise_exception=1)
-				else:
-					continue
 			# validate
 			if (submit and len(s) != 4) or (not submit and len(s) != 6):
 				msgprint("""Data entered at Row No %s in Attachment File 
@@ -69,18 +79,14 @@ class DocType:
 		
 		if not self.validated:
 			raise Exception
-
-
-	def get_reconciliation_data(self, submit = 1):
-		"""Read and validate csv data"""
-		data = self.read_csv_content(submit)
-		self.convert_into_list(data, submit)
 		
 	def validate_item(self, item, count):
 		""" Validate item exists and non-serialized"""
-		det = sql("select item_code, has_serial_no from `tabItem` where name = %s", cstr(item), as_dict = 1)
+		det = sql("select item_code, has_serial_no from `tabItem` where name = %s"
+			, cstr(item), as_dict = 1)
 		if not det:
-			msgprint("Item: " + cstr(item) + " mentioned at Row No. " + cstr(count) + "does not exist in the system")
+			msgprint("Item: " + cstr(item) + " mentioned at Row No. " + 
+				cstr(count) + "does not exist in the system")
 			self.validated = 0
 		elif det and det[0]['has_serial_no'] == 'Yes':
 			msgprint("""You cannot make Stock Reconciliation of items having serial no. \n
@@ -92,19 +98,16 @@ class DocType:
 	def validate_warehouse(self, wh, count,):
 		"""Validate warehouse exists"""
 		if not sql("select name from `tabWarehouse` where name = %s", cstr(wh)):
-			msgprint("Warehouse: " + cstr(wh) + " mentioned at Row No. " + cstr(count) + " does not exist in the system")
+			msgprint("Warehouse: " + cstr(wh) + " mentioned at Row No. " + 
+				cstr(count) + " does not exist in the system")
 			self.validated = 0
 
-
-	def validate(self):
-		"""Validate attachment data"""
-		if self.doc.file_list:
-			self.get_reconciliation_data()
 
 	def get_system_stock(self, it, wh):
 		"""get actual qty on reconciliation date and time as per system"""
 		bin = sql("select name from tabBin where item_code=%s and warehouse=%s", (it, wh))
-		prev_sle = bin and get_obj('Bin', bin[0][0]).get_prev_sle(self.doc.reconciliation_date, self.doc.reconciliation_time) or {}
+		prev_sle = bin and get_obj('Bin', bin[0][0]).get_prev_sle(
+			self.doc.reconciliation_date, self.doc.reconciliation_time) or {}
 		return {
 			'actual_qty': prev_sle.get('bin_aqat', 0), 
 			'stock_uom' : sql("select stock_uom from tabItem where name = %s", it)[0][0], 
@@ -115,7 +118,8 @@ class DocType:
 		"""Calculate incoming rate to maintain valuation rate"""
 		if qty_diff:
 			if not sys_stock and not row[3]:
-				msgprint("Incoming Rate is mandatory for item: %s and warehouse: %s" % (rpw[0], row[1]), raise_exception=1)
+				msgprint("Incoming Rate is mandatory for item: %s and warehouse: %s"
+				 	% (rpw[0], row[1]), raise_exception=1)
 			else:
 				in_rate = qty_diff > 0 and row[3] or 0
 		else:
@@ -206,5 +210,5 @@ class DocType:
 		for d in self.data:
 			bin = webnotes.conn.sql("select name from `tabBin` where item_code = %s and \
 				warehouse = %s", (d[0], d[1]))
-			get_obj('Bin', bin[0][0]).update_entries_after(self.doc.reconciliation_date, \
+			get_obj('Bin', bin[0][0]).update_entries_after(self.doc.reconciliation_date, 
 				self.doc.reconciliation_time)

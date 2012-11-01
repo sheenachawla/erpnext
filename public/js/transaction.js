@@ -29,16 +29,32 @@ erpnext.Transaction = Class.extend({
 		erpnext.hide_naming_series();
 	},
 	set_missing_values: function() {
-		if(!this.frm.doc.posting_date)
-			this.frm.doc.posting_date = dateutil.obj_to_str(new Date());
-
-		if(!this.frm.doc.status) this.frm.doc.status = "Draft";
+		var default_values = {
+			"posting_date": dateutil.obj_to_str(new Date()),
+			"status": "Draft",
+			"company": sys_defaults.company,
+			"fiscal_year": sys_defaults.fiscal_year,
+			"currency": sys_defaults.currency,
+			"exchange_rate": 1,
+		}
+		for(key in default_values) {
+			if(!this.frm.doc[key]) this.frm.doc[key] = default_values[key];
+		}
 	},
 	is_table_empty: function(table_field) {
 		if(!wn.model.has_children(this.frm.doc.doctype, this.frm.doc.name, table_field)) {
 			var error_msg = "There should be atleast 1 Item in the Item table";			
 			msgprint(error_msg);
 			throw error_msg;
+		}
+	},
+	setup_get_query: function() {
+		var me = this;
+		// taxes and charges master
+		this.frm.fields_dict['sales_taxes_and_charges_master'].get_query = function() {
+			return "SELECT DISTINCT name FROM `tabSales Taxes and Charges Master` \
+				WHERE ifnull(company, '') = '" + me.frm.doc.company + "' \
+				AND docstatus < 2 AND %(key)s LIKE \"%s\" ORDER BY name LIMIT 50";
 		}
 	},
 });

@@ -196,10 +196,7 @@ cur_frm.cscript.hide_price_list_currency = function(doc, cdt, cdn, callback1) {
 	}
 }
 
-// TRIGGERS FOR CALCULATIONS
-// =====================================================================================================
 
-// ********************* CURRENCY ******************************
 cur_frm.cscript.currency = function(doc, cdt, cdn) {
 	cur_frm.cscript.price_list_name(doc, cdt, cdn); 
 }
@@ -224,8 +221,6 @@ cur_frm.cscript.company = function(doc, cdt, cdn) {
 }
 
 
-
-// ******************** PRICE LIST ******************************
 cur_frm.cscript.price_list_name = function(doc, cdt, cdn) {
 	var callback = function() {
 		var fname = cur_frm.cscript.fname;
@@ -243,26 +238,6 @@ cur_frm.cscript.price_list_name = function(doc, cdt, cdn) {
 	cur_frm.cscript.hide_price_list_currency(doc, cdt, cdn, callback);
 }
 
-
-
-// ******************** ITEM CODE ******************************** 
-cur_frm.fields_dict[cur_frm.cscript.fname].grid.get_field("item_code").get_query = function(doc, cdt, cdn) {
-	if (inList(['Maintenance', 'Service'], doc.order_type))
-		return 'SELECT tabItem.name,tabItem.item_name,tabItem.description \
-			FROM tabItem WHERE tabItem.is_service_item="Yes" \
-			AND tabItem.docstatus != 2 \
-			AND (ifnull(`tabItem`.`end_of_life`,"") = "" \
-				OR `tabItem`.`end_of_life` > NOW() \
-				OR `tabItem`.`end_of_life`="0000-00-00") \
-			AND tabItem.%(key)s LIKE "%s" LIMIT 50';
-	else 
-		return 'SELECT tabItem.name,tabItem.item_name,tabItem.description FROM tabItem \
-			WHERE tabItem.is_sales_item="Yes" AND tabItem.docstatus != 2 \
-			AND (ifnull(`tabItem`.`end_of_life`,"") = "" \
-				OR `tabItem`.`end_of_life` > NOW() \
-				OR `tabItem`.`end_of_life`="0000-00-00") \
-			AND tabItem.%(key)s LIKE "%s" LIMIT 50';
-}
 
 
 cur_frm.cscript.item_code = function(doc, cdt, cdn) {
@@ -362,17 +337,6 @@ cur_frm.cscript.print_rate = function(doc,cdt,cdn) {
 }
 
 
-
-// ************* GET OTHER CHARGES BASED ON COMPANY *************
-cur_frm.fields_dict.charge.get_query = function(doc) {
-	return 'SELECT DISTINCT `tabSales Taxes and Charges Master`.name FROM \
-		`tabSales Taxes and Charges Master` WHERE `tabSales Taxes and Charges Master`.company = "'
-		+doc.company+'" AND `tabSales Taxes and Charges Master`.company is not NULL \
-		AND `tabSales Taxes and Charges Master`.docstatus != 2 \
-		AND `tabSales Taxes and Charges Master`.%(key)s LIKE "%s" \
-		ORDER BY `tabSales Taxes and Charges Master`.name LIMIT 50';
-}
-
 // ********************* Get Charges ****************************
 cur_frm.cscript.get_charges = function(doc, cdt, cdn) {
 	$c_obj(wn.model.get_doclist(doc.doctype,doc.name),
@@ -469,7 +433,6 @@ cur_frm.cscript.calc_doc_values = function(doc, cdt, cdn, tname, fname, other_fn
 	doc.total_commission = flt(flt(net_total) * flt(doc.commission_rate) / 100);
 }
 
-// ******************************* OTHER CHARGES *************************************
 cur_frm.cscript.calc_other_charges = function(doc , tname , fname , other_fname) {
 	doc = locals[doc.doctype][doc.name];
 

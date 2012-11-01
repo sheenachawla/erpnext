@@ -14,96 +14,184 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-// Module CRM
-cur_frm.cscript.tname = "Quotation Item";
-cur_frm.cscript.fname = "quotation_details";
-cur_frm.cscript.other_fname = "other_charges";
-cur_frm.cscript.sales_team_fname = "sales_team";
+wn.require('public/app/js/selling.js');
+wn.provide("erpnext.selling");
 
-// =====================================================================================
-wn.require('app/selling/doctype/sales_common/sales_common.js');
-wn.require('app/accounts/doctype/sales_taxes_and_charges_master/sales_taxes_and_charges_master.js');
-wn.require('app/utilities/doctype/sms_control/sms_control.js');
-wn.require('app/setup/doctype/notification_control/notification_control.js');
-wn.require('app/support/doctype/communication/communication.js');
-
-// ONLOAD
-// ===================================================================================
-cur_frm.cscript.onload = function(doc, cdt, cdn) {
-	if(!doc.quotation_to) hide_field(['customer','customer_address','contact_person','customer_name','lead', 'lead_name', 'address_display', 'contact_display', 'contact_mobile', 'contact_email', 'territory', 'customer_group']);
-	if(!doc.price_list_name) set_multiple(cdt,cdn,{price_list_name:sys_defaults.price_list_name});
-	if(!doc.posting_date) set_multiple(cdt,cdn,{posting_date:get_today()});
-	if(!doc.exchange_rate) set_multiple(cdt,cdn,{exchange_rate:'1.00'});
-	if(!doc.currency && sys_defaults.currency) set_multiple(cdt,cdn,{currency:sys_defaults.currency});
-	if(!doc.price_list_currency) set_multiple(cdt, cdn, {price_list_currency: doc.currency, plc_exchange_rate: 1});
-
-	if(!doc.company && sys_defaults.company) set_multiple(cdt,cdn,{company:sys_defaults.company});
-	if(!doc.fiscal_year && sys_defaults.fiscal_year) set_multiple(cdt,cdn,{fiscal_year:sys_defaults.fiscal_year});
-	
-	if(doc.quotation_to) {
-		if(doc.quotation_to == 'Customer') {
-			hide_field(['lead', 'lead_name', 'organization']);
+erpnext.selling.Quotation = erpnext.Selling.extend({
+	onload: function() {
+		this._super();
+		this.hide_unhide_fields();
+		this.make_communication_body();
+	},
+	refresh: function() {
+		this._super();
+		this.add_button();
+		this.hide_unhide_fields();
+		
+		if (!this.is_onload) this.hide_price_list_currency(); 
+		if (!doc.__islocal) this.render_communication_list();
+	},
+	validate: function() {
+		this.validate_quotation_to();
+	},
+	validate_quotation_to: function() {
+		if(this.frm.doc.quotation_to == "Lead" && !this.frm.doc.lead) {
+			msgprint("Lead is mandatory");
+			validated = false;
+		} else if (this.frm.doc.quotation_to == "Customer" && !this.frm.doc.customer) {
+			msgprint("Customer is mandatory");
+			validated = false;
 		}
-		else if (doc.quotation_to == 'Lead') {
-			hide_field(['customer','customer_address','contact_person', 'customer_name','contact_display', 'customer_group']);
+	},
+	on_submit: function() {
+		this.notify(this.frm.doc, {type: 'Quotation', doctype: 'Quotation'});
+	},
+	hide_unhide_fields: function() {
+		erpnext.hide_naming_series();
+		var quote_to_customer = ['customer','customer_address',
+			'contact_person', 'customer_name', 'contact_display', 'customer_group'];
+		var quote_to_lead = ['lead', 'lead_name', 'organization'];
+		this.frm.toggle_display(quote_to_customer, this.frm.doc.quotation_to == "Customer");
+		this.frm.toggle_display(quote_to_lead, this.frm.doc.quotation_to == "Lead");
+		
+		display_contact_section = (this.frm.doc.customer || this.frm.doc.lead) ? true : false;
+		$(this.frm.fields_dict.contact_section.row.wrapper).toggle(display_contact_section);
+	},
+	
+
+	cur_frm.cscript.lead_cust_show = function(doc,cdt,cdn){
+		hide_field(['lead', 'lead_name','customer','customer_address','contact_person',
+			'customer_name','address_display','contact_display','contact_mobile','contact_email',
+			'territory','customer_group', 'organization']);
+		if(doc.quotation_to == 'Lead') unhide_field(['lead']);
+		else if(doc.quotation_to == 'Customer') unhide_field(['customer']);
+
+		doc.lead = doc.lead_name = doc.customer = doc.customer_name = doc.customer_address = doc.contact_person = doc.address_display = doc.contact_display = doc.contact_mobile = doc.contact_email = doc.territory = doc.customer_group = doc.organization = "";
+	}
+
+	cur_frm.cscript.quotation_to = function(doc,cdt,cdn){
+		cur_frm.cscript.lead_cust_show(doc,cdt,cdn);
+	}
+	add_button: function() {
+		this.frm.clear_custom_buttons();		
+		if(this.frm.doc.docstatus == 1 && this.frm.doc.status != 'Order Lost') {
+			this.frm.add_custom_button('Make Sales Order', this.make_sales_order);
+			this.frmcur_frm.add_custom_button('Set as Lost', this.set_as_lost);
+			this.frmcur_frm.add_custom_button('Send SMS', this.send_sms); // to-do
 		}
-	}
-	cur_frm.cscript.make_communication_body();
-}
+	},
+	make_sales_order: function() {
+		wn.model.map_doclist([["Quotation", "Sales Order"], 
+			["Quotation Item", "Sales Order Item"],
+		 	['Sales Taxes and Charges','Sales Taxes and Charges'], 
+			['Sales Team', 'Sales Team']], this.frm.doc.name);
+	},
+	set_as_lost: function() {
+		// to-do (discuss with anand)
+	},
+	lead: function() {
+		if(this.frm.doc.lead) {
+			get_server_fields('get_lead_details', this.frm.doc.lead, '', this.frm.doc, 
+				this.frm.doc.doctype, this.frm.doc.name, 1);
+			unhide_field('territory');
+		}
+	},
+	setup_get_query: function() {
+		this._super();
+		var me = this;
+		
+		//lead
+		this.frm.fields_dict['lead'].get_query = function() {
+			return "SELECT name, lead_name FROM tabLead \
+				WHERE %(key)s LIKE \"%s\" ORDER BY name ASC LIMIT 50";
+		}
+		
+		// opportunity
+		this.frm.fields_dict['opportunity'].get_query = function() {
+			var condition = "";
+			if(me.frm.doc.order_type) {
+				condition += " AND ifnull(enquiry_type, '') = '" + me.frm.doc.order_type + "'";
+			}
+			if(me.frm.doc.customer) {
+				condition += " AND customer = '" + me.frm.doc.customer + "'";
+			} else if(me.frm.doc.lead) {
+				condition += " AND lead = '" + me.frm.doc.lead + "'";
+			}
+			
+			return "SELECT name FROM tabOpportunity WHERE docstatus = 1 \
+				AND status = 'Submitted' AND %(key)s like \"%s\"" + condition + 
+				"ORDER BY name ASC LIMIT 50";
+		}
+		
+		// item code
+		this.frm.fields_dict[this.item_table_field].grid.get_field('item_code')
+				.get_query = function() {
+			if(me.frm.doc.order_type == "Maintenance") {
+				var condition = "infull(item.is_service_item, 'No')='Yes'";
+			} else {
+				var condition = "ifnull(item.is_sales_item, 'No')='Yes'";
+			}
+			
+			if(me.frm.doc.customer) {
+				var print_rate_field = wn.meta.get_docfield(me.frm.doctype, 
+					'print_rate', me.frm.doc.name);
+				var precision = (print_rate_field && 
+					print_rate_field.fieldtype === 'Float') ? 6 : 2;
+				var query = repl("\
+					select \
+						item.name, \
+						( \
+							select concat('Last Quote @ ', q.currency, ' ', \
+								format(q_item.print_rate, %(precision)s)) \
+							from `tabQuotation` q, `tabQuotation Item` q_item \
+							where \
+								q.name = q_item.parent and q_item.item_code = item.name \
+								and q.docstatus = 1 and q.customer = \"%(customer)s\" \
+							order by q.posting_date desc limit 1 \
+						) as quote_rate, \
+						( \
+							select concat('Last Sale @ ', si.currency, ' ', \
+								format(si_item.rate, %(precision)s)) \
+							from `tabSales Invoice` si, `tabSales Invoice Item` si_item \
+							where \
+								si.name = si_item.parent and si_item.item_code = item.name \
+								and si.docstatus = 1 and si.customer = \"%(cust)s\" \
+							order by si.voucher_date desc limit 1 \
+						) as sales_rate, \
+						item.item_name, item.description \
+					from `tabItem` item \
+					where \
+						%(condition)s and item.%(key)s like \"%s\" \
+					limit 25", {
+						customer: me.frm.doc.customer,
+						condition: condition,
+						precision: precision
+					}
+				);
+			else {
+				var query = repl("\
+					SELECT name, item_name, description \
+					FROM `tabItem` item \
+					WHERE %(condition)s and item.%(key)s LIKE '%s' 
+					ORDER BY item.item_code DESC LIMIT 50", {condition: condition});
+			}
+			return query;
+		}
+	},
+})
 
-cur_frm.cscript.onload_post_render = function(doc, dt, dn) {
-	var callback = function(doc, dt, dn) {
-		// defined in sales_common.js
-		cur_frm.cscript.update_item_details(doc, dt, dn);
-	}
-	cur_frm.cscript.hide_price_list_currency(doc, dt, dn, callback); 
-}
-
-// hide - unhide fields based on lead or customer..
-// =======================================================================================================================
-cur_frm.cscript.lead_cust_show = function(doc,cdt,cdn){
-	hide_field(['lead', 'lead_name','customer','customer_address','contact_person',
-		'customer_name','address_display','contact_display','contact_mobile','contact_email',
-		'territory','customer_group', 'organization']);
-	if(doc.quotation_to == 'Lead') unhide_field(['lead']);
-	else if(doc.quotation_to == 'Customer') unhide_field(['customer']);
-	
-	doc.lead = doc.lead_name = doc.customer = doc.customer_name = doc.customer_address = doc.contact_person = doc.address_display = doc.contact_display = doc.contact_mobile = doc.contact_email = doc.territory = doc.customer_group = doc.organization = "";
-}
+cur_frm.cscript = new erpnext.selling.Quotation({
+	frm: cur_frm, item_table_field: "quotation_items"});
 
 
 
-//================ hide - unhide fields on basis of quotation to either lead or customer ===============================
-cur_frm.cscript.quotation_to = function(doc,cdt,cdn){
-	cur_frm.cscript.lead_cust_show(doc,cdt,cdn);
-}
 
 
-// REFRESH
-// ===================================================================================
-cur_frm.cscript.refresh = function(doc, cdt, cdn) {
-
-	cur_frm.clear_custom_buttons();
-
-	if (!cur_frm.cscript.is_onload) cur_frm.cscript.hide_price_list_currency(doc, cdt, cdn); 
 
 
-	if(doc.docstatus == 1 && doc.status!='Order Lost') {
-		cur_frm.add_custom_button('Make Sales Order', cur_frm.cscript['Make Sales Order']);
-		cur_frm.add_custom_button('Set as Lost', cur_frm.cscript['Declare Order Lost']);
-		cur_frm.add_custom_button('Send SMS', cur_frm.cscript.send_sms);
-	}
-
-	erpnext.hide_naming_series();
-	
-	if(doc.customer || doc.lead) $(cur_frm.fields_dict.contact_section.row.wrapper).toggle(true);
-	else $(cur_frm.fields_dict.contact_section.row.wrapper).toggle(false);
-	
-	if (!doc.__islocal) cur_frm.cscript.render_communication_list(doc, cdt, cdn);
-}
 
 
-//customer
+
 cur_frm.cscript.customer = function(doc,dt,dn) {
 	var pl = doc.price_list_name;
 	var callback = function(r,rt) {
@@ -117,78 +205,7 @@ cur_frm.cscript.customer = function(doc,dt,dn) {
 	if(doc.customer) unhide_field(['customer_address','contact_person','territory', 'customer_group']);
 }
 
-cur_frm.cscript.customer_address = cur_frm.cscript.contact_person = function(doc,dt,dn) {
-	if(doc.customer) get_server_fields('get_customer_address', JSON.stringify({
-		customer: doc.customer, 
-		address: doc.customer_address, 
-		contact: doc.contact_person
-	}),'', doc, dt, dn, 1);
-}
-
-cur_frm.fields_dict.customer_address.on_new = function(dn) {
-	locals['Address'][dn].customer = locals[cur_frm.doctype][cur_frm.docname].customer;
-	locals['Address'][dn].customer_name = locals[cur_frm.doctype][cur_frm.docname].customer_name;
-}
-
-cur_frm.fields_dict.contact_person.on_new = function(dn) {
-	locals['Contact'][dn].customer = locals[cur_frm.doctype][cur_frm.docname].customer;
-	locals['Contact'][dn].customer_name = locals[cur_frm.doctype][cur_frm.docname].customer_name;
-}
-
-cur_frm.fields_dict['customer_address'].get_query = function(doc, cdt, cdn) {
-	return 'SELECT name,address_line1,city FROM tabAddress WHERE customer = "'+ doc.customer +'" AND docstatus != 2 AND name LIKE "%s" ORDER BY name ASC LIMIT 50';
-}
-
-cur_frm.fields_dict['contact_person'].get_query = function(doc, cdt, cdn) {
-	return 'SELECT name,CONCAT(first_name," ",ifnull(last_name,"")) As FullName,department,designation FROM tabContact WHERE customer = "'+ doc.customer +'" AND docstatus != 2 AND name LIKE "%s" ORDER BY name ASC LIMIT 50';
-}
-
-//lead
-cur_frm.fields_dict['lead'].get_query = function(doc,cdt,cdn){
-	return 'SELECT `tabLead`.name, `tabLead`.lead_name FROM `tabLead` WHERE `tabLead`.%(key)s LIKE "%s"	ORDER BY	`tabLead`.`name` ASC LIMIT 50';
-}
-
-cur_frm.cscript.lead = function(doc, cdt, cdn) {
-	if(doc.lead) {
-		get_server_fields('get_lead_details', doc.lead,'', doc, cdt, cdn, 1);
-		unhide_field('territory');
-	}
-}
-
-
-// =====================================================================================
-cur_frm.fields_dict['opportunity'].get_query = function(doc,cdt,cdn){
-	var cond='';
-	var cond1='';
-	if(doc.order_type) cond = 'ifnull(`tabOpportunity`.enquiry_type, "") = "'+doc.order_type+'" AND';
-	if(doc.customer) cond1 = '`tabOpportunity`.customer = "'+doc.customer+'" AND';
-	else if(doc.lead) cond1 = '`tabOpportunity`.lead = "'+doc.lead+'" AND';
-
-	return repl('SELECT `tabOpportunity`.`name` FROM `tabOpportunity` WHERE `tabOpportunity`.`docstatus` = 1 AND `tabOpportunity`.status = "Submitted" AND %(cond)s %(cond1)s `tabOpportunity`.`name` LIKE "%s" ORDER BY `tabOpportunity`.`name` ASC LIMIT 50', {cond:cond, cond1:cond1});
-}
-
-// Make Sales Order
-// =====================================================================================
-cur_frm.cscript['Make Sales Order'] = function() {
-	var doc = cur_frm.doc;
-
-	if (doc.docstatus == 1) {
-		var n = wn.model.make_new_doc_and_get_name("Sales Order");
-		$c('dt_map', args={
-			'docs':wn.model.compress([locals["Sales Order"][n]]),
-			'from_doctype':'Quotation',
-			'to_doctype':'Sales Order',
-			'from_docname':doc.name,
-			'from_to_list':"[['Quotation', 'Sales Order'], ['Quotation Item', 'Sales Order Item'],['Sales Taxes and Charges','Sales Taxes and Charges'], ['Sales Team', 'Sales Team'], ['TC Detail', 'TC Detail']]"
-		}, function(r,rt) {
-			loaddoc("Sales Order", n);
-		});
-	}
-}
-
-//pull enquiry details
 cur_frm.cscript.pull_enquiry_detail = function(doc,cdt,cdn){
-
 	var callback = function(r,rt){
 		if(r.message){
 			doc.quotation_to = r.message;
@@ -207,8 +224,6 @@ cur_frm.cscript.pull_enquiry_detail = function(doc,cdt,cdn){
 
 }
 
-// declare order lost
-//-------------------------
 cur_frm.cscript['Declare Order Lost'] = function(){
 	var qtn_lost_dialog;
 
@@ -245,95 +260,13 @@ cur_frm.cscript['Declare Order Lost'] = function(){
 					qtn_lost_dialog.hide();
 				}
 			}
-			if(arg) $c_obj(wn.model.get_doclist(cur_frm.doc.doctype, cur_frm.doc.name),'declare_order_lost',arg,call_back);
+			if(arg) $c_obj(wn.model.get_doclist(cur_frm.doc.doctype,
+				 cur_frm.doc.name),'declare_order_lost',arg,call_back);
 			else msgprint("Please add Quotation lost reason");
 		}
 	}
-
 	if(!qtn_lost_dialog){
 		set_qtn_lost_dialog(doc,cdt,cdn);
 	}
 	qtn_lost_dialog.show();
-}
-
-//===================== Quotation to validation - either customer or lead mandatory ====================
-cur_frm.cscript.quot_to_validate = function(doc,cdt,cdn){
-
-	if(doc.quotation_to == 'Lead'){
-
-		if(!doc.lead){
-			alert("Lead is mandatory.");
-			validated = false;
-		}
-	}
-	else if(doc.quotation_to == 'Customer'){
-		if(!doc.customer){
-			alert("Customer is mandatory.");
-			validated = false;
-		}
-	}
-}
-
-//===================validation function =================================
-
-cur_frm.cscript.validate = function(doc,cdt,cdn){
-	cur_frm.cscript.recalculate_values(doc, cdt, cdn);
-	cur_frm.cscript.quot_to_validate(doc,cdt,cdn);
-}
-
-//================ Last Quoted Price and Last Sold Price suggestion ======================
-cur_frm.fields_dict['quotation_details'].grid.get_field('item_code').get_query= function(doc, cdt, cdn) {
-	var d = locals[cdt][cdn];
-	var cond = (doc.order_type == 'Maintenance') ? " and item.is_service_item = 'Yes'" : " and item.is_sales_item = 'Yes'";
-	if(doc.customer) {
-		var print_rate_field = wn.meta.get_docfield(cdt, 'print_rate', cdn);
-		var precision = (print_rate_field && print_rate_field.fieldtype) === 'Float' ? 6 : 2;
-		return repl("\
-			select \
-				item.name, \
-				( \
-					select concat('Last Quote @ ', q.currency, ' ', \
-						format(q_item.print_rate, %(precision)s)) \
-					from `tabQuotation` q, `tabQuotation Item` q_item \
-					where \
-						q.name = q_item.parent \
-						and q_item.item_code = item.name \
-						and q.docstatus = 1 \
-						and q.customer = \"%(cust)s\" \
-					order by q.posting_date desc \
-					limit 1 \
-				) as quote_rate, \
-				( \
-					select concat('Last Sale @ ', si.currency, ' ', \
-						format(si_item.rate, %(precision)s)) \
-					from `tabSales Invoice` si, `tabSales Invoice Item` si_item \
-					where \
-						si.name = si_item.parent \
-						and si_item.item_code = item.name \
-						and si.docstatus = 1 \
-						and si.customer = \"%(cust)s\" \
-					order by si.voucher_date desc \
-					limit 1 \
-				) as sales_rate, \
-				item.item_name, item.description \
-			from `tabItem` item \
-			where \
-				item.%(key)s like \"%s\" \
-				%(cond)s \
-				limit 25", {
-					cust: doc.customer,
-					cond: cond,
-					precision: precision
-				});
-	} else {
-		return repl("SELECT name, item_name, description FROM `tabItem` item WHERE item.%(key)s LIKE '%s' %(cond)s ORDER BY item.item_code DESC LIMIT 50", {cond:cond});
-	}
-}
-
-cur_frm.cscript.on_submit = function(doc, cdt, cdn) {
-	var args = {
-		type: 'Quotation',
-		doctype: 'Quotation'
-	}
-	cur_frm.cscript.notify(doc, args);
 }
