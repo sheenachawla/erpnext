@@ -1,0 +1,65 @@
+[
+ {
+  "owner": "Administrator", 
+  "docstatus": 0, 
+  "creation": "2012-10-31 11:58:25", 
+  "modified_by": "Administrator", 
+  "modified": "2012-10-31 11:58:25"
+ }, 
+ {
+  "name": "__common__", 
+  "parent": "Timesheet", 
+  "doctype": "Workflow Transition", 
+  "parenttype": "Workflow", 
+  "state": "Under Revision", 
+  "allowed": "Sales Manager", 
+  "parentfield": "workflow_transitions"
+ }, 
+ {
+  "name": "__common__", 
+  "parent": "Timesheet", 
+  "doctype": "Workflow Document State", 
+  "parenttype": "Workflow", 
+  "parentfield": "workflow_document_states"
+ }, 
+ {
+  "is_custom": "No", 
+  "name": "__common__", 
+  "doctype": "Workflow", 
+  "workflow_state_field": "status", 
+  "document_type": "Timesheet"
+ }, 
+ {
+  "name": "Timesheet", 
+  "doctype": "Workflow"
+ }, 
+ {
+  "allow_edit": "Projects User", 
+  "doctype": "Workflow Document State", 
+  "state": "Under Revision", 
+  "message": "Under revision", 
+  "doc_status": "0"
+ }, 
+ {
+  "doctype": "Workflow Document State", 
+  "state": "Approved", 
+  "message": "Approved", 
+  "doc_status": "1"
+ }, 
+ {
+  "doctype": "Workflow Document State", 
+  "state": "Rejected", 
+  "message": "Rejected", 
+  "doc_status": "1"
+ }, 
+ {
+  "action": "Approve", 
+  "doctype": "Workflow Transition", 
+  "next_state": "Approved"
+ }, 
+ {
+  "action": "Reject", 
+  "doctype": "Workflow Transition", 
+  "next_state": "Rejected"
+ }
+]

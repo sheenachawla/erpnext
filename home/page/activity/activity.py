@@ -8,7 +8,7 @@ def get_feed(arg=None):
 		distinct t1.name, t1.feed_type, t1.doc_type, t1.doc_name, t1.subject, t1.owner,
 		t1.modified
 		from tabFeed t1, tabDocPerm t2
-		where t1.doc_type = t2.parent
+		where t1.doc_type = t2.document_type
 		and t2.role in ('%s')
 		and ifnull(t2.`read`,0) = 1
 		order by t1.modified desc
