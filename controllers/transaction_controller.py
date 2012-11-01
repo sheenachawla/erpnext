@@ -28,14 +28,28 @@ import stock
 from webnotes.model.controller import DocListController
 
 class TransactionController(DocListController):
+	def __init__(self, doc, doclist):
+		super(TransactionController, self).__init__(doc, doclist)
+		self.cur_docstatus = cint(webnotes.conn.get_value(self.doc.doctype, self.doc.name,
+								"docstatus"))
+		
 	def autoname(self):
 		self.doc.name = make_autoname(self.doc.naming_series+'.#####')
 	
 	def validate(self):
 		self.validate_fiscal_year()
 		
+		if self.doc.docstatus == 1 and self.cur_docstatus == 0:
+			# a doc getting submitted should not be stopped
+			self.doc.is_stopped = 0
+	
+	def on_update(self):
+		pass
+		
+	def on_submit(self):
+		pass
+	
 	def on_cancel(self):
-		self.validate_stopped_status()
 		self.check_next_submitted()
 	
 	def load_precision_maps(self):
@@ -55,6 +69,7 @@ class TransactionController(DocListController):
 		self.doc.is_stopped = cint(self.doc.is_stopped)
 		is_stopped_old = webnotes.conn.get_value(self.doc.doctype, self.doc.name,
 			"is_stopped")
+		
 		if self.doc.is_stopped != cint(is_stopped_old):
 			self.update_bin()
 
@@ -63,18 +78,6 @@ class TransactionController(DocListController):
 				"name": self.doc.name,
 				"stopped": self.doc.is_stopped and _("stopped") or _("resumed")
 			})
-			
-	def validate_stopped_status(self):
-		"""do not allow cancel if status is stopped"""
-		webnotes.msgprint(cint(webnotes.conn.get_value(self.doc.doctype, self.doc.name,
-			"is_stopped")))
-		if cint(webnotes.conn.get_value(self.doc.doctype, self.doc.name,
-			"is_stopped")):
-			# this is done because bin is already updated when stopping
-			msgprint(_("""%(doctype)s %(name)s is stopped.
-				To change status to %(status)s, resume the %(doctype)s""") % \
-				self.doc.fields, raise_exception=1)
-		
 			
 	def validate_fiscal_year(self):
 		# TODO: fiscal_year field needs to be deprecated

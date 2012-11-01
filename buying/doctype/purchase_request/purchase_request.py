@@ -35,16 +35,20 @@ class DocType(BuyingController):
 			
 		self.validate_qty_against_sales_order()
 		
-	def on_update(self):
-		pass
-		
 	def on_submit(self):
-		# super(DocType, self).on_submit()
+		super(DocType, self).on_submit()
 		self.update_bin()
 		
 	def on_cancel(self):
 		super(DocType, self).on_cancel()
-		self.update_bin()
+		if not cint(webnotes.conn.get_value(self.doc.doctype, self.doc.name, "is_stopped")):
+			self.update_bin()
+
+		# if a stopped transaction is cancelled,
+		# then, when a user tries to amend the transaction,
+		# the amended transaction has is_stopped=1, which should not be the case
+		if self.doc.is_stopped == 1:
+			webnotes.conn.set(self.doc, "is_stopped", 0)		
 		
 	def on_trash(self):
 		pass
