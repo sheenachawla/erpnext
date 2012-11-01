@@ -235,7 +235,7 @@ class DocType(TransactionBase):
 	# Load Default Taxes
 	# ====================
 	def load_default_taxes(self, obj):
-		if cstr(obj.doc.sales_taxes_and_charges_master):
+		if cstr(obj.doc.taxes_and_charges_master):
 			return self.get_taxes_and_charges(obj)
 		else:
 			return self.get_taxes_and_charges(obj, 1)
@@ -247,7 +247,7 @@ class DocType(TransactionBase):
 		obj.doclist = obj.doc.clear_table(obj.doclist, 'taxes_and_charges')
 		if not getlist(obj.doclist, 'taxes_and_charges'):
 			if default: add_cond = 'ifnull(t2.is_default,0) = 1'
-			else: add_cond = 't1.parent = "'+cstr(obj.doc.sales_taxes_and_charges_master)+'"'
+			else: add_cond = 't1.parent = "'+cstr(obj.doc.taxes_and_charges_master)+'"'
 			idx = 0
 			other_charge = webnotes.conn.sql("""\
 				select t1.*

@@ -625,9 +625,9 @@ var calculate_outstanding = function(doc) {
 }
 
 
-cur_frm.cscript.toggle_contact_section = function(doc) {
-	cur_frm.toggle_display("contact_section", doc.supplier);
-}
+// cur_frm.cscript.toggle_contact_section = function(doc) {
+// 	cur_frm.toggle_display("contact_section", doc.supplier);
+// }
 
 cur_frm.cscript.project_name = function(doc, cdt, cdn) {
 	var item_doc = locals[cdt][cdn];

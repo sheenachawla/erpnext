@@ -4,7 +4,7 @@
   "docstatus": 0, 
   "creation": "2012-10-26 15:23:09", 
   "modified_by": "Administrator", 
-  "modified": "2012-10-26 18:21:50"
+  "modified": "2012-11-01 18:34:20"
  }, 
  {
   "is_submittable": 1, 
@@ -25,14 +25,6 @@
   "doctype": "DocField", 
   "parenttype": "DocType", 
   "parentfield": "fields"
- }, 
- {
-  "name": "__common__", 
-  "parent": "Purchase Request", 
-  "read": 1, 
-  "doctype": "DocPerm", 
-  "parenttype": "DocType", 
-  "parentfield": "permissions"
  }, 
  {
   "name": "Purchase Request", 
@@ -124,13 +116,6 @@
   "options": "Sales Order", 
   "fieldname": "sales_order", 
   "fieldtype": "Link", 
-  "permlevel": 0
- }, 
- {
-  "doctype": "DocField", 
-  "width": "50%", 
-  "fieldname": "column_break5", 
-  "fieldtype": "Column Break", 
   "permlevel": 0
  }, 
  {
@@ -359,81 +344,6 @@
   "fieldname": "file_list", 
   "fieldtype": "Text", 
   "hidden": 1, 
-  "permlevel": 0
- }, 
- {
-  "amend": 1, 
-  "create": 1, 
-  "doctype": "DocPerm", 
-  "submit": 1, 
-  "write": 1, 
-  "role": "Purchase User", 
-  "cancel": 1, 
-  "permlevel": 0
- }, 
- {
-  "doctype": "DocPerm", 
-  "role": "Purchase User", 
-  "permlevel": 1
- }, 
- {
-  "amend": 0, 
-  "create": 0, 
-  "doctype": "DocPerm", 
-  "submit": 0, 
-  "write": 0, 
-  "role": "Purchase Manager", 
-  "cancel": 0, 
-  "permlevel": 1
- }, 
- {
-  "amend": 1, 
-  "create": 1, 
-  "doctype": "DocPerm", 
-  "submit": 1, 
-  "write": 1, 
-  "role": "Purchase Manager", 
-  "cancel": 1, 
-  "permlevel": 0
- }, 
- {
-  "amend": 0, 
-  "create": 0, 
-  "doctype": "DocPerm", 
-  "submit": 0, 
-  "write": 0, 
-  "role": "Material Manager", 
-  "cancel": 0, 
-  "permlevel": 1
- }, 
- {
-  "amend": 1, 
-  "create": 1, 
-  "doctype": "DocPerm", 
-  "submit": 1, 
-  "write": 1, 
-  "role": "Material Manager", 
-  "cancel": 1, 
-  "permlevel": 0
- }, 
- {
-  "amend": 0, 
-  "create": 0, 
-  "doctype": "DocPerm", 
-  "submit": 0, 
-  "write": 0, 
-  "role": "Material User", 
-  "cancel": 0, 
-  "permlevel": 1
- }, 
- {
-  "amend": 1, 
-  "create": 1, 
-  "doctype": "DocPerm", 
-  "submit": 1, 
-  "write": 1, 
-  "role": "Material User", 
-  "cancel": 1, 
   "permlevel": 0
  }
 ]

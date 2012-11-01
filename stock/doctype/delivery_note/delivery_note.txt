@@ -501,7 +501,7 @@
 		'colour': u'White:FFF',
 		'description': u'If you have created a standard template in Sales Taxes and Charges Master, select one and click on the button below.',
 		u'doctype': u'DocField',
-		'fieldname': u'sales_taxes_and_charges_master',
+		'fieldname': u'taxes_and_charges_master',
 		'fieldtype': u'Link',
 		'label': u'Taxes and Charges',
 		'oldfieldname': u'charge',

@@ -625,14 +625,14 @@ class DocType(TransactionBase):
 	# 		msgprint("'%s' Not Within The Fiscal Year"%(dn))
 	# 		raise Exception			
 
-	def load_default_taxes(self, obj):
-		return self.get_purchase_tax_details(obj, 1)
+	# def load_default_taxes(self, obj):
+	# 	return self.get_purchase_tax_details(obj, 1)
 	
 	def get_purchase_tax_details(self,obj, default = 0):
 		obj.doclist = self.doc.clear_table(obj.doclist,'taxes_and_charges')
 		
 		if default: add_cond = " and ifnull(t2.is_default,0) = 1"
-		else: add_cond = " and t1.parent = '"+cstr(obj.doc.purchase_taxes_and_charges_master)+"'"
+		else: add_cond = " and t1.parent = '"+cstr(obj.doc.taxes_and_charges_master)+"'"
 
 		other_charge = sql("""
 			select t1.*
