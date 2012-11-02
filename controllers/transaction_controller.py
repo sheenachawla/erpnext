@@ -38,6 +38,8 @@ class TransactionController(DocListController):
 	
 	def validate(self):
 		self.validate_fiscal_year()
+		self.validate_mandatory()
+		self.validate_items()
 		
 		if self.doc.docstatus == 1 and self.cur_docstatus == 0:
 			# a doc getting submitted should not be stopped
@@ -79,6 +81,13 @@ class TransactionController(DocListController):
 				"stopped": self.doc.is_stopped and _("stopped") or _("resumed")
 			})
 			
+	def validate_mandatory(self):
+		if self.doc.amended_from and not self.doc.amendment_date:
+			from webnotes.model import doctype
+			msgprint(_("Please specify: %(label)s") % {"label":
+				webnotes.model.doctype.get(self.doc.doctype).get_label("amendment_date")},
+				raise_exception=1)
+			
 	def validate_fiscal_year(self):
 		# TODO: fiscal_year field needs to be deprecated
 		from accounts.utils import get_fiscal_year
@@ -87,6 +96,53 @@ class TransactionController(DocListController):
 				"posting_date": formatdate(self.doc.posting_date),
 				"fiscal_year": self.doc.fiscal_year
 			})
+			
+	def validate_items(self):
+		"""
+			validate the following:
+			* qty
+			* is_stock_item
+		"""
+		import stock
+		from webnotes.model.utils import validate_condition
+		
+		item_doclist = self.doclist.get({"parentfield": self.item_table_field})
+		
+		stock_items = []
+		non_stock_items = []
+		
+		for item in item_doclist:
+			# validate qty
+			validate_condition(item, "qty", ">=", 0)
+			
+			item_controller = get_obj("Item", item.item_code)
+			
+			# validations for stock item
+			self.validate_stock_item(item_controller.doc, item)
+			
+			# separate out stock and non-stop items for duplicate checking
+			if item_controller.doc.is_stock_item == "Yes":
+				stock_items.append(item_controller.doc.name)
+			else:
+				non_stock_items.append(item_controller.doc.name)
+		
+		self.check_duplicate(item_doclist, stock_items, non_stock_items)
+		
+		# to be overridden in each controller
+		self.validate_prevdoclist()
+		
+	def validate_stock_item(self, item, child):
+		stock.validate_end_of_life(item.name, item.end_of_life)
+		
+		# get warehouse field
+		warehouse_field = webnotes.get_field(item.parenttype, "warehouse",
+			parentfield=item.parentfield)
+		
+		if warehouse_field and item.is_stock_item == "Yes" and not child.warehouse:
+			msgprint(_("""Row # %(idx)s, Item %(item_code)s: \
+				Please specify Warehouse for Stock Item""") % \
+				{"idx": child.idx, "item_code": item.name },
+				raise_exception=1)
 			
 	def get_item_details(self, args):
 		if isinstance(args, basestring):

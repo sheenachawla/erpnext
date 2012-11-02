@@ -27,67 +27,15 @@ from controllers.transaction_controller import TransactionController
 class BuyingController(TransactionController):
 	def validate(self):
 		super(BuyingController, self).validate()
-		self.validate_mandatory()
-		self.validate_items()
+		self.set_item_values()
 		
-	def validate_mandatory(self):
-		if self.doc.amended_from and not self.doc.amendment_date:
-			from webnotes.model import doctype
-			msgprint(_("Please specify: %(label)s") % {"label":
-				webnotes.model.doctype.get(self.doc.doctype).get_label("amendment_date")},
-				raise_exception=1)
-		
-	def validate_items(self):
-		"""
-			validate the following:
-			* qty
-			* is_stock_item
-			*
-		"""
-		import stock
-		from webnotes.model.utils import validate_condition
-		
-		item_doclist = self.doclist.get({"parentfield": self.item_table_field})
-		
-		stock_items = []
-		non_stock_items = []
-		
-		for item in item_doclist:
-			# validate qty
-			validate_condition(item, "qty", ">=", 0)
-			
-			# set projected qty
-			item.projected_qty = stock.get_projected_qty(item.item_code,
-				item.warehouse).get("projected_qty")
-			
-			item_controller = get_obj("Item", item.item_code)
-			
-			# validations for stock item
-			self.validate_stock_item(item_controller.doc, item)
-			
-			# separate out stock and non-stop items for duplicate checking
-			if item_controller.doc.is_stock_item == "Yes":
-				stock_items.append(item_controller.doc.name)
-			else:
-				non_stock_items.append(item_controller.doc.name)
-		
-		self.check_duplicate(item_doclist, stock_items, non_stock_items)
-		
-		# to be overridden in each controller
-		self.validate_prevdoclist()
-			
 	def validate_stock_item(self, item, child):
-		stock.validate_end_of_life(item.name, item.end_of_life)
-		
-		msg = _("Row # %(idx)s, Item %(item_code)s: ") % {"idx": child.idx,
-			"item_code": item.name}
-		
-		if item.is_stock_item == "Yes" and not child.warehouse:
-			msgprint((msg + _("""Please specify Warehouse for Stock Item""")),
-				raise_exception=1)
+		super(BuyingController, self).validate_stock_item(item, child)
 		
 		if item.is_purchase_item != "Yes" and item.is_subcontracted_item != "Yes":
-			msgprint((msg + _("""Not a Purchase / Sub-contracted Item""")),
+			msgprint(_("""Row # %(idx)s, Item %(item_code)s: \
+				Not a Purchase / Sub-contracted Item""") % \
+				{"idx": child.idx, "item_code": item.name },
 				raise_exception=1)
 				
 	def check_duplicate(self, item_doclist, stock_items, non_stock_items):
@@ -127,6 +75,12 @@ class BuyingController(TransactionController):
 					# i.e. if not mapped using doctype mapper
 					d.schedule_date = add_days(self.doc.posting_date, lead_time_days)
 					
+	def set_item_values(self):
+		for item in self.doclist.get({"parentfield": self.item_table_field}):
+			# set projected qty
+			item.projected_qty = stock.get_projected_qty(item.item_code,
+				item.warehouse).get("projected_qty")
+		
 	def get_last_purchase_details(self, item_code, doc_name):
 		query = """select parent.name, parent.posting_date, item.conversion_factor,
 			item.ref_rate, item.discount, item.rate %s
