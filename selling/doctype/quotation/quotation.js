@@ -20,13 +20,12 @@ wn.provide("erpnext.selling");
 erpnext.selling.Quotation = erpnext.Selling.extend({
 	onload: function() {
 		this._super();
-		this.hide_unhide_fields();
 		this.make_communication_body();
 	},
 	refresh: function() {
 		this._super();
-		this.add_button();
-		this.hide_unhide_fields();
+		this.add_buttons();
+		this.toggle_fields();
 		
 		if (!this.is_onload) this.hide_price_list_currency(); 
 		if (!doc.__islocal) this.render_communication_list();
@@ -46,48 +45,50 @@ erpnext.selling.Quotation = erpnext.Selling.extend({
 	on_submit: function() {
 		this.notify(this.frm.doc, {type: 'Quotation', doctype: 'Quotation'});
 	},
-	hide_unhide_fields: function() {
-		erpnext.hide_naming_series();
-		var quote_to_customer = ['customer','customer_address',
-			'contact_person', 'customer_name', 'contact_display', 'customer_group'];
-		var quote_to_lead = ['lead', 'lead_name', 'organization'];
-		this.frm.toggle_display(quote_to_customer, this.frm.doc.quotation_to == "Customer");
-		this.frm.toggle_display(quote_to_lead, this.frm.doc.quotation_to == "Lead");
+	toggle_fields: function() {
+		var customer_fields = ['customer', 'customer_address', 'contact_person', 'customer_name',
+		 	'address_display', 'contact_display', 'customer_group', 'territory'];
+		var lead_fields = ['lead', 'lead_name', 'organization', 'territory'];
+		this.frm.toggle_display("customer", this.frm.doc.quotation_to == "Customer");
+		this.frm.toggle_display("lead", this.frm.doc.quotation_to == "Lead");
+		this.frm.toggle_display(customer_fields, this.frm.doc.customer);
+		this.frm.toggle_display(lead_fields, this.frm.doc.lead);
 		
 		display_contact_section = (this.frm.doc.customer || this.frm.doc.lead) ? true : false;
 		$(this.frm.fields_dict.contact_section.row.wrapper).toggle(display_contact_section);
 	},
-	
-
-	cur_frm.cscript.lead_cust_show = function(doc,cdt,cdn){
-		hide_field(['lead', 'lead_name','customer','customer_address','contact_person',
-			'customer_name','address_display','contact_display','contact_mobile','contact_email',
-			'territory','customer_group', 'organization']);
-		if(doc.quotation_to == 'Lead') unhide_field(['lead']);
-		else if(doc.quotation_to == 'Customer') unhide_field(['customer']);
-
-		doc.lead = doc.lead_name = doc.customer = doc.customer_name = doc.customer_address = doc.contact_person = doc.address_display = doc.contact_display = doc.contact_mobile = doc.contact_email = doc.territory = doc.customer_group = doc.organization = "";
-	}
-
-	cur_frm.cscript.quotation_to = function(doc,cdt,cdn){
-		cur_frm.cscript.lead_cust_show(doc,cdt,cdn);
-	}
-	add_button: function() {
-		this.frm.clear_custom_buttons();		
-		if(this.frm.doc.docstatus == 1 && this.frm.doc.status != 'Order Lost') {
-			this.frm.add_custom_button('Make Sales Order', this.make_sales_order);
-			this.frmcur_frm.add_custom_button('Set as Lost', this.set_as_lost);
-			this.frmcur_frm.add_custom_button('Send SMS', this.send_sms); // to-do
+	quotation_to: function() {
+		related_fields = ['lead', 'lead_name','customer', 'customer_address', 
+			'contact_person', 'customer_name', 'address_display', 'contact_display',
+			 'contact_mobile', 'contact_email', 'territory','customer_group', 'organization'];
+		for (fld in related_fields) {
+			this.frm.doc.fields[fld] = "";
+		}
+		this.toggle_fields();
+	},
+	add_buttons: function() {
+		var me = this;
+		if(this.frm.doc.docstatus == 1 && this.frm.doc.status != "Order Lost") {
+			this.frm.add_custom_button("Make Sales Order", 
+				function() { me.make_sales_order(this); });
+			this.frmcur_frm.add_custom_button("Set as Lost", 
+				function() { me.set_as_lost(this); });
+			this.frmcur_frm.add_custom_button("Send SMS", this.send_sms); // to-do
 		}
 	},
 	make_sales_order: function() {
 		wn.model.map_doclist([["Quotation", "Sales Order"], 
 			["Quotation Item", "Sales Order Item"],
-		 	['Sales Taxes and Charges','Sales Taxes and Charges'], 
-			['Sales Team', 'Sales Team']], this.frm.doc.name);
+		 	["Sales Taxes and Charges", "Sales Taxes and Charges"], 
+			["Sales Team", "Sales Team"]], this.frm.doc.name);
 	},
 	set_as_lost: function() {
-		// to-do (discuss with anand)
+		var lost_reason_dialog;
+		if(!lost_reason_dialog) {
+			lost_reason_dialog = new erpnext.InputDialog("Add Quotation Lost Reason", 
+				"Reason", "declare_order_lost");
+		}
+		lost_reason_dialog.show();
 	},
 	lead: function() {
 		if(this.frm.doc.lead) {
@@ -95,6 +96,40 @@ erpnext.selling.Quotation = erpnext.Selling.extend({
 				this.frm.doc.doctype, this.frm.doc.name, 1);
 			unhide_field('territory');
 		}
+	},
+	customer: function() {
+		var me = this;
+		var old_price_list = self.frm.doc.price_list_name;
+		wn.call({
+			method: "runserverobj",
+			args: {
+				docs: wn.model.compress(wn.model.get_doclist(me.frm.doc.doctype,
+					me.frm.doc.name)),
+				method: "get_default_customer_address",
+				args: ""
+			},
+			callback: function(r, rt) {
+				$.extend(locals[this.frm.doc.doctype][this.frm.doc.name], r.message);
+				this.refresh();
+				if (old_price_list != this.frm.doc.price_list_name) 
+					this.price_list_name(this.frm.doc, this.frm.doctype, this.frm.name);
+			}
+		});
+	},
+	pull_enquiry_detail: function(){
+		wn.call({
+			method: "runserverobj",
+			args: {
+				docs: wn.model.compress(wn.model.get_doclist(me.frm.doc.doctype,
+					me.frm.doc.name)),
+				method: "pull_enquiry_details",
+				args: ""
+			},
+			callback: function(r, rt) {
+				$.extend(locals[this.frm.doc.doctype][this.frm.doc.name], r.message);
+				this.refresh();
+			}
+		});
 	},
 	setup_get_query: function() {
 		this._super();
@@ -182,91 +217,3 @@ erpnext.selling.Quotation = erpnext.Selling.extend({
 
 cur_frm.cscript = new erpnext.selling.Quotation({
 	frm: cur_frm, item_table_field: "quotation_items"});
-
-
-
-
-
-
-
-
-
-
-cur_frm.cscript.customer = function(doc,dt,dn) {
-	var pl = doc.price_list_name;
-	var callback = function(r,rt) {
-		var doc = locals[cur_frm.doctype][cur_frm.docname];
-		cur_frm.refresh();		
-		if (pl != doc.price_list_name) cur_frm.cscript.price_list_name(doc, dt, dn); 
-	}
-
-	if(doc.customer) $c_obj(wn.model.get_doclist(doc.doctype, doc.name), 
-		'get_default_customer_address', '', callback);
-	if(doc.customer) unhide_field(['customer_address','contact_person','territory', 'customer_group']);
-}
-
-cur_frm.cscript.pull_enquiry_detail = function(doc,cdt,cdn){
-	var callback = function(r,rt){
-		if(r.message){
-			doc.quotation_to = r.message;
-
-			if(doc.quotation_to == 'Lead') {
-					unhide_field('lead');
-			}
-			else if(doc.quotation_to == 'Customer') {
-				unhide_field(['customer','customer_address','contact_person','territory','customer_group']);
-			}
-			refresh_many(['quotation_details','quotation_to','customer','customer_address','contact_person','lead','lead_name','address_display','contact_display','contact_mobile','contact_email','territory','customer_group','order_type']);
-		}
-	}
-
-	$c_obj(wn.model.get_doclist(doc.doctype, doc.name),'pull_enq_details','',callback);
-
-}
-
-cur_frm.cscript['Declare Order Lost'] = function(){
-	var qtn_lost_dialog;
-
-	set_qtn_lost_dialog = function(doc,cdt,cdn){
-		qtn_lost_dialog = new Dialog(400,400,'Add Quotation Lost Reason');
-		qtn_lost_dialog.make_body([
-			['HTML', 'Message', '<div class="comment">Please add quotation lost reason</div>'],
-			['Text', 'Quotation Lost Reason'],
-			['HTML', 'Response', '<div class = "comment" id="update_quotation_dialog_response"></div>'],
-			['HTML', 'Add Reason', '<div></div>']
-		]);
-
-		var add_reason_btn1 = $a($i(qtn_lost_dialog.widgets['Add Reason']), 'button', 'button');
-		add_reason_btn1.innerHTML = 'Add';
-		add_reason_btn1.onclick = function(){ qtn_lost_dialog.add(); }
-
-		var add_reason_btn2 = $a($i(qtn_lost_dialog.widgets['Add Reason']), 'button', 'button');
-		add_reason_btn2.innerHTML = 'Cancel';
-		$y(add_reason_btn2,{marginLeft:'4px'});
-		add_reason_btn2.onclick = function(){ qtn_lost_dialog.hide();}
-
-		qtn_lost_dialog.onshow = function() {
-			qtn_lost_dialog.widgets['Quotation Lost Reason'].value = '';
-			$i('update_quotation_dialog_response').innerHTML = '';
-		}
-
-		qtn_lost_dialog.add = function() {
-			// sending...
-			$i('update_quotation_dialog_response').innerHTML = 'Processing...';
-			var arg =	strip(qtn_lost_dialog.widgets['Quotation Lost Reason'].value);
-			var call_back = function(r,rt) {
-				if(r.message == 'true'){
-					$i('update_quotation_dialog_response').innerHTML = 'Done';
-					qtn_lost_dialog.hide();
-				}
-			}
-			if(arg) $c_obj(wn.model.get_doclist(cur_frm.doc.doctype,
-				 cur_frm.doc.name),'declare_order_lost',arg,call_back);
-			else msgprint("Please add Quotation lost reason");
-		}
-	}
-	if(!qtn_lost_dialog){
-		set_qtn_lost_dialog(doc,cdt,cdn);
-	}
-	qtn_lost_dialog.show();
-}
