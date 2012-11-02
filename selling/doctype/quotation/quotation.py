@@ -33,24 +33,26 @@ class DocType(SellingController):
 		super(DocType, self).validate()
 		self.set_last_contact_date()
 		self.validate_order_type()
-		sales_com_obj = get_obj('Sales Common')
-		sales_com_obj.check_active_sales_items(self)
-		sales_com_obj.validate_max_discount(self,'quotation_items') #verify whether rate is not greater than max_discount
-		sales_com_obj.check_exchange_rate(self)
 
-		# Get total in words
-		dcc = TransactionBase().get_company_currency(self.doc.company)
-		self.doc.rounded_total_in_words = sales_com_obj.get_total_in_words(dcc, self.doc.rounded_total)
-		self.doc.rounded_total_in_words_print = sales_com_obj.get_total_in_words(self.doc.currency, self.doc.rounded_total_print)
-	# 
-	# def pull_enquiry_details(self):
-	# 	self.doclist = self.doc.clear_table(self.doclist, 'quotation_items')
-	# 	get_obj('DocType Mapper', 'Opportunity-Quotation').dt_map('Opportunity', 'Quotation', self.doc.opportunity, self.doc, self.doclist, "[['Opportunity', 'Quotation'],['Opportunity Item', 'Quotation Item']]")
-	# 
-	# 	self.get_adj_percent()
-	# 	return self.doc.quotation_to
-	# 
-	# 
+	def set_last_contact_date(self):
+		if self.doc.contact_date_ref and self.doc.contact_date_ref != self.doc.contact_date:
+			if getdate(self.doc.contact_date_ref) < getdate(self.doc.contact_date):
+				self.doc.last_contact_date = self.doc.contact_date_ref
+			else:
+				msgprint("Contact Date Cannot be before Last Contact Date", raise_exception=1)
+
+	def pull_opportunity_items(self):
+		self.doclist = self.doc.clear_table(self.doclist, self.item_table_field)
+		if self.doc.opportunity:
+			mapper = webnotes.get_controller("DocType Mapper", "Opportunity-Quotation")
+
+		import json
+		from_to_list = [["Opportunity", "Quotation"], ["Opportunity Item", "Quotation Item"]]
+		
+		mapper.dt_map("Opportunity", "Quotation", self.doc.opportunity,
+			self.doc, self.doclist, json.dumps(from_to_list))
+
+
 	# def get_contact_details(self):
 	# 	return get_obj('Sales Common').get_contact_details(self,0)
 	# 
@@ -90,39 +92,7 @@ class DocType(SellingController):
 	# def get_tc_details(self):
 	# 	return get_obj('Sales Common').get_tc_details(self)
 	
-	def validate_for_items(self):
-		chk_dupl_itm = []
-		for d in getlist(self.doclist,'quotation_items'):
-			if [cstr(d.item_code),cstr(d.description)] in chk_dupl_itm:
-				msgprint("Item %s has been entered twice. Please change description atleast to continue" % d.item_code)
-				raise Exception
-			else:
-				chk_dupl_itm.append([cstr(d.item_code),cstr(d.description)])
 
-	def validate_order_type(self):
-		if self.doc.order_type in ['Maintenance', 'Service']:
-			for d in getlist(self.doclist, 'quotation_items'):
-				is_service_item = webnotes.conn.sql("select is_service_item from `tabItem` where name=%s", d.item_code)
-				is_service_item = is_service_item and is_service_item[0][0] or 'No'
-				
-				if is_service_item == 'No':
-					msgprint("You can not select non service item "+d.item_code+" in Maintenance Quotation")
-					raise Exception
-		else:
-			for d in getlist(self.doclist, 'quotation_items'):
-				is_sales_item = webnotes.conn.sql("select is_sales_item from `tabItem` where name=%s", d.item_code)
-				is_sales_item = is_sales_item and is_sales_item[0][0] or 'No'
-				
-				if is_sales_item == 'No':
-					msgprint("You can not select non sales item "+d.item_code+" in Sales Quotation")
-					raise Exception
-	
-	def set_last_contact_date(self):
-		if self.doc.contact_date_ref and self.doc.contact_date_ref != self.doc.contact_date:
-			if getdate(self.doc.contact_date_ref) < getdate(self.doc.contact_date):
-				self.doc.last_contact_date=self.doc.contact_date_ref
-			else:
-				msgprint("Contact Date Cannot be before Last Contact Date", raise_exception=1)
 
 
 	def on_update(self):
