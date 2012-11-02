@@ -195,10 +195,10 @@ cur_frm.fields_dict['quotation'].get_query = function(doc) {
 // ================================================================================================
 
 // ***************** Get available qty in warehouse of item selected **************** 
-cur_frm.cscript.reserved_warehouse = function(doc, cdt , cdn) {
+cur_frm.cscript.warehouse = function(doc, cdt , cdn) {
 	var d = locals[cdt][cdn];
-	if (d.reserved_warehouse) {
-		arg = "{'item_code':'" + d.item_code + "','warehouse':'" + d.reserved_warehouse +"'}";
+	if (d.warehouse) {
+		arg = "{'item_code':'" + d.item_code + "','warehouse':'" + d.warehouse +"'}";
 		get_server_fields('get_available_qty',arg,'sales_order_items',doc,cdt,cdn,1);
 	}
 }

@@ -139,7 +139,7 @@
 	# Field Mapper Detail
 	{
 		u'doctype': u'Field Mapper Detail',
-		'from_field': u'reserved_warehouse',
+		'from_field': u'warehouse',
 		'map': u'Yes',
 		'match_id': 1,
 		'to_field': u'warehouse'

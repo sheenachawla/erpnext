@@ -139,7 +139,7 @@ class DocType(TransactionBase):
 			'item_name'				: item and item[0]['item_name'] or '',
 			'brand'					: item and item[0]['brand'] or '',
 			'stock_uom'				: item and item[0]['stock_uom'] or '',
-			'reserved_warehouse'	: item and item[0]['default_warehouse'] or '',
+			'warehouse'	: item and item[0]['default_warehouse'] or '',
 			'warehouse'				: item and item[0]['default_warehouse'] or args.get('warehouse'),
 			'income_account'		: item and item[0]['default_income_account'] or args.get('income_account'),
 			'cost_center'			: item and item[0]['default_sales_cost_center'] or args.get('cost_center'),
@@ -157,8 +157,8 @@ class DocType(TransactionBase):
 			ret['ref_rate'] = flt(ref_rate)
 			ret['rate'] = flt(ref_rate)
 			
-		if ret['warehouse'] or ret['reserved_warehouse']:
-			av_qty = self.get_available_qty({'item_code': args['item_code'], 'warehouse': ret['warehouse'] or ret['reserved_warehouse']})
+		if ret['warehouse'] or ret['warehouse']:
+			av_qty = self.get_available_qty({'item_code': args['item_code'], 'warehouse': ret['warehouse'] or ret['warehouse']})
 			ret.update(av_qty)
 			
 		# get customer code for given item from Item Customer Detail
@@ -177,7 +177,7 @@ class DocType(TransactionBase):
 			where name = '%s' and (ifnull(end_of_life,'') = '' or end_of_life > now() or end_of_life = '0000-00-00') 
 			and (is_sales_item = 'Yes' or is_service_item = 'Yes') """ % (args['item_code']), as_dict=1)
 		ret = {
-			'reserved_warehouse'	: item and item[0]['default_warehouse'] or '',
+			'warehouse'	: item and item[0]['default_warehouse'] or '',
 			'warehouse'				: item and item[0]['default_warehouse'] or args.get('warehouse'),
 			'income_account'		: item and item[0]['default_income_account'] or args.get('income_account'),
 			'cost_center'			: item and item[0]['default_sales_cost_center'] or args.get('cost_center')
@@ -403,7 +403,7 @@ class DocType(TransactionBase):
 					reserved_qty = - flt(qty)
 					
 			if obj.doc.doctype == 'Sales Order':
-				reserved_wh = d.reserved_warehouse
+				reserved_wh = d.warehouse
 						
 			if self.has_sales_bom(d.item_code):
 				for p in getlist(obj.doclist, 'delivery_note_packing_items'):
@@ -411,7 +411,7 @@ class DocType(TransactionBase):
 						# the packing details table's qty is already multiplied with parent's qty
 						il.append({
 							'warehouse': p.warehouse,
-							'reserved_warehouse': reserved_wh,
+							'warehouse': reserved_wh,
 							'item_code': p.item_code,
 							'qty': flt(p.qty),
 							'reserved_qty': (flt(p.qty)/qty)*(reserved_qty),
@@ -423,7 +423,7 @@ class DocType(TransactionBase):
 			else:
 				il.append({
 					'warehouse': d.warehouse,
-					'reserved_warehouse': reserved_wh,
+					'warehouse': reserved_wh,
 					'item_code': d.item_code,
 					'qty': qty,
 					'reserved_qty': reserved_qty,
@@ -448,7 +448,7 @@ class DocType(TransactionBase):
 			qty, amt = curr_det and flt(curr_det[0][0]) or 0, curr_det and flt(curr_det[0][1]) or 0
 
 		# get total qty of ref doctype
-		so_det = webnotes.conn.sql("select qty, amount, reserved_warehouse from `tabSales Order Item` where name = '%s' and docstatus = 1"% ref_tab_dn)
+		so_det = webnotes.conn.sql("select qty, amount, warehouse from `tabSales Order Item` where name = '%s' and docstatus = 1"% ref_tab_dn)
 		max_qty, max_amt, res_wh = so_det and flt(so_det[0][0]) or 0, so_det and flt(so_det[0][1]) or 0, so_det and cstr(so_det[0][2]) or ''
 		return qty, max_qty, amt, max_amt, res_wh
 
@@ -510,7 +510,7 @@ class DocType(TransactionBase):
 		self.packing_list_idx = 0
 		parent_items = []
 		for d in getlist(obj.doclist, fname):
-			warehouse = fname == "sales_order_items" and d.reserved_warehouse or d.warehouse
+			warehouse = fname == "sales_order_items" and d.warehouse or d.warehouse
 			if self.has_sales_bom(d.item_code):
 				for i in self.get_sales_bom_items(d.item_code):
 					self.update_packing_list_item(obj, i['item_code'], flt(i['qty'])*flt(d.qty), warehouse, d)

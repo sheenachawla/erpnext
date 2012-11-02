@@ -391,7 +391,7 @@ class DocType(StockController):
 						"posting_date": self.doc.posting_date,
 						"is_amended": self.doc.amended_from and 'Yes' or 'No'
 					}
-					get_obj("Warehouse", d["reserved_warehouse"]).update_bin(args)
+					get_obj("Warehouse", d["warehouse"]).update_bin(args)
 						
 				# Reduce actual qty from warehouse
 				self.make_sl_entry(d, d['warehouse'], - flt(d['qty']) , 0, update_stock)
