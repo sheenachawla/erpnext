@@ -54,7 +54,7 @@ class DocType(TransactionBase):
 			if not self.doc.debit_to:
 				webnotes.conn.set(self.doc,'debit_to',val)
 			
-			lst = ['territory','naming_series','currency','sales_taxes_and_charges_master','letter_head','tc_name','price_list_name','company','select_print_heading','cash_bank_account']
+			lst = ['territory','naming_series','currency','taxes_and_charges_master','letter_head','tc_name','price_list_name','company','select_print_heading','cash_bank_account']
 				
 			for i in lst:
 				val = pos and pos[0][i] or ''
@@ -68,7 +68,7 @@ class DocType(TransactionBase):
 			if self.doc.tc_name:	 self.get_tc_details()
 			
 			#fetch charges
-			if self.doc.sales_taxes_and_charges_master:		self.get_taxes_and_charges()
+			if self.doc.taxes_and_charges_master:		self.get_taxes_and_charges()
 
 
 	def set_pos_item_values(self):

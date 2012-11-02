@@ -27,19 +27,32 @@ erpnext.Transaction = Class.extend({
 	},
 	refresh: function() {
 		erpnext.hide_naming_series();
+		if(this.add_buttons) {
+			this.frm.clear_custom_buttons();
+			this.add_buttons();
+		}
+		this.toggle_fields && this.toggle_fields();
+		this.set_labels && this.set_labels();
 	},
 	set_missing_values: function() {
+		var me = this;
 		var default_values = {
-			"posting_date": dateutil.obj_to_str(new Date()),
-			"status": "Draft",
-			"company": sys_defaults.company,
-			"fiscal_year": sys_defaults.fiscal_year,
-			"currency": sys_defaults.currency,
-			"exchange_rate": 1,
+			posting_date: dateutil.obj_to_str(new Date()),
+			status: "Draft",
+			company: sys_defaults.company,
+			fiscal_year: sys_defaults.fiscal_year,
+			currency: sys_defaults.currency,
+			exchange_rate: 1.0,
+			
+			// for buying
+			is_subcontracted: "No",
+			
+			// for selling
 		}
-		for(key in default_values) {
-			if(!this.frm.doc[key]) this.frm.doc[key] = default_values[key];
-		}
+		$.each(default_values, function(key, value) {
+			if(!me.frm.doc[key]) me.frm.doc[key] = value;
+		});
+		
 	},
 	is_table_empty: function(table_field) {
 		if(!wn.model.has_children(this.frm.doc.doctype, this.frm.doc.name, table_field)) {
@@ -51,7 +64,7 @@ erpnext.Transaction = Class.extend({
 	setup_get_query: function() {
 		var me = this;
 		// taxes and charges master
-		this.frm.fields_dict['sales_taxes_and_charges_master'].get_query = function() {
+		this.frm.fields_dict['taxes_and_charges_master'].get_query = function() {
 			return "SELECT DISTINCT name FROM `tabSales Taxes and Charges Master` \
 				WHERE ifnull(company, '') = '" + me.frm.doc.company + "' \
 				AND docstatus < 2 AND %(key)s LIKE \"%s\" ORDER BY name LIMIT 50";

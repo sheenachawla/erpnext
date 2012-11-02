@@ -173,3 +173,14 @@ class BuyingController(TransactionController):
 		})
 		
 		return last_purchase_details
+		
+	def append_default_taxes(self):
+		"""called in on_map to add rows in tax table when they are missing"""
+		if not (self.doc.supplier or 
+				len(self.doclist.get({"parentfield": "taxes_and_charges"}))):
+			self.doc.taxes_and_charges_master = webnotes.conn.get_value(
+				"Purchase Taxes and Charges Master", {"is_default[0]": 1}, "name")
+			
+			if not self.doc.taxes_and_charges_master: return
+			
+			self.append_taxes()
