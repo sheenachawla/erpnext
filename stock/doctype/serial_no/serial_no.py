@@ -92,7 +92,7 @@ class DocType(StockControllers):
 		self.make_gl_entries()
 
 	def make_stock_ledger_entry(self, qty):
-		from webnotes.model.code import get_obj
+		from webnotes.model.controller import get_obj
 		values = [{
 			'item_code'				: self.doc.item_code,
 			'warehouse'				: self.doc.warehouse,

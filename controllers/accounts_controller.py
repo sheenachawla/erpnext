@@ -19,7 +19,7 @@ from __future__ import unicode_literals
 import webnotes
 from webnotes.utils import flt, cstr, cint, round_doc
 import webnotes.model.doctype
-from webnotes.model.code import get_obj
+from webnotes.model.controller import get_obj
 from webnotes.model.utils import getlist
 from webnotes.model.doc import Document
 from utilities.transaction_base import TransactionBase

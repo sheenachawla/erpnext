@@ -19,7 +19,7 @@ import webnotes
 from webnotes.utils import cint, cstr, flt, fmt_money, formatdate, getdate
 from webnotes.model.doc import addchild, make_autoname
 from webnotes.model.utils import getlist
-from webnotes.model.code import get_obj
+from webnotes.model.controller import get_obj
 from webnotes import msgprint
 from utilities.transaction_base import TransactionBase
 from controllers.accounts_controller import AccountsController

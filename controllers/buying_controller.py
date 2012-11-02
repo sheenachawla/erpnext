@@ -19,7 +19,7 @@ import webnotes
 import webnotes.model
 from webnotes import _, msgprint, DictObj
 from webnotes.utils import add_days, getdate, flt, cint
-from webnotes.model.code import get_obj
+from webnotes.model.controller import get_obj
 
 import stock
 from controllers.transaction_controller import TransactionController

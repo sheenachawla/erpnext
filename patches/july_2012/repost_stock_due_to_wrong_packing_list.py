@@ -94,7 +94,7 @@ def create_comment(dn):
 	
 	
 def repost_bin(item, wh):
-	from webnotes.model.code import get_obj	
+	from webnotes.model.controller import get_obj	
 	bin = webnotes.conn.sql("select name from `tabBin` \
 		where item_code = %s and warehouse = %s", (item, wh))
 			

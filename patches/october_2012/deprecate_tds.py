@@ -1,7 +1,7 @@
 def execute():
 	import webnotes
 	from webnotes.model import delete_doc
-	from webnotes.model.code import get_obj
+	from webnotes.model.controller import get_obj
 	from webnotes.model.doc import addchild
 	
 	# delete doctypes and tables

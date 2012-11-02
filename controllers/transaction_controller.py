@@ -21,7 +21,7 @@ import webnotes
 import webnotes.model
 from webnotes import _, msgprint, DictObj
 from webnotes.utils import cint, formatdate, cstr, flt, add_days
-from webnotes.model.code import get_obj
+from webnotes.model.controller import get_obj
 from webnotes.model.doc import make_autoname
 
 import stock

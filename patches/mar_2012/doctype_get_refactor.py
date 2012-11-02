@@ -107,7 +107,7 @@ def create_file_list():
 		'Customer Issue', 'Customer', 'Contact Us Settings', 'Company',
 		'Bulk Rename Tool', 'Blog', 'BOM', 'About Us Settings']
 
-	from webnotes.model.code import get_obj
+	from webnotes.model.controller import get_obj
 
 	for dt in should_exist:
 		obj = get_obj('DocType', dt, with_children=1)

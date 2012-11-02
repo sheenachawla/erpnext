@@ -18,7 +18,7 @@ from __future__ import unicode_literals
 import webnotes
 from webnotes.utils import cstr, flt, get_defaults, nowdate
 from webnotes import msgprint
-from webnotes.model.code import get_obj
+from webnotes.model.controller import get_obj
 sql = webnotes.conn.sql
 	
 
@@ -206,7 +206,7 @@ class DocType:
 
 	def update_entries_after(self):
 		self.get_reconciliation_data(submit = 0)
-		from webnotes.model.code import get_obj
+		from webnotes.model.controller import get_obj
 		for d in self.data:
 			bin = webnotes.conn.sql("select name from `tabBin` where item_code = %s and \
 				warehouse = %s", (d[0], d[1]))

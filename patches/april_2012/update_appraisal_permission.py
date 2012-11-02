@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 def execute():
 	import webnotes
 	from webnotes.model.doc import addchild
-	from webnotes.model.code import get_obj
+	from webnotes.model.controller import get_obj
 	
 	webnotes.conn.sql("delete from `tabDocPerm` where role = 'All' and permlevel = 0 and parent in ('Appraisal', 'Ticket', 'Project')")
 

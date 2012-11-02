@@ -18,7 +18,7 @@ from __future__ import unicode_literals
 import webnotes
 
 from webnotes.utils import load_json, nowdate, cstr
-from webnotes.model.code import get_obj
+from webnotes.model.controller import get_obj
 from webnotes.model.doc import Document
 from webnotes import msgprint
 from webnotes.model.utils import getlist

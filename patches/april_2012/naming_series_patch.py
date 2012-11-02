@@ -1,7 +1,7 @@
 from __future__ import unicode_literals
 def execute():
 	import webnotes
-	from webnotes.model.code import get_obj
+	from webnotes.model.controller import get_obj
 	ns_list = webnotes.conn.sql("""\
 		SELECT `tabDocField`.`parent`, `tabDocField`.`options`
 		FROM `tabDocField`, `tabDocType`

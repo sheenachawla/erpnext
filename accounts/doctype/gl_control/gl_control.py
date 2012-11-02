@@ -20,7 +20,7 @@ import webnotes
 from webnotes.utils import add_days, cint, cstr, date_diff, flt, get_defaults, getdate, nowdate, sendmail 
 from webnotes.model.doc import Document, addchild
 from webnotes.model.utils import getlist
-from webnotes.model.code import get_obj
+from webnotes.model.controller import get_obj
 from webnotes import msgprint
 from webnotes.utils.email_lib import sendmail
 from utilities.transaction_base import TransactionBase

@@ -24,7 +24,7 @@ class DocType:
 		Generate update quereies for rename
 		"""
 		import webnotes.model
-		from webnotes.model.code import get_obj
+		from webnotes.model.controller import get_obj
 		
 		# call on_rename method if exists
 		obj = get_obj(self.doc.select_doctype, self.doc.document_to_rename)

@@ -5,7 +5,7 @@ def execute():
 	import webnotes.model.doctype
 	from webnotes.utils import cint
 	from webnotes.model.doc import Document
-	from webnotes.model.code import get_obj
+	from webnotes.model.controller import get_obj
 	doctype_list = webnotes.conn.sql("SELECT name FROM `tabDocType`")
 	for dt in doctype_list:
 		doclist = webnotes.model.doctype.get(dt[0], form=0)
