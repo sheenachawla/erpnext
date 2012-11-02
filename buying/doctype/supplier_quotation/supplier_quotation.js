@@ -89,3 +89,41 @@ erpnext.buying.SupplierQuotation = erpnext.Buying.extend({
 
 cur_frm.cscript = new erpnext.buying.SupplierQuotation({
 	frm: cur_frm, item_table_field: "supplier_quotation_items"});
+
+
+// =======
+// }
+// 
+// cur_frm.cscript.make_purchase_order = function() {
+// 	var new_po_name = createLocal("Purchase Order");
+// 	$c("dt_map", {
+// 		"docs": compress_doclist([locals['Purchase Order'][new_po_name]]),
+// 		"from_doctype": cur_frm.doc.doctype,
+// 		"to_doctype": "Purchase Order",
+// 		"from_docname": cur_frm.doc.name,
+// 		"from_to_list": JSON.stringify([['Supplier Quotation', 'Purchase Order'],
+// 			['Supplier Quotation Item', 'Purchase Order Item'],
+// 			['Purchase Taxes and Charges', 'Purchase Taxes and Charges']]),
+// 	}, function(r, rt) { loaddoc("Purchase Order", new_po_name) });
+// }
+// 
+// cur_frm.cscript.supplier = function(doc, dt, dn) {
+// 	if (doc.supplier) {
+// 		get_server_fields('get_default_supplier_address',
+// 			JSON.stringify({ supplier: doc.supplier }), '', doc, dt, dn, 1,
+// 			function() { cur_frm.refresh(); });
+// 		cur_frm.cscript.toggle_contact_section(doc);
+// 	}
+// }
+// 
+// cur_frm.cscript.uom = function(doc, cdt, cdn) {
+// 	// no need to trigger updation of stock uom, as this field doesn't exist in supplier quotation
+// }
+// 
+// cur_frm.fields_dict['quotation_items'].grid.get_field('project_name').get_query = 
+// 	function(doc, cdt, cdn) {
+// 		return "select `tabProject`.name from `tabProject` \
+// 			where `tabProject`.status not in (\"Completed\", \"Cancelled\") \
+// 			and `tabProject`.name like \"%s\" \
+// 			order by `tabProject`.name ASC LIMIT 50";
+// >>>>>>> 282a97f954fcde11cc97a028b19301beef324a94

@@ -37,13 +37,9 @@ class DocType:
 		
 		if (flt(args.get("actual_qty")) < 0 or flt(args.get("reserved_qty")) > 0) \
 				and args.get("is_cancelled") == 'No' and args.get("is_amended")=='No':
-			self.reorder_item(args.get("doc_type"), args.get("doc_name"))
+			self.reorder_item(args.get("voucher_type"), args.get("voucher_no"))
 		
 		if args.get("actual_qty"):
-			# check actual qty with total number of serial no
-			if args.get("serial_no"):
-				self.check_qty_with_serial_no()
-				
 			# update valuation and qty after transaction for post dated entry
 			self.update_entries_after(args.get("posting_date"), args.get("posting_time"))
 		
@@ -59,24 +55,6 @@ class DocType:
 		 	flt(self.doc.indented_qty) + flt(self.doc.planned_qty) - flt(self.doc.reserved_qty)
 		
 		self.doc.save()
-
-	def check_qty_with_serial_no(self):
-		"""
-			check actual qty with total number of serial no in store
-			Temporary validation added on: 18-07-2011
-		"""
-		if sql("select name from `tabItem` where ifnull(has_serial_no, 'No') = 'Yes' and name = '%s'" % self.doc.item_code):
-			sr_count = sql("""select count(name) from `tabSerial No` 
-				where item_code = '%s' and warehouse = '%s' 
-				and status  ='In Store' and docstatus != 2
-				""" % (self.doc.item_code, self.doc.warehouse))[0][0]
-			
-			if sr_count != self.doc.actual_qty:
-				msg = """Actual Qty(%s) in Bin is mismatched with total number(%s) 
-					of serial no in store for item: %s and warehouse: %s""" % \
-					(self.doc.actual_qty, sr_count, self.doc.item_code, self.doc.warehouse)
-
-				msgprint(msg, raise_exception=1)
 
 	def get_first_sle(self):
 		sle = sql("""
@@ -343,18 +321,19 @@ class DocType:
 		webnotes.conn.set(indent_obj.doc,'docstatus',1)
 		indent_obj.on_submit()
 		msgprint("""Item: %s is to be re-ordered. Purchase Request %s raised. 
-			It was generated from %s %s""" % 
-			(self.doc.item_code, indent.name,doc_type, doc_name ))
+			It was generated from %s: %s""" % 
+			(self.doc.item_code, indent.name, doc_type, doc_name ))
 		if(i['email_notify']):
-			self.send_email_notification(doc_type,doc_name)
+			self.send_email_notification(doc_type, doc_name)
 			
-	def send_email_notification(self,doc_type,doc_name):
+	def send_email_notification(self, doc_type, doc_name):
 		""" Notify user about auto creation of indent"""
 		
 		from webnotes.utils.email_lib import sendmail
-		email_list=[d[0] for d in sql("""select parent from tabUserRole 
-			where role in ('Purchase Manager','Material Manager') 
-			and parent not in ('Administrator', 'All', 'Guest')""")]
+		email_list=[d[0] for d in sql("""select distinct r.parent from tabUserRole r, tabProfile p
+			where p.name = r.parent and p.enabled = 1 and p.docstatus < 2
+			and r.role in ('Purchase Manager','Material Manager') 
+			and p.name not in ('Administrator', 'All', 'Guest')""")]
 		msg="""A Purchase Request has been raised 
 			for item %s: %s on %s """ % (doc_type, doc_name, nowdate())
 		sendmail(email_list, subject='Auto Purchase Request Generation Notification', msg = msg)	

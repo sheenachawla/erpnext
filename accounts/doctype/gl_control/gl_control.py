@@ -87,7 +87,6 @@ class DocType:
 
 		return cc_obj.doc.name
 
-
 	def get_advances(self, obj, account_head, table_name,table_field_name, dr_or_cr):
 		jv_detail = webnotes.conn.sql("""
 			select 

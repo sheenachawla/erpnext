@@ -175,6 +175,15 @@
 
 	# DocField
 	{
+		u'doctype': u'DocField',
+		'fieldname': u'default_valuation_method',
+		'fieldtype': u'Select',
+		'label': u'Default Valuation Method',
+		'options': u'FIFO\nMoving Average'
+	},
+
+	# DocField
+	{
 		'colour': u'White:FFF',
 		'description': u'Applicable only if valuation method is moving average',
 		u'doctype': u'DocField',
