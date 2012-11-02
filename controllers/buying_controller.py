@@ -27,15 +27,8 @@ from controllers.transaction_controller import TransactionController
 class BuyingController(TransactionController):
 	def validate(self):
 		super(BuyingController, self).validate()
-		self.validate_mandatory()
 		self.validate_items()
-		
-	def validate_mandatory(self):
-		if self.doc.amended_from and not self.doc.amendment_date:
-			from webnotes.model import doctype
-			msgprint(_("Please specify: %(label)s") % {"label":
-				webnotes.model.doctype.get(self.doc.doctype).get_label("amendment_date")},
-				raise_exception=1)
+
 		
 	def validate_items(self):
 		"""

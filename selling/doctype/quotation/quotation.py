@@ -22,73 +22,73 @@ from webnotes.model.utils import getlist
 from webnotes.model.code import get_obj
 from webnotes import msgprint
 
-from utilities.transaction_base import TransactionBase
 
-class DocType(TransactionBase):
-	def __init__(self, doc, doclist=[]):
-		self.doc = doc
-		self.doclist = doclist
-		self.tname = 'Quotation Item'
-		self.fname = 'quotation_items'
-		
-	def autoname(self):
-		self.doc.name = make_autoname(self.doc.naming_series+'.#####')
+from controllers.selling_controller import SellingController
 
-	def pull_enquiry_details(self):
-		self.doclist = self.doc.clear_table(self.doclist, 'quotation_items')
-		get_obj('DocType Mapper', 'Opportunity-Quotation').dt_map('Opportunity', 'Quotation', self.doc.opportunity, self.doc, self.doclist, "[['Opportunity', 'Quotation'],['Opportunity Item', 'Quotation Item']]")
+class DocType(SellingController):
+	def setup(self):
+		self.item_table_field = "quotation_items"
 
-		self.get_adj_percent()
+	def validate(self):
+		super(DocType, self).validate()
+		self.set_last_contact_date()
+		self.validate_order_type()
+		sales_com_obj = get_obj('Sales Common')
+		sales_com_obj.check_active_sales_items(self)
+		sales_com_obj.validate_max_discount(self,'quotation_items') #verify whether rate is not greater than max_discount
+		sales_com_obj.check_exchange_rate(self)
 
-		return self.doc.quotation_to
-
-
-	def get_contact_details(self):
-		return get_obj('Sales Common').get_contact_details(self,0)
-	
-	
-	def get_item_details(self, args=None):
-		import json
-		args = args and json.loads(args) or {}
-		if args.get('item_code'):
-			return get_obj('Sales Common').get_item_details(args, self)
-		else:
-			obj = get_obj('Sales Common')
-			for doc in self.doclist:
-				if doc.fields.get('item_code'):
-					arg = {
-						'item_code': doc.fields.get('item_code'),
-						'income_account': doc.fields.get('income_account'),
-						'cost_center': doc.fields.get('cost_center'),
-						'warehouse': doc.fields.get('warehouse')
-					}
-					res = obj.get_item_details(arg, self) or {}
-					for r in res:
-						if not doc.fields.get(r):
-							doc.fields[r] = res[r]
-
-	def get_adj_percent(self, arg=''):
-		get_obj('Sales Common').get_adj_percent(self)
-
-	def get_rate(self,arg):
-		return get_obj('Sales Common').get_rate(arg)
-
-	def load_default_taxes(self):
-		self.doclist = get_obj('Sales Common').load_default_taxes(self)
-
-	def get_taxes_and_charges(self):
-		self.doclist = get_obj('Sales Common').get_taxes_and_charges(self)	
-
-	def get_tc_details(self):
-		return get_obj('Sales Common').get_tc_details(self)
-
-	def validate_mandatory(self):
-		if self.doc.amended_from and not self.doc.amendment_date:
-			msgprint("Please Enter Amendment Date")
-			raise Exception
-
-	def validate_fiscal_year(self):
-		get_obj('Sales Common').validate_fiscal_year(self.doc.fiscal_year,self.doc.posting_date,'Quotation Date')
+		# Get total in words
+		dcc = TransactionBase().get_company_currency(self.doc.company)
+		self.doc.rounded_total_in_words = sales_com_obj.get_total_in_words(dcc, self.doc.rounded_total)
+		self.doc.rounded_total_in_words_print = sales_com_obj.get_total_in_words(self.doc.currency, self.doc.rounded_total_print)
+	# 
+	# def pull_enquiry_details(self):
+	# 	self.doclist = self.doc.clear_table(self.doclist, 'quotation_items')
+	# 	get_obj('DocType Mapper', 'Opportunity-Quotation').dt_map('Opportunity', 'Quotation', self.doc.opportunity, self.doc, self.doclist, "[['Opportunity', 'Quotation'],['Opportunity Item', 'Quotation Item']]")
+	# 
+	# 	self.get_adj_percent()
+	# 	return self.doc.quotation_to
+	# 
+	# 
+	# def get_contact_details(self):
+	# 	return get_obj('Sales Common').get_contact_details(self,0)
+	# 
+	# 
+	# def get_item_details(self, args=None):
+	# 	import json
+	# 	args = args and json.loads(args) or {}
+	# 	if args.get('item_code'):
+	# 		return get_obj('Sales Common').get_item_details(args, self)
+	# 	else:
+	# 		obj = get_obj('Sales Common')
+	# 		for doc in self.doclist:
+	# 			if doc.fields.get('item_code'):
+	# 				arg = {
+	# 					'item_code': doc.fields.get('item_code'),
+	# 					'income_account': doc.fields.get('income_account'),
+	# 					'cost_center': doc.fields.get('cost_center'),
+	# 					'warehouse': doc.fields.get('warehouse')
+	# 				}
+	# 				res = obj.get_item_details(arg, self) or {}
+	# 				for r in res:
+	# 					if not doc.fields.get(r):
+	# 						doc.fields[r] = res[r]
+	# 
+	# def get_adj_percent(self, arg=''):
+	# 	get_obj('Sales Common').get_adj_percent(self)
+	# 
+	# def get_rate(self,arg):
+	# 	return get_obj('Sales Common').get_rate(arg)
+	# 
+	# def load_default_taxes(self):
+	# 	self.doclist = get_obj('Sales Common').load_default_taxes(self)
+	# 
+	# def get_taxes_and_charges(self):
+	# 	self.doclist = get_obj('Sales Common').get_taxes_and_charges(self)	
+	# 
+	# def get_tc_details(self):
+	# 	return get_obj('Sales Common').get_tc_details(self)
 	
 	def validate_for_items(self):
 		chk_dupl_itm = []
@@ -122,24 +122,8 @@ class DocType(TransactionBase):
 			if getdate(self.doc.contact_date_ref) < getdate(self.doc.contact_date):
 				self.doc.last_contact_date=self.doc.contact_date_ref
 			else:
-				msgprint("Contact Date Cannot be before Last Contact Date")
-				raise Exception
+				msgprint("Contact Date Cannot be before Last Contact Date", raise_exception=1)
 
-	def validate(self):
-		self.validate_fiscal_year()
-		self.validate_mandatory()
-		self.set_last_contact_date()
-		self.validate_order_type()
-		self.validate_for_items()
-		sales_com_obj = get_obj('Sales Common')
-		sales_com_obj.check_active_sales_items(self)
-		sales_com_obj.validate_max_discount(self,'quotation_items') #verify whether rate is not greater than max_discount
-		sales_com_obj.check_exchange_rate(self)
-		
-		# Get total in words
-		dcc = TransactionBase().get_company_currency(self.doc.company)
-		self.doc.rounded_total_in_words = sales_com_obj.get_total_in_words(dcc, self.doc.rounded_total)
-		self.doc.rounded_total_in_words_print = sales_com_obj.get_total_in_words(self.doc.currency, self.doc.rounded_total_print)
 
 	def on_update(self):
 		# Add to calendar

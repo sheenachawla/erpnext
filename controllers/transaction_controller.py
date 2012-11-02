@@ -38,10 +38,17 @@ class TransactionController(DocListController):
 	
 	def validate(self):
 		self.validate_fiscal_year()
-		
+		self.validate_mandatory()
 		if self.doc.docstatus == 1 and self.cur_docstatus == 0:
 			# a doc getting submitted should not be stopped
 			self.doc.is_stopped = 0
+	
+	def validate_mandatory(self):
+		if self.doc.amended_from and not self.doc.amendment_date:
+			from webnotes.model import doctype
+			msgprint(_("Please specify: %(label)s") % {"label":
+				webnotes.model.doctype.get(self.doc.doctype).get_label("amendment_date")},
+				raise_exception=1)
 	
 	def on_update(self):
 		pass
