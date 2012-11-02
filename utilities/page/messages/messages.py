@@ -24,14 +24,14 @@ def get_list(arg=None):
 	webnotes.form_dict['limit_page_length'] = int(webnotes.form_dict['limit_page_length'])
 	webnotes.form_dict['user'] = webnotes.session['user']
 
+	# set all messages as read
+	webnotes.conn.sql("""UPDATE `tabComment`
+	set docstatus = 1 where comment_doctype in ('My Company', 'Message')
+	and comment_docname = %s
+	""", webnotes.user.name)
+
+	# all messages
 	if webnotes.form_dict['contact'] == webnotes.session['user']:
-		# set all messages as read
-		webnotes.conn.sql("""UPDATE `tabComment`
-		set docstatus = 1 where comment_doctype in ('My Company', 'Message')
-		and comment_docname = %s
-		""", webnotes.user.name)
-				
-		# return messages
 		return webnotes.conn.sql("""select * from `tabComment` 
 		where (owner=%(contact)s 
 			or comment_docname=%(user)s 
@@ -61,34 +61,35 @@ def get_active_users(arg=None):
 		order by first_name""", as_dict=1)
 
 @webnotes.whitelist()
-def post(arg=None):
+def post(txt=None, contact=None, notify_by_email=False, parenttype=None):
 	import webnotes
 	"""post message"""
-	if arg:
-		import json
-		arg = json.loads(arg)
-	else:
-		arg = {}
-		arg.update(webnotes.form_dict)
 	from webnotes.model.doc import Document
+	
+	if not txt or not contact:
+		webnotes.msgprint("Message and Recipient must be given.", raise_exception=1)
+	
 	d = Document('Comment')
-	d.comment = arg['txt']
-	d.comment_docname = arg['contact']
+	d.comment = txt
+	d.comment_docname = contact
 	d.comment_doctype = 'Message'
+	if parenttype:
+		d.parenttype = parenttype
 	d.save()
 
 	import webnotes.utils
-	if webnotes.utils.cint(arg.get('notify')):
-		notify(arg)
+	if notify_by_email:
+		notify(contact, txt)
 	
 @webnotes.whitelist()
 def delete(arg=None):
 	webnotes.conn.sql("""delete from `tabComment` where name=%s""", 
 		webnotes.form_dict['name']);
 
-def notify(arg=None):
+def notify(contact, txt):
 	from webnotes.utils import cstr
-	fn = webnotes.conn.sql('select first_name, last_name from tabProfile where name=%s', webnotes.user.name)[0]
+	fn = webnotes.conn.sql("""select first_name, last_name 
+		from tabProfile where name=%s""", webnotes.user.name)[0]
 	if fn[0] or f[1]:
 		fn = cstr(fn[0]) + (fn[0] and ' ' or '') + cstr(fn[1])
 	else:
@@ -99,7 +100,7 @@ def notify(arg=None):
 	<b>Comment:</b> %s
 	
 	To answer, please login to your erpnext account!
-	''' % (fn, arg['txt'])
+	''' % (fn, txt)
 	
 	from webnotes.model.code import get_obj
 	note = get_obj('Notification Control')
@@ -111,4 +112,4 @@ def notify(arg=None):
 	sender = webnotes.user.name!='Administrator' and webnotes.user.name or 'support+admin_post@erpnext.com'
 	
 	from webnotes.utils.email_lib import sendmail
-	sendmail([arg['contact']], sender, email_msg, fn + ' has posted a new comment')	
+	sendmail(contact, sender, email_msg, fn + ' has posted a new comment')	

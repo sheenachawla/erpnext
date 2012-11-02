@@ -1,0 +1,21 @@
+[
+ {
+  "owner": "Administrator", 
+  "docstatus": 0, 
+  "creation": "2012-10-23 15:21:31", 
+  "modified_by": "Administrator", 
+  "modified": "2012-11-02 11:51:43"
+ }, 
+ {
+  "style": "Danger", 
+  "name": "__common__", 
+  "module": "Setup", 
+  "doctype": "Workflow State", 
+  "workflow_state_name": "Rejected", 
+  "icon": "remove"
+ }, 
+ {
+  "name": "Rejected", 
+  "doctype": "Workflow State"
+ }
+]

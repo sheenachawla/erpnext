@@ -96,13 +96,18 @@ KBQuestionView = function(w, qid, qtext) {
 			var v = $(me.input).val();
 			if(!v) { msgprint('Write something!'); return; }
 			me.btn.set_working();
-			$c_page('utilities', 'question_view', 'add_answer', {qid: qid, answer:v}, 
-				function(r, rt) {
+			wn.call({
+				method:'utilities.page.question_view.question_view.add_answer',
+				args: {
+					qid:qid, 
+					answer:v
+				},
+				callback: function(r) {
 					me.btn.done_working();
 					me.ans_list.list.run();
-					$dh(w.add_answer_area);
+					$dh(w.add_answer_area);					
 				}
-			);
+			});
 		});
 	}
 	

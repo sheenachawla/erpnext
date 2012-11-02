@@ -1,0 +1,21 @@
+[
+ {
+  "owner": "Administrator", 
+  "docstatus": 0, 
+  "creation": "2012-10-23 15:21:27", 
+  "modified_by": "Administrator", 
+  "modified": "2012-11-02 11:51:32"
+ }, 
+ {
+  "style": "Success", 
+  "name": "__common__", 
+  "module": "Setup", 
+  "doctype": "Workflow State", 
+  "workflow_state_name": "Approved", 
+  "icon": "ok"
+ }, 
+ {
+  "name": "Approved", 
+  "doctype": "Workflow State"
+ }
+]

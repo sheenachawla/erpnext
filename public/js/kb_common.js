@@ -135,16 +135,18 @@ EditableText = function(args) {
 				return;
 			}
 			var btn = this;
-			$(btn).set_working();
-			$c_page('utilities', 'question_view', 'update_item', {
+			wn.call({
+				method: 'utilities.page.question_view.question_view.update_item',
+				args: {
 					dt: me.dt, dn: me.dn, fn: me.fieldname, text: v
-				}, 
-				function(r) {
-					$(btn).done_working();
+				},
+				callback: function(r) {
 					if(r.exc) {msgprint(r.exc); return; }
 					me.set_display(v);
-					me.show_as_text();
-				});
+					me.show_as_text();					
+				},
+				btn: btn
+			});
 		}
 	)
 	
