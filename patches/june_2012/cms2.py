@@ -78,7 +78,7 @@ def save_pages():
 				webnotes.modules.patch_handler.log(unicode(e))
 			
 def save_website_settings():
-	from webnotes.model.code import get_obj
+	from webnotes.model.controller import get_obj
 	
 	# rewrite pages
 	get_obj('Website Settings').on_update()

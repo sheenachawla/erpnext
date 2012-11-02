@@ -123,8 +123,8 @@ def get_doc_fields(page_name):
 	import webnotes
 	doc_type, doc_name = webnotes.conn.get_value('Web Cache', page_name, ['doc_type', 'doc_name'])
 	
-	import webnotes.model.code
-	obj = webnotes.model.code.get_obj(doc_type, doc_name)
+	import webnotes.model.controller
+	obj = webnotes.model.controller.get_obj(doc_type, doc_name)
 	
 	if hasattr(obj, 'prepare_template_args'):
 		obj.prepare_template_args()

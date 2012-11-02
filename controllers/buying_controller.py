@@ -19,7 +19,7 @@ import webnotes
 import webnotes.model
 from webnotes import _, msgprint, DictObj
 from webnotes.utils import add_days, getdate, flt, cint
-from webnotes.model.code import get_obj
+from webnotes.model.controller import get_obj
 
 import stock
 from controllers.transaction_controller import TransactionController
@@ -28,7 +28,7 @@ class BuyingController(TransactionController):
 	def validate(self):
 		super(BuyingController, self).validate()
 		self.set_item_values()
-		
+
 	def validate_stock_item(self, item, child):
 		super(BuyingController, self).validate_stock_item(item, child)
 		

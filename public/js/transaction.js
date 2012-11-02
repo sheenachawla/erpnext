@@ -71,3 +71,50 @@ erpnext.Transaction = Class.extend({
 		}
 	},
 });
+
+erpnext.InputDialog = function(title, input_label, method) {
+	var me = this;
+	dialog = new Dialog(400, 400, title);
+	dialog.make_body([
+		['Text', input_label],
+		['HTML', 'response_area', '<div class = "comment" id="response"></div>'],
+		['HTML', 'button_area', '<div></div>']
+	]);
+	var add_button = $a($i(dialog.widgets['button_area']), 'button', 'button');
+	add_button.innerHTML = 'Add';
+	add_button.onclick = function() { dialog.add(); }
+
+	var cancel_button = $a($i(dialog.widgets['button_area']), 'button', 'button');
+	cancel_button.innerHTML = 'Cancel';
+	$y(cancel_button, { marginLeft: '4px' });
+	cancel_button.onclick = function() { dialog.hide(); };
+	
+	dialog.onshow = function() {
+		dialog.widgets[input_label].value = '';
+		$i('response').innerHTML = '';
+	}
+
+	dialog.add = function() {
+		$i('response').innerHTML = 'Processing...';
+		var arg = strip(dialog.widgets[input_label].value);
+		if(arg) {
+			wn.call({
+				method: "runserverobj",
+				args: {
+					docs: wn.model.compress(wn.model.get_doclist(me.frm.doc.doctype,
+						me.frm.doc.name)),
+					method: method,
+					args: arg
+				},
+				callback: function(r, rt) {
+					if(r.message) {
+						$i('response').innerHTML = 'Done';
+						dialog.hide();
+					}
+				}
+			});
+		} else {
+			$i('response').innerHTML = 'Please enter somthing before adding';
+		}
+	}
+}

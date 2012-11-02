@@ -29,7 +29,7 @@ def execute():
 	
 	if not webnotes.conn.sql("""select name from `tabDocPerm` where parent = 'Leave Application'
 			and role = 'Employee' and permlevel = 1"""):
-		from webnotes.model.code import get_obj
+		from webnotes.model.controller import get_obj
 		from webnotes.model.doc import addchild
 		leave_app = get_obj('DocType', 'Leave Application', with_children=1)
 		ch = addchild(leave_app.doc, 'permissions', 'DocPerm')

@@ -23,7 +23,7 @@ class DocType:
 		self.doclist = doclist
 
 	def get_rate(self, arg):
-		from webnotes.model.code import get_obj
+		from webnotes.model.controller import get_obj
 		return get_obj('Sales Common').get_rate(arg, self)
 
 	def update_other_default_charges(self):

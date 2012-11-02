@@ -1,7 +1,7 @@
 from __future__ import unicode_literals
 def execute():
 	import webnotes
-	from webnotes.model.code import get_obj
+	from webnotes.model.controller import get_obj
 	from selling.doctype.sales_common.sales_common import StatusUpdater
 	
 	invoices = webnotes.conn.sql("select name from `tabSales Invoice` where docstatus = 1")

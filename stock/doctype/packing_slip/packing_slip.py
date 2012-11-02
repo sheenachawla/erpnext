@@ -171,7 +171,7 @@ class DocType:
 		"""
 		self.doc.from_case_no = self.get_recommended_case_no()
 
-		from webnotes.model.code import get_obj
+		from webnotes.model.controller import get_obj
 		for d in self.doclist:
 			psd_obj = get_obj(doc=d)
 			psd_obj.get_packing_slip_items(self.doc.delivery_note)

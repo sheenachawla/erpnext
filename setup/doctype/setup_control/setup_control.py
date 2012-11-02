@@ -19,7 +19,7 @@ import webnotes
 
 from webnotes.utils import cint, cstr, getdate, now, nowdate
 from webnotes.model.doc import Document, addchild
-from webnotes.model.code import get_obj
+from webnotes.model.controller import get_obj
 from webnotes import session, form, msgprint
 
 class DocType:

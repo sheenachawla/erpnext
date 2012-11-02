@@ -20,7 +20,7 @@ import webnotes
 from webnotes.utils import flt, get_defaults, now, nowdate
 
 from webnotes.model.doc import Document
-from webnotes.model.code import get_obj
+from webnotes.model.controller import get_obj
 
 sql = webnotes.conn.sql
 

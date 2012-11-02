@@ -21,7 +21,7 @@ from webnotes.utils import add_days, cint, cstr, default_fields, flt, getdate, n
 
 from webnotes.model.doc import addchild
 from webnotes.model.utils import getlist
-from webnotes.model.code import get_obj
+from webnotes.model.controller import get_obj
 from webnotes import form, msgprint
 
 

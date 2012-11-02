@@ -19,7 +19,7 @@ import webnotes
 from webnotes.utils import cstr, flt, getdate
 from webnotes.model.doc import make_autoname
 from webnotes.model.utils import getlist
-from webnotes.model.code import get_obj
+from webnotes.model.controller import get_obj
 from webnotes import msgprint
 sql = webnotes.conn.sql
 

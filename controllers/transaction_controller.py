@@ -21,7 +21,7 @@ import webnotes
 import webnotes.model
 from webnotes import _, msgprint, DictObj
 from webnotes.utils import cint, formatdate, cstr, flt, add_days
-from webnotes.model.code import get_obj
+from webnotes.model.controller import get_obj
 from webnotes.model.doc import make_autoname
 
 import stock
@@ -40,10 +40,16 @@ class TransactionController(DocListController):
 		self.validate_fiscal_year()
 		self.validate_mandatory()
 		self.validate_items()
-		
 		if self.doc.docstatus == 1 and self.cur_docstatus == 0:
 			# a doc getting submitted should not be stopped
 			self.doc.is_stopped = 0
+	
+	def validate_mandatory(self):
+		if self.doc.amended_from and not self.doc.amendment_date:
+			from webnotes.model import doctype
+			msgprint(_("Please specify: %(label)s") % {"label":
+				webnotes.model.doctype.get(self.doc.doctype).get_label("amendment_date")},
+				raise_exception=1)
 	
 	def on_update(self):
 		pass

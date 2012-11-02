@@ -20,7 +20,7 @@ import webnotes
 from webnotes.utils import add_days, cstr, flt, getdate
 
 from webnotes.model.utils import getlist
-from webnotes.model.code import get_obj
+from webnotes.model.controller import get_obj
 from webnotes import session, msgprint, errprint
 
 sql = webnotes.conn.sql
