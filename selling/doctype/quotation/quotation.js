@@ -116,13 +116,13 @@ erpnext.selling.Quotation = erpnext.Selling.extend({
 			}
 		});
 	},
-	pull_enquiry_detail: function(){
+	pull_opportunity_items: function(){
 		wn.call({
 			method: "runserverobj",
 			args: {
 				docs: wn.model.compress(wn.model.get_doclist(me.frm.doc.doctype,
 					me.frm.doc.name)),
-				method: "pull_enquiry_details",
+				method: "pull_opportunity_items",
 				args: ""
 			},
 			callback: function(r, rt) {

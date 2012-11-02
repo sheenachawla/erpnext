@@ -218,7 +218,7 @@ class DocType(TransactionBase):
 					raise Exception
 
 			# validates whether item is not entered twice
-			e = [d.item_code, d.description, d.reserved_warehouse, d.prevdoc_docname or '']
+			e = [d.item_code, d.description, d.warehouse, d.prevdoc_docname or '']
 			f = [d.item_code, d.description]
 
 			#check item is stock item
@@ -240,7 +240,7 @@ class DocType(TransactionBase):
 			d.delivery_date = self.doc.delivery_date
 
 			# gets total projected qty of item in warehouse selected (this case arises when warehouse is selected b4 item)
-			tot_avail_qty = sql("select projected_qty from `tabBin` where item_code = '%s' and warehouse = '%s'" % (d.item_code,d.reserved_warehouse))
+			tot_avail_qty = sql("select projected_qty from `tabBin` where item_code = '%s' and warehouse = '%s'" % (d.item_code,d.warehouse))
 			d.projected_qty = tot_avail_qty and flt(tot_avail_qty[0][0]) or 0
 		
 		if flag == 0:
@@ -418,7 +418,7 @@ class DocType(TransactionBase):
 	def update_stock_ledger(self, update_stock, clear = 0):
 		for d in self.get_item_list(clear):
 			if webnotes.conn.get_value("Item", d['item_code'], "is_stock_item") == "Yes":
-				if not d['reserved_warehouse']:
+				if not d['warehouse']:
 					msgprint("""Please enter Reserved Warehouse for item %s 
 						as it is stock ite""" % d['item_code'], raise_exception=1)
 						
@@ -426,11 +426,11 @@ class DocType(TransactionBase):
 					"item_code": d['item_code'],
 					"reserved_qty": flt(update_stock) * flt(d['qty']),
 					"posting_date": self.doc.transaction_date,
-					"doc_type": self.doc.doctype,
-					"doc_name": self.doc.name,
+					"voucher_type": self.doc.doctype,
+					"voucher_no": self.doc.name,
 					"is_amended": self.doc.amended_from and 'Yes' or 'No'
 				}
-				get_obj('Warehouse', d['reserved_warehouse']).update_bin(args)
+				get_obj('Warehouse', d['warehouse']).update_bin(args)
 				
 				
 	def get_item_list(self, clear):

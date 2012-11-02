@@ -255,6 +255,7 @@ rename_map = {
 		["export_amount", "print_amount"],
 		["base_ref_rate", "ref_rate"],
 		["basic_rate", "rate"],
+		["reserved_warehouse", "warehouse"],
 	],
 	"Sales Invoice": [
 		["entries", "sales_invoice_items"],
