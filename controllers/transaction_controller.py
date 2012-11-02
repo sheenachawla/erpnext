@@ -50,7 +50,7 @@ class TransactionController(DocListController):
 		pass
 	
 	def on_cancel(self):
-		self.check_next_submitted()
+		self.is_next_submitted()
 	
 	def load_precision_maps(self):
 		if not hasattr(self, "precision"):
@@ -60,9 +60,9 @@ class TransactionController(DocListController):
 			self.precision.main = doctypelist.get_precision_map()
 			self.precision.item = doctypelist.get_precision_map(parentfield = \
 				self.item_table_field)
-			if hasattr(self, "tax_table_field"):
+			if doctypelist.get_field("taxes_and_charges"):
 				self.precision.tax = doctypelist.get_precision_map(parentfield = \
-					self.tax_table_field)
+					"taxes_and_charges")
 			
 	def stop_resume_transaction(self):
 		"""stop/resume a transaction if there is a change in is_stopped"""
@@ -174,7 +174,29 @@ class TransactionController(DocListController):
 		if terms:
 			self.doc.terms = terms
 	
-	def check_next_submitted(self):
+	def is_next_submitted(self):
 		from webnotes.model.mapper import is_next_submitted
 		is_next_submitted(self.doc.doctype, self.doc.name)
+	
+	def append_taxes(self):
+		"""append taxes as per tax master link field"""
+		self.doclist = self.doclist.get({"parentfield": ["!=", "taxes_and_charges"]})
 		
+		doctypelist = webnotes.get_doctype(self.doc.doctype)
+		tax_master_doctype = (doctypelist.get_options("taxes_and_charges_master"))\
+			.split("\n")[0]
+		tax_doctype = (doctypelist.get_options("taxes_and_charges")).split("\n")[0]
+		
+		master_tax_list = webnotes.get_doclist(tax_master_doctype,
+			self.doc.taxes_and_charges_master).get({"parentfield": "taxes_and_charges"})
+			
+		for base_tax in master_tax_list:
+			tax = DictObj([[field, base_tax.fields.get(field)]
+				for field in base_tax.fields
+				if field not in webnotes.model.default_fields])
+			tax.update({
+				"doctype": tax_doctype,
+				"parentfield": "taxes_and_charges",
+				"rate": flt(tax.rate, self.precision.tax.rate),
+			})
+			self.doclist.append(tax)

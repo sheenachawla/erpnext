@@ -18,7 +18,6 @@ from __future__ import unicode_literals
 import webnotes
 from webnotes import _, msgprint
 from webnotes.utils import cint, flt
-from webnotes.model.code import get_obj
 
 from controllers.buying_controller import BuyingController
 
@@ -73,7 +72,8 @@ class DocType(BuyingController):
 	
 	def pull_sales_order_items(self):
 		if self.doc.sales_order:
-			mapper = get_obj("DocType Mapper", "Sales Order-Purchase Request")
+			mapper = webnotes.get_controller("DocType Mapper", 
+				"Sales Order-Purchase Request")
 			
 			import json
 			from_to_list = [["Sales Order", "Purchase Request"],
@@ -109,7 +109,7 @@ class DocType(BuyingController):
 				qty *= (self.doc.docstatus == 1 and self.doc.is_stopped != 1) and 1 or -1					
 
 				# finally, update the requested qty
-				get_obj("Warehouse", item.warehouse).update_bin({
+				webnotes.get_controller("Warehouse", item.warehouse).update_bin({
 					"item_code": item.item_code,
 					"indented_qty": qty,
 					"posting_date": self.doc.posting_date

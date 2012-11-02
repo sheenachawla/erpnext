@@ -209,7 +209,7 @@
 	# DocField
 	{
 		'doctype': u'DocField',
-		'fieldname': u'sales_taxes_and_charges_master',
+		'fieldname': u'taxes_and_charges_master',
 		'fieldtype': u'Link',
 		'label': u'Charge',
 		'oldfieldname': u'charge',
