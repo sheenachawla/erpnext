@@ -1,0 +1,19 @@
+[
+ {
+  "owner": "Administrator", 
+  "docstatus": 0, 
+  "creation": "2012-10-23 15:22:28", 
+  "modified_by": "Administrator", 
+  "modified": "2012-11-02 11:52:02"
+ }, 
+ {
+  "workflow_action_name": "Reject", 
+  "name": "__common__", 
+  "module": "Setup", 
+  "doctype": "Workflow Action"
+ }, 
+ {
+  "name": "Reject", 
+  "doctype": "Workflow Action"
+ }
+]

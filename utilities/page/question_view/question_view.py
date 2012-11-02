@@ -19,30 +19,27 @@ import webnotes
 from webnotes.utils import load_json, cstr, now
 
 @webnotes.whitelist()
-def update_item(args):
-	args = load_json(args)
-	
+def update_item(dt, fn, text, dn):
 	webnotes.conn.sql("update `tab%s` set `%s`=%s, modified=%s where name=%s" \
-		% (args['dt'], args['fn'], '%s', '%s', '%s'), (args['text'], now(), args['dn']))
+		% (dt, fn, '%s', '%s', '%s'), (text, now(), dn))
 
 @webnotes.whitelist()
 def has_answered(arg):
-	return webnotes.conn.sql("select name from tabAnswer where owner=%s and question=%s", (webnotes.user.name, arg)) and 'Yes' or 'No'
+	return webnotes.conn.sql("select name from tabAnswer where owner=%s and question=%s", 
+		(webnotes.user.name, arg)) and 'Yes' or 'No'
 
 @webnotes.whitelist()
 def get_question(arg):
 	return cstr(webnotes.conn.sql("select question from tabQuestion where name=%s", arg)[0][0])
 
 @webnotes.whitelist()
-def add_answer(args):
-	args = load_json(args)
-	
+def add_answer(qid, answer):
 	from webnotes.model.doc import Document
 	
 	a = Document('Answer')
-	a.answer = args['answer']
-	a.question = args['qid']
+	a.answer = answer
+	a.question = qid
 	a.points = 1
 	a.save(1)
 	
-	webnotes.conn.set_value('Question', args['qid'], 'modified', now())
+	webnotes.conn.set_value('Question', qid, 'modified', now())
