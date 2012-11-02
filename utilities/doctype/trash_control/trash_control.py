@@ -19,7 +19,7 @@ import webnotes
 
 from webnotes.utils import now
 
-from webnotes.model.code import get_obj
+from webnotes.model.controller import get_obj
 
 sql = webnotes.conn.sql
 

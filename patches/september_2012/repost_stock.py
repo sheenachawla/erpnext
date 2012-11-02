@@ -17,7 +17,7 @@
 from __future__ import unicode_literals
 def execute():
 	import webnotes
-	from webnotes.model.code import get_obj
+	from webnotes.model.controller import get_obj
 	bin = webnotes.conn.sql("select name from `tabBin`")
 	i=0
 	for d in bin:

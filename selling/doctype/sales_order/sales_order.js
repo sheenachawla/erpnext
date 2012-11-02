@@ -168,7 +168,9 @@ cur_frm.cscript.new_contact = function(){
 cur_frm.fields_dict['project_name'].get_query = function(doc, cdt, cdn) {
 	var cond = '';
 	if(doc.customer) cond = '(`tabProject`.customer = "'+doc.customer+'" OR IFNULL(`tabProject`.customer,"")="") AND';
-	return repl('SELECT `tabProject`.name FROM `tabProject` WHERE `tabProject`.status = "Open" AND %(cond)s `tabProject`.name LIKE "%s" ORDER BY `tabProject`.name ASC LIMIT 50', {cond:cond});
+	return repl('SELECT `tabProject`.name FROM `tabProject` \
+	WHERE `tabProject`.status not in ("Completed", "Cancelled") \
+	AND %(cond)s `tabProject`.name LIKE "%s" ORDER BY `tabProject`.name ASC LIMIT 50', {cond:cond});
 }
 
 //---- get customer details ----------------------------
@@ -195,10 +197,10 @@ cur_frm.fields_dict['quotation'].get_query = function(doc) {
 // ================================================================================================
 
 // ***************** Get available qty in warehouse of item selected **************** 
-cur_frm.cscript.reserved_warehouse = function(doc, cdt , cdn) {
+cur_frm.cscript.warehouse = function(doc, cdt , cdn) {
 	var d = locals[cdt][cdn];
-	if (d.reserved_warehouse) {
-		arg = "{'item_code':'" + d.item_code + "','warehouse':'" + d.reserved_warehouse +"'}";
+	if (d.warehouse) {
+		arg = "{'item_code':'" + d.item_code + "','warehouse':'" + d.warehouse +"'}";
 		get_server_fields('get_available_qty',arg,'sales_order_items',doc,cdt,cdn,1);
 	}
 }

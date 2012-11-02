@@ -153,7 +153,7 @@ def reset_global_defaults():
 		'default_supplier_type': 'Default Supplier Type'
 	}
 
-	from webnotes.model.code import get_obj
+	from webnotes.model.controller import get_obj
 	gd = get_obj('Global Defaults', 'Global Defaults')
 	for d in flds:
 		gd.doc.fields[d] = flds[d]

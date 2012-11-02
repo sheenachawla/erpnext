@@ -22,7 +22,7 @@ import webnotes.profile
 webnotes.user = webnotes.profile.Profile()
 
 
-from webnotes.model.code import get_obj
+from webnotes.model.controller import get_obj
 sql = webnotes.conn.sql
 
 from sandbox.testdata import leaves

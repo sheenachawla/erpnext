@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 def execute():
 	import webnotes
 	from webnotes.model.doc import addchild
-	from webnotes.model.code import get_obj
+	from webnotes.model.controller import get_obj
 	
 	existing = webnotes.conn.sql("""select role, name from `tabDocPerm`
 		where permlevel=0 and parent='Communication'""")

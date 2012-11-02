@@ -20,7 +20,7 @@ import webnotes
 from webnotes.utils import add_days, cint, cstr, date_diff, flt, get_defaults, getdate, nowdate, sendmail 
 from webnotes.model.doc import Document, addchild
 from webnotes.model.utils import getlist
-from webnotes.model.code import get_obj
+from webnotes.model.controller import get_obj
 from webnotes import msgprint
 from webnotes.utils.email_lib import sendmail
 from utilities.transaction_base import TransactionBase
@@ -86,7 +86,6 @@ class DocType:
 		cc_obj.on_update()
 
 		return cc_obj.doc.name
-
 
 	def get_advances(self, obj, account_head, table_name,table_field_name, dr_or_cr):
 		jv_detail = webnotes.conn.sql("""

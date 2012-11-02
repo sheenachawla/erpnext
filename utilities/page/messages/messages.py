@@ -102,7 +102,7 @@ def notify(contact, txt):
 	To answer, please login to your erpnext account!
 	''' % (fn, txt)
 	
-	from webnotes.model.code import get_obj
+	from webnotes.model.controller import get_obj
 	note = get_obj('Notification Control')
 	email_msg = note.prepare_message({
 		'type': 'New Comment',

@@ -474,5 +474,9 @@ patch_list = [
 	{
 		'patch_module': 'patches.october_2012',
 		'patch_file': 'separate_permissions',
-	}
+	},
+	{
+		'patch_module': 'patches.november_2012',
+		'patch_file': 'custom_field_insert_after',
+	},
 ]

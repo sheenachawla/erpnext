@@ -19,7 +19,7 @@ import unittest
 import webnotes
 
 from webnotes.model.doc import Document
-from webnotes.model.code import get_obj
+from webnotes.model.controller import get_obj
 from webnotes.utils import cstr, flt
 sql = webnotes.conn.sql
 

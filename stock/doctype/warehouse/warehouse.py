@@ -21,7 +21,7 @@ import webnotes.model
 from webnotes.utils import cstr, validate_email_add
 
 from webnotes.model.doc import Document
-from webnotes.model.code import get_obj
+from webnotes.model.controller import get_obj
 from webnotes import msgprint
 
 sql = webnotes.conn.sql

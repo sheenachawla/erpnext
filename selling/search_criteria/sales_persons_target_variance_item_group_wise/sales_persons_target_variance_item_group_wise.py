@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # validate Filters
 from __future__ import unicode_literals
-from webnotes.model.code import get_obj
+from webnotes.model.controller import get_obj
 
 flt_dict = {'fiscal_year': 'Fiscal Year', 'period': 'Period', 'under' : 'Under', 'sales_person':'Sales Person', 'target_on':'Target On'}
 for f in flt_dict:

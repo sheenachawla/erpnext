@@ -355,6 +355,16 @@
 
 	# DocField
 	{
+		u'doctype': u'DocField',
+		'fieldname': u'valuation_method',
+		'fieldtype': u'Select',
+		'label': u'Valuation Method',
+		'options': u'\nFIFO\nMoving Average',
+		'permlevel': 0
+	},
+
+	# DocField
+	{
 		'colour': u'White:FFF',
 		'default': u'0.00',
 		'description': u'You can enter the minimum quantity of this item to be ordered.',

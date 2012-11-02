@@ -19,7 +19,7 @@ import webnotes
 from webnotes.utils import cstr, flt, getdate
 from webnotes.model.doc import make_autoname
 from webnotes.model.utils import getlist
-from webnotes.model.code import get_obj
+from webnotes.model.controller import get_obj
 from webnotes import msgprint
 sql = webnotes.conn.sql
 
@@ -385,13 +385,13 @@ class DocType(StockController):
 					# Reduce reserved qty from reserved warehouse mentioned in so
 					args = {
 						"item_code": d['item_code'],
-						"doc_type": self.doc.doctype,
-						"doc_name": self.doc.name,
+						"voucher_type": self.doc.doctype,
+						"voucher_no": self.doc.name,
 						"reserved_qty": flt(update_stock) * flt(d['reserved_qty']),
 						"posting_date": self.doc.posting_date,
 						"is_amended": self.doc.amended_from and 'Yes' or 'No'
 					}
-					get_obj("Warehouse", d["reserved_warehouse"]).update_bin(args)
+					get_obj("Warehouse", d["warehouse"]).update_bin(args)
 						
 				# Reduce actual qty from warehouse
 				self.make_sl_entry(d, d['warehouse'], - flt(d['qty']) , 0, update_stock)

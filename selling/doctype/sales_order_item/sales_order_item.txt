@@ -235,7 +235,7 @@
 	# DocField
 	{
 		u'doctype': u'DocField',
-		'fieldname': u'reserved_warehouse',
+		'fieldname': u'warehouse',
 		'fieldtype': u'Link',
 		'label': u'Reserved Warehouse',
 		'no_copy': 1,

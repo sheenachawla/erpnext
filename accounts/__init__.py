@@ -17,7 +17,7 @@
 from __future__ import unicode_literals
 import webnotes
 from webnotes.utils import flt
-from webnotes.model.code import get_obj
+from webnotes.model.controller import get_obj
 from accounts.utils import get_balance_on
 
 install_docs = [

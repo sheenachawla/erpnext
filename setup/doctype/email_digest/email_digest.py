@@ -337,7 +337,7 @@ class DocType:
 		self.get_next_sending()
 
 def send():
-	from webnotes.model.code import get_obj
+	from webnotes.model.controller import get_obj
 	from webnotes.utils import getdate
 	now_date = now_datetime().date()
 	
