@@ -56,46 +56,12 @@ class DocType(SellingController):
 # 	def get_contact_details(self):
 # 		get_obj('Sales Common').get_contact_details(self,0)
 # 
-# 	def get_comm_rate(self, sales_partner):
-# 		return get_obj('Sales Common').get_comm_rate(sales_partner, self)
-# 				
 # 
-# 
-# 	# Re-calculates Basic Rate & amount based on Price List Selected
-# 	# --------------------------------------------------------------
-# 	def get_adj_percent(self, arg=''):
-# 		get_obj('Sales Common').get_adj_percent(self)
-# 
-# 
-# 
-# 	# Get projected qty of item based on warehouse selected
-# 	# -----------------------------------------------------
-# 	def get_available_qty(self,args):
-# 		return get_obj('Sales Common').get_available_qty(eval(args))
-# 	
-# # OTHER CHARGES TRIGGER FUNCTIONS
-# # ====================================================================================
-# 	
 # 	# Get Tax rate if account type is TAX
 # 	# ------------------------------------
 # 	def get_rate(self,arg):
 # 		return get_obj('Sales Common').get_rate(arg)
 # 
-# 	# Load Default Charges
-# 	# ----------------------------------------------------------
-# 	def load_default_taxes(self):
-# 		self.doclist = get_obj('Sales Common').load_default_taxes(self)
-# 
-# 	# Pull details from other charges master (Get Sales Taxes and Charges Master)
-# 	# ----------------------------------------------------------
-# 	def get_taxes_and_charges(self):
-# 		self.doclist = get_obj('Sales Common').get_taxes_and_charges(self)
-#  
-#  
-# # GET TERMS & CONDITIONS
-# # =====================================================================================
-# 	def get_tc_details(self):
-# 		return get_obj('Sales Common').get_tc_details(self)
 
 #check if maintenance schedule already generated
 #============================================

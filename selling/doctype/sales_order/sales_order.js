@@ -181,9 +181,6 @@ cur_frm.cscript.project_name = function(doc,cdt,cdn){
 	
 }
 
-
-
-// *************** Customized link query for QUOTATION ***************************** 
 cur_frm.fields_dict['quotation'].get_query = function(doc) {
 	var cond='';
 	if(doc.order_type) cond = ' ifnull(`tabQuotation`.order_type, "") = "'+doc.order_type+'" and';
@@ -192,11 +189,6 @@ cur_frm.fields_dict['quotation'].get_query = function(doc) {
 	return repl('SELECT DISTINCT name, customer, posting_date FROM `tabQuotation` WHERE `tabQuotation`.company = "' + doc.company + '" and `tabQuotation`.`docstatus` = 1 and `tabQuotation`.status != "Order Lost" and %(cond)s `tabQuotation`.%(key)s LIKE "%s" ORDER BY `tabQuotation`.`name` DESC LIMIT 50', {cond:cond});
 }
 
-
-// SALES ORDER DETAILS TRIGGERS
-// ================================================================================================
-
-// ***************** Get available qty in warehouse of item selected **************** 
 cur_frm.cscript.warehouse = function(doc, cdt , cdn) {
 	var d = locals[cdt][cdn];
 	if (d.warehouse) {
@@ -205,7 +197,6 @@ cur_frm.cscript.warehouse = function(doc, cdt , cdn) {
 	}
 }
 
-//----------- make maintenance schedule----------
 cur_frm.cscript['Make Maintenance Schedule'] = function() {
 	var doc = cur_frm.doc;
 
@@ -338,8 +329,7 @@ cur_frm.cscript['Stop Sales Order'] = function() {
 	}
 }
 
-// UNSTOP SALES ORDER
-// ==================================================================================================
+
 cur_frm.cscript['Unstop Sales Order'] = function() {
 	var doc = cur_frm.doc;
 
@@ -352,8 +342,7 @@ cur_frm.cscript['Unstop Sales Order'] = function() {
 	}
 }
 
-//get query select Territory
-//=======================================================================================================================
+
 cur_frm.fields_dict['territory'].get_query = function(doc,cdt,cdn) {
 	return 'SELECT `tabTerritory`.`name`,`tabTerritory`.`parent_territory` FROM `tabTerritory` WHERE `tabTerritory`.`is_group` = "No" AND `tabTerritory`.`docstatus`!= 2 AND `tabTerritory`.%(key)s LIKE "%s"	ORDER BY	`tabTerritory`.`name` ASC LIMIT 50';
 }

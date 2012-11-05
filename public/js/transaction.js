@@ -82,6 +82,15 @@ erpnext.Transaction = Class.extend({
 			this.custom_item_code(doc, cdt, cdn);
 		}
 	},
+	barcode: function(doc, cdt, cdn) {
+		var me = this;
+		var item = locals[cdt][cdn];
+		get_server_fields("get_barcode_details", item.barcode, this.item_table_field, 
+			doc, cdt, cdn, 1, function(r, rt) {
+				this.item_code(doc, cdt, cdn);
+			}
+		);
+	},
 	setup_get_query: function() {
 		var me = this;
 		// taxes and charges master

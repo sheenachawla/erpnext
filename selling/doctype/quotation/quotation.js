@@ -56,7 +56,7 @@ erpnext.selling.Quotation = erpnext.Selling.extend({
 		this.frm.toggle_display(lead_fields, this.frm.doc.lead);
 		
 		display_contact_section = (this.frm.doc.customer || this.frm.doc.lead) ? true : false;
-		$(this.frm.fields_dict.contact_section.row.wrapper).toggle(display_contact_section);
+		this.frm.toggle_display("contact_section", display_contact_section);
 	},
 	quotation_to: function() {
 		related_fields = ['lead', 'lead_name','customer', 'customer_address', 

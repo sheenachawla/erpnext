@@ -154,15 +154,7 @@ class TransactionController(DocListController):
 				{"idx": child.idx, "item_code": item.name },
 				raise_exception=1)
 			
-	def get_item_details(self, args):
-		if isinstance(args, basestring):
-			import json
-			args = json.loads(args)
-
-		args = DictObj(args)
-
-		item = get_obj("Item", args.item_code, with_children=1)
-
+	def get_item_details(self, args, item=None):
 		# validate end of life
 		stock.validate_end_of_life(item.doc.item_code, item.doc.end_of_life)
 
@@ -177,28 +169,22 @@ class TransactionController(DocListController):
 			"conversion_factor": 1,
 			"qty": 0,
 			"discount": 0,
+			"amount": 0,
+			"print_amount": 0,
+			"serial_no": "",
 			"batch_no": "",
 			"item_tax_rate": json.dumps(dict((item_tax.tax_type, item_tax.tax_rate)
 				for item_tax in item.doclist.get({"parentfield": "item_tax"}))),
-			"min_order_qty": flt(item.doc.min_order_qty, 
-				self.precision.item.min_order_qty),
-			"income_account": item.doc.default_income_account or args.income_account,
-			"cost_center": item.doc.default_sales_cost_center or args.cost_center,
 		})
-
-		if ret.warehouse:
-			ret.projected_qty = stock.get_projected_qty(args.item_code,
-				ret.warehouse)["projected_qty"]
-		
-		if self.doc.posting_date and item.doc.lead_time_days:
-			ret.schedule_date = add_days(self.doc.posting_date, item.doc.lead_time_days)
-			ret.leat_time_date = ret.schedule_date
-			
-		# TODO last purchase details for PO and Pur Receipt
-		
-		# TODO supplier part no for PO
 		
 		return ret
+		
+	def process_args(self, args):
+		if isinstance(args, basestring):
+			import json
+			args = json.loads(args)
+		args = DictObj(args)
+		return args 
 		
 	def get_uom_details(self, args=None):
 		"""get last purchase rate based on conversion factor"""

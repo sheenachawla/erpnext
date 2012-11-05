@@ -14,69 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-// Preset
-// ------
-// cur_frm.cscript.tname - Details table name
-// cur_frm.cscript.fname - Details fieldname
-// cur_frm.cscript.other_fname - wn.require('app/accounts/doctype/sales_taxes_and_charges_master/sales_taxes_and_charges_master.js'); fieldname
-// cur_frm.cscript.sales_team_fname - Sales Team fieldname
-
-// ============== Load Default Taxes ===================
-cur_frm.cscript.load_taxes = function(doc, cdt, cdn, callback) {
-	// run if this is not executed from dt_map...
-	doc = locals[doc.doctype][doc.name];
-	if(doc.customer || getchildren('Sales Taxes and Charges', doc.name, 'taxes_and_charges', doc.doctype).length) {
-		if(callback) {
-			callback(doc, cdt, cdn);
-		}
-	} else {
-		$c_obj(wn.model.get_doclist(doc.doctype, doc.name),'load_default_taxes','',function(r,rt){
-			refresh_field('taxes_and_charges');
-			if(callback) callback(doc, cdt, cdn);
-		});
-	}
-}
-
-
-// Gets called after existing item details are update to fill in
-// remaining default values
-cur_frm.cscript.load_defaults = function(doc, dt, dn, callback) {
-	if(!cur_frm.doc.__islocal) { return; }
-
-	doc = locals[doc.doctype][doc.name];
-	var fields_to_refresh = wn.model.set_default_values(doc);
-	if(fields_to_refresh) { refresh_many(fields_to_refresh); }
-
-	fields_to_refresh = null;
-	var children = getchildren(cur_frm.cscript.tname, doc.name, cur_frm.cscript.fname);
-	if(!children) { return; }
-	for(var i=0; i<children.length; i++) {
-		wn.model.set_default_values(children[i]);
-	}
-	refresh_field(cur_frm.cscript.fname);
-	cur_frm.cscript.load_taxes(doc, dt, dn, callback);
-}
-
-
-// Update existing item details
-cur_frm.cscript.update_item_details = function(doc, dt, dn, callback) {
-	doc = locals[doc.doctype][doc.name];
-	if(!cur_frm.doc.__islocal) return;
-	var children = getchildren(cur_frm.cscript.tname, doc.name, cur_frm.cscript.fname);
-	if(children.length) {
-		$c_obj(wn.model.get_doclist(doc.doctype, doc.name), 'get_item_details', '',
-		function(r, rt) {
-			if(!r.exc) {
-				refresh_field(cur_frm.cscript.fname);
-				doc = locals[doc.doctype][doc.name];
-				cur_frm.cscript.load_defaults(doc, dt, dn, callback);
-			}
-		});
-	} else {
-		cur_frm.cscript.load_taxes(doc, dt, dn, callback);
-	}
-}
-
 
 var set_dynamic_label_par = function(doc, cdt, cdn, base_curr) {
 	//parent flds
@@ -157,9 +94,6 @@ var set_sales_bom_help = function(doc) {
 }
 
 
-// hide / unhide price list currency based on availability of price list in customer's currency
-//---------------------------------------------------------------------------------------------------
-
 cur_frm.cscript.hide_price_list_currency = function(doc, cdt, cdn, callback1) {
 	if (doc.price_list_name && doc.currency) {
 		wn.call({
@@ -197,36 +131,6 @@ cur_frm.cscript.hide_price_list_currency = function(doc, cdt, cdn, callback1) {
 }
 
 
-cur_frm.cscript.currency = function(doc, cdt, cdn) {
-	cur_frm.cscript.price_list_name(doc, cdt, cdn); 
-}
-
-cur_frm.cscript.price_list_currency = cur_frm.cscript.currency;
-cur_frm.cscript.exchange_rate = cur_frm.cscript.currency;
-cur_frm.cscript.plc_exchange_rate = cur_frm.cscript.currency;
-
-cur_frm.cscript.company = function(doc, cdt, cdn) {
-	wn.call({
-		method: 'selling.doctype.sales_common.sales_common.get_comp_base_currency',
-		args: {company:doc.company},
-		callback: function(r, rt) {
-			var doc = locals[cdt][cdn];
-			set_multiple(doc.doctype, doc.name, {
-				currency:r.message, 
-				price_list_currency:r.message
-			});
-			cur_frm.cscript.currency(doc, cdt, cdn);
-		}
-	});
-}
-
-cur_frm.cscript.barcode = function(doc, cdt, cdn) {
-	var d = locals[cdt][cdn];
-	var callback = function(r, rt) {
-		cur_frm.cscript.item_code(doc, cdt, cdn);
-	}
-	get_server_fields('get_barcode_details', d.barcode, cur_frm.cscript.fname, doc, cdt, cdn, 1, callback);
-}
 
 
 // *********************** QUANTITY ***************************
@@ -287,15 +191,6 @@ cur_frm.cscript.print_rate = function(doc,cdt,cdn) {
 	cur_frm.cscript.recalc(doc, 1);
 }
 
-
-// ********************* Get Charges ****************************
-cur_frm.cscript.get_charges = function(doc, cdt, cdn) {
-	$c_obj(wn.model.get_doclist(doc.doctype,doc.name),
-		'get_taxes_and_charges',
-		'', 
-		function(r, rt) { cur_frm.cscript.calculate_charges(doc, cdt, cdn);}
-		,null,null,cur_frm.fields_dict.get_charges.input);
-}
 
 
 // CALCULATION OF TOTAL AMOUNTS
@@ -700,51 +595,6 @@ cur_frm.cscript.calculate_charges = function(doc, cdt, cdn) {
 	cur_frm.cscript.recalc(doc, 1);
 }
 
-// Get Sales Partner Commission
-// =================================================================================
-cur_frm.cscript.sales_partner = function(doc, cdt, cdn){
-	if(doc.sales_partner){
-
-		get_server_fields('get_comm_rate', doc.sales_partner, '', doc, cdt, cdn, 1);
-	}
-}
-
-// *******Commission Rate Trigger (calculates total commission amount)*********
-cur_frm.cscript.commission_rate = function(doc, cdt, cdn) {
-	if(doc.commission_rate > 100){
-		alert("Commision rate cannot be greater than 100.");
-		doc.total_commission = 0;
-		doc.commission_rate = 0;
-	}
-	else
-		doc.total_commission = doc.net_total * doc.commission_rate / 100;
-	refresh_many(['total_commission','commission_rate']);
-
-}
-
-// *******Total Commission Trigger (calculates commission rate)*********
-cur_frm.cscript.total_commission = function(doc, cdt, cdn) {
-	if(doc.net_total){
-		if(doc.net_total < doc.total_commission){
-			alert("Total commission cannot be greater than net total.");
-			doc.total_commission = 0;
-			doc.commission_rate = 0;
-		}
-		else
-			doc.commission_rate = doc.total_commission * 100 / doc.net_total;
-		refresh_many(['total_commission','commission_rate']);
-	}
-}
-// Sales Person Allocated % trigger 
-// ==============================================================================
-cur_frm.cscript.allocated_percentage = function(doc, cdt, cdn) {
-	var fname = cur_frm.cscript.sales_team_fname;
-	var d = locals[cdt][cdn];
-	if (d.allocated_percentage) {
-		d.allocated_amount = flt(flt(doc.net_total)*flt(d.allocated_percentage)/100);
-		refresh_field('allocated_amount', d.name, fname);
-	}
-}
 
 // Client Side Validation
 // =================================================================================
@@ -758,16 +608,5 @@ cur_frm.cscript.validate = function(doc, cdt, cdn) {
 		}
 	}
 	cur_frm.cscript.calculate_charges (doc, cdt, cdn);
-
 	if (cur_frm.cscript.calc_adjustment_amount) cur_frm.cscript.calc_adjustment_amount(doc);
-}
-
-
-// ************** Atleast one item in document ****************
-cur_frm.cscript.validate_items = function(doc) {
-	var cl = getchildren(cur_frm.cscript.tname, doc.name, cur_frm.cscript.fname);
-	if(!cl.length){
-		alert("Please enter Items for " + doc.doctype);
-		validated = false;
-	}
 }

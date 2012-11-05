@@ -69,22 +69,76 @@ erpnext.Selling = erpnext.Transaction.extend({
 			if(me.frm.doc.price_list_name && me.frm.doc.currency && me.frm.doc.price_list_currency
 				 	&& me.frm.doc.exchange_rate && me.frm.doc.plc_exchange_rate) {
 				wn.call({
-					method: "runserverobj",
-					"args": {
-						docs: wn.model.compress(wn.model.get_doclist(me.frm.doc.doctype,
-							me.frm.doc.name)),
-						method: "get_price_list_rate",
-					},
+					docs: me.frm.doc,
+					method: "get_price_list_rate",
 					callback: function(r, rt) {
 						refresh_field(me.item_table_field);
 						// to-do
 						// recalculate amount and taxes
-						
 					}
 				});
 			}
 		}
 		this.hide_price_list_currency(callback);
+	},
+	currency: function() {
+		this.price_list_name();
+	},
+	price_list_currency: function() {
+		this.price_list_name();
+	},
+	exchange_rate: function() {
+		this.price_list_name();
+	},
+	plc_exchange_rate: function() {
+		this.price_list_name();
+	},
+	company: function() {
+		var me = this;
+		default_currency = wn.boot.company[this.frm.doc.company].default_currency;
+		set_multiple(me.frm.doc.doctype, me.frm.doc.name, {
+			"currency": default_currency,
+			"price_list_currency": default_currency,
+			"exchange_rate": 1,
+			"plc_exchange_rate": 1
+		});
+		this.price_list_name();
+	},
+	get_charges: function() {
+		var me = this;
+		wn.call({
+			doc: me.frm.doc,
+			method: "append_taxes",
+			callback: function(r, rt) {
+				// to-do
+				// recalculate taxes
+			},
+			btn: me.frm.fields_dict.get_charges.input
+		})
+	},
+	sales_partner: function() {
+		if(this.frm.doc.sales_partner) {
+			get_server_fields('get_commission', "", "", this.frm.doc, 
+				this.frm.doc.doctype, this.frm.doc.name, 1);
+		}
+	},
+	commission_rate: function() {
+		if(doc.commission_rate > 100) {
+			msgprint("Commision rate cannot be greater than 100.");
+		} else {
+			this.frm.doc.total_commission = 
+				flt(this.frm.doc.net_total, this.frm.precision.main.net_total) * 
+				flt(this.frm.doc.commission_rate, this.frm.precision.main.commission_rate) / 100;
+			refresh_field('total_commission');
+		}
+	},
+	allocated_percentage: function(doc, cdt, cdn) {
+		var d = locals[cdt][cdn];
+		if (d.allocated_percentage) {
+			d.allocated_amount = flt(this.frm.doc.net_total, this.frm.precision.net_total) * 
+				flt(d.allocated_percentage) / 100;
+			refresh_field('allocated_amount', d.name, "sales_team");
+		}
 	},
 	setup_get_query: function() {
 		this._super();
