@@ -171,20 +171,6 @@ class DocType(TransactionBase):
 		
 		return ret
 
-
-	def get_item_defaults(self, args):
-		item = webnotes.conn.sql("""select default_warehouse, default_income_account, default_sales_cost_center from `tabItem` 
-			where name = '%s' and (ifnull(end_of_life,'') = '' or end_of_life > now() or end_of_life = '0000-00-00') 
-			and (is_sales_item = 'Yes' or is_service_item = 'Yes') """ % (args['item_code']), as_dict=1)
-		ret = {
-			'warehouse'	: item and item[0]['default_warehouse'] or '',
-			'warehouse'				: item and item[0]['default_warehouse'] or args.get('warehouse'),
-			'income_account'		: item and item[0]['default_income_account'] or args.get('income_account'),
-			'cost_center'			: item and item[0]['default_sales_cost_center'] or args.get('cost_center')
-		}
-
-		return ret
-
 	def get_available_qty(self,args):
 		tot_avail_qty = webnotes.conn.sql("select projected_qty, actual_qty from `tabBin` where item_code = '%s' and warehouse = '%s'" % (args['item_code'], args['warehouse']), as_dict=1)
 		ret = {
@@ -327,16 +313,6 @@ class DocType(TransactionBase):
 			msgprint("Business Associate : %s does not exist in the system." % (sales_partner))
 			raise Exception
 
-	
-	# To verify whether rate entered in details table does not exceed max discount %
-	# =======================================================================================
-	def validate_max_discount(self,obj, detail_table):
-		for d in getlist(obj.doclist, detail_table):
-			discount = webnotes.conn.sql("select max_discount from tabItem where name = '%s'" %(d.item_code),as_dict = 1)
-			if discount and discount[0]['max_discount'] and (flt(d.discount)>flt(discount[0]['max_discount'])):
-				msgprint("You cannot give more than " + cstr(discount[0]['max_discount']) + " % discount on Item Code : "+cstr(d.item_code))
-				raise Exception
-
 
 	# Get sum of allocated % of sales person (it should be 100%)
 	# ========================================================================
@@ -348,20 +324,6 @@ class DocType(TransactionBase):
 		if (flt(sum) != 100) and getlist(obj.doclist,'sales_team'):
 			msgprint("Total Allocated % of Sales Persons should be 100%")
 			raise Exception
-			
-	# Check Conversion Rate (i.e. it will not allow conversion rate to be 1 for Currency other than default currency set in Global Defaults)
-	# ===========================================================================
-	def check_exchange_rate(self, obj):
-		default_currency = TransactionBase().get_company_currency(obj.doc.company)
-		if not default_currency:
-			msgprint('Message: Please enter default currency in Company Master')
-			raise Exception		
-		if (obj.doc.currency == default_currency and flt(obj.doc.exchange_rate) != 1.00) or not obj.doc.exchange_rate or (obj.doc.currency != default_currency and flt(obj.doc.exchange_rate) == 1.00):
-			msgprint("Please Enter Appropriate Conversion Rate for Customer's Currency to Base Currency (%s --> %s)" % (obj.doc.currency, default_currency), raise_exception = 1)
-	
-		if (obj.doc.price_list_currency == default_currency and flt(obj.doc.plc_exchange_rate) != 1.00) or not obj.doc.plc_exchange_rate or (obj.doc.price_list_currency != default_currency and flt(obj.doc.plc_exchange_rate) == 1.00):
-			msgprint("Please Enter Appropriate Conversion Rate for Price List Currency to Base Currency ( (%s --> %s)" % (obj.doc.price_list_currency, default_currency), raise_exception = 1)
-	
 
 
 	# Get Tax rate if account type is TAX
@@ -576,23 +538,6 @@ class DocType(TransactionBase):
 					raise Exception
 					
 					
-	# ****** Check for Item.is_sales_item = 'Yes' and Item.docstatus != 2 *******
-	def check_active_sales_items(self,obj):
-		for d in getlist(obj.doclist, obj.fname):
-			if d.item_code:		# extra condn coz item_code is not mandatory in RV
-				valid_item = webnotes.conn.sql("select docstatus,is_sales_item, is_service_item from tabItem where name = %s",d.item_code)
-				if valid_item and valid_item[0][0] == 2:
-					msgprint("Item : '%s' does not exist in system." %(d.item_code))
-					raise Exception
-				sales_item = valid_item and valid_item[0][1] or 'No'
-				service_item = valid_item and valid_item[0][2] or 'No'
-				if sales_item == 'No' and service_item == 'No':
-					msgprint("Item : '%s' is neither Sales nor Service Item"%(d.item_code))
-					raise Exception
-
-
-# **************************************************************************************************************************************************
-
 	def check_credit(self,obj,grand_total):
 		acc_head = webnotes.conn.sql("select name from `tabAccount` where company = '%s' and master_name = '%s'"%(obj.doc.company, obj.doc.customer))
 		if acc_head:

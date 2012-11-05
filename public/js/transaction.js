@@ -58,11 +58,34 @@ erpnext.Transaction = Class.extend({
 		});
 	},
 	
-	is_table_empty: function(table_field) {
-		if(!wn.model.has_children(this.frm.doc.doctype, this.frm.doc.name, table_field)) {
-			var error_msg = _("There should be atleast 1 Item in the Item table");
-			msgprint(error_msg);
-			throw error_msg;
+	item_code: function(doc, cdt, cdn) {
+		var me = this;
+		var item = locals[cdt][cdn];
+		if(item.item_code) {
+			wn.call({
+				method: "runserverobj",
+				args: {
+					docs: wn.model.compress(wn.model.get_doclist(me.frm.doc.doctype,
+						me.frm.doc.name)),
+					method: "get_item_details",
+					args: {
+						item_code: item.item_code,
+						warehouse: item.warehouse,
+						income_account: item.income_account,
+						expense_account: item.expense_account,
+						cost_center: item.cost_center
+					},
+				},
+				callback: function(r) {
+					// update item doc
+					$.extend(locals[cdt][cdn], r.message);
+					refresh_field(me.item_table_field);
+				}
+			});
+		}
+		if(this.custom_item_code){
+			this.custom_item_code(doc, cdt, cdn);
+>>>>>>> 070c404bc36f07f0a9438637531b049e4d587afc
 		}
 	},
 	

@@ -25,9 +25,7 @@ from controllers.buying_controller import BuyingController
 class DocType(BuyingController):
 	def setup(self):
 		self.item_table_field = "supplier_quotation_items"
-		
-	def on_map(self):
-		self.append_default_taxes()
+
 	
 	# def validate(self):
 	# 	super(DocType, self).validate()

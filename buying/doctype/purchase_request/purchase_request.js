@@ -28,11 +28,7 @@ erpnext.buying.PurchaseRequest = erpnext.Buying.extend({
 		this._super();
 		this.add_buttons();
 	},
-	
-	validate: function() {
-		this.is_table_empty("purchase_request_items");
-	},
-	
+
 	posting_date: function() {
 		if(this.frm.doc.__islocal && this.frm.doc.posting_date) {
 			// on change of posting date, update schedule date

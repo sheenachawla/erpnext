@@ -22,25 +22,25 @@ erpnext.Buying = erpnext.Transaction.extend({
 		this.frm.toggle_display("contact_section", this.frm.doc.supplier);
 	},
 	
-	item_code: function(doc, cdt, cdn) {
-		var me = this;
-		var item = locals[cdt][cdn];
-		if(item.item_code) {
-			wn.call({
-				doc: this.frm.doc,
-				method: "get_item_details",
-				args: {
-					item_code: item.item_code,
-					warehouse: item.warehouse,
-				},
-				callback: function(r) {
-					// update item doc
-					$.extend(locals[cdt][cdn], r.message);
-					refresh_field(me.item_table_field);
-				}
-			})
-		}
-	},
+	// item_code: function(doc, cdt, cdn) {
+	// 		var me = this;
+	// 		var item = locals[cdt][cdn];
+	// 		if(item.item_code) {
+	// 			wn.call({
+	// 				doc: this.frm.doc,
+	// 				method: "get_item_details",
+	// 				args: {
+	// 					item_code: item.item_code,
+	// 					warehouse: item.warehouse,
+	// 				},
+	// 				callback: function(r) {
+	// 					// update item doc
+	// 					$.extend(locals[cdt][cdn], r.message);
+	// 					refresh_field(me.item_table_field);
+	// 				}
+	// 			})
+	// 		}
+	// 	},
 	
 	warehouse: function(doc, cdt, cdn) {
 		var me = this;

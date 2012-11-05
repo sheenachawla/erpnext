@@ -63,6 +63,29 @@ erpnext.Selling = erpnext.Transaction.extend({
 		locals[doctype][docname].customer_name = 
 		 	locals[this.frm.doc.doctype][this.frm.doc.name].customer_name;
 	},
+	price_list_name: function() {
+		var me = this;
+		var callback = function() {
+			if(me.frm.doc.price_list_name && me.frm.doc.currency && me.frm.doc.price_list_currency
+				 	&& me.frm.doc.exchange_rate && me.frm.doc.plc_exchange_rate) {
+				wn.call({
+					method: "runserverobj",
+					"args": {
+						docs: wn.model.compress(wn.model.get_doclist(me.frm.doc.doctype,
+							me.frm.doc.name)),
+						method: "get_price_list_rate",
+					},
+					callback: function(r, rt) {
+						refresh_field(me.item_table_field);
+						// to-do
+						// recalculate amount and taxes
+						
+					}
+				});
+			}
+		}
+		this.hide_price_list_currency(callback);
+	},
 	setup_get_query: function() {
 		this._super();
 		var me = this;
