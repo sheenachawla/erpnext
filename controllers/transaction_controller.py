@@ -22,7 +22,7 @@ import webnotes.model
 from webnotes import _, msgprint, DictObj
 from webnotes.utils import cint, formatdate, cstr, flt, add_days
 from webnotes.model.controller import get_obj
-from webnotes.model.doc import make_autoname
+from webnotes.model.doc import make_autoname, Document
 
 import stock
 from webnotes.model.controller import DocListController
@@ -106,8 +106,10 @@ class TransactionController(DocListController):
 	def validate_items(self):
 		"""
 			validate the following:
-			* qty
-			* is_stock_item
+			* qty >= 0
+			* stock item
+			* duplicate rows
+			* mapping with previous doclist
 		"""
 		import stock
 		from webnotes.model.utils import validate_condition
@@ -262,3 +264,80 @@ class TransactionController(DocListController):
 				"rate": flt(tax.rate, self.precision.tax.rate),
 			})
 			self.doclist.append(tax)
+			
+	def get_address(self, args):
+		args = DictObj(args)
+		address_field = self.meta.get_field({"options": "^Address"})
+		
+		query = "select * from `tabAddress` where docstatus < 2 "
+		
+		if args.customer:
+			query += "and customer=%s order by "
+			if args.is_shipping_address:
+				query += "is_shipping_address desc, "
+			query += "is_primary_address desc limit 1"
+			val = args.customer
+		elif args.supplier:
+			query += "and supplier=%s order by "
+			if args.is_shipping_address:
+				query += "is_shipping_address desc, "
+			query += "is_primary_address desc limit 1"
+			val = args.supplier
+		else:
+			query += "and name=%s"
+			val = self.doc.fields.get(address_field)
+		
+		address_result = webnotes.conn.sql(query, (val,), as_dict=1)
+		
+		if address_result:
+			address_doc = Document("Address", fielddata=address_result[0])
+			
+			self.doc.fields[address_field] = address_doc.name
+			
+			self.doc.address_display = "\n".join(filter(None, [
+				address_doc.address_line1,
+				address_doc.address_line2,
+				" ".join(filter(None, [address_doc.city, address_doc.pincode])),
+				address_doc.state,
+				address_doc.country,
+				address_doc.phone and ("Phone: %s" % address_doc.phone) or "",
+				address_doc.fax and ("Fax: %s" % address_doc.fax) or "",
+			]))
+			
+			# send it on client side - can be used for further processing
+			webnotes.response.setdefault("docs", []).append(address_doc)
+
+	def get_contact(self, args):
+		args = DictObj(args)
+		contact_field = self.meta.get_field({"options": "^Contact"})
+
+		query = "select * from `tabContact` where docstatus < 2 "
+		
+		if args.customer:
+			query += "and customer=%s order by is_primary_contact desc limit 1"
+			val = args.customer
+		elif args.supplier:
+			query += "and supplier=%s order by is_primary_contact desc limit 1"
+			val = args.supplier
+		else:
+			query += "and name=%s"
+			val = self.doc.fields.get(contact_field)
+			
+		contact_result = webnotes.conn.sql(query, (val,), as_dict=1)
+		
+		if contact_result:
+			contact_doc = Document("Contact", fielddata=contact_result[0])
+			
+			self.doc.fields[contact_field] = contact_doc.name
+			
+			self.doc.contact_display = " ".join(filter(None, 
+				[contact_doc.first_name, contact_doc.last_name]))
+			
+			self.doc.contact_person = contact_doc.name
+			self.doc.contact_email = contact_doc.email_id
+			self.doc.contact_mobile = contact_doc.mobile_no
+			self.doc.contact_designation = contact_doc.designation
+			self.doc.contact_department = contact_doc.department
+			
+			# send it on client side - can be used for further processing
+			webnotes.response.setdefault("docs", []).append(contact_doc)

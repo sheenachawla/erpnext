@@ -22,9 +22,11 @@ erpnext.Transaction = Class.extend({
 		this.setup_get_query && this.setup_get_query();
 		this.load_precision_maps && this.load_precision_maps();
 	},
+	
 	onload: function() {
 		this.set_missing_values();
 	},
+	
 	refresh: function() {
 		erpnext.hide_naming_series();
 		if(this.add_buttons) {
@@ -32,8 +34,8 @@ erpnext.Transaction = Class.extend({
 			this.add_buttons();
 		}
 		this.toggle_fields && this.toggle_fields();
-		this.set_labels && this.set_labels();
 	},
+	
 	set_missing_values: function() {
 		var me = this;
 		var default_values = {
@@ -50,26 +52,59 @@ erpnext.Transaction = Class.extend({
 			// for selling
 		}
 		$.each(default_values, function(key, value) {
-			if(!me.frm.doc[key]) me.frm.doc[key] = value;
+			if(!me.frm.doc[key] && wn.meta.get_docfield(me.frm.doc.doctype, key)) {
+				me.frm.doc[key] = value;
+			}
 		});
-		
 	},
+	
 	is_table_empty: function(table_field) {
 		if(!wn.model.has_children(this.frm.doc.doctype, this.frm.doc.name, table_field)) {
-			var error_msg = "There should be atleast 1 Item in the Item table";			
+			var error_msg = _("There should be atleast 1 Item in the Item table");
 			msgprint(error_msg);
 			throw error_msg;
 		}
 	},
+	
 	setup_get_query: function() {
 		var me = this;
+		
 		// taxes and charges master
-		this.frm.fields_dict['taxes_and_charges_master'].get_query = function() {
-			return "SELECT DISTINCT name FROM `tabSales Taxes and Charges Master` \
-				WHERE ifnull(company, '') = '" + me.frm.doc.company + "' \
-				AND docstatus < 2 AND %(key)s LIKE \"%s\" ORDER BY name LIMIT 50";
+		if(this.frm.fields_dict.taxes_and_charges_master) {
+			this.frm.fields_dict.taxes_and_charges_master.get_query = function() {
+				return repl("select distinct name from `tab%(doctype)s` \
+					where company = \"%(company)s\" and docstatus < 2 \
+					and %(key)s like \"%s\" order by name limit 50", {
+						doctype: wn.meta.get_docfield(me.frm.doc.doctype,
+							"taxes_and_charges_master").options.split("\n")[0],
+						company: me.frm.doc.company
+					});
+			}
 		}
 	},
+	
+	get_address: function(args) {
+		wn.call({
+			doc: this.frm.doc,
+			method: 'get_address',
+			args: args || {},
+			callback: function(r) {
+				me.frm.refresh();
+			}
+		});
+	},
+	
+	get_contact: function(args) {
+		wn.call({
+			doc: this.frm.doc,
+			method: 'get_contact',
+			args: args || {},
+			callback: function(r) {
+				me.frm.refresh();
+			}
+		});
+	},
+	
 });
 
 erpnext.InputDialog = function(title, input_label, method) {

@@ -24,14 +24,9 @@ erpnext.buying.SupplierQuotation = erpnext.Buying.extend({
 	// onload_post_render: function() {
 	// 	this.get_item_defaults();
 	// },
+	
 	refresh: function() {
 		this._super();
-	},
-	toggle_fields: function() {
-		this.frm.toggle_display("contact_section", this.frm.doc.supplier);
-	},
-	set_labels: function() {
-		
 	},
 	
 	// validate: function() {
@@ -62,6 +57,7 @@ erpnext.buying.SupplierQuotation = erpnext.Buying.extend({
 	// 			});
 	// 	}
 	// },
+	
 	add_buttons: function() {
 		var me = this;
 		
@@ -70,15 +66,30 @@ erpnext.buying.SupplierQuotation = erpnext.Buying.extend({
 				function() { me.make_purchase_order(this); });
 		}
 	},
+	
 	make_purchase_order: function(btn) {
 		wn.model.map_doclist([["Supplier Quotation", "Purchase Order",
 			["Supplier Quotation Item", "Purchase Order Item"],
 			["Purchase Taxes and Charges", "Purchase Taxes and Charges"]]],
 			this.frm.doc.name)
-	}
-	send_sms: function(me) {
-		// TODO
 	},
+	
+	setup_get_query: function() {
+		this._super();
+		var me = this;
+		
+		// purchase request link field
+		this.fields_dict.purchase_request.get_query = function() {
+			return repl("select name from `tabPurchase Request` \
+				where company = %(company)s and docstatus = 1 \
+				and ifnull(is_stopped, 0) != 1 \
+				and ifnull(per_ordered, 0) < 100 \
+				and %(key)s like \"%s\" order by name desc limit 50", {
+					company: me.frm.doc.company,
+				});
+		};
+	},
+	
 	load_precision_maps: function() {
 		// TODO
 		// if(!this.frm.precision) this.frm.precision = {};
@@ -90,32 +101,6 @@ erpnext.buying.SupplierQuotation = erpnext.Buying.extend({
 cur_frm.cscript = new erpnext.buying.SupplierQuotation({
 	frm: cur_frm, item_table_field: "supplier_quotation_items"});
 
-
-// =======
-// }
-// 
-// cur_frm.cscript.make_purchase_order = function() {
-// 	var new_po_name = createLocal("Purchase Order");
-// 	$c("dt_map", {
-// 		"docs": compress_doclist([locals['Purchase Order'][new_po_name]]),
-// 		"from_doctype": cur_frm.doc.doctype,
-// 		"to_doctype": "Purchase Order",
-// 		"from_docname": cur_frm.doc.name,
-// 		"from_to_list": JSON.stringify([['Supplier Quotation', 'Purchase Order'],
-// 			['Supplier Quotation Item', 'Purchase Order Item'],
-// 			['Purchase Taxes and Charges', 'Purchase Taxes and Charges']]),
-// 	}, function(r, rt) { loaddoc("Purchase Order", new_po_name) });
-// }
-// 
-// cur_frm.cscript.supplier = function(doc, dt, dn) {
-// 	if (doc.supplier) {
-// 		get_server_fields('get_default_supplier_address',
-// 			JSON.stringify({ supplier: doc.supplier }), '', doc, dt, dn, 1,
-// 			function() { cur_frm.refresh(); });
-// 		cur_frm.cscript.toggle_contact_section(doc);
-// 	}
-// }
-// 
 // cur_frm.cscript.uom = function(doc, cdt, cdn) {
 // 	// no need to trigger updation of stock uom, as this field doesn't exist in supplier quotation
 // }

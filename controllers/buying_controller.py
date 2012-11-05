@@ -138,3 +138,15 @@ class BuyingController(TransactionController):
 			if not self.doc.taxes_and_charges_master: return
 			
 			self.append_taxes()
+			
+	def get_supplier_details(self, args):
+		self.get_address(args)
+		self.get_contact(args)
+	
+		res = webnotes.conn.sql("""select supplier_name, default_currency
+			from `tabSupplier` where name=%s and docstatus < 2""",
+			(args.get("supplier"),))
+	
+		if res:
+			self.doc.supplier_name = res[0][0]
+			self.doc.currency = res[0][1]
