@@ -79,7 +79,7 @@ erpnext.buying.SupplierQuotation = erpnext.Buying.extend({
 		var me = this;
 		
 		// purchase request link field
-		this.fields_dict.purchase_request.get_query = function() {
+		this.frm.fields_dict.purchase_request.get_query = function() {
 			return repl("select name from `tabPurchase Request` \
 				where company = %(company)s and docstatus = 1 \
 				and ifnull(is_stopped, 0) != 1 \

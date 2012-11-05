@@ -173,7 +173,7 @@ erpnext.Buying = erpnext.Transaction.extend({
 		if(this.frm.fields_dict.supplier_address) {
 			this.frm.fields_dict.supplier_address.get_query = function() {
 				return repl("select name, address_line1, city from `tabAddress` \
-					where supplier = %(supplier)s and docstatus < 2 \
+					where supplier = \"%(supplier)s\" and docstatus < 2 \
 					and %(key)s like \"%s\" order by name asc limit 50", {
 						supplier: me.frm.doc.supplier,
 					});
@@ -189,7 +189,7 @@ erpnext.Buying = erpnext.Transaction.extend({
 			this.frm.fields_dict.contact_person.get_query = function() {
 				return repl("select name, concat(first_name, ' ', ifnull(last_name, '')) \
 					as fullname, department, designation from tabContact \
-					where supplier = %(supplier)s and docstatus < 2 \
+					where supplier = \"%(supplier)s\" and docstatus < 2 \
 					and %(key)s like \"%s\" order by name asc limit 50", {
 						supplier: me.frm.doc.supplier,
 					});

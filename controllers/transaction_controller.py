@@ -23,6 +23,7 @@ from webnotes import _, msgprint, DictObj
 from webnotes.utils import cint, formatdate, cstr, flt, add_days
 from webnotes.model.controller import get_obj
 from webnotes.model.doc import make_autoname, Document
+import json
 
 import stock
 from webnotes.model.controller import DocListController
@@ -147,8 +148,8 @@ class TransactionController(DocListController):
 		stock.validate_end_of_life(item.name, item.end_of_life)
 		
 		# get warehouse field
-		warehouse_field = webnotes.get_field(item.parenttype, "warehouse",
-			parentfield=item.parentfield)
+		warehouse_field = webnotes.get_field(child.parenttype, "warehouse",
+			parentfield=child.parentfield)
 		
 		if warehouse_field and item.is_stock_item == "Yes" and not child.warehouse:
 			msgprint(_("""Row # %(idx)s, Item %(item_code)s: \
@@ -183,7 +184,6 @@ class TransactionController(DocListController):
 		
 	def process_args(self, args):
 		if isinstance(args, basestring):
-			import json
 			args = json.loads(args)
 		args = DictObj(args)
 		return args 
@@ -195,7 +195,6 @@ class TransactionController(DocListController):
 			args = webnotes.form_dict.get("args")
 			
 		if isinstance(args, basestring):
-			import json
 			args = json.loads(args)
 		
 		args = DictObj(args)
@@ -284,7 +283,7 @@ class TransactionController(DocListController):
 		if address_result:
 			address_doc = Document("Address", fielddata=address_result[0])
 			
-			self.doc.fields[address_field] = address_doc.name
+			self.doc.fields[address_field.fieldname] = address_doc.name
 			
 			self.doc.address_display = "\n".join(filter(None, [
 				address_doc.address_line1,
@@ -320,7 +319,7 @@ class TransactionController(DocListController):
 		if contact_result:
 			contact_doc = Document("Contact", fielddata=contact_result[0])
 			
-			self.doc.fields[contact_field] = contact_doc.name
+			self.doc.fields[contact_field.fieldname] = contact_doc.name
 			
 			self.doc.contact_display = " ".join(filter(None, 
 				[contact_doc.first_name, contact_doc.last_name]))

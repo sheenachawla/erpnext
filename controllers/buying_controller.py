@@ -26,7 +26,7 @@ from controllers.transaction_controller import TransactionController
 
 class BuyingController(TransactionController):
 	def validate(self):
-		super(BuyingController, self).validateate()
+		super(BuyingController, self).validate()
 		self.set_item_values()
 
 	def get_item_details(self, args):
