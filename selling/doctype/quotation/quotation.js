@@ -31,6 +31,7 @@ erpnext.selling.Quotation = erpnext.Selling.extend({
 		if (!doc.__islocal) this.render_communication_list();
 	},
 	validate: function() {
+		this._super()
 		this.validate_quotation_to();
 	},
 	validate_quotation_to: function() {
@@ -46,9 +47,9 @@ erpnext.selling.Quotation = erpnext.Selling.extend({
 		this.notify(this.frm.doc, {type: 'Quotation', doctype: 'Quotation'});
 	},
 	toggle_fields: function() {
-		var customer_fields = ['customer', 'customer_address', 'contact_person', 'customer_name',
+		var customer_fields = ['customer_address', 'contact_person', 'customer_name',
 		 	'address_display', 'contact_display', 'customer_group', 'territory'];
-		var lead_fields = ['lead', 'lead_name', 'organization', 'territory'];
+		var lead_fields = ['lead_name', 'organization', 'territory'];
 		this.frm.toggle_display("customer", this.frm.doc.quotation_to == "Customer");
 		this.frm.toggle_display("lead", this.frm.doc.quotation_to == "Lead");
 		this.frm.toggle_display(customer_fields, this.frm.doc.customer);
@@ -94,7 +95,6 @@ erpnext.selling.Quotation = erpnext.Selling.extend({
 		if(this.frm.doc.lead) {
 			get_server_fields('get_lead_details', this.frm.doc.lead, '', this.frm.doc, 
 				this.frm.doc.doctype, this.frm.doc.name, 1);
-			unhide_field('territory');
 		}
 	},
 	customer: function() {

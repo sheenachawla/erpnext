@@ -22,7 +22,6 @@ from webnotes.model.utils import getlist
 from webnotes.model.controller import get_obj
 from webnotes import msgprint
 
-
 from controllers.selling_controller import SellingController
 
 class DocType(SellingController):
@@ -33,6 +32,16 @@ class DocType(SellingController):
 		super(DocType, self).validate()
 		self.set_last_contact_date()
 		self.validate_order_type()
+		self.set_next_contact_date()
+
+	def on_submit(self):
+		# to-do
+		# get_obj('Authorization Control').validate_approving_authority(self.doc.doctype,
+		# 		 	self.doc.company, self.doc.grand_total, self)
+		self.update_opportunity_status("Quotation Sent")
+		
+	def on_cancel(self):
+		self.update_opportunity_status("Open")
 
 	def set_last_contact_date(self):
 		if self.doc.contact_date_ref and self.doc.contact_date_ref != self.doc.contact_date:
@@ -52,31 +61,80 @@ class DocType(SellingController):
 		mapper.dt_map("Opportunity", "Quotation", self.doc.opportunity,
 			self.doc, self.doclist, json.dumps(from_to_list))
 
+	def declare_order_lost(self, reason):
+		so = webnotes.conn.sql("""select parent from `tabSales Order Item` 
+			where docstatus=1 and quotation = %s 
+			and ifnull(parent, '') != '' and parent not like '%%old%%'""", self.doc.name)
+		if so:
+			msgprint("""Submitted sales order: %s exists against this quotation. 
+				So you can not set theis order as lost""" % so[0][0], raise_exception=1)
+		else:
+			webnotes.conn.set(self.doc, 'order_lost_reason', reason)
+			self.update_enquiry('Opportunity Lost')
+			return True
+
+	def update_opportunity_status(self, status):
+		opportunity = ""
+		for d in self.doclist.get({"parentfield": self.item_table_field}):
+			if d.opportunity:
+				opportunity = d.opportunity
+				break
+		
+		if opportunity:
+			webnotes.conn.set_value("Opportunity", opportunity, "status", status)
+		
+	def set_next_contact_date(self):
+		if self.doc.contact_date and self.doc.contact_date_ref != self.doc.contact_date:
+			if self.doc.contact_by:
+				self.add_calendar_event()
+			webnotes.conn.set(self.doc, 'contact_date_ref',self.doc.contact_date)
+
+	def add_calendar_event(self):
+		event_description = "To be contacted %s by %s" % ((self.doc.contact_person 
+			or self.doc.customer or self.doc.lead_name or self.doc.lead), self.doc.contact_by)		
+		if self.doc.to_discuss:
+			event_description += "to discuss " + self.doc.to_discuss
+		
+		def _create_event():
+			event = Document('Event')
+			event.description = event_description
+			event.event_date = self.doc.contact_date
+			event.event_hour = '10:00'
+			event.event_type = 'Private'
+			event.ref_type = 'Opportunity'
+			event.ref_name = self.doc.name
+			event.save(1)
+			return event
+			
+		def _add_participants(event):
+			participants = [self.doc.owner]
+			contact_by_email = webnotes.conn.get_value("Sales Person", 
+				self.doc.contact_by, "email_id")
+			if webnotes.conn.exists("Profile", contact_by_email):
+				participants.append(contact_by_email)
+				
+			for p in participants:
+				child = addchild(event, 'event_individuals', 'Event User', 0)
+				child.person = p
+				child.save(1)
+				
+		event = _create_event()
+		_add_participants(event)
+
+	def get_lead_details(self):
+		lead = webnotes.conn.get_value("Lead", self.doc.lead, 
+			["lead_name", "company_name", "territory"])
+		ret = {
+			"lead_name": lead["lead_name"] or "",
+			"organization": lead["company_name"] or "",
+			"territory": lead["territory"] or ""
+		}
+		return ret
+		
 
 	# def get_contact_details(self):
 	# 	return get_obj('Sales Common').get_contact_details(self,0)
-	# 
-	# 
-	# def get_item_details(self, args=None):
-	# 	import json
-	# 	args = args and json.loads(args) or {}
-	# 	if args.get('item_code'):
-	# 		return get_obj('Sales Common').get_item_details(args, self)
-	# 	else:
-	# 		obj = get_obj('Sales Common')
-	# 		for doc in self.doclist:
-	# 			if doc.fields.get('item_code'):
-	# 				arg = {
-	# 					'item_code': doc.fields.get('item_code'),
-	# 					'income_account': doc.fields.get('income_account'),
-	# 					'cost_center': doc.fields.get('cost_center'),
-	# 					'warehouse': doc.fields.get('warehouse')
-	# 				}
-	# 				res = obj.get_item_details(arg, self) or {}
-	# 				for r in res:
-	# 					if not doc.fields.get(r):
-	# 						doc.fields[r] = res[r]
-	# 
+
 	# def get_adj_percent(self, arg=''):
 	# 	get_obj('Sales Common').get_adj_percent(self)
 	# 
@@ -88,111 +146,3 @@ class DocType(SellingController):
 	# 
 	# def get_taxes_and_charges(self):
 	# 	self.doclist = get_obj('Sales Common').get_taxes_and_charges(self)	
-	# 
-	# def get_tc_details(self):
-	# 	return get_obj('Sales Common').get_tc_details(self)
-	
-
-
-
-	def on_update(self):
-		# Add to calendar
-		if self.doc.contact_date and self.doc.contact_date_ref != self.doc.contact_date:
-			if self.doc.contact_by:
-				self.add_calendar_event()
-			webnotes.conn.set(self.doc, 'contact_date_ref',self.doc.contact_date)
-		
-		# subject for follow
-		self.doc.subject = '[%(status)s] To %(customer)s worth %(currency)s %(grand_total)s' % self.doc.fields
-
-	def add_calendar_event(self):
-		desc=''
-		user_lst =[]
-		if self.doc.customer:
-			if self.doc.contact_person:
-				desc = 'Contact '+cstr(self.doc.contact_person)
-			else:
-				desc = 'Contact customer '+cstr(self.doc.customer)
-		elif self.doc.lead:
-			if self.doc.lead_name:
-				desc = 'Contact '+cstr(self.doc.lead_name)
-			else:
-				desc = 'Contact lead '+cstr(self.doc.lead)
-		desc = desc+ '.By : ' + cstr(self.doc.contact_by)
-		
-		if self.doc.to_discuss:
-			desc = desc+' To Discuss : ' + cstr(self.doc.to_discuss)
-		
-		ev = Document('Event')
-		ev.description = desc
-		ev.event_date = self.doc.contact_date
-		ev.event_hour = '10:00'
-		ev.event_type = 'Private'
-		ev.ref_type = 'Opportunity'
-		ev.ref_name = self.doc.name
-		ev.save(1)
-		
-		user_lst.append(self.doc.owner)
-		
-		chk = webnotes.conn.sql("select t1.name from `tabProfile` t1, `tabSales Person` t2 where t2.email_id = t1.name and t2.name=%s",self.doc.contact_by)
-		if chk:
-			user_lst.append(chk[0][0])
-		
-		for d in user_lst:
-			ch = addchild(ev, 'event_individuals', 'Event User', 0)
-			ch.person = d
-			ch.save(1)
-	
-	def update_enquiry(self, flag):
-		prevdoc=''
-		for d in getlist(self.doclist, 'quotation_items'):
-			if d.prevdoc_docname:
-				prevdoc = d.prevdoc_docname
-		
-		if prevdoc:
-			if flag == 'submit': #on submit
-				webnotes.conn.sql("update `tabOpportunity` set status = 'Quotation Sent' where name = %s", prevdoc)
-			elif flag == 'cancel': #on cancel
-				webnotes.conn.sql("update `tabOpportunity` set status = 'Open' where name = %s", prevdoc)
-			elif flag == 'order lost': #order lost
-				webnotes.conn.sql("update `tabOpportunity` set status = 'Opportunity Lost' where name=%s", prevdoc)
-			elif flag == 'order confirm': #order confirm
-				webnotes.conn.sql("update `tabOpportunity` set status='Order Confirmed' where name=%s", prevdoc)
-	
-	def declare_order_lost(self,arg):
-		chk = webnotes.conn.sql("select t1.name from `tabSales Order` t1, `tabSales Order Item` t2 where t2.parent = t1.name and t1.docstatus=1 and t2.prevdoc_docname = %s",self.doc.name)
-		if chk:
-			msgprint("Sales Order No. "+cstr(chk[0][0])+" is submitted against this Quotation. Thus 'Order Lost' can not be declared against it.")
-			raise Exception
-		else:
-			webnotes.conn.set(self.doc, 'order_lost_reason', arg)
-			self.update_enquiry('order lost')
-			return 'true'
-
-	def check_item_table(self):
-		if not getlist(self.doclist, 'quotation_items'):
-			msgprint("Please enter item details")
-			raise Exception
-		
-	def on_submit(self):
-		self.check_item_table()
-		get_obj('Authorization Control').validate_approving_authority(self.doc.doctype,
-		 	self.doc.company, self.doc.grand_total, self)
-		self.update_enquiry('submit')
-		
-	def on_cancel(self):
-		self.update_enquiry('cancel')
-
-	def print_taxes_and_charges(self,docname):
-		print_lst = []
-		for d in getlist(self.doclist,'taxes_and_charges'):
-			lst1 = []
-			lst1.append(d.description)
-			lst1.append(d.total)
-			print_lst.append(lst1)
-		return print_lst
-	
-	def update_followup_details(self):
-		webnotes.conn.sql("delete from `tabCommunication Log` where parent = '%s'"%self.doc.name)
-		for d in getlist(self.doclist, 'follow_up'):
-			d.save()

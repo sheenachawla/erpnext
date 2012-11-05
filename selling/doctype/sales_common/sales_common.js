@@ -220,55 +220,6 @@ cur_frm.cscript.company = function(doc, cdt, cdn) {
 	});
 }
 
-
-cur_frm.cscript.price_list_name = function(doc, cdt, cdn) {
-	var callback = function() {
-		var fname = cur_frm.cscript.fname;
-		var cl = getchildren(cur_frm.cscript.tname, doc.name, cur_frm.cscript.fname);
-		if(doc.price_list_name && doc.currency && doc.price_list_currency && doc.exchange_rate && doc.plc_exchange_rate) {
-			$c_obj(wn.model.get_doclist(doc.doctype, doc.name), 'get_adj_percent', '',
-				function(r, rt) {
-					refresh_field(fname);
-					var doc = locals[cdt][cdn];
-					cur_frm.cscript.recalc(doc,3);		//this is to re-calculate BASIC RATE and AMOUNT on basis of changed REF RATE
-				}
-			);
-		}
-	}
-	cur_frm.cscript.hide_price_list_currency(doc, cdt, cdn, callback);
-}
-
-
-
-cur_frm.cscript.item_code = function(doc, cdt, cdn) {
-	var fname = cur_frm.cscript.fname;
-	var d = locals[cdt][cdn];
-	if (d.item_code) {
-		if (!doc.company) {
-			msgprint("Please select company to proceed");
-			d.item_code = '';
-			refresh_field('item_code', d.name, fname);
-		} else {
-			var callback = function(r, rt){
-				cur_frm.cscript.recalc(doc, 1);
-			}
-			var args = {
-				'item_code':d.item_code, 
-				'income_account':d.income_account, 
-				'cost_center': d.cost_center, 
-				'warehouse': d.warehouse
-			};
-			get_server_fields('get_item_details',JSON.stringify(args), 
-				fname,doc,cdt,cdn,1,callback);
-		}
-	}
-	if(cur_frm.cscript.custom_item_code){
-		cur_frm.cscript.custom_item_code(doc, cdt, cdn);
-	}
-}
-
-//Barcode
-//
 cur_frm.cscript.barcode = function(doc, cdt, cdn) {
 	var d = locals[cdt][cdn];
 	var callback = function(r, rt) {

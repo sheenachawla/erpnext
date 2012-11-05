@@ -171,20 +171,6 @@ class DocType(TransactionBase):
 		
 		return ret
 
-
-	def get_item_defaults(self, args):
-		item = webnotes.conn.sql("""select default_warehouse, default_income_account, default_sales_cost_center from `tabItem` 
-			where name = '%s' and (ifnull(end_of_life,'') = '' or end_of_life > now() or end_of_life = '0000-00-00') 
-			and (is_sales_item = 'Yes' or is_service_item = 'Yes') """ % (args['item_code']), as_dict=1)
-		ret = {
-			'warehouse'	: item and item[0]['default_warehouse'] or '',
-			'warehouse'				: item and item[0]['default_warehouse'] or args.get('warehouse'),
-			'income_account'		: item and item[0]['default_income_account'] or args.get('income_account'),
-			'cost_center'			: item and item[0]['default_sales_cost_center'] or args.get('cost_center')
-		}
-
-		return ret
-
 	def get_available_qty(self,args):
 		tot_avail_qty = webnotes.conn.sql("select projected_qty, actual_qty from `tabBin` where item_code = '%s' and warehouse = '%s'" % (args['item_code'], args['warehouse']), as_dict=1)
 		ret = {

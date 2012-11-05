@@ -83,3 +83,14 @@ class SellingController(TransactionController):
 			self.doclist.get({'parentfield': 'sales_team'})])
 		for d in self.doclist.get({"parentfield": 'sales_team'}):
 			d.allocated_percentage = d.allocated_percentage*100/total_contribution
+			
+	def append_default_taxes(self):
+		"""called in on_map to add rows in tax table when they are missing"""
+		if not (self.doc.customer or 
+				len(self.doclist.get({"parentfield": "taxes_and_charges"}))):
+			self.doc.taxes_and_charges_master = webnotes.conn.get_value(
+				"Sales Taxes and Charges Master", {"is_default[0]": 1}, "name")
+			
+			if not self.doc.taxes_and_charges_master: return
+			
+			self.append_taxes()

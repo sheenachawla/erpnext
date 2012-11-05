@@ -43,6 +43,17 @@ class TransactionController(DocListController):
 		if self.doc.docstatus == 1 and self.cur_docstatus == 0:
 			# a doc getting submitted should not be stopped
 			self.doc.is_stopped = 0
+			
+	def on_map(self):
+		self.set_item_values()
+		self.append_default_taxes()
+
+	def set_item_values(self):
+		for item in self.doclist.get({"parentfield": self.item_table_field}):
+			item_values = self.get_item_details({"item_code": item.item_code})
+			for k in item_values:
+				if not item.fields.get(k):
+					item.fields[k] = item_values[k]
 	
 	def on_update(self):
 		pass
@@ -156,21 +167,23 @@ class TransactionController(DocListController):
 		stock.validate_end_of_life(item.doc.item_code, item.doc.end_of_life)
 
 		ret = DictObj({
-			"item_name": cstr(item.doc.item_name),
-			"item_group": cstr(item.doc.item_group),
-			"brand": cstr(item.doc.brand),
-			"description": cstr(item.doc.description),
-			"uom": cstr(item.doc.stock_uom),
-			"stock_uom": cstr(item.doc.stock_uom),
-			"warehouse": args.warehouse or cstr(item.doc.default_warehouse),
+			"item_name": item.doc.item_name,
+			"item_group": item.doc.item_group,
+			"brand": item.doc.brand,
+			"description": item.doc.description,
+			"uom": item.doc.stock_uom,
+			"stock_uom": item.doc.stock_uom,
+			"warehouse": args.warehouse or item.doc.default_warehouse,
 			"conversion_factor": 1,
 			"qty": 0,
 			"discount": 0,
 			"batch_no": "",
 			"item_tax_rate": json.dumps(dict((item_tax.tax_type, item_tax.tax_rate)
 				for item_tax in item.doclist.get({"parentfield": "item_tax"}))),
-			"min_order_qty": flt(item.doc.min_order_qty,
+			"min_order_qty": flt(item.doc.min_order_qty, 
 				self.precision.item.min_order_qty),
+			"income_account": item.doc.default_income_account or args.income_account,
+			"cost_center": item.doc.default_sales_cost_center or args.cost_center,
 		})
 
 		if ret.warehouse:
