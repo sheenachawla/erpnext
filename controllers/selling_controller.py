@@ -92,5 +92,70 @@ class SellingController(TransactionController):
 				"Sales Taxes and Charges Master", {"is_default[0]": 1}, "name")
 			
 			if not self.doc.taxes_and_charges_master: return
-			
 			self.append_taxes()
+	
+	def get_item_details(self, args):
+		args = self.process_args(args)
+		item = get_obj("Item", args.item_code, with_children=1)
+		
+		ret = super(SellingController, self).get_item_details(args, item)
+
+		# set default income account and cost center
+		ret.income_account: item.doc.default_income_account or args.income_account,
+		ret.cost_center: item.doc.default_sales_cost_center or args.cost_center,
+		
+		# rate as per selected price list
+		if self.doc.price_list_name and self.doc.price_list_currency:
+			exchange_rate = flt(self.doc.exchange_rate, self.precision.main.exchange_rate)
+			ref_rate = self.get_ref_rate(args['item_code'])
+			ret.print_ref_rate = ref_rate / exchange_rate
+			ret.print_rate = ref_rate / exchange_rate
+			ret.ref_rate = ref_rate
+			ret.rate = ref_rate
+			
+		# get actual qty
+		if ret.warehouse:
+			ret.available_qty = self.get_actual_qty({
+				'item_code': args.item_code, 'warehouse': ret.warehouse, 
+				"posting_date": self.doc.posting_date, "posting_time": self.doc.posting_time or ""
+			})
+			
+		# get customer code from Item Customer Detail
+		customer_item_code = webnotes.conn.get_value("Item Customer Detail", 
+			{"parent": args.item_code, "customer_name": self.doc.customer}, "ref_code")
+		if customer_item_code:
+			ret.customer_item_code = customer_item_code
+		
+		return ret
+		
+	
+	def get_price_list_rate(self):
+		for item in self.doclist.get({"parentfield": self.doc.item_table_field}):
+			ref_rate = self.get_ref_rate(item.item_code)
+			exchange_rate = flt(self.doc.exchange_rate, self.precision.main.exchange_rate)
+			item.print_ref_rate = ref_rate / exchange_rate
+			item.print_rate = ref_rate / exchange_rate
+			item.print_amount = flt(item.qty, self.precision.item.qty) * ref_rate / exchange_rate
+			item.discount = 0
+			item.ref_rate = ref_rate
+			item.rate = ref_rate			
+			item.amount = flt(item.qty, self.precision.item.qty) * ref_rate
+			
+	def get_ref_rate(self, item_code):
+		ref_rate_price_list_currency = webnotes.conn.get_value("Item Price", {"parent": item_code, 
+			"price_list_name": self.doc.price_list_name, 
+			"ref_currency": self.doc.price_list_currency}, "ref_rate")
+			
+		# ref rate @ base currency
+		ref_rate = flt(ref_rate_price_list_currency, self.precision.item.ref_rate) * \
+			flt(self.doc.plc_exchange_rate, self.precision.main.plc_exchange_rate)
+		return ref_rate
+		
+	def get_commission(self):
+		commission_rate = flt(webnotes.conn.get_value("Sales Partner", 
+			self.doc.sales_partner, "commission_rate"), self.precision.main.commission_rate)
+		return {
+			'commission_rate':	commission_rate,
+			'total_commission': (commission_rate * 
+				flt(self.doc.net_total, self.precision.main.net_total)) / 100.0
+		}
