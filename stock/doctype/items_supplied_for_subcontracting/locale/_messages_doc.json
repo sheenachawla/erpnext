@@ -1,0 +1,14 @@
+[
+ "Reference Name", 
+ "Raw Material Item Code", 
+ "Amount", 
+ "Description", 
+ "Required Qty", 
+ "Items Supplied For Subcontracting", 
+ "Consumed Qty", 
+ "Rate", 
+ "BOM Detail No", 
+ "Stock Uom", 
+ "Item Code", 
+ "Stock"
+]

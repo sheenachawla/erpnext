@@ -1,0 +1,4 @@
+{
+ "Row # %(idx)s [Item: %(item_code)s]:\t\t\t\t\t\tWarehouse mandatory for a stock item.": "#% \u092a\u0902\u0915\u094d\u0924\u093f (IDX) [\u0906\u0907\u091f\u092e:% (item_code) \u090f\u0938]: \u092e\u093e\u0932\u0917\u094b\u0926\u093e\u092e \u0915\u0947 \u090f\u0915 \u0936\u0947\u092f\u0930 \u092e\u0926 \u0915\u0947 \u0932\u093f\u090f \u0905\u0928\u093f\u0935\u093e\u0930\u094d\u092f \u0939\u0948.", 
+ "Row # %(idx)s [Item: %(item_code)s]: \t\t\t\t\t%(schedule_date)s cannot be before %(posting_date)s": "\u092a\u0902\u0915\u094d\u0924\u093f #% (IDX) [\u0906\u0907\u091f\u092e:% (item_code) \u090f\u0938]:% (schedule_date)% \u0938\u0947 \u092a\u0939\u0932\u0947 (posting_date) \u0928\u0939\u0940\u0902 \u0915\u093f\u092f\u093e \u091c\u093e \u0938\u0915\u0924\u093e \u0939\u0948"
+}

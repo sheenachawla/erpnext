@@ -1,0 +1,22 @@
+[
+ "BOM No.", 
+ "BOM No. for a Finished Good Item", 
+ "Description", 
+ "Incoming Rate", 
+ "Reqd Qty", 
+ "Stock UOM", 
+ "Actual Qty (at source)", 
+ "Stock Qty", 
+ "Amount", 
+ "Source Warehouse", 
+ "Qty", 
+ "Serial No", 
+ "Conversion Factor", 
+ "Target Warehouse", 
+ "Batch No", 
+ "FG Item", 
+ "Stock", 
+ "Item Code", 
+ "UOM", 
+ "Stock Entry Detail"
+]

@@ -1,0 +1,6 @@
+[
+ "Workstation where production operations are performed.", 
+ "Generate Purchase Requests and Production Orders from open Sales Orders (MRP).", 
+ "Authorization for production of an Item.", 
+ "Bill of materials and operations."
+]

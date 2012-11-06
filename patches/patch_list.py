@@ -479,4 +479,8 @@ patch_list = [
 		'patch_module': 'patches.november_2012',
 		'patch_file': 'custom_field_insert_after',
 	},
+	{
+		'patch_module': 'patches.november_2012',
+		'patch_file': 'remove_old_doctypes',
+	},
 ]
