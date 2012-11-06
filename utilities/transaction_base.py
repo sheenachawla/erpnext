@@ -48,66 +48,66 @@ class TransactionBase(object):
 
 	# Get Customer Address
 	# -----------------------
-	def get_customer_address(self, args):
-		args = load_json(args)		
-		address_text, address_name = self.get_address_text(address_name=args['address'])
-		ret = {
-			'customer_address' : address_name,
-			'address_display' : address_text,
-		}
-		
-		ret.update(self.get_contact_text(contact_name=args['contact']))
-		
-		return ret	
+	# def get_customer_address(self, args):
+	# 	args = load_json(args)		
+	# 	address_text, address_name = self.get_address_text(address_name=args['address'])
+	# 	ret = {
+	# 		'customer_address' : address_name,
+	# 		'address_display' : address_text,
+	# 	}
+	# 	
+	# 	ret.update(self.get_contact_text(contact_name=args['contact']))
+	# 	
+	# 	return ret	
 			
 	# Get Address Text
 	# -----------------------
-	def get_address_text(self, customer=None, address_name=None, supplier=None, is_shipping_address=None):
-		if customer:
-			cond = customer and 'customer="%s"' % customer or 'name="%s"' % address_name
-		elif supplier:
-			cond = supplier and 'supplier="%s"' % supplier or 'name="%s"' % address_name	
-		else:
-			cond = 'name="%s"' % address_name	
-
-		if is_shipping_address:
-			details = webnotes.conn.sql("select name, address_line1, address_line2, city, country, pincode, state, phone, fax from `tabAddress` where %s and docstatus != 2 order by is_shipping_address desc, is_primary_address desc limit 1" % cond, as_dict = 1)
-		else:
-			details = webnotes.conn.sql("select name, address_line1, address_line2, city, country, pincode, state, phone, fax from `tabAddress` where %s and docstatus != 2 order by is_primary_address desc limit 1" % cond, as_dict = 1)
-		
-		extract = lambda x: details and details[0] and details[0].get(x,'') or ''
-		address_fields = [('','address_line1'),('\n','address_line2'),('\n','city'),(' ','pincode'),('\n','state'),('\n','country'),('\nPhone: ','phone'),('\nFax: ', 'fax')]
-		address_display = ''.join([a[0]+extract(a[1]) for a in address_fields if extract(a[1])])
-		if address_display.startswith('\n'): address_display = address_display[1:]		
-
-		address_name = details and details[0]['name'] or ''
-		return address_display, address_name
+	# def get_address_text(self, customer=None, address_name=None, supplier=None, is_shipping_address=None):
+	# 	if customer:
+	# 		cond = customer and 'customer="%s"' % customer or 'name="%s"' % address_name
+	# 	elif supplier:
+	# 		cond = supplier and 'supplier="%s"' % supplier or 'name="%s"' % address_name	
+	# 	else:
+	# 		cond = 'name="%s"' % address_name	
+	# 
+	# 	if is_shipping_address:
+	# 		details = webnotes.conn.sql("select name, address_line1, address_line2, city, country, pincode, state, phone, fax from `tabAddress` where %s and docstatus != 2 order by is_shipping_address desc, is_primary_address desc limit 1" % cond, as_dict = 1)
+	# 	else:
+	# 		details = webnotes.conn.sql("select name, address_line1, address_line2, city, country, pincode, state, phone, fax from `tabAddress` where %s and docstatus != 2 order by is_primary_address desc limit 1" % cond, as_dict = 1)
+	# 	
+	# 	extract = lambda x: details and details[0] and details[0].get(x,'') or ''
+	# 	address_fields = [('','address_line1'),('\n','address_line2'),('\n','city'),(' ','pincode'),('\n','state'),('\n','country'),('\nPhone: ','phone'),('\nFax: ', 'fax')]
+	# 	address_display = ''.join([a[0]+extract(a[1]) for a in address_fields if extract(a[1])])
+	# 	if address_display.startswith('\n'): address_display = address_display[1:]		
+	# 
+	# 	address_name = details and details[0]['name'] or ''
+	# 	return address_display, address_name
 
 	# Get Contact Text
 	# -----------------------
-	def get_contact_text(self, customer=None, contact_name=None, supplier=None):
-		if customer:
-			cond = customer and 'customer="%s"' % customer or 'name="%s"' % contact_name
-		elif supplier:
-			cond = supplier and 'supplier="%s"' % supplier or 'name="%s"' % contact_name
-		else:
-			cond = 'name="%s"' % contact_name			
-			
-		details = webnotes.conn.sql("select name, first_name, last_name, email_id, phone, mobile_no, department, designation from `tabContact` where %s and docstatus != 2 order by is_primary_contact desc limit 1" % cond, as_dict = 1)
-
-		extract = lambda x: details and details[0] and details[0].get(x,'') or ''
-		contact_fields = [('','first_name'),(' ','last_name')]
-		contact_display = ''.join([a[0]+cstr(extract(a[1])) for a in contact_fields if extract(a[1])])
-		if contact_display.startswith('\n'): contact_display = contact_display[1:]
-		
-		return {
-			"contact_display": contact_display,
-			"contact_person": details and details[0]["name"] or "",
-			"contact_email": details and details[0]["email_id"] or "",
-			"contact_mobile": details and details[0]["mobile_no"] or "",
-			"contact_designation": details and details[0]["designation"] or "",
-			"contact_department": details and details[0]["department"] or "",
-		}
+	# def get_contact_text(self, customer=None, contact_name=None, supplier=None):
+	# 	if customer:
+	# 		cond = customer and 'customer="%s"' % customer or 'name="%s"' % contact_name
+	# 	elif supplier:
+	# 		cond = supplier and 'supplier="%s"' % supplier or 'name="%s"' % contact_name
+	# 	else:
+	# 		cond = 'name="%s"' % contact_name			
+	# 		
+	# 	details = webnotes.conn.sql("select name, first_name, last_name, email_id, phone, mobile_no, department, designation from `tabContact` where %s and docstatus != 2 order by is_primary_contact desc limit 1" % cond, as_dict = 1)
+	# 
+	# 	extract = lambda x: details and details[0] and details[0].get(x,'') or ''
+	# 	contact_fields = [('','first_name'),(' ','last_name')]
+	# 	contact_display = ''.join([a[0]+cstr(extract(a[1])) for a in contact_fields if extract(a[1])])
+	# 	if contact_display.startswith('\n'): contact_display = contact_display[1:]
+	# 	
+	# 	return {
+	# 		"contact_display": contact_display,
+	# 		"contact_person": details and details[0]["name"] or "",
+	# 		"contact_email": details and details[0]["email_id"] or "",
+	# 		"contact_mobile": details and details[0]["mobile_no"] or "",
+	# 		"contact_designation": details and details[0]["designation"] or "",
+	# 		"contact_department": details and details[0]["department"] or "",
+	# 	}
 		
 	def get_customer_details(self, name):
 		"""
@@ -137,19 +137,19 @@ class TransactionBase(object):
 
 	# Get Customer Shipping Address
 	# -----------------------
-	def get_shipping_address(self, name):
-		details = webnotes.conn.sql("select name, address_line1, address_line2, city, country, pincode, state, phone from `tabAddress` where customer = '%s' and docstatus != 2 order by is_shipping_address desc, is_primary_address desc limit 1" %(name), as_dict = 1)
-		
-		extract = lambda x: details and details[0] and details[0].get(x,'') or ''
-		address_fields = [('','address_line1'),('\n','address_line2'),('\n','city'),(' ','pincode'),('\n','state'),('\n','country'),('\nPhone: ','phone')]
-		address_display = ''.join([a[0]+extract(a[1]) for a in address_fields if extract(a[1])])
-		if address_display.startswith('\n'): address_display = address_display[1:]
-		
-		ret = {
-			'shipping_address_name' : details and details[0]['name'] or '',
-			'shipping_address' : address_display
-		}
-		return ret
+	# def get_shipping_address(self, name):
+	# 	details = webnotes.conn.sql("select name, address_line1, address_line2, city, country, pincode, state, phone from `tabAddress` where customer = '%s' and docstatus != 2 order by is_shipping_address desc, is_primary_address desc limit 1" %(name), as_dict = 1)
+	# 	
+	# 	extract = lambda x: details and details[0] and details[0].get(x,'') or ''
+	# 	address_fields = [('','address_line1'),('\n','address_line2'),('\n','city'),(' ','pincode'),('\n','state'),('\n','country'),('\nPhone: ','phone')]
+	# 	address_display = ''.join([a[0]+extract(a[1]) for a in address_fields if extract(a[1])])
+	# 	if address_display.startswith('\n'): address_display = address_display[1:]
+	# 	
+	# 	ret = {
+	# 		'shipping_address_name' : details and details[0]['name'] or '',
+	# 		'shipping_address' : address_display
+	# 	}
+	# 	return ret
 		
 	# Get Lead Details
 	# -----------------------
@@ -174,45 +174,45 @@ class TransactionBase(object):
 		
 	# Get Supplier Default Primary Address - first load
 	# -----------------------
-	def get_default_supplier_address(self, args):
-		args = load_json(args)
-		address_text, address_name = self.get_address_text(supplier=args['supplier'])
-		ret = {
-			'supplier_address' : address_name,
-			'address_display' : address_text,
-		}
-		ret.update(self.get_contact_text(supplier=args['supplier']))
-		ret.update(self.get_supplier_details(args['supplier']))
-		return ret
-		
+	# def get_default_supplier_address(self, args):
+	# 	args = load_json(args)
+	# 	address_text, address_name = self.get_address_text(supplier=args['supplier'])
+	# 	ret = {
+	# 		'supplier_address' : address_name,
+	# 		'address_display' : address_text,
+	# 	}
+	# 	ret.update(self.get_contact_text(supplier=args['supplier']))
+	# 	ret.update(self.get_supplier_details(args['supplier']))
+	# 	return ret
+	# 	
 	# Get Supplier Address
 	# -----------------------
-	def get_supplier_address(self, args):
-		args = load_json(args)
-		address_text, address_name = self.get_address_text(address_name=args['address'])
-		ret = {
-			'supplier_address' : address_name,
-			'address_display' : address_text,
-		}
-		ret.update(self.get_contact_text(contact_name=args['contact']))
-		return ret
+	# def get_supplier_address(self, args):
+	# 	args = load_json(args)
+	# 	address_text, address_name = self.get_address_text(address_name=args['address'])
+	# 	ret = {
+	# 		'supplier_address' : address_name,
+	# 		'address_display' : address_text,
+	# 	}
+	# 	ret.update(self.get_contact_text(contact_name=args['contact']))
+	# 	return ret
 	
-	# Get Supplier Details
-	# -----------------------
-	def get_supplier_details(self, name):
-		supplier_details = webnotes.conn.sql("""\
-			select supplier_name, default_currency
-			from `tabSupplier`
-			where name = %s and docstatus < 2""", name, as_dict=1)
-		if supplier_details:
-			return {
-				'supplier_name': (supplier_details[0]['supplier_name']
-					or self.doc.fields.get('supplier_name')),
-				'currency': (supplier_details[0]['default_currency']
-					or self.doc.fields.get('currency')),
-			}
-		else:
-			return {}
+	# # Get Supplier Details
+	# # -----------------------
+	# def get_supplier_details(self, name):
+	# 	supplier_details = webnotes.conn.sql("""\
+	# 		select supplier_name, default_currency
+	# 		from `tabSupplier`
+	# 		where name = %s and docstatus < 2""", name, as_dict=1)
+	# 	if supplier_details:
+	# 		return {
+	# 			'supplier_name': (supplier_details[0]['supplier_name']
+	# 				or self.doc.fields.get('supplier_name')),
+	# 			'currency': (supplier_details[0]['default_currency']
+	# 				or self.doc.fields.get('currency')),
+	# 		}
+	# 	else:
+	# 		return {}
 		
 	# Get Sales Person Details of Customer
 	# ------------------------------------

@@ -23,16 +23,19 @@ erpnext.buying.PurchaseRequest = erpnext.Buying.extend({
 	onload_post_render: function() {
 		this.get_item_defaults();
 	},
+	
 	refresh: function() {
 		this._super();
 		this.add_buttons();
 	},
+
 	posting_date: function() {
 		if(this.frm.doc.__islocal && this.frm.doc.posting_date) {
 			// on change of posting date, update schedule date
 			this.set_schedule_date("purchase_request_items");
 		}
 	},
+	
 	qty: function(doc, cdt, cdn) {
 		// warn if qty < min order qty
 		var child = locals[cdt][cdn];
@@ -43,6 +46,7 @@ erpnext.buying.PurchaseRequest = erpnext.Buying.extend({
 				{ item_code: child.item_code, idx: child.idx }));
 		}
 	},
+	
 	get_item_defaults: function() {
 		if(this.frm.doc.__islocal && wn.model.has_children(this.frm.doc.doctype,
 				this.frm.doc.name, "purchase_request_items")) {
@@ -52,6 +56,7 @@ erpnext.buying.PurchaseRequest = erpnext.Buying.extend({
 				});
 		}
 	},
+	
 	add_buttons: function() {
 		var me = this;
 		this.frm.clear_custom_buttons();
@@ -75,25 +80,31 @@ erpnext.buying.PurchaseRequest = erpnext.Buying.extend({
 			}
 		}
 	},
+	
 	make_supplier_quotation: function(btn) {
 		wn.model.map_doclist([["Purchase Request", "Supplier Quotation"],
 			["Purchase Request Item", "Supplier Quotation Item"]], this.frm.doc.name);
 	},
+	
 	make_purchase_order: function(btn) {
 		wn.model.map_doclist([["Purchase Request", "Purchase Order"],
 			["Purchase Request Item", "Purchase Order Item"]], this.frm.doc.name);
 	},
+	
 	stop_purchase_request: function(btn) {
 		this.frm.doc.is_stopped = 1;
 		this.frm.save(null, btn);
 	},
+	
 	resume_purchase_request: function(btn) {
 		this.frm.doc.is_stopped = 0;
 		this.frm.save(null, btn);
 	},
+	
 	send_sms: function(me) {
 		// TODO
 	},
+	
 	load_precision_maps: function() {
 		// TODO
 		// if(!this.frm.precision) this.frm.precision = {};

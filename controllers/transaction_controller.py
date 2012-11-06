@@ -22,7 +22,8 @@ import webnotes.model
 from webnotes import _, msgprint, DictObj
 from webnotes.utils import cint, formatdate, cstr, flt, add_days
 from webnotes.model.controller import get_obj
-from webnotes.model.doc import make_autoname
+from webnotes.model.doc import make_autoname, Document
+import json
 
 import stock
 from webnotes.model.controller import DocListController
@@ -110,8 +111,10 @@ class TransactionController(DocListController):
 	def validate_items(self):
 		"""
 			validate the following:
-			* qty
-			* is_stock_item
+			* qty >= 0
+			* stock item
+			* duplicate rows
+			* mapping with previous doclist
 		"""
 		import stock
 		from webnotes.model.utils import validate_condition
@@ -145,8 +148,8 @@ class TransactionController(DocListController):
 		stock.validate_end_of_life(item.name, item.end_of_life)
 		
 		# get warehouse field
-		warehouse_field = webnotes.get_field(item.parenttype, "warehouse",
-			parentfield=item.parentfield)
+		warehouse_field = webnotes.get_field(child.parenttype, "warehouse",
+			parentfield=child.parentfield)
 		
 		if warehouse_field and item.is_stock_item == "Yes" and not child.warehouse:
 			msgprint(_("""Row # %(idx)s, Item %(item_code)s: \
@@ -154,15 +157,7 @@ class TransactionController(DocListController):
 				{"idx": child.idx, "item_code": item.name },
 				raise_exception=1)
 			
-	def get_item_details(self, args):
-		if isinstance(args, basestring):
-			import json
-			args = json.loads(args)
-
-		args = DictObj(args)
-
-		item = get_obj("Item", args.item_code, with_children=1)
-
+	def get_item_details(self, args, item=None):
 		# validate end of life
 		stock.validate_end_of_life(item.doc.item_code, item.doc.end_of_life)
 
@@ -177,28 +172,21 @@ class TransactionController(DocListController):
 			"conversion_factor": 1,
 			"qty": 0,
 			"discount": 0,
+			"amount": 0,
+			"print_amount": 0,
+			"serial_no": "",
 			"batch_no": "",
 			"item_tax_rate": json.dumps(dict((item_tax.tax_type, item_tax.tax_rate)
 				for item_tax in item.doclist.get({"parentfield": "item_tax"}))),
-			"min_order_qty": flt(item.doc.min_order_qty, 
-				self.precision.item.min_order_qty),
-			"income_account": item.doc.default_income_account or args.income_account,
-			"cost_center": item.doc.default_sales_cost_center or args.cost_center,
 		})
-
-		if ret.warehouse:
-			ret.projected_qty = stock.get_projected_qty(args.item_code,
-				ret.warehouse)["projected_qty"]
-		
-		if self.doc.posting_date and item.doc.lead_time_days:
-			ret.schedule_date = add_days(self.doc.posting_date, item.doc.lead_time_days)
-			ret.leat_time_date = ret.schedule_date
-			
-		# TODO last purchase details for PO and Pur Receipt
-		
-		# TODO supplier part no for PO
 		
 		return ret
+		
+	def process_args(self, args):
+		if isinstance(args, basestring):
+			args = json.loads(args)
+		args = DictObj(args)
+		return args 
 		
 	def get_uom_details(self, args=None):
 		"""get last purchase rate based on conversion factor"""
@@ -207,7 +195,6 @@ class TransactionController(DocListController):
 			args = webnotes.form_dict.get("args")
 			
 		if isinstance(args, basestring):
-			import json
 			args = json.loads(args)
 		
 		args = DictObj(args)
@@ -269,6 +256,82 @@ class TransactionController(DocListController):
 			})
 			self.doclist.append(tax)
 			
+	def get_address(self, args):
+		args = DictObj(args)
+		address_field = self.meta.get_field({"options": "^Address"})
+		
+		query = "select * from `tabAddress` where docstatus < 2 "
+		
+		if args.customer:
+			query += "and customer=%s order by "
+			if args.is_shipping_address:
+				query += "is_shipping_address desc, "
+			query += "is_primary_address desc limit 1"
+			val = args.customer
+		elif args.supplier:
+			query += "and supplier=%s order by "
+			if args.is_shipping_address:
+				query += "is_shipping_address desc, "
+			query += "is_primary_address desc limit 1"
+			val = args.supplier
+		else:
+			query += "and name=%s"
+			val = self.doc.fields.get(address_field)
+		
+		address_result = webnotes.conn.sql(query, (val,), as_dict=1)
+		
+		if address_result:
+			address_doc = Document("Address", fielddata=address_result[0])
+			
+			self.doc.fields[address_field.fieldname] = address_doc.name
+			
+			self.doc.address_display = "\n".join(filter(None, [
+				address_doc.address_line1,
+				address_doc.address_line2,
+				" ".join(filter(None, [address_doc.city, address_doc.pincode])),
+				address_doc.state,
+				address_doc.country,
+				address_doc.phone and ("Phone: %s" % address_doc.phone) or "",
+				address_doc.fax and ("Fax: %s" % address_doc.fax) or "",
+			]))
+			
+			# send it on client side - can be used for further processing
+			webnotes.response.setdefault("docs", []).append(address_doc)
+
+	def get_contact(self, args):
+		args = DictObj(args)
+		contact_field = self.meta.get_field({"options": "^Contact"})
+
+		query = "select * from `tabContact` where docstatus < 2 "
+		
+		if args.customer:
+			query += "and customer=%s order by is_primary_contact desc limit 1"
+			val = args.customer
+		elif args.supplier:
+			query += "and supplier=%s order by is_primary_contact desc limit 1"
+			val = args.supplier
+		else:
+			query += "and name=%s"
+			val = self.doc.fields.get(contact_field)
+			
+		contact_result = webnotes.conn.sql(query, (val,), as_dict=1)
+		
+		if contact_result:
+			contact_doc = Document("Contact", fielddata=contact_result[0])
+			
+			self.doc.fields[contact_field.fieldname] = contact_doc.name
+			
+			self.doc.contact_display = " ".join(filter(None, 
+				[contact_doc.first_name, contact_doc.last_name]))
+			
+			self.doc.contact_person = contact_doc.name
+			self.doc.contact_email = contact_doc.email_id
+			self.doc.contact_mobile = contact_doc.mobile_no
+			self.doc.contact_designation = contact_doc.designation
+			self.doc.contact_department = contact_doc.department
+			
+			# send it on client side - can be used for further processing
+			webnotes.response.setdefault("docs", []).append(contact_doc)
 			
 	def calculate_taxes_and_totals(self):
 		"""
@@ -450,4 +513,3 @@ class TransactionController(DocListController):
 		self.item_precision = doctypelist.get_precision_map(parentfield=self.fname)
 		self.tax_precision = \
 			doctypelist.get_precision_map(parentfield=self.taxes_and_charges)
-		

@@ -29,6 +29,28 @@ class BuyingController(TransactionController):
 		super(BuyingController, self).validate()
 		self.set_item_values()
 
+	def get_item_details(self, args):
+		args = self.process_args(args)
+		item = get_obj("Item", args.item_code, with_children=1)
+		ret = super(BuyingController, self).get_item_details(args, item)
+		
+		ret.min_order_qty = flt(item.doc.min_order_qty, self.precision.item.min_order_qty)
+		
+		if ret.warehouse:
+			ret.projected_qty = stock.get_projected_qty(args.item_code,
+				ret.warehouse)["projected_qty"]
+		
+		if self.doc.posting_date and item.doc.lead_time_days:
+			ret.schedule_date = add_days(self.doc.posting_date, item.doc.lead_time_days)
+			ret.leat_time_date = ret.schedule_date
+			
+		# TODO last purchase details for PO and Pur Receipt
+		
+		# TODO supplier part no for PO
+		
+		return ret
+		
+
 	def validate_stock_item(self, item, child):
 		super(BuyingController, self).validate_stock_item(item, child)
 		
@@ -138,3 +160,15 @@ class BuyingController(TransactionController):
 			if not self.doc.taxes_and_charges_master: return
 			
 			self.append_taxes()
+			
+	def get_supplier_details(self, args):
+		self.get_address(args)
+		self.get_contact(args)
+	
+		res = webnotes.conn.sql("""select supplier_name, default_currency
+			from `tabSupplier` where name=%s and docstatus < 2""",
+			(args.get("supplier"),))
+	
+		if res:
+			self.doc.supplier_name = res[0][0]
+			self.doc.currency = res[0][1]

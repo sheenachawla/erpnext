@@ -180,8 +180,7 @@ class DocType(BuyingController):
 	# 						"uom": item.uom,
 	# 					}, raise_exception=1)
 	# 					
-	# def validate_prevdoclist(self):
-	# 	from webnotes.model.mapper import validate_prev_doclist
-	# 	validate_prev_doclist("Sales Order", "Purchase Request", self.doclist)
-	# 
+	def validate_prevdoclist(self):
+		from webnotes.model.mapper import validate_prev_doclist
+		validate_prev_doclist("Purchase Request", "Supplier Quotation", self.doclist)
 	

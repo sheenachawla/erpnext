@@ -28,3 +28,8 @@ def validate_end_of_life(item_code, end_of_life=None):
 	if end_of_life and getdate(end_of_life) > now_datetime().date():
 		raise Exception, _("Item: %(item_code)s reached its end of life on %(date)s") % \
 			{"item_code": item_code, "date": formatdate(end_of_life)}
+			
+@webnotes.whitelist()
+def get_actual_qty(item_code=None, warehouse=None, posting_date=None, posting_time=None):
+	# to-so
+	return
