@@ -7,6 +7,9 @@ def execute():
 	sync_all()
 	webnotes.conn.begin()
 	
+	# TODO
+	# shift item_wise_tax_detail to tax_breakup in item table
+	
 	rename_fields()
 	rename_prevdoc_fields()
 	remove_fields()
@@ -102,7 +105,7 @@ def delete_docs():
 		for d in docs:
 			print "delete_doc(%s, %s)" % (dt, d)
 			webnotes.model.delete_doc(dt, d)
-	
+			
 rename_map = {
 	"Purchase Taxes and Charges Master": [
 		["purchase_tax_details", "taxes_and_charges"],
@@ -181,6 +184,7 @@ rename_map = {
 		["purchase_ref_rate", "ref_rate"],
 		["po_detail", "purchase_order_item"],
 		["pr_detail", "purchase_receipt_item"],
+		["item_tax_amount", "valuation_tax_amount"],
 	],
 	"Purchase Receipt": [
 		["purchase_receipt_details", "purchase_receipt_items"],
@@ -204,6 +208,7 @@ rename_map = {
 		["purchase_rate", "rate"],
 		["project_name", "project"],
 		["qa_no", "quality_inspection"],
+		["item_tax_amount", "valuation_tax_amount"],
 	],	
 	"Opportunity": [
 		["enquiry_details", "opportunity_items"],
@@ -325,8 +330,9 @@ rename_map = {
 	
 remove_map = {
 	"Purchase Taxes and Charges": ["add_deduct_tax", "total_tax_amount",
-		"total_amount"],
-	"Sales Taxes and Charges": ["total_tax_amount", "total_amount"],
+		"total_amount", "item_wise_tax_detail"],
+	"Sales Taxes and Charges": ["total_tax_amount", "total_amount",
+		"item_wise_tax_detail"],
 	"Supplier Quotation": ["other_charges_added", "other_charges_deducted",
 		"other_charges_added_import", "other_charges_deducted_import"],
 	"Supplier Quotation Item": ["prevdoc_doctype"],

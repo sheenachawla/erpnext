@@ -25,11 +25,12 @@ from pprint import pprint
 
 sql = webnotes.conn.sql
 	
-from controllers.accounts_controller import AccountsController
+from controllers.buying_controller import BuyingController
 
-class DocType(AccountsController):
-	def __init__(self,d,dl):
-		self.doc, self.doclist = d, dl
+class DocType(BuyingController):
+	def setup(self):
+		self.item_table_field = "purchase_invoice_items"
+		self.transaction_type = "Purchase"
 		
 		# temp fields for identification
 		self.tname = 'Purchase Invoice Item'
@@ -197,7 +198,9 @@ class DocType(AccountsController):
 					raise Exception
 						
 	def check_exchange_rate(self):
-		default_currency = super(DocType, self).get_company_currency(self.doc.company)		
+		import setup.utils
+		default_currency = setup.utils.get_currency(company=self.doc.company)
+		
 		if not default_currency:
 			msgprint('Message: Please enter default currency in Company Master')
 			raise Exception
@@ -358,8 +361,11 @@ class DocType(AccountsController):
 		super(DocType, self).calculate_taxes_and_totals()
 		if self.doc.docstatus == 0:
 			self.doc.outstanding_amount = flt(self.doc.grand_total - 
-			 	flt(self.doc.total_advance, self.main_precision["total_advance"]),
-				self.main_precision["outstanding_amount"])
+			 	flt(self.doc.total_advance, self.precision.main["total_advance"]),
+				self.precision.main["outstanding_amount"])
+				
+	def validate_prevdoclist(self):
+		pass
 	
 	def validate(self):
 		self.po_required()
@@ -374,8 +380,8 @@ class DocType(AccountsController):
 		self.check_for_acc_head_of_supplier()
 		self.check_for_stopped_status()
 		
-		self.calculate_taxes_and_totals()
-
+		super(DocType, self).validate()
+	
 		self.po_list, self.pr_list = [], []
 		for d in getlist(self.doclist, 'purchase_invoice_items'):
 			self.validate_supplier(d)
@@ -384,15 +390,15 @@ class DocType(AccountsController):
 				self.po_list.append(d.purchase_order)
 			if not d.purhcase_receipt in self.pr_list:
 				self.pr_list.append(d.purchase_receipt)
-
+	
 		if not self.doc.is_opening:
 			self.doc.is_opening = 'No'
-
+	
 		self.set_aging_date()
-
+	
 		#set against account for credit to
 		self.set_against_expense_account()
-
+	
 		#FY validation
 		get_obj('Sales Common').validate_fiscal_year(self.doc.fiscal_year,self.doc.posting_date,'Posting Date')
 		
@@ -402,7 +408,8 @@ class DocType(AccountsController):
 		pc_obj = get_obj(dt='Purchase Common')
 		
 		 # get total in words
-		dcc = super(DocType, self).get_company_currency(self.doc.company)
+		import setup.utils
+		dcc = setup.utils.get_currency(company=self.doc.company)
 		self.doc.grand_total_in_words = pc_obj.get_total_in_words(dcc, self.doc.grand_total)
 		self.doc.grand_total_in_words_print = pc_obj.get_total_in_words(self.doc.currency, self.doc.grand_total_print)
 

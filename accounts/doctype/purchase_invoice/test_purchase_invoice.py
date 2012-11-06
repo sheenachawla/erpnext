@@ -137,7 +137,6 @@ class TestPurchaseReceipt(unittest.TestCase):
 		load_data()
 		webnotes.conn.set_value("Global Defaults", None, "automatic_inventory_accounting", 1)
 
-
 	def test_purchase_invoice(self):
 		from webnotes.model.doclist import DocList
 		controller = webnotes.insert(DocList(purchase_invoice_doclist))
@@ -171,7 +170,7 @@ class TestPurchaseReceipt(unittest.TestCase):
 		]
 		for i, item in enumerate(dl.get({"parentfield": "purchase_invoice_items"})):
 			self.assertEqual(item.item_code, expected_values[i][0])
-			self.assertEqual(item.item_tax_amount, expected_values[i][1])
+			self.assertEqual(item.valuation_tax_amount, expected_values[i][1])
 			
 	def test_purchase_invoice_having_zero_amount_items(self):
 		from webnotes.model.doclist import DocList
@@ -215,7 +214,7 @@ class TestPurchaseReceipt(unittest.TestCase):
 		]
 		for i, item in enumerate(dl.get({"parentfield": "purchase_invoice_items"})):
 			self.assertEqual(item.item_code, expected_values[i][0])
-			self.assertEqual(item.item_tax_amount, expected_values[i][1])
+			self.assertEqual(item.valuation_tax_amount, expected_values[i][1])
 		
 	def test_gl_entries(self):
 		from webnotes.model.doclist import DocList

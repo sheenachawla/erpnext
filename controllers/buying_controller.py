@@ -22,16 +22,16 @@ from webnotes.utils import add_days, getdate, flt, cint
 from webnotes.model.controller import get_obj
 
 import stock
-from controllers.transaction_controller import TransactionController
+from controllers.accounts_controller import AccountsController
 
-class BuyingController(TransactionController):
+class BuyingController(AccountsController):
 	def validate(self):
 		super(BuyingController, self).validate()
 		self.set_item_values()
 
-	def get_item_details(self, args):
-		args = self.process_args(args)
-		item = get_obj("Item", args.item_code, with_children=1)
+	def get_item_details(self, args, item=None):
+		args, item = self.process_args(args, item)
+		
 		ret = super(BuyingController, self).get_item_details(args, item)
 		
 		ret.min_order_qty = flt(item.doc.min_order_qty, self.precision.item.min_order_qty)
@@ -172,3 +172,19 @@ class BuyingController(TransactionController):
 		if res:
 			self.doc.supplier_name = res[0][0]
 			self.doc.currency = res[0][1]
+			
+	def set_valuation_tax_amount(self, item, tax, current_tax_amount):
+		if tax.category in ["Valuation", "Valuation and Total"] and \
+				item.item_code in self.stock_items:
+			item.valuation_tax_amount += flt(current_tax_amount,
+				self.precision.item.valuation_tax_amount)
+
+	@property
+	def stock_items(self):
+		if not hasattr(self, "_stock_items"):
+			item_codes = list(set(item.item_code for item in self.item_doclist))
+			self._stock_items = [r[0] for r in webnotes.conn.sql("""select name
+				from `tabItem` where name in (%s) and is_stock_item='Yes'""" % \
+				(", ".join((["%s"]*len(item_codes))),), item_codes)]
+
+		return self._stock_items

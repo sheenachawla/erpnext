@@ -156,7 +156,7 @@ class DocType:
 					tax_amount = self.cal_tax(ocd, prd, rate, obj.doc.net_total, oc)					
 					total, prev_total, item_tax = self.add_deduct_taxes(ocd, oc, tax_amount, total, prev_total, item_tax)
 
-				prd.item_tax_amount = flt(item_tax)
+				prd.valuation_tax_amount = flt(item_tax)
 				prd.save()
 			obj.doc.save()
 	
@@ -222,7 +222,7 @@ class DocType:
 			
 			for d in getlist(pr_obj.doclist, 'purchase_receipt_details'):
 				if flt(d.qty):
-					d.valuation_rate = (flt(d.rate) + (flt(d.rm_supp_cost)/flt(d.qty)) + (flt(d.item_tax_amount)/flt(d.qty))) / flt(d.conversion_factor)
+					d.valuation_rate = (flt(d.rate) + (flt(d.rm_supp_cost)/flt(d.qty)) + (flt(d.valuation_tax_amount)/flt(d.qty))) / flt(d.conversion_factor)
 					d.save()
 					self.update_serial_no(d.serial_no, d.valuation_rate)
 				sql("update `tabStock Ledger Entry` set incoming_rate = '%s' where voucher_detail_no = '%s'"%(flt(d.valuation_rate), d.name))

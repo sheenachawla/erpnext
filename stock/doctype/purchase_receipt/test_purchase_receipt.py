@@ -95,7 +95,7 @@ base_purchase_receipt = [
 		"doctype": "Purchase Receipt Item", 
 		"item_code": "Home Desktop 100",
 		"qty": 10, "received_qty": 10, "rejected_qty": 0, "rate": 50, 
-		"amount": 500, "warehouse": "Default Warehouse", "item_tax_amount": 250,
+		"amount": 500, "warehouse": "Default Warehouse", "valuation_tax_amount": 250,
 		"parentfield": "purchase_receipt_details",
 		"conversion_factor": 1, "uom": "Nos", "stock_uom": "Nos"
 	},
