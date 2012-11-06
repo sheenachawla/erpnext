@@ -39,7 +39,8 @@ erpnext.desktop.add_classes = function() {
 }
 
 erpnext.desktop.render = function() {
-	var add_icon = function(desktop_item) {		
+	var add_icon = function(desktop_item) {
+		desktop_item._label = wn._(desktop_item.label);
 		$('#icon-grid').append(repl('\
 			<div id="%(case_class)s" class="case-wrapper" data-name="%(name)s">\
 				<a href="#%(route)s">\
@@ -47,8 +48,8 @@ erpnext.desktop.render = function() {
 						<div class="sprite-image sprite-%(style)s"></div>\
 					</div>\
 				</a>\
-				<div class="case-label">%(label)s</div>\
-			</div>', desktop_item));		
+				<div class="case-label">%(_label)s</div>\
+			</div>', desktop_item));	
 	}
 	
 	// setup

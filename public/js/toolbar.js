@@ -22,7 +22,8 @@ erpnext.toolbar.setup = function() {
 	erpnext.toolbar.add_modules();
 	
 	// profile
-	$('#toolbar-user').append('<li><a href="#!profile-settings">Profile Settings</a></li>');
+	$('#toolbar-user').append('<li><a href="#!profile-settings">'+
+		wn._("My Settings") +'</a></li>');
 
 	$('.navbar .pull-right').append('\
 		<li><a href="#!messages" title="Unread Messages"><span class="navbar-new-comments"></span></a></li>');
@@ -30,18 +31,18 @@ erpnext.toolbar.setup = function() {
 	// help
 	$('.navbar .pull-right').prepend('<li class="dropdown">\
 		<a class="dropdown-toggle" data-toggle="dropdown" href="#" \
-			onclick="return false;">Help<b class="caret"></b></a>\
+			onclick="return false;">' +  wn._("Help") + '<b class="caret"></b></a>\
 		<ul class="dropdown-menu" id="toolbar-help">\
 		</ul></li>')
 
-	$('#toolbar-help').append('<li><a href="https://erpnext.com/manual" target="_blank">\
-		Documentation</a></li>')
+	$('#toolbar-help').append('<li><a href="https://erpnext.com/manual" target="_blank">'+
+		wn._('Documentation') + '</a></li>')
 
-	$('#toolbar-help').append('<li><a href="http://groups.google.com/group/erpnext-user-forum" target="_blank">\
-		Forum</a></li>')
+	$('#toolbar-help').append('<li><a href="http://groups.google.com/group/erpnext-user-forum" target="_blank">'
+		+ wn._('Forum') + '</a></li>')
 
-	$('#toolbar-help').append('<li><a href="http://www.providesupport.com?messenger=iwebnotes" target="_blank">\
-		Live Chat (Office Hours)</a></li>');
+	$('#toolbar-help').append('<li><a href="http://www.providesupport.com?messenger=iwebnotes" target="_blank">'
+		+ wn._("Live Chat (Office Hours)") +'</a></li>');
 		
 	erpnext.toolbar.set_new_comments();
 }
@@ -49,25 +50,25 @@ erpnext.toolbar.setup = function() {
 erpnext.toolbar.add_modules = function() {
 	$('<li class="dropdown">\
 		<a class="dropdown-toggle" data-toggle="dropdown" href="#"\
-			onclick="return false;">Modules<b class="caret"></b></a>\
+			onclick="return false;">' + wn._("Modules") + '<b class="caret"></b></a>\
 		<ul class="dropdown-menu modules">\
 		</ul>\
 		</li>').prependTo('.navbar .nav:first');
 	
 	// add to dropdown
 	$.each(wn.user.get_desktop_items(), function(i, d) {
+		d._label = wn._(d.label)
 		if(d.route != 'Setup') {
 			$('.navbar .modules').append(repl('<li><a href="#%(route)s" \
-				data-module="%(name)s">%(label)s</a></li>', d));			
+				data-module="%(name)s">%(_label)s</a></li>', d));			
 		}
 	})
 	
 	// setup for system manager
 	if(user_roles.indexOf("System Manager")!=-1) {
 		$('.navbar .modules').append('<li class="divider"></li>\
-		<li><a href="#!Setup" data-module="Setup">Setup</a></li>');
+		<li><a href="#!Setup" data-module="Setup">'+ wn._("Setup") +'</a></li>');
 	}
-	
 }
 
 erpnext.toolbar.set_new_comments = function(new_comments) {

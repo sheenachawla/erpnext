@@ -1,0 +1,5 @@
+[
+ "Unsubscribe", 
+ "A custom page is a simple page with the layout - headline, main section, side sectionEditing:- Editing is in [markdown format](http://daringfireball.net/projects/markdown/syntax)- You can also add images and embed html codeAccessing the page:- The page can be accessed as #![page-name] after the main urlIdeal for pages like FAQ, Terms and Conditions, Help etc.", 
+ "Set your background color, font and image (tiled)"
+]
