@@ -1,0 +1,11 @@
+[
+ "Package Items", 
+ "Sales BOM Items", 
+ "List items that form the package.", 
+ "The Item that represents the Package. This Item must have \"Is Stock Item\" as \"No\" and \"Is Sales Item\" as \"Yes\"", 
+ "Sales BOM", 
+ "Sales BOM Item", 
+ "Group of items sold as a unit, but stocked separately.", 
+ "Parent Item", 
+ "Stock"
+]

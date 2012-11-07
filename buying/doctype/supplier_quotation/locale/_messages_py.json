@@ -1,0 +1,4 @@
+[
+ "Row # %(idx)s [Item: %(item_code)s]: \t# \t\t\t\t%(schedule_date)s cannot be before %(posting_date)s", 
+ "Row # %(idx)s [Item: %(item_code)s]:\t# \t\t\t\t\tWarehouse mandatory for a stock item."
+]

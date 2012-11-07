@@ -1,0 +1,3 @@
+[
+ "Item: %(item_code)s reached its end of life on %(date)s"
+]

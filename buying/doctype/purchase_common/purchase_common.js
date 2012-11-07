@@ -519,7 +519,7 @@ cur_frm.cscript.calc_other_charges = function(doc , tname , fname , other_fname)
 				}
 			}	
 		}
-		set_multiple(tname, cl[i].name, {'item_tax_amount': item_tax }, fname);
+		set_multiple(tname, cl[i].name, {'valuation_tax_amount': item_tax }, fname);
 	}
 	for(var t=0;t<tax.length;t++){
 		tax[t].tax_amount = roundNumber(tax[t].tax_amount, 2);

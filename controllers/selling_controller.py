@@ -94,9 +94,8 @@ class SellingController(TransactionController):
 			if not self.doc.taxes_and_charges_master: return
 			self.append_taxes()
 	
-	def get_item_details(self, args):
-		args = self.process_args(args)
-		item = get_obj("Item", args.item_code, with_children=1)
+	def get_item_details(self, args, item=None):
+		args, item = self.process_args(args, item)
 		
 		ret = super(SellingController, self).get_item_details(args, item)
 

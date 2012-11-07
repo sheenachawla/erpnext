@@ -1,0 +1,10 @@
+[
+ "resumed", 
+ "Please specify: %(label)s", 
+ "Row # %(idx)s, Item %(item_code)s: \\\t\t\t\tPlease specify Warehouse for Stock Item", 
+ "Discount on row no: %s is greater than \t\t\t\t\tmax discount (%s) allowed for Item: %s", 
+ "stopped", 
+ "Default currency not mentioned in Company Master", 
+ "Please enter appropriate Exchange Rate for %s \t\t\t\t\tcurrency (%s) to base currency (%s)", 
+ "Row # %(idx)s, Item %(item_code)s: \\\t\t\t\tNot a Purchase / Sub-contracted Item"
+]

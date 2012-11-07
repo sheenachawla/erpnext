@@ -1,0 +1,22 @@
+[
+ "Territory Targets", 
+ "Trash Reason", 
+ "Selling", 
+ "For reference", 
+ "Only leaf nodes are allowed in transaction", 
+ "No", 
+ "Select Budget Distribution to unevenly distribute targets across months.", 
+ "Has Child Node", 
+ "Parent Territory", 
+ "Target Distribution", 
+ "Territory Name", 
+ "old_parent", 
+ "lft", 
+ "Target Details", 
+ "Territory Manager", 
+ "rgt", 
+ "Yes", 
+ "Territory", 
+ "Set Item Group-wise budgets on this Territory. You can also include seasonality by setting the Distribution.", 
+ "You can create **Territories** If your organization operates in multiple regions (could be countries, states or cities). Once you group **Customers** by **Territories**, you can set annual targets for each **Item Group** and get reports that will show your actual performance in the territory v/s what you had planned."
+]

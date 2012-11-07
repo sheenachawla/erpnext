@@ -1,0 +1,23 @@
+[
+ "Voucher No", 
+ "Account", 
+ "Amount <=", 
+ "Reconcile", 
+ "Pull Payment Entries", 
+ "Pending Amt To Reconcile", 
+ "<div class = 'field_description'>Filter payment entries based on amount:</div>", 
+ "Voucher Type", 
+ "<div class = 'field_description'>Filter payment entries based on date:</div>", 
+ "Journal Voucher", 
+ "Payment to Invoice Matching Tool", 
+ "Reconcile HTML", 
+ "To Date", 
+ "Amount >=", 
+ "Sales Invoice", 
+ "From Date", 
+ "Payment Entries", 
+ "Accounts", 
+ "Purchase Invoice", 
+ "Total Amount", 
+ "Match open invoices with payments."
+]

@@ -1,0 +1,21 @@
+[
+ "Analyze sales trends.", 
+ "Maintain multiple selling rates for the same **Item** using **Price Lists**. You can upload / edit multiple prices by downloading and uploading the template.", 
+ "Market segmentation. e.g. High-income, low-income.", 
+ "Customer Addresses And Contacts", 
+ "Type of industry. e.g. Manufacturing, Retail", 
+ "Confirmed order from the Customer for sales.", 
+ "A **Sales Partner** is a third party distributor / dealer / commission agent / affiliate / reseller who sells the companies products for a commission. This is useful if you make the end sale to the **Customer**, involving your **Sales Partner**.If you sell to your **Sales Partner** who in-turn sells it to the **Customer**, then you must make a **Customer** instead.", 
+ "Chart of Sales", 
+ "A contact who may lead to business.", 
+ "Specific opportunity to do business with a Lead or Customer.", 
+ "Member of sales for whom targets are set.", 
+ "Reason for losing the deal. e.g. pricing, features", 
+ "Buyer of goods or services from the organization.", 
+ "Proposal with pricing sent to the Customer.", 
+ "View / Edit Item Groups, Customer Groups, Territories and Sales Persons", 
+ "All Sales Transactions can be tagged against multiple **Sales Persons** so that you can set and monitor targets.", 
+ "Sales Analytics", 
+ "Salse campaign. e.g. Promotion, Advertisement", 
+ "You can create **Territories** If your organization operates in multiple regions (could be countries, states or cities). Once you group **Customers** by **Territories**, you can set annual targets for each **Item Group** and get reports that will show your actual performance in the territory v/s what you had planned."
+]

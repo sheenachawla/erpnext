@@ -17,15 +17,16 @@
 from __future__ import unicode_literals
 
 import webnotes
-from webnotes.utils import flt, cstr, cint, round_doc
+from webnotes.utils import flt, cstr, cint
 import webnotes.model.doctype
 from webnotes.model.controller import get_obj
 from webnotes.model.utils import getlist
 from webnotes.model.doc import Document
-from utilities.transaction_base import TransactionBase
+
 import json
 
-class AccountsController(TransactionBase):
+from controllers.transaction_controller import TransactionController
+class AccountsController(TransactionController):
 	def make_gl_entries(self, cancel=False, adv_adj=False, mapper=None,
 			merge_entries=True,	update_outstanding='Yes', gl_map=None):
 		"""make gl entries based on jv, invoice or stock valuation"""

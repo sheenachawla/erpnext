@@ -2,9 +2,9 @@
  {
   "owner": "Administrator", 
   "docstatus": 0, 
-  "creation": "2012-10-26 16:54:23", 
+  "creation": "2012-11-02 13:35:42", 
   "modified_by": "Administrator", 
-  "modified": "2012-10-29 13:43:35"
+  "modified": "2012-11-06 19:43:33"
  }, 
  {
   "istable": 1, 
@@ -364,6 +364,18 @@
   "fieldtype": "Small Text", 
   "hidden": 1, 
   "permlevel": 1
+ }, 
+ {
+  "print_hide": 1, 
+  "description": "Breakup of tax amount applied on this item", 
+  "no_copy": 1, 
+  "doctype": "DocField", 
+  "label": "Tax Breakup", 
+  "fieldname": "tax_breakup", 
+  "fieldtype": "Small Text", 
+  "hidden": 1, 
+  "permlevel": 1, 
+  "report_hide": 1
  }, 
  {
   "print_hide": 1, 
