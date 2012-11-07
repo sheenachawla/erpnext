@@ -188,6 +188,35 @@ class TransactionController(DocListController):
 		args = DictObj(args)
 		return args 
 		
+	def get_barcode_details(self, args):
+		item = self.get_item_code(args["barcode"])
+		ret = args.update({'item_code': item})
+		if item:
+			ret = self.get_item_details(ret)
+			
+		return ret
+		
+	def get_item_code(self, barcode):
+		item = webnotes.conn.sql("""select name, end_of_life, is_sales_item, is_service_item 
+			from `tabItem` where barcode = %s""", barcode, as_dict=1)
+			
+		if not item:
+			msgprint(_("No item found for this barcode") + ": " + barcode + ". " + 
+				_("May be barcode not updated in item master. Please check"))
+
+		elif item[0]['end_of_life'] and getdate(cstr(item[0]['end_of_life'])) < nowdate():
+			msgprint(_("Item") + ": " + item[0]['name'] + _(" has been expired.") +  
+				_("Please check 'End of Life' field in item master"))
+
+		elif item[0]['is_sales_item'] == 'No' and item[0]['is_service_item'] == 'No':
+			msgprint(_("Item") + ": "+ item[0]['name'] +_(" is not a sales or service item"))
+
+		elif len(item) > 1:
+			msgprint(_("""There are multiple item for this barcode. 
+				Please select item code manually"""))
+		else:
+			return item[0]["name"]
+	
 	def get_uom_details(self, args=None):
 		"""get last purchase rate based on conversion factor"""
 		# QUESTION why is this function called in purchase request?

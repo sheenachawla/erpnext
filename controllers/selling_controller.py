@@ -159,3 +159,11 @@ class SellingController(TransactionController):
 			'total_commission': (commission_rate * 
 				flt(self.doc.net_total, self.precision.main.net_total)) / 100.0
 		}
+	def get_price_list_currency(self, args):
+		""" Get all currencies in which price list is maintained"""
+		plc = webnotes.conn.sql("""select distinct ref_currency from `tabItem Price` 
+			where price_list_name = %s""", args.get("price_list"))
+		plc = [d[0] for d in plc]
+		import setup
+		default_currency = setup.get_currency(args.get("company"))
+		return plc, default_currency

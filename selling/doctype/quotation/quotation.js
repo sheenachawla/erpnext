@@ -26,8 +26,6 @@ erpnext.selling.Quotation = erpnext.Selling.extend({
 		this._super();
 		this.add_buttons();
 		this.toggle_fields();
-		
-		if (!this.is_onload) this.hide_price_list_currency(); 
 		if (!doc.__islocal) this.render_communication_list();
 	},
 	validate: function() {

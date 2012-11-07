@@ -31,35 +31,13 @@ wn.require('app/setup/doctype/notification_control/notification_control.js');
 // ONLOAD
 // ================================================================================================
 cur_frm.cscript.onload = function(doc, cdt, cdn) {
-	if(!doc.status) set_multiple(cdt,cdn,{status:'Draft'});
-	if(!doc.posting_date) set_multiple(cdt,cdn,{posting_date:get_today()});
-	if(!doc.price_list_currency) set_multiple(cdt, cdn, {price_list_currency: doc.currency, plc_exchange_rate: 1});
-	// load default charges
-	
-	if(doc.__islocal && !doc.customer){
-		hide_field(['customer_address','contact_person','customer_name','address_display','contact_display','contact_mobile','contact_email','territory','customer_group']);
+	if(doc.__islocal && !doc.customer){			
+		hide_field(['customer_address','contact_person','customer_name', 'address_display',	
+			'contact_display','contact_mobile','contact_email',	'territory',	'customer_group']);
 	}
 }
 
-cur_frm.cscript.onload_post_render = function(doc, cdt, cdn) {
-	var callback = function(doc, cdt, cdn) {
-		if(doc.__islocal) {
-			// defined in sales_common.js
-			cur_frm.cscript.update_item_details(doc, cdt, cdn);
-		}
-	}
-	
-	cur_frm.cscript.hide_price_list_currency(doc, cdt, cdn, callback); 
-
-}
-
-
-cur_frm.cscript.refresh = function(doc, cdt, cdn) {
-	cur_frm.clear_custom_buttons();
-	erpnext.hide_naming_series();
-
-	if (!cur_frm.cscript.is_onload) cur_frm.cscript.hide_price_list_currency(doc, cdt, cdn); 
-	
+cur_frm.cscript.refresh = function(doc, cdt, cdn) {	
 	if(doc.customer) $(cur_frm.fields_dict.contact_info.row.wrapper).toggle(true);
 	else $(cur_frm.fields_dict.contact_info.row.wrapper).toggle(false);
 
@@ -295,9 +273,6 @@ cur_frm.cscript['Make Delivery Note'] = function() {
 	}
 }
 
-
-// MAKE SALES INVOICE
-// ================================================================================================
 cur_frm.cscript['Make Sales Invoice'] = function() {
 	var doc = cur_frm.doc;
 
@@ -314,9 +289,6 @@ cur_frm.cscript['Make Sales Invoice'] = function() {
 	);
 }
 
-
-// STOP SALES ORDER
-// ==================================================================================================
 cur_frm.cscript['Stop Sales Order'] = function() {
 	var doc = cur_frm.doc;
 
@@ -328,7 +300,6 @@ cur_frm.cscript['Stop Sales Order'] = function() {
 		});
 	}
 }
-
 
 cur_frm.cscript['Unstop Sales Order'] = function() {
 	var doc = cur_frm.doc;
