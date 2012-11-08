@@ -1,0 +1,22 @@
+[
+ {
+  "owner": "Administrator", 
+  "docstatus": 0, 
+  "creation": "2012-11-08 11:40:42", 
+  "modified_by": "Administrator", 
+  "modified": "2012-11-08 11:40:42"
+ }, 
+ {
+  "description": "Incoming Support Queries", 
+  "title": "Support Mailbox", 
+  "doctype": "Page", 
+  "module": "Support", 
+  "standard": "Yes", 
+  "page_name": "support-mailbox", 
+  "name": "__common__"
+ }, 
+ {
+  "name": "support-mailbox", 
+  "doctype": "Page"
+ }
+]

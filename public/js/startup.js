@@ -120,7 +120,7 @@ erpnext.update_messages = function(reset) {
 		}
 
 		wn.call({
-			method: 'startup.startup.get_global_status_messages',
+			method: 'home.page.desktop.desktop.get_global_status_messages',
 			callback: set_messages
 		});
 	

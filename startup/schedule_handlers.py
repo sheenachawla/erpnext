@@ -20,18 +20,15 @@ from __future__ import unicode_literals
 import webnotes
 from webnotes.utils import scheduler
 	
-def execute_all():
-	"""
-		* get support email
-		* recurring invoice
-	"""
-	# pull emails
-	from support.doctype.support_ticket import get_support_mails
-	run_fn(get_support_mails)
-	
+def execute_all():	
 	# bulk email
 	from webnotes.utils.email_lib.bulk import flush
 	run_fn(flush)
+	
+def execute_every_ten_minutes():
+	# pull emails
+	from utilities.doctype.communication.import_emails import import_emails
+	run_fn(import_emails)
 	
 def execute_daily():
 	# email digest

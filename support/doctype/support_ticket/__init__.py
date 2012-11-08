@@ -45,7 +45,8 @@ class SupportMailbox(POP3Mailbox):
 			returns true if there are active sessions
 		"""
 		self.auto_close_tickets()
-		return webnotes.conn.sql("select user from tabSessions where time_to_sec(timediff(now(), lastupdate)) < 1800")
+		return webnotes.conn.sql("select user from tabSessions \
+			where time_to_sec(timediff(now(), lastupdate)) < 1800")
 	
 	def process_message(self, mail):
 		"""
@@ -53,25 +54,12 @@ class SupportMailbox(POP3Mailbox):
 		"""
 		from home import update_feed
 
-		content, content_type = '[Blank Email]', 'text/plain'
-		if mail.text_content:
-			content, content_type = mail.text_content, 'text/plain'
-		else:
-			content, content_type = mail.html_content, 'text/html'
-			
+		content, content_type = mail.get_content_and_type()
 		thread_list = mail.get_thread_id()
 
-
-		email_id = mail.mail['From']
-		if "<" in mail.mail['From']:
-			import re
-			re_result = re.findall('(?<=\<)(\S+)(?=\>)', mail.mail['From'])
-			if re_result and re_result[0]: email_id = re_result[0]
+		from email.utils import parseaddr, formataddr
+		real_name, email_id = parseaddr(mail.mail["From"])
 		
-		from webnotes.utils import decode_email_header
-		
-		full_email_id = decode_email_header(mail.mail['From'])
-
 		for thread_id in thread_list:
 			exists = webnotes.conn.sql("""\
 				SELECT name
@@ -82,7 +70,7 @@ class SupportMailbox(POP3Mailbox):
 				from webnotes.model.controller import get_obj
 				
 				st = get_obj('Support Ticket', thread_id)
-				st.make_response_record(content, full_email_id, content_type)
+				st.make_response_record(content, formataddr(real_name, email_id), content_type)
 				
 				# to update modified date
 				#webnotes.conn.set(st.doc, 'status', 'Open')
@@ -102,10 +90,8 @@ class SupportMailbox(POP3Mailbox):
 		from webnotes.model.doc import Document
 		d = Document('Support Ticket')
 		d.description = content
-		
-		d.subject = decode_email_header(mail.mail['Subject'])
-		
-		d.raised_by = full_email_id
+		d.subject = mail.mail['Subject']
+		d.raised_by = formataddr(real_name, email_id)
 		d.content_type = content_type
 		d.status = 'Open'
 		d.naming_series = opts and opts.split("\n")[0] or 'SUP'
@@ -127,26 +113,6 @@ class SupportMailbox(POP3Mailbox):
 			# extract attachments
 			self.save_attachments(d, mail.attachments)
 			webnotes.conn.begin()
-			
-
-	def save_attachments(self, doc, attachment_list=[]):
-		"""
-			Saves attachments from email
-
-			attachment_list is a list of dict containing:
-			'filename', 'content', 'content-type'
-		"""
-		from webnotes.utils.file_manager import save_file, add_file_list
-		for attachment in attachment_list:
-			webnotes.conn.begin()
-			fid = save_file(attachment['filename'], attachment['content'], 'Support')
-			status = add_file_list('Support Ticket', doc.name, attachment['filename'], fid)
-			if not status:
-				doc.description = doc.description \
-					+ "\nCould not attach: " + cstr(attachment['filename'])
-				doc.save()
-			webnotes.conn.commit()
-
 		
 	def send_auto_reply(self, d):
 		"""
