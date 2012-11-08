@@ -228,12 +228,12 @@ class TransactionBase(object):
 			ch.idx = idx
 			idx += 1
 			
-	# Get Company Specific Default Currency
-	# -------------------------------------
-	def get_company_currency(self, name):
-		ret = webnotes.conn.sql("select default_currency from tabCompany where name = '%s'" %(name))
-		dcc = ret and ret[0][0] or get_defaults()['currency']						
-		return dcc	
+	# # Get Company Specific Default Currency
+	# # -------------------------------------
+	# def get_company_currency(self, name):
+	# 	ret = webnotes.conn.sql("select default_currency from tabCompany where name = '%s'" %(name))
+	# 	dcc = ret and ret[0][0] or get_defaults()['currency']						
+	# 	return dcc	
 	
 
 	def get_formatted_message(self, args):

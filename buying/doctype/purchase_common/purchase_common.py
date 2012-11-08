@@ -743,5 +743,5 @@ class DocType(TransactionBase):
 				d.valuation_rate = (
 						flt(d.rate) + 
 						(flt(d.rm_supp_cost) / flt(d.qty)) + 
-						(flt(d.item_tax_amount)/flt(d.qty)) 
+						(flt(d.valuation_tax_amount)/flt(d.qty)) 
 					) / flt(d.conversion_factor)

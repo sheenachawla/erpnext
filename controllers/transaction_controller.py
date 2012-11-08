@@ -20,7 +20,7 @@ from __future__ import unicode_literals
 import webnotes
 import webnotes.model
 from webnotes import _, msgprint, DictObj
-from webnotes.utils import cint, formatdate, cstr, flt, add_days
+from webnotes.utils import cint, formatdate, cstr, flt, add_days, round_doc
 from webnotes.model.controller import get_obj
 from webnotes.model.doc import make_autoname, Document
 import json
@@ -45,6 +45,9 @@ class TransactionController(DocListController):
 			# a doc getting submitted should not be stopped
 			self.doc.is_stopped = 0
 			
+		if self.meta.get_field("taxes_and_charges"):
+			self.calculate_taxes_and_totals()
+			
 	def on_map(self):
 		self.set_item_values()
 		self.append_default_taxes()
@@ -65,18 +68,19 @@ class TransactionController(DocListController):
 	def on_cancel(self):
 		self.is_next_submitted()
 	
-	def load_precision_maps(self):
-		if not hasattr(self, "precision"):
-			from webnotes.model import doctype
-			doctypelist = doctype.get(self.doc.doctype)
-			self.precision = DictObj()
-			self.precision.main = doctypelist.get_precision_map()
-			self.precision.item = doctypelist.get_precision_map(parentfield = \
+	@property
+	def precision(self):
+		if not hasattr(self, "_precision"):
+			self._precision = DictObj()
+			self._precision.main = self.meta.get_precision_map()
+			self._precision.item = self.meta.get_precision_map(parentfield = \
 				self.item_table_field)
-			if doctypelist.get_field("taxes_and_charges"):
-				self.precision.tax = doctypelist.get_precision_map(parentfield = \
+			if self.meta.get_field("taxes_and_charges"):
+				self._precision.tax = self.meta.get_precision_map(parentfield = \
 					"taxes_and_charges")
-			
+					
+		return self._precision
+	
 	def stop_resume_transaction(self):
 		"""stop/resume a transaction if there is a change in is_stopped"""
 		self.doc.is_stopped = cint(self.doc.is_stopped)
@@ -84,6 +88,7 @@ class TransactionController(DocListController):
 			"is_stopped")
 		
 		if self.doc.is_stopped != cint(is_stopped_old):
+			# TODO deprecate bin
 			self.update_bin()
 
 			msgprint("%(doctype)s: %(name)s %(stopped)s." % {
@@ -94,19 +99,18 @@ class TransactionController(DocListController):
 			
 	def validate_mandatory(self):
 		if self.doc.amended_from and not self.doc.amendment_date:
-			from webnotes.model import doctype
-			msgprint(_("Please specify: %(label)s") % {"label":
-				webnotes.model.doctype.get(self.doc.doctype).get_label("amendment_date")},
-				raise_exception=1)
+			msgprint(_("Please specify") + ": %(label)s" % \
+				{"label": self.meta.get_label("amendment_date")}, raise_exception=1)
 			
 	def validate_fiscal_year(self):
 		# TODO: fiscal_year field needs to be deprecated
 		from accounts.utils import get_fiscal_year
 		if get_fiscal_year(self.doc.posting_date)[0] != self.doc.fiscal_year:
-			msgprint("""%(posting_date)s: not within Fiscal Year: %(fiscal_year)s""" % {
-				"posting_date": formatdate(self.doc.posting_date),
-				"fiscal_year": self.doc.fiscal_year
-			})
+			msgprint("%(posting_date)s: " + _("not within Fiscal Year") + \
+				": %(fiscal_year)s" % {
+					"posting_date": formatdate(self.doc.posting_date),
+					"fiscal_year": self.doc.fiscal_year
+				}, raise_exception=1)
 			
 	def validate_items(self):
 		"""
@@ -152,8 +156,8 @@ class TransactionController(DocListController):
 			parentfield=child.parentfield)
 		
 		if warehouse_field and item.is_stock_item == "Yes" and not child.warehouse:
-			msgprint(_("""Row # %(idx)s, Item %(item_code)s: \
-				Please specify Warehouse for Stock Item""") % \
+			msgprint((_("Row") + " # %(idx)s, " + _("Item") + " %(item_code)s: " + \
+				_("Please specify Warehouse for Stock Item")) % \
 				{"idx": child.idx, "item_code": item.name },
 				raise_exception=1)
 			
@@ -182,12 +186,46 @@ class TransactionController(DocListController):
 		
 		return ret
 		
-	def process_args(self, args):
+	def process_args(self, args, item=None):
 		if isinstance(args, basestring):
 			args = json.loads(args)
+
 		args = DictObj(args)
-		return args 
+
+		if not item:
+			item = get_obj("Item", args.item_code, with_children=1)
+
+		return args, item
 		
+	def get_barcode_details(self, args):
+		item = self.get_item_code(args["barcode"])
+		ret = args.update({'item_code': item})
+		if item:
+			ret = self.get_item_details(ret)
+			
+		return ret
+		
+	def get_item_code(self, barcode):
+		item = webnotes.conn.sql("""select name, end_of_life, is_sales_item, is_service_item 
+			from `tabItem` where barcode = %s""", barcode, as_dict=1)
+			
+		if not item:
+			msgprint(_("No item found for this barcode") + ": " + barcode + ". " + 
+				_("May be barcode not updated in item master. Please check"))
+
+		elif item[0]['end_of_life'] and getdate(cstr(item[0]['end_of_life'])) < nowdate():
+			msgprint(_("Item") + ": " + item[0]['name'] + _(" has been expired.") +  
+				_("Please check 'End of Life' field in item master"))
+
+		elif item[0]['is_sales_item'] == 'No' and item[0]['is_service_item'] == 'No':
+			msgprint(_("Item") + ": "+ item[0]['name'] +_(" is not a sales or service item"))
+
+		elif len(item) > 1:
+			msgprint(_("""There are multiple item for this barcode. 
+				Please select item code manually"""))
+		else:
+			return item[0]["name"]
+	
 	def get_uom_details(self, args=None):
 		"""get last purchase rate based on conversion factor"""
 		# QUESTION why is this function called in purchase request?
@@ -337,15 +375,14 @@ class TransactionController(DocListController):
 		"""
 			Calculates:
 				* amount for each item
-				* item_tax_amount for each item, 
+				* valuation_tax_amount for each item, 
 				* tax amount and tax total for each tax
 				* net total
 				* total taxes
 				* grand total
 		"""
-		self.prepare_precision_maps()
-		self.item_doclist = self.doclist.get({"parentfield": self.fname})
-		self.tax_doclist = self.doclist.get({"parentfield": self.taxes_and_charges})
+		self.item_doclist = self.doclist.get({"parentfield": self.item_table_field})
+		self.tax_doclist = self.doclist.get({"parentfield": "taxes_and_charges"})
 
 		self.calculate_net_total()
 		self.initialize_taxes()
@@ -357,25 +394,41 @@ class TransactionController(DocListController):
 		self.doc.net_total = 0
 		for item in self.item_doclist:
 			# round relevant values
-			round_doc(item, self.item_precision)
+			round_doc(item, self.precision.item)
 			
 			# calculate amount and net total
 			item.amount = flt((item.qty * item.rate) - \
-				((flt(item.discount, self.item_precision["amount"]) / 100.0) * item.rate), 
-				self.item_precision["amount"])
+				((flt(item.discount, self.precision.item.amount) / 100.0) * item.rate), 
+				self.precision.item.amount)
 			self.doc.net_total += item.amount
 			
-		self.doc.net_total = flt(self.doc.net_total, self.main_precision["net_total"])
+		self.doc.net_total = flt(self.doc.net_total, self.precision.main.net_total)
 		
 	def initialize_taxes(self):
 		for tax in self.tax_doclist:
 			# initialize totals to 0
 			tax.tax_amount = tax.total = 0
 			tax.grand_total_for_current_item = tax.tax_amount_for_current_item = 0
-			tax.item_wise_tax_detail = {}
+			
+			if tax.charge_type in ["On Previous Row Amount", "On Previous Row Total"]:
+				self.validate_on_previous_row(tax)
 			
 			# round relevant values
-			round_doc(tax, self.tax_precision)
+			round_doc(tax, self.precision.tax)
+			
+	def validate_on_previous_row(self, tax):
+		"""
+			validate if a valid row id is mentioned in case of
+			On Previous Row Amount and On Previous Row Total
+		"""
+		if not tax.row_id or tax.row_id >= tax.idx:
+			msgprint(_("Row") + " # %(idx)s [%(taxes_doctype)s]: " + \
+				_("Please specify a valid") + " %(row_id_label)s" % {
+					"idx": tax.idx,
+					"taxes_doctype": self.meta.get_options("taxes_and_charges"),
+					"row_id_label": self.meta.get_label("row_id",
+						parentfield="taxes_and_charges")
+				}, raise_exception=True)
 			
 	def calculate_taxes(self):
 		def _load_item_tax_rate(item_tax_rate):
@@ -384,51 +437,17 @@ class TransactionController(DocListController):
 
 			return json.loads(item_tax_rate)
 
-		def _get_tax_rate(item_tax_map, tax):
-			if item_tax_map.has_key(tax.account_head):
-				return flt(item_tax_map.get(tax.account_head), self.tax_precision["rate"])
-			else:
-				return tax.rate
-		
-		def _get_current_tax_amount(item, tax, item_tax_map):
-			tax_rate = _get_tax_rate(item_tax_map, tax)
-	
-			if tax.charge_type == "Actual":
-				# distribute the tax amount proportionally to each item row
-				current_tax_amount = (self.doc.net_total
-					and ((item.amount / self.doc.net_total) * tax.rate)
-					or 0)
-			elif tax.charge_type == "On Net Total":
-				current_tax_amount = (tax_rate / 100.0) * item.amount
-			elif tax.charge_type == "On Previous Row Amount":
-				current_tax_amount = (tax_rate / 100.0) * \
-					self.tax_doclist[cint(tax.row_id) - 1].tax_amount_for_current_item
-			elif tax.charge_type == "On Previous Row Total":
-				current_tax_amount = (tax_rate / 100.0) * \
-					self.tax_doclist[cint(tax.row_id) - 1].grand_total_for_current_item
-	
-			return flt(current_tax_amount, self.tax_precision["tax_amount"])
-		
-		# build is_stock_item_map
-		item_codes = list(set(item.item_code for item in self.item_doclist))
-		is_stock_item_map = dict(webnotes.conn.sql("""select name, 
-			ifnull(is_stock_item, "No") from `tabItem` where name in (%s)""" % \
-			(", ".join((["%s"]*len(item_codes))),),
-			item_codes))
-		
 		# loop through items and set item tax amount
 		for item in self.item_doclist:
 			item_tax_map = _load_item_tax_rate(item.item_tax_rate)
-			item.item_tax_amount = 0
+			item.valuation_tax_amount = 0
 			
 			for i, tax in enumerate(self.tax_doclist):
 				# tax_amount represents the amount of tax for the current step
-				current_tax_amount = _get_current_tax_amount(item, tax, item_tax_map)
+				current_tax_amount = self.get_current_tax_amount(item, tax, item_tax_map)
 				
-				if self.transaction_type == "Purchase" and \
-						tax.category in ["Valuation", "Valuation and Total"] and \
-						is_stock_item_map.get(item.item_code)=="Yes":
-					item.item_tax_amount += current_tax_amount
+				if hasattr(self, "set_valuation_tax_amount"):
+					self.set_valuation_tax_amount(item, tax, current_tax_amount)
 				
 				# case when net total is 0 but there is an actual type charge
 				# in this case add the actual amount to tax.tax_amount
@@ -436,7 +455,8 @@ class TransactionController(DocListController):
 				zero_net_total_adjustment = 0
 				if not (current_tax_amount or self.doc.net_total or tax.tax_amount) and \
 						tax.charge_type=="Actual":
-					zero_net_total_adjustment = flt(tax.rate, self.tax_precision["tax_amount"])
+					zero_net_total_adjustment = flt(tax.rate,
+						self.precision.tax.tax_amount)
 				
 				# store tax_amount for current item as it will be used for
 				# charge type = 'On Previous Row Amount'
@@ -457,25 +477,43 @@ class TransactionController(DocListController):
 				if i==0:
 					tax.grand_total_for_current_item = flt(item.amount +
 						current_tax_amount + zero_net_total_adjustment, 
-						self.tax_precision["total"])
+						self.precision.tax.total)
 				else:
 					tax.grand_total_for_current_item = \
 						flt(self.tax_doclist[i-1].grand_total_for_current_item +
 							current_tax_amount + zero_net_total_adjustment,
-							self.tax_precision["total"])
-				
-				# prepare itemwise tax detail
-				tax.item_wise_tax_detail[item.item_code] = current_tax_amount
-				
+							self.precision.tax.total)
+							
 				# in tax.total, accumulate grand total of each item
 				tax.total += tax.grand_total_for_current_item
+	
+				# TODO store tax_breakup for each item
+			
+	def get_current_tax_amount(self, item, tax, item_tax_map):
+		def _get_tax_rate(tax, item_tax_map):
+			if item_tax_map.has_key(tax.account_head):
+				return flt(item_tax_map.get(tax.account_head), self.precision.tax.rate)
+			else:
+				return tax.rate
 		
-		# QUESTION: is this necessary?
-		# store itemwise tax details as a json
-		for tax in self.tax_doclist:
-			tax.item_wise_tax_detail = json.dumps(tax.item_wise_tax_detail)
-			# print tax.item_wise_tax_detail
-				
+		tax_rate = _get_tax_rate(tax, item_tax_map)
+
+		if tax.charge_type == "Actual":
+			# distribute the tax amount proportionally to each item row
+			current_tax_amount = (self.doc.net_total
+				and ((item.amount / self.doc.net_total) * tax.rate)
+				or 0)
+		elif tax.charge_type == "On Net Total":
+			current_tax_amount = (tax_rate / 100.0) * item.amount
+		elif tax.charge_type == "On Previous Row Amount":
+			current_tax_amount = (tax_rate / 100.0) * \
+				self.tax_doclist[cint(tax.row_id) - 1].tax_amount_for_current_item
+		elif tax.charge_type == "On Previous Row Total":
+			current_tax_amount = (tax_rate / 100.0) * \
+				self.tax_doclist[cint(tax.row_id) - 1].grand_total_for_current_item
+
+		return flt(current_tax_amount, self.precision.tax["tax_amount"])
+		
 	def calculate_totals(self):
 		if self.tax_doclist:
 			self.doc.grand_total = self.tax_doclist[-1].total
@@ -483,11 +521,11 @@ class TransactionController(DocListController):
 			self.doc.grand_total = self.doc.net_total
 		
 		self.doc.grand_total = flt(self.doc.grand_total,
-			self.main_precision["grand_total"])
+			self.precision.main["grand_total"])
 		
-		self.doc.fields[self.taxes_and_charges_total] = \
+		self.doc.fields.taxes_and_charges_total = \
 			flt(self.doc.grand_total - self.doc.net_total,
-			self.main_precision[self.taxes_and_charges_total])
+			self.precision.main.taxes_and_charges_total)
 		
 		self.set_amount_in_words()
 		
@@ -506,10 +544,3 @@ class TransactionController(DocListController):
 			money_in_words(self.doc.grand_total_print, default_currency)
 		self.doc.rounded_total_in_words_print = \
 			money_in_words(self.doc.rounded_total_print, default_currency)
-			
-	def prepare_precision_maps(self):
-		doctypelist = webnotes.model.doctype.get(self.doc.doctype)
-		self.main_precision = doctypelist.get_precision_map()
-		self.item_precision = doctypelist.get_precision_map(parentfield=self.fname)
-		self.tax_precision = \
-			doctypelist.get_precision_map(parentfield=self.taxes_and_charges)

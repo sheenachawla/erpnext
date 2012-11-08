@@ -94,9 +94,8 @@ class SellingController(TransactionController):
 			if not self.doc.taxes_and_charges_master: return
 			self.append_taxes()
 	
-	def get_item_details(self, args):
-		args = self.process_args(args)
-		item = get_obj("Item", args.item_code, with_children=1)
+	def get_item_details(self, args, item=None):
+		args, item = self.process_args(args, item)
 		
 		ret = super(SellingController, self).get_item_details(args, item)
 
@@ -159,3 +158,11 @@ class SellingController(TransactionController):
 			'total_commission': (commission_rate * 
 				flt(self.doc.net_total, self.precision.main.net_total)) / 100.0
 		}
+	def get_price_list_currency(self, args):
+		""" Get all currencies in which price list is maintained"""
+		plc = webnotes.conn.sql("""select distinct ref_currency from `tabItem Price` 
+			where price_list_name = %s""", args.get("price_list"))
+		plc = [d[0] for d in plc]
+		import setup
+		default_currency = setup.get_currency(args.get("company"))
+		return plc, default_currency

@@ -28,15 +28,16 @@ from webnotes import session, form, msgprint
 session = webnotes.session
 
 
-from utilities.transaction_base import TransactionBase
+from controllers.buying_controller import BuyingController
 
-class DocType(TransactionBase):
-	def __init__(self,d,dl):
-		self.doc, self.doclist = d, dl
+class DocType(BuyingController):
+	def setup(self):
+		self.item_table_field = "sales_invoice_items"
+		self.transaction_type = "Sales"
+
 		self.log = []
 		self.tname = 'Sales Invoice Item'
 		self.fname = 'sales_invoice_items'
-
 
 	def autoname(self):
 		self.doc.name = make_autoname(self.doc.naming_series+ '.#####')
@@ -415,38 +416,43 @@ class DocType(TransactionBase):
 			d.projected_qty = bin and flt(bin[0]['projected_qty']) or 0
 	 
 	
-	def validate(self):
-		self.so_dn_required()
-		self.validate_proj_cust()
-		sales_com_obj = get_obj('Sales Common')
-		sales_com_obj.check_stop_sales_order(self)
-		sales_com_obj.check_active_sales_items(self)
-		sales_com_obj.check_exchange_rate(self)
-		sales_com_obj.validate_max_discount(self, 'sales_invoice_items')	 #verify whether rate is not greater than tolerance
-		sales_com_obj.get_allocated_sum(self)	# this is to verify that the allocated % of sales persons is 100%
-		sales_com_obj.validate_fiscal_year(self.doc.fiscal_year,self.doc.posting_date,'Posting Date')
-		self.validate_customer()
-		self.validate_customer_account()
-		self.validate_debit_acc()
-		self.validate_fixed_asset_account()
-		self.add_remarks()
-		if cint(self.doc.is_pos):
-			self.validate_pos()
-			self.validate_write_off_account()
-			if cint(self.doc.update_stock):
-				sl = get_obj('Stock Ledger')
-				sl.validate_serial_no(self, 'sales_invoice_items')
-				sl.validate_serial_no(self, 'delivery_note_packing_items')
-				self.validate_item_code()
-				self.update_current_stock()
-		self.set_in_words()
-		if not self.doc.is_opening:
-			self.doc.is_opening = 'No'
-		self.set_aging_date()
-		self.clear_advances()
-		self.set_against_income_account()
-		self.validate_c_form()
-
+	# def validate(self):
+	# 	self.so_dn_required()
+	# 	self.validate_proj_cust()
+	# 	sales_com_obj = get_obj('Sales Common')
+	# 	sales_com_obj.check_stop_sales_order(self)
+	# 	sales_com_obj.check_active_sales_items(self)
+	# 	sales_com_obj.check_exchange_rate(self)
+	# 	sales_com_obj.validate_max_discount(self, 'sales_invoice_items')	 #verify whether rate is not greater than tolerance
+	# 	sales_com_obj.get_allocated_sum(self)	# this is to verify that the allocated % of sales persons is 100%
+	# 	sales_com_obj.validate_fiscal_year(self.doc.fiscal_year,self.doc.posting_date,'Posting Date')
+	# 	self.validate_customer()
+	# 	self.validate_customer_account()
+	# 	self.validate_debit_acc()
+	# 	self.validate_fixed_asset_account()
+	# 	self.add_remarks()
+	# 	if cint(self.doc.is_pos):
+	# 		self.validate_pos()
+	# 		self.validate_write_off_account()
+	# 		if cint(self.doc.update_stock):
+	# 			sl = get_obj('Stock Ledger')
+	# 			sl.validate_serial_no(self, 'sales_invoice_items')
+	# 			sl.validate_serial_no(self, 'delivery_note_packing_items')
+	# 			self.validate_item_code()
+	# 			self.update_current_stock()
+	# 			
+	# 	self.calculate_taxes_and_totals()
+	# 	
+	# 	self.set_in_words()
+	# 	if not self.doc.is_opening:
+	# 		self.doc.is_opening = 'No'
+	# 	self.set_aging_date()
+	# 	self.clear_advances()
+	# 	self.set_against_income_account()
+	# 	self.validate_c_form()
+	
+	def validate_prevdoclist(self):
+		pass
 
 	def get_warehouse(self):
 		w = webnotes.conn.sql("select warehouse from `tabPOS Setting` where ifnull(user,'') = '%s' and company = '%s'" % (session['user'], self.doc.company))

@@ -25,6 +25,8 @@ install_docs = [
 	{"doctype":"Role", "role_name":"Accounts User", "name":"Accounts User"}
 ]
 
+
+# TODO - refactor this code
 @webnotes.whitelist()
 def get_default_bank_account():
 	"""
