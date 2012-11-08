@@ -64,7 +64,7 @@ erpnext.buying.PurchaseRequest = erpnext.Buying.extend({
 		if(this.frm.doc.docstatus == 1) {
 			if(this.frm.doc.is_stopped == 1) {
 				this.frm.add_custom_button("Resume Purchase Request",
-					function() { me.resume_purchase_request(this); }, "icon-play");
+					function() { me.resume_transaction(this); }, "icon-play");
 			} else {
 				this.frm.add_custom_button("Make Supplier Quotation",
 					function() { me.make_supplier_quotation(this); });
@@ -74,7 +74,7 @@ erpnext.buying.PurchaseRequest = erpnext.Buying.extend({
 						function() { me.make_purchase_order(this); });
 
 					this.frm.add_custom_button("Stop Purchase Request",
-						function() { me.stop_purchase_request(this); }, "icon-ban-circle");
+						function() { me.stop_transaction(this); }, "icon-ban-circle");
 				}
 				this.frm.add_custom_button("Send SMS", this.send_sms);
 			}
@@ -89,16 +89,6 @@ erpnext.buying.PurchaseRequest = erpnext.Buying.extend({
 	make_purchase_order: function(btn) {
 		wn.model.map_doclist([["Purchase Request", "Purchase Order"],
 			["Purchase Request Item", "Purchase Order Item"]], this.frm.doc.name);
-	},
-	
-	stop_purchase_request: function(btn) {
-		this.frm.doc.is_stopped = 1;
-		this.frm.save(null, btn);
-	},
-	
-	resume_purchase_request: function(btn) {
-		this.frm.doc.is_stopped = 0;
-		this.frm.save(null, btn);
 	},
 	
 	send_sms: function(me) {

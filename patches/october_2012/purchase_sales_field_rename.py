@@ -322,6 +322,9 @@ rename_map = {
 		["transaction_date", "posting_date"],
 		["sales_order_no", "sales_order"],
 	],
+	"Maintenance Schedule Item": [
+	["prevdoc_docname", "sales_order"]
+	],
 	"Maintenance Visit": [
 		["sales_order_no", "sales_order"],
 		["customer_issue_no", "customer_issue"],
@@ -381,6 +384,11 @@ prevdoc_rename_map = {
 	"Delivery Note Item": [
 		["Sales Order", "Sales Order Item"],
 		["Sales Invoice", "Sales Invoice Item"],
+	],
+	"Maintenance Visit Purpose": [
+		["Sales Order", "Sales Order Item"],
+		["Customer Issue"],
+		["Maintenance Schedule", "Maintenance Schedule Item"],
 	]
 	
 }

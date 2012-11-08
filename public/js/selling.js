@@ -25,29 +25,83 @@ erpnext.Selling = erpnext.Transaction.extend({
 		this.set_sales_bom_help();
 	},
 	
+	on_submit: function() {
+		this.notify(this.frm.doc, {type: this.frm.doc.doctype, doctype: this.frm.doc.doctype});
+	},
+	
+	toggle_fields: function() {
+		var customer_fields = ['customer_address', 'contact_person', 'customer_name',
+		 	'address_display', 'contact_display', 'customer_group', 'territory'];
+		this.frm.toggle_display(customer_fields, this.frm.doc.customer);
+		
+		display_contact_section = (this.frm.doc.customer || this.frm.doc.lead) ? true : false;
+		this.frm.toggle_display("contact_section", display_contact_section);
+	},
+	
+	customer: function() {
+		var me = this;
+		var old_price_list = this.frm.doc.price_list_name;
+		wn.call({
+			doc: me.frm.doc,
+			method: "get_customer_details",
+			args: {"customer": me.frm.doc.customer},
+			callback: function(r, rt) {
+				me.frm.refresh();
+				if (old_price_list != me.frm.doc.price_list_name) 
+					me.price_list_name();
+			}
+		});
+	},
+	
 	customer_address: function() {
-		if(this.frm.doc.customer) {
-			get_server_fields('get_customer_address', JSON.stringify({
-				customer: this.frm.doc.customer, 
-				address: this.frm.doc.customer_address, 
-				contact: this.frm.doc.contact_person
-			}), '', this.frm.doc, this.frm.doc.doctype, this.frm.doc.name, 1);
+		if (this.frm.doc.customer_address) {
+			args = {"name": this.frm.doc.customer_address};
+			this.get_address(args);
+		}
 	},
+	
+	shipping_address_name: function() {
+		if (this.frm.doc.shipping_address_name) {
+			args = {
+				"name": this.frm.doc.shipping_address_name,
+				"is_shipping_address": 1
+			};
+			this.get_address(args);
+		}
+	},
+	
 	contact_person: function() {
-		this.customer_address();
+		if (this.frm.doc.contact_person)
+			this.customer_address();
 	},
+	
 	customer_address.on_new: function(docname) {
 		this.on_new_master("Address", docname);
 	},
+	
 	contact_person.on_new: function(docname) {
 		this.on_new_master("Contact", docname);
 	},
+	
 	on_new_master: function(doctype, docname) {
 		locals[doctype][docname].customer = 
 		 	locals[this.frm.doc.doctype][this.frm.doc.name].customer;
 		locals[doctype][docname].customer_name = 
 		 	locals[this.frm.doc.doctype][this.frm.doc.name].customer_name;
 	},
+	
+	project_name: function(){
+		if (this.frm.doc.project_name) {
+			wn.call({
+				doc: me.frm.doc,
+				method: "get_project_details"
+				callback: function(r, rt) {
+					me.refresh();
+				}
+			});
+		}
+	},
+	
 	price_list_name: function() {
 		var me = this;
 		var callback = function() {
@@ -64,20 +118,25 @@ erpnext.Selling = erpnext.Transaction.extend({
 				});
 			}
 		}
-		this.hide_price_list_currency(callback);
+		this.toggle_currency_display(callback);
 	},
+	
 	currency: function() {
 		this.price_list_name();
 	},
+	
 	price_list_currency: function() {
 		this.price_list_name();
 	},
+	
 	exchange_rate: function() {
 		this.price_list_name();
 	},
+	
 	plc_exchange_rate: function() {
 		this.price_list_name();
 	},
+	
 	company: function() {
 		var me = this;
 		default_currency = wn.boot.company[this.frm.doc.company].default_currency;
@@ -89,6 +148,28 @@ erpnext.Selling = erpnext.Transaction.extend({
 		});
 		this.price_list_name();
 	},
+	
+	warehouse: function(doc, cdt , cdn) {
+		var me = this;
+		var item = locals[cdt][cdn];
+		if (item.warehouse) {
+			wn.call({
+				doc: me.frm.doc,
+				method: "stock.get_actual_qty"
+				args: {
+					"item_code": item.item_code,
+					"warehouse": item.warehouse,
+					"posting_date": me.frm.doc.posting_date,
+					"posting_time": me.frm.doc.posting_time || ""
+				},
+				callback: function(r, rt) {
+					$.extend(locals[cdt][cdn], r.message);
+					refresh_field(me.item_table_field);
+				}
+			});
+		}
+	},
+	
 	get_charges: function() {
 		var me = this;
 		wn.call({
@@ -101,12 +182,14 @@ erpnext.Selling = erpnext.Transaction.extend({
 			btn: me.frm.fields_dict.get_charges.input
 		})
 	},
+	
 	sales_partner: function() {
 		if(this.frm.doc.sales_partner) {
 			get_server_fields('get_commission', "", "", this.frm.doc, 
 				this.frm.doc.doctype, this.frm.doc.name, 1);
 		}
 	},
+	
 	commission_rate: function() {
 		if(doc.commission_rate > 100) {
 			msgprint("Commision rate cannot be greater than 100.");
@@ -117,6 +200,7 @@ erpnext.Selling = erpnext.Transaction.extend({
 			refresh_field('total_commission');
 		}
 	},
+	
 	allocated_percentage: function(doc, cdt, cdn) {
 		var d = locals[cdt][cdn];
 		if (d.allocated_percentage) {
@@ -328,6 +412,25 @@ erpnext.Selling = erpnext.Transaction.extend({
 			 	department, designation FROM tabContact \
 				WHERE customer = '" + doc.customer +"' AND docstatus < 2 \
 				AND name LIKE \"%s\" ORDER BY name ASC LIMIT 50";
+		}
+		
+		// project name
+		this.frm.fields_dict['project_name'].get_query = function() {
+			var condition = '';
+			if (doc.customer) 
+				condition = ' AND (ifnull(customer, "") = "" or customer = "' +  
+					this.frm.doc.customer + '")';
+				
+			return repl('SELECT name FROM `tabProject` WHERE status not in \
+				("Completed", "Cancelled") AND name LIKE \"%s\" %(condition)s \
+				ORDER BY name ASC LIMIT 50', { condition: condition});
+		}
+		
+		// territory
+		this.frm.fields_dict['territory'].get_query = function() {
+			return 'SELECT name, parent_territory FROM `tabTerritory` \
+				WHERE ifnull(is_group, "No") = "No" AND docstatus != 2 \
+				AND %(key)s LIKE \"%s\"	ORDER BY name ASC LIMIT 50';
 		}
 	},
 })

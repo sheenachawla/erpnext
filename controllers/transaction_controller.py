@@ -44,6 +44,9 @@ class TransactionController(DocListController):
 		if self.doc.docstatus == 1 and self.cur_docstatus == 0:
 			# a doc getting submitted should not be stopped
 			self.doc.is_stopped = 0
+		
+		if self.doc.docstatus == 1:
+			self.stop_resume_transaction()
 			
 		if self.meta.get_field("taxes_and_charges"):
 			self.calculate_taxes_and_totals()
@@ -196,6 +199,19 @@ class TransactionController(DocListController):
 			item = get_obj("Item", args.item_code, with_children=1)
 
 		return args, item
+	
+	@property
+	def stock_items(self):
+		if not hasattr(self, "_stock_items"):
+			if not self.item_doclist:
+				self.item_doclist = self.doclist.get({"parentfield": self.item_table_field})
+			
+			item_codes = list(set(item.item_code for item in self.item_doclist))
+			self._stock_items = [r[0] for r in webnotes.conn.sql("""select name
+				from `tabItem` where name in (%s) and is_stock_item='Yes'""" % \
+				(", ".join((["%s"]*len(item_codes))),), item_codes)]
+
+		return self._stock_items
 		
 	def get_barcode_details(self, args):
 		item = self.get_item_code(args["barcode"])
@@ -294,9 +310,17 @@ class TransactionController(DocListController):
 			})
 			self.doclist.append(tax)
 			
+	def set_address(self, args):
+		address = self.get_address(args)
+		if args.get("is_shipping_address"):
+			self.doc.shipping_address_name = address["name"]
+			self.doc.shipping_address = address["address_display"]
+		else:
+			self.doc.customer_address = address["name"]
+			self.doc.address_display = address["address_display"]
+			
 	def get_address(self, args):
 		args = DictObj(args)
-		address_field = self.meta.get_field({"options": "^Address"})
 		
 		query = "select * from `tabAddress` where docstatus < 2 "
 		
@@ -314,16 +338,14 @@ class TransactionController(DocListController):
 			val = args.supplier
 		else:
 			query += "and name=%s"
-			val = self.doc.fields.get(address_field)
+			val = args.name
 		
 		address_result = webnotes.conn.sql(query, (val,), as_dict=1)
 		
 		if address_result:
 			address_doc = Document("Address", fielddata=address_result[0])
-			
-			self.doc.fields[address_field.fieldname] = address_doc.name
-			
-			self.doc.address_display = "\n".join(filter(None, [
+						
+			address_display = "\n".join(filter(None, [
 				address_doc.address_line1,
 				address_doc.address_line2,
 				" ".join(filter(None, [address_doc.city, address_doc.pincode])),
@@ -335,8 +357,13 @@ class TransactionController(DocListController):
 			
 			# send it on client side - can be used for further processing
 			webnotes.response.setdefault("docs", []).append(address_doc)
+			
+			return {
+				"name": address_doc.name, 
+				"address_display": address_display
+			}
 
-	def get_contact(self, args):
+	def set_contact(self, args):
 		args = DictObj(args)
 		contact_field = self.meta.get_field({"options": "^Contact"})
 
@@ -544,3 +571,4 @@ class TransactionController(DocListController):
 			money_in_words(self.doc.grand_total_print, default_currency)
 		self.doc.rounded_total_in_words_print = \
 			money_in_words(self.doc.rounded_total_print, default_currency)
+	

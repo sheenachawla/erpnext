@@ -208,10 +208,10 @@ class DocType(TransactionBase):
   #-----------------------------------------------------------------------------------
   def validate_sales_order(self):
     for d in getlist(self.doclist, 'item_maintenance_detail'):
-      if d.prevdoc_docname:
-        chk = sql("select t1.name from `tabMaintenance Schedule` t1, `tabMaintenance Schedule Item` t2 where t2.parent=t1.name and t2.prevdoc_docname=%s and t1.docstatus=1", d.prevdoc_docname)
+      if d.sales_order:
+        chk = sql("select t1.name from `tabMaintenance Schedule` t1, `tabMaintenance Schedule Item` t2 where t2.parent=t1.name and t2.sales_order=%s and t1.docstatus=1", d.sales_order)
         if chk:
-          msgprint("Maintenance Schedule against "+d.prevdoc_docname+" already exist")
+          msgprint("Maintenance Schedule against "+d.sales_order+" already exist")
           raise Exception
   
   # Validate values with reference document

@@ -81,12 +81,6 @@ class DocType(StockController):
 		return get_obj('Sales Common').get_tc_details(self)
 
 
-	def pull_project_customer(self):
-		res = sql("select customer from `tabProject` where name = '%s'"%self.doc.project_name)
-		if res:
-			get_obj('DocType Mapper', 'Project-Delivery Note').dt_map('Project', 'Delivery Note', self.doc.project_name, self.doc, self.doclist, "[['Project', 'Delivery Note']]")
-
-
 	def get_item_details(self, args=None):
 		import json
 		args = args and json.loads(args) or {}

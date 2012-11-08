@@ -128,9 +128,10 @@ erpnext.Transaction = Class.extend({
 	},
 	
 	get_address: function(args) {
+		var me = this;
 		wn.call({
-			doc: this.frm.doc,
-			method: 'get_address',
+			doc: me.frm.doc,
+			method: 'set_address',
 			args: args || {},
 			callback: function(r) {
 				me.frm.refresh();
@@ -141,12 +142,22 @@ erpnext.Transaction = Class.extend({
 	get_contact: function(args) {
 		wn.call({
 			doc: this.frm.doc,
-			method: 'get_contact',
+			method: 'set_contact',
 			args: args || {},
 			callback: function(r) {
 				me.frm.refresh();
 			}
 		});
+	},
+	
+	stop_transaction: function(btn) {
+		this.frm.doc.is_stopped = 1;
+		this.frm.save(null, btn);
+	},
+	
+	resume_transaction: function(btn) {
+		this.frm.doc.is_stopped = 0;
+		this.frm.save(null, btn);
 	},
 	
 });
