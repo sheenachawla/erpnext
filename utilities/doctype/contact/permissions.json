@@ -1,0 +1,17 @@
+[
+ {
+  "execute": null, 
+  "name": "PERM02391", 
+  "amend": null, 
+  "create": 1, 
+  "submit": null, 
+  "write": 1, 
+  "read": 1, 
+  "role": "System Manager", 
+  "cancel": null, 
+  "docstatus": 0, 
+  "document_type": "Contact", 
+  "permlevel": 0, 
+  "match": null
+ }
+]
