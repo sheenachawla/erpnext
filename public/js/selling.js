@@ -14,14 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-wn.require("app/js/transaction.js")
+wn.require("public/app/js/transaction.js");
 wn.provide("erpnext");
 
 erpnext.Selling = erpnext.Transaction.extend({
 	refresh: function(doc, cdt, cdn) {
 		this._super();
 		this.toggle_currency_display(doc, cdt, cdn);
-		this.set_dynamic_labels();
+		//this.set_dynamic_labels();
 		this.set_sales_bom_help();
 	},
 	
@@ -75,14 +75,6 @@ erpnext.Selling = erpnext.Transaction.extend({
 			this.customer_address();
 	},
 	
-	customer_address.on_new: function(docname) {
-		this.on_new_master("Address", docname);
-	},
-	
-	contact_person.on_new: function(docname) {
-		this.on_new_master("Contact", docname);
-	},
-	
 	on_new_master: function(doctype, docname) {
 		locals[doctype][docname].customer = 
 		 	locals[this.frm.doc.doctype][this.frm.doc.name].customer;
@@ -90,11 +82,11 @@ erpnext.Selling = erpnext.Transaction.extend({
 		 	locals[this.frm.doc.doctype][this.frm.doc.name].customer_name;
 	},
 	
-	project_name: function(){
+	project_name: function() {
 		if (this.frm.doc.project_name) {
 			wn.call({
 				doc: me.frm.doc,
-				method: "get_project_details"
+				method: "get_project_details",
 				callback: function(r, rt) {
 					me.refresh();
 				}
@@ -155,7 +147,7 @@ erpnext.Selling = erpnext.Transaction.extend({
 		if (item.warehouse) {
 			wn.call({
 				doc: me.frm.doc,
-				method: "stock.get_actual_qty"
+				method: "stock.get_actual_qty",
 				args: {
 					"item_code": item.item_code,
 					"warehouse": item.warehouse,
@@ -253,7 +245,7 @@ erpnext.Selling = erpnext.Transaction.extend({
 			});
 		}
 	},
-	
+	/*
 	set_dynamic_labels: function() {
 		var me = this;
 		
@@ -263,10 +255,9 @@ erpnext.Selling = erpnext.Transaction.extend({
 					me.frm.fields_dict[f].label_span.innerHTML 
 						= fields_dict[f] + ' (' + currency + ')';
 				} else {
-					$('[data-grid-fieldname="' + table_fieldname + '-' + f + '"]').html(
-						fields[f] + ' (' + currency + ')');
+					$('[data-grid-fieldname="' + dt + '-' + f + '"]').html(fields[f] + ' (' + currency + ')');
 				}
-			}			
+			}
 		};
 		
 		var _map = function(field_currency_map) {
@@ -275,9 +266,9 @@ erpnext.Selling = erpnext.Transaction.extend({
 					_set_labels(field_currency_map[dt][currency], currency, dt);
 			}
 		};
-				
+		
 		// set fields label as per currency
-		field_currency_map = {
+		var field_currency_map = {
 			this.frm.doc.doctype: {
 				base_currency: {
 					"net_total": "Net Total", 
@@ -292,7 +283,7 @@ erpnext.Selling = erpnext.Transaction.extend({
 					"rounded_total_in_words_print":	"In Words"
 				}
 			},
-			this.frm.doc.doctype + " Item": {
+			(this.frm.doc.doctype + " Item"): {
 				base_currency: {
 					"rate": "Basic Rate", 
 					"ref_rate": "Price List Rate", 
@@ -348,7 +339,7 @@ erpnext.Selling = erpnext.Transaction.extend({
 			this.frm.fields_dict[this.item_table_field].grid.set_column_disp(f, hide);
 		}
 	},
-	
+	*/
 	set_sales_bom_help: function() {
 		if(!this.frm.fields_dict.packing_list) return;
 		
@@ -359,13 +350,12 @@ erpnext.Selling = erpnext.Transaction.extend({
 		if (inList(['Delivery Note', 'Sales Invoice'], doc.doctype)) {
 			var help_msg = "";
 			if (has_packing_item) {
-				help_msg = """<div class='alert'> \
+				help_msg = "<div class='alert'> \
 					For 'Sales BOM' items, warehouse, serial no and batch no \
 					will be considered from the 'Packing List' table. \
-					If warehouse and batch no are same for all packing items for any 
-					'Sales BOM' item, those values can be entered in the main item table, 
-					values will be copied to 'Packing List' table. \
-				</div>""";
+					If warehouse and batch no are same for all packing items for any \
+					'Sales BOM' item, those values can be entered in the main item table, \
+					values will be copied to 'Packing List' table. </div>";
 			}
 			wn.meta.get_docfield(doc.doctype, 'sales_bom_help', doc.name).options = help_msg;
 			refresh_field('sales_bom_help');
@@ -432,5 +422,13 @@ erpnext.Selling = erpnext.Transaction.extend({
 				WHERE ifnull(is_group, "No") = "No" AND docstatus != 2 \
 				AND %(key)s LIKE \"%s\"	ORDER BY name ASC LIMIT 50';
 		}
+		
+		this.frm.fields_dict.customer_address.on_new = function(docname) {
+			me.on_new_master("Address", docname);
+		},
+
+		this.frm.fields_dict.contact_person.on_new = function(docname) {
+			me.on_new_master("Contact", docname);
+		},
 	},
 })

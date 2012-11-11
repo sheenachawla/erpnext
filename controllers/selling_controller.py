@@ -127,8 +127,8 @@ class SellingController(TransactionController):
 		ret = super(SellingController, self).get_item_details(args, item)
 		
 		# set default income account and cost center
-		ret.income_account: item.doc.default_income_account or args.income_account,
-		ret.cost_center: item.doc.default_sales_cost_center or args.cost_center,
+		ret.income_account = item.doc.default_income_account or args.income_account,
+		ret.cost_center = item.doc.default_sales_cost_center or args.cost_center,
 		
 		# rate as per selected price list
 		if self.doc.price_list_name and self.doc.price_list_currency:

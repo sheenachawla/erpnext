@@ -180,7 +180,7 @@ erpnext.selling.Quotation = erpnext.Selling.extend({
 						precision: precision
 					}
 				);
-			else {
+			} else {
 				var query = repl("\
 					SELECT name, item_name, description \
 					FROM `tabItem` item \
