@@ -30,20 +30,6 @@ from webnotes import form, msgprint
 from utilities.transaction_base import TransactionBase
 
 
-@webnotes.whitelist()
-def get_comp_base_currency(arg=None):
-	""" get default currency of company"""
-	res = webnotes.conn.sql("""select default_currency from `tabCompany`
-			where name = %s""", webnotes.form_dict.get('company'))
-	return res and res[0][0] or None
-
-@webnotes.whitelist()
-def get_price_list_currency(arg=None):
-	""" Get all currency in which price list is maintained"""
-	plc = webnotes.conn.sql("select distinct ref_currency from `tabItem Price` where price_list_name = %s", webnotes.form_dict['price_list'])
-	plc = [d[0] for d in plc]
-	base_currency = get_comp_base_currency(webnotes.form_dict['company'])
-	return plc, base_currency
 
 
 class DocType(TransactionBase):
@@ -67,27 +53,6 @@ class DocType(TransactionBase):
 		self.msg = []
 
 
-	# Get Sales Person Details
-	# ==========================
-	
-	# TODO: To be deprecated if not in use
-	def get_sales_person_details(self, obj):
-		if obj.doc.doctype != 'Quotation':
-			obj.doclist = obj.doc.clear_table(obj.doclist,'sales_team')
-			idx = 0
-			for d in webnotes.conn.sql("select sales_person, allocated_percentage, allocated_amount, incentives from `tabSales Team` where parent = '%s'" % obj.doc.customer):
-				ch = addchild(obj.doc, 'sales_team', 'Sales Team', 1, obj.doclist)
-				ch.sales_person = d and cstr(d[0]) or ''
-				ch.allocated_percentage = d and flt(d[1]) or 0
-				ch.allocated_amount = d and flt(d[2]) or 0
-				ch.incentives = d and flt(d[3]) or 0
-				ch.idx = idx
-				idx += 1
-		return obj.doclist
-
-
-	# Get customer's contact person details
-	# ==============================================================
 	def get_contact_details(self, obj = '', primary = 0):
 		cond = " and contact_name = '"+cstr(obj.doc.contact_person)+"'"
 		if primary: cond = " and is_primary_contact = 'Yes'"
@@ -103,8 +68,6 @@ class DocType(TransactionBase):
 			obj.doc.customer_address = c['contact_address']
 
 
-	# Get customer's primary shipping details
-	# ==============================================================
 	def get_shipping_details(self, obj = ''):
 		det = webnotes.conn.sql("select name, ship_to, shipping_address from `tabShipping Address` where customer = '%s' and docstatus != 2 and ifnull(is_primary_address, 'Yes') = 'Yes'" %(obj.doc.customer), as_dict = 1)
 		obj.doc.ship_det_no = det and det[0]['name'] or ''
@@ -112,37 +75,14 @@ class DocType(TransactionBase):
 		obj.doc.shipping_address = det and det[0]['shipping_address'] or ''
 
 
-	# get invoice details
-	# ====================
 	def get_invoice_details(self, obj = ''):
 		if obj.doc.company:
 			acc_head = webnotes.conn.sql("select name from `tabAccount` where name = '%s' and docstatus != 2" % (cstr(obj.doc.customer) + " - " + get_value('Company', obj.doc.company, 'abbr')))
 			obj.doc.debit_to = acc_head and acc_head[0][0] or ''
 
+	
 
 
-	def get_barcode_details(self, barcode):
-		item = webnotes.conn.sql("select name, end_of_life, is_sales_item, is_service_item \
-			from `tabItem` where barcode = %s", barcode, as_dict=1)
-		ret = {}
-		if not item:
-			msgprint("""No item found for this barcode: %s. 
-				May be barcode not updated in item master. Please check""" % barcode)
-		elif item[0]['end_of_life'] and getdate(cstr(item[0]['end_of_life'])) < nowdate():
-			msgprint("Item: %s has been expired. Please check 'End of Life' field in item master" % item[0]['name'])
-		elif item[0]['is_sales_item'] == 'No' and item[0]['is_service_item'] == 'No':
-			msgprint("Item: %s is not a sales or service item" % item[0]['name'])
-		elif len(item) > 1:
-			msgprint("There are multiple item for this barcode. \nPlease select item code manually")
-		else:
-			ret = {'item_code': item and item[0]['name'] or ''}
-			
-		return ret
-
-
-
-	# Get Serial No Details
-	# ==========================================================================
 	def get_serial_details(self, serial_no, obj):
 		import json
 		item = webnotes.conn.sql("select item_code, make, label,brand, description from `tabSerial No` where name = '%s' and docstatus != 2" %(serial_no), as_dict=1)
@@ -160,9 +100,6 @@ class DocType(TransactionBase):
 		return ret
 		
 
-
-	# Get Tax rate if account type is TAX
-	# =========================================================================
 	def get_rate(self, arg):
 		arg = eval(arg)
 		rate = webnotes.conn.sql("select account_type, tax_rate from `tabAccount` where name = '%s' and docstatus != 2" %(arg['account_head']), as_dict=1)

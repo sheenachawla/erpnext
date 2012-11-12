@@ -26,6 +26,7 @@ from webnotes.model.doc import Document
 import json
 
 from controllers.transaction_controller import TransactionController
+
 class AccountsController(TransactionController):
 	def make_gl_entries(self, cancel=False, adv_adj=False, mapper=None,
 			merge_entries=True,	update_outstanding='Yes', gl_map=None):

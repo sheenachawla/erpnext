@@ -162,8 +162,8 @@ class BuyingController(AccountsController):
 			self.append_taxes()
 			
 	def get_supplier_details(self, args):
-		self.get_address(args)
-		self.get_contact(args)
+		self.set_address(args)
+		self.set_contact(args)
 	
 		res = webnotes.conn.sql("""select supplier_name, default_currency
 			from `tabSupplier` where name=%s and docstatus < 2""",
@@ -178,13 +178,3 @@ class BuyingController(AccountsController):
 				item.item_code in self.stock_items:
 			item.valuation_tax_amount += flt(current_tax_amount,
 				self.precision.item.valuation_tax_amount)
-
-	@property
-	def stock_items(self):
-		if not hasattr(self, "_stock_items"):
-			item_codes = list(set(item.item_code for item in self.item_doclist))
-			self._stock_items = [r[0] for r in webnotes.conn.sql("""select name
-				from `tabItem` where name in (%s) and is_stock_item='Yes'""" % \
-				(", ".join((["%s"]*len(item_codes))),), item_codes)]
-
-		return self._stock_items

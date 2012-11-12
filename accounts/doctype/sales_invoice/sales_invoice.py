@@ -232,10 +232,6 @@ class DocType(BuyingController):
 		self.doclist = get_obj('GL Control').get_advances(self, self.doc.debit_to, 'Sales Invoice Advance', 'advance_adjustment_details', 'credit')
 
 	
-	def pull_project_customer(self):
-		res = webnotes.conn.sql("select customer from `tabProject` where name = '%s'"%self.doc.project_name)
-		if res:
-			get_obj('DocType Mapper', 'Project-Sales Invoice').dt_map('Project', 'Sales Invoice', self.doc.project_name, self.doc, self.doclist, "[['Project', 'Sales Invoice']]")
 		
 	def validate_prev_docname(self,doctype):
 		"""Check whether sales order / delivery note items already pulled"""

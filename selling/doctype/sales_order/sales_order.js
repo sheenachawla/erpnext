@@ -14,343 +14,148 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-// Module CRM
 
-cur_frm.cscript.tname = "Sales Order Item";
-cur_frm.cscript.fname = "sales_order_items";
-cur_frm.cscript.other_fname = "taxes_and_charges";
-cur_frm.cscript.sales_team_fname = "sales_team";
+wn.require('public/app/js/selling.js');
+wn.provide("erpnext.selling");
 
-
-wn.require('app/selling/doctype/sales_common/sales_common.js');
-wn.require('app/accounts/doctype/sales_taxes_and_charges_master/sales_taxes_and_charges_master.js');
-wn.require('app/utilities/doctype/sms_control/sms_control.js');
-wn.require('app/setup/doctype/notification_control/notification_control.js');
-
-
-// ONLOAD
-// ================================================================================================
-cur_frm.cscript.onload = function(doc, cdt, cdn) {
-	if(!doc.status) set_multiple(cdt,cdn,{status:'Draft'});
-	if(!doc.posting_date) set_multiple(cdt,cdn,{posting_date:get_today()});
-	if(!doc.price_list_currency) set_multiple(cdt, cdn, {price_list_currency: doc.currency, plc_exchange_rate: 1});
-	// load default charges
+erpnext.selling.SalesOrder = erpnext.Selling.extend({
+	onload: function() {
+		this._super();
+		this.make_communication_body();
+	},
 	
-	if(doc.__islocal && !doc.customer){
-		hide_field(['customer_address','contact_person','customer_name','address_display','contact_display','contact_mobile','contact_email','territory','customer_group']);
-	}
-}
-
-cur_frm.cscript.onload_post_render = function(doc, cdt, cdn) {
-	var callback = function(doc, cdt, cdn) {
-		if(doc.__islocal) {
-			// defined in sales_common.js
-			cur_frm.cscript.update_item_details(doc, cdt, cdn);
-		}
-	}
+	refresh: function() {
+		this._super();
+		this.add_buttons();
+		this.toggle_fields();
+		if (!doc.__islocal) this.render_communication_list();
+	},
 	
-	cur_frm.cscript.hide_price_list_currency(doc, cdt, cdn, callback); 
-
-}
-
-
-cur_frm.cscript.refresh = function(doc, cdt, cdn) {
-	cur_frm.clear_custom_buttons();
-	erpnext.hide_naming_series();
-
-	if (!cur_frm.cscript.is_onload) cur_frm.cscript.hide_price_list_currency(doc, cdt, cdn); 
-	
-	if(doc.customer) $(cur_frm.fields_dict.contact_info.row.wrapper).toggle(true);
-	else $(cur_frm.fields_dict.contact_info.row.wrapper).toggle(false);
-
-	if(doc.docstatus==1) {
-		if(doc.status != 'Stopped') {
-			cur_frm.add_custom_button('Send SMS', cur_frm.cscript.send_sms);
-			// delivery note
-			if(doc.per_delivered < 100 && doc.order_type=='Sales')
-				cur_frm.add_custom_button('Make Delivery', cur_frm.cscript['Make Delivery Note']);
+	add_buttons: function() {
+		var me = this;
+		if (this.frm.doc.docstatus == 1) {
+			if(this.frm.doc.is_stopped == 1) {
+				this.frm.add_custom_button("Resume Sales Order",
+					function() { me.resume_transaction(this); }, "icon-play");
+			} else {
+				// delivery note
+				if (this.frm.doc.per_delivered < 100 && this.frm.doc.order_type == 'Sales')
+					this.frm.add_custom_button("Make Delivery Note", 
+						function() { me.make_delivery_note(this);});
 			
-			// maintenance
-			if(doc.per_delivered < 100 && (doc.order_type !='Sales')) {
-				cur_frm.add_custom_button('Make Maint. Visit', cur_frm.cscript.make_maintenance_visit);
-				cur_frm.add_custom_button('Make Maint. Schedule', cur_frm.cscript['Make Maintenance Schedule']);
+				// maintenance
+				if (doc.per_delivered < 100 && (doc.order_type !='Sales')) {
+					this.frm.add_custom_button("Make Maintenance Visit",
+					 	funtion() { me.make_maintenance_visit(this);});
+					this.frm.add_custom_button("Make Maintenance Schedule",
+					 	funtion() { me.make_maintenance_schedule(this);});
+				}
+
+				// purchase request
+				if (doc.order_type == 'Sales')
+					this.frm.add_custom_button('Make ' + get_doctype_label('Purchase Request'),
+					 	function() { me.make_purchae_request(this);});
+			
+				// sales invoice
+				if (doc.per_billed < 100)
+					this.frm.add_custom_button('Make Invoice', 
+						function() { me.make_sales_invoice(this);});
+						
+				// stop sales order
+				this.frm.add_custom_button("Stop Sales Order",
+					function() { me.stop_transaction(this); }, "icon-ban-circle");
 			}
-
-			// indent
-			if(!doc.order_type || (doc.order_type == 'Sales'))
-				cur_frm.add_custom_button('Make ' + get_doctype_label('Purchase Request'), cur_frm.cscript['Make Purchase Request']);
-			
-			// sales invoice
-			if(doc.per_billed < 100)
-				cur_frm.add_custom_button('Make Invoice', cur_frm.cscript['Make Sales Invoice']);
-			
-			// stop
-			if(doc.per_delivered < 100 || doc.per_billed < 100)
-				cur_frm.add_custom_button('Stop!', cur_frm.cscript['Stop Sales Order']);
-		} else {	
-			// un-stop
-			cur_frm.add_custom_button('Unstop', cur_frm.cscript['Unstop Sales Order']);
+			// to-do - sms
+			this.frm.add_custom_button("Send SMS", this.send_sms);
 		}
-	}
-}
-
-//customer
-cur_frm.cscript.customer = function(doc,dt,dn) {
-	var pl = doc.price_list_name;
-	var callback = function(r,rt) {
-		var callback2  = function(r, rt) {
-
-			if(doc.customer) unhide_field(['customer_address', 'contact_person', 'territory','customer_group']);
-			cur_frm.refresh();
-			
-			if(!onload && (pl != doc.price_list_name)) cur_frm.cscript.price_list_name(doc, dt, dn);
-
-		}
-		var doc = locals[cur_frm.doctype][cur_frm.docname];
-		get_server_fields('get_shipping_address',doc.customer,'',doc, dt, dn, 0, callback2);
-			
-	}	 
-	if(doc.customer) $c_obj(wn.model.get_doclist(doc.doctype, doc.name), 'get_default_customer_address', '', callback);
-}
-
-cur_frm.cscript.customer_address = cur_frm.cscript.contact_person = function(doc,dt,dn) {		
-	if(doc.customer) get_server_fields('get_customer_address', JSON.stringify({customer: doc.customer, address: doc.customer_address, contact: doc.contact_person}),'', doc, dt, dn, 1);
-}
-
-cur_frm.fields_dict.customer_address.on_new = function(dn) {
-	locals['Address'][dn].customer = locals[cur_frm.doctype][cur_frm.docname].customer;
-	locals['Address'][dn].customer_name = locals[cur_frm.doctype][cur_frm.docname].customer_name;
-}
-
-cur_frm.fields_dict.contact_person.on_new = function(dn) {
-	locals['Contact'][dn].customer = locals[cur_frm.doctype][cur_frm.docname].customer;
-	locals['Contact'][dn].customer_name = locals[cur_frm.doctype][cur_frm.docname].customer_name;
-}
-
-cur_frm.fields_dict['customer_address'].get_query = function(doc, cdt, cdn) {
-	return 'SELECT name,address_line1,city FROM tabAddress WHERE customer = "'+ doc.customer +'" AND docstatus != 2 AND name LIKE "%s" ORDER BY name ASC LIMIT 50';
-}
-
-cur_frm.fields_dict['contact_person'].get_query = function(doc, cdt, cdn) {
-	return 'SELECT name,CONCAT(first_name," ",ifnull(last_name,"")) As FullName,department,designation FROM tabContact WHERE customer = "'+ doc.customer +'" AND docstatus != 2 AND name LIKE "%s" ORDER BY name ASC LIMIT 50';
-}
-
-cur_frm.cscript.pull_quotation_items = function(doc,dt,dn) {
-	var callback = function(r,rt){
-		var doc = locals[cur_frm.doctype][cur_frm.docname];					
-		if(r.message){							
-			doc.quotation = r.message;			
-			if(doc.quotation) {					
-				unhide_field(['quotation_date', 'customer_address', 'contact_person', 'territory', 'customer_group']);
-				if(doc.customer) get_server_fields('get_shipping_address', doc.customer, '', doc, dt, dn, 0);
-			}			
-			cur_frm.refresh();
-		}
-	} 
-
- $c_obj(wn.model.get_doclist(doc.doctype, doc.name),'pull_quotation_items','',callback);
-}
-
-
-//================ create new contact ============================================================================
-cur_frm.cscript.new_contact = function(){
-	tn = wn.model.make_new_doc_and_get_name('Contact');
-	locals['Contact'][tn].is_customer = 1;
-	if(doc.customer) locals['Contact'][tn].customer = doc.customer;
-	loaddoc('Contact', tn);
-}
-
-// DOCTYPE TRIGGERS
-// ================================================================================================
-
-
-// ***************** Get project name *****************
-cur_frm.fields_dict['project_name'].get_query = function(doc, cdt, cdn) {
-	var cond = '';
-	if(doc.customer) cond = '(`tabProject`.customer = "'+doc.customer+'" OR IFNULL(`tabProject`.customer,"")="") AND';
-	return repl('SELECT `tabProject`.name FROM `tabProject` \
-	WHERE `tabProject`.status not in ("Completed", "Cancelled") \
-	AND %(cond)s `tabProject`.name LIKE "%s" ORDER BY `tabProject`.name ASC LIMIT 50', {cond:cond});
-}
-
-//---- get customer details ----------------------------
-cur_frm.cscript.project_name = function(doc,cdt,cdn){
-	$c_obj(wn.model.get_doclist(doc.doctype, doc.name),'pull_project_customer','', function(r,rt){
-		refresh_many(['customer','customer_name', 'customer_address', 'contact_person', 'territory', 'contact_no', 'email_id', 'customer_group']);
-	});
+	},
 	
-}
-
-cur_frm.fields_dict['quotation'].get_query = function(doc) {
-	var cond='';
-	if(doc.order_type) cond = ' ifnull(`tabQuotation`.order_type, "") = "'+doc.order_type+'" and';
-	if(doc.customer) cond += ' ifnull(`tabQuotation`.customer, "") = "'+doc.customer+'" and';
-	
-	return repl('SELECT DISTINCT name, customer, posting_date FROM `tabQuotation` WHERE `tabQuotation`.company = "' + doc.company + '" and `tabQuotation`.`docstatus` = 1 and `tabQuotation`.status != "Order Lost" and %(cond)s `tabQuotation`.%(key)s LIKE "%s" ORDER BY `tabQuotation`.`name` DESC LIMIT 50', {cond:cond});
-}
-
-cur_frm.cscript.warehouse = function(doc, cdt , cdn) {
-	var d = locals[cdt][cdn];
-	if (d.warehouse) {
-		arg = "{'item_code':'" + d.item_code + "','warehouse':'" + d.warehouse +"'}";
-		get_server_fields('get_available_qty',arg,'sales_order_items',doc,cdt,cdn,1);
-	}
-}
-
-cur_frm.cscript['Make Maintenance Schedule'] = function() {
-	var doc = cur_frm.doc;
-
-	if (doc.docstatus == 1) { 
-		$c_obj(wn.model.get_doclist(doc.doctype, doc.name),'check_maintenance_schedule','',
-			function(r,rt){
-				if(r.message == 'No'){
-					n = wn.model.make_new_doc_and_get_name("Maintenance Schedule");
-					$c('dt_map', args={
-									'docs':wn.model.compress([locals["Maintenance Schedule"][n]]),
-									'from_doctype':'Sales Order',
-									'to_doctype':'Maintenance Schedule',
-									'from_docname':doc.name,
-						'from_to_list':"[['Sales Order', 'Maintenance Schedule'], ['Sales Order Item', 'Maintenance Schedule Item']]"
-					}
-					, function(r,rt) {
-						loaddoc("Maintenance Schedule", n);
-					}
-					);
-				}
-				else{
-					msgprint("You have already created Maintenance Schedule against this Sales Order");
-				}
+	pull_quotation_items: function(doc, cdt, cdn) {
+		var me = this;
+		wn.call({
+			doc: me.frm.doc,
+			method: "pull_quotation_items",
+			callback: function(r, rt) {
+				unhide_field("quotation_date");
+				me.refresh();
 			}
-		);
-	}
-}
-
-//------------ make maintenance visit ------------
-cur_frm.cscript.make_maintenance_visit = function() {
-	var doc = cur_frm.doc;
-
-	if (doc.docstatus == 1) { 
-		$c_obj(wn.model.get_doclist(doc.doctype, doc.name),'check_maintenance_visit','',
-			function(r,rt){
-				if(r.message == 'No'){
-					n = wn.model.make_new_doc_and_get_name("Maintenance Visit");
-					$c('dt_map', args={
-									'docs':wn.model.compress([locals["Maintenance Visit"][n]]),
-									'from_doctype':'Sales Order',
-									'to_doctype':'Maintenance Visit',
-									'from_docname':doc.name,
-						'from_to_list':"[['Sales Order', 'Maintenance Visit'], ['Sales Order Item', 'Maintenance Visit Purpose']]"
-					}
-					, function(r,rt) {
-						loaddoc("Maintenance Visit", n);
-					}
-					);
-				}
-				else{
-					msgprint("You have already completed maintenance against this Sales Order");
-				}
-			}
-		);
-	}
-}
-
-// make indent
-// ================================================================================================
-cur_frm.cscript['Make Purchase Request'] = function() {
-	var doc = cur_frm.doc;
-	if (doc.docstatus == 1) { 
-	n = wn.model.make_new_doc_and_get_name("Purchase Request");
-	$c('dt_map', args={
-					'docs':wn.model.compress([locals["Purchase Request"][n]]),
-					'from_doctype':'Sales Order',
-					'to_doctype':'Purchase Request',
-					'from_docname':doc.name,
-		'from_to_list':"[['Sales Order', 'Purchase Request'], ['Sales Order Item', 'Purchase Request Item']]"
-	}
-	, function(r,rt) {
-		loaddoc("Purchase Request", n);
-		}
-		);
-	}
-}
-
-
-// MAKE DELIVERY NOTE
-// ================================================================================================
-cur_frm.cscript['Make Delivery Note'] = function() {
-	var doc = cur_frm.doc;
-	if (doc.docstatus == 1) { 
-	n = wn.model.make_new_doc_and_get_name("Delivery Note");
-	$c('dt_map', args={
-					'docs':wn.model.compress([locals["Delivery Note"][n]]),
-					'from_doctype':'Sales Order',
-					'to_doctype':'Delivery Note',
-					'from_docname':doc.name,
-		'from_to_list':"[['Sales Order', 'Delivery Note'], ['Sales Order Item', 'Delivery Note Item'],['Sales Taxes and Charges','Sales Taxes and Charges'],['Sales Team','Sales Team']]"
-	}
-	, function(r,rt) {
-		loaddoc("Delivery Note", n);
-		}
-		);
-	}
-}
-
-
-// MAKE SALES INVOICE
-// ================================================================================================
-cur_frm.cscript['Make Sales Invoice'] = function() {
-	var doc = cur_frm.doc;
-
-	n = wn.model.make_new_doc_and_get_name('Sales Invoice');
-	$c('dt_map', args={
-		'docs':wn.model.compress([locals['Sales Invoice'][n]]),
-		'from_doctype':doc.doctype,
-		'to_doctype':'Sales Invoice',
-		'from_docname':doc.name,
-		'from_to_list':"[['Sales Order','Sales Invoice'],['Sales Order Item','Sales Invoice Item'],['Sales Taxes and Charges','Sales Taxes and Charges'],['Sales Team','Sales Team']]"
-		}, function(r,rt) {
-			 loaddoc('Sales Invoice', n);
-		}
-	);
-}
-
-
-// STOP SALES ORDER
-// ==================================================================================================
-cur_frm.cscript['Stop Sales Order'] = function() {
-	var doc = cur_frm.doc;
-
-	var check = confirm("Are you sure you want to STOP " + doc.name);
-
-	if (check) {
-		$c('runserverobj', args={'method':'stop_sales_order', 'docs': wn.model.compress(wn.model.get_doclist(doc.doctype, doc.name))}, function(r,rt) {
-			cur_frm.refresh();
 		});
-	}
-}
+	},
+	
+	make_delivery_note: function() {
+		wn.model.map_doclist([["Sales Order", "Delivery Note"], 
+			["Sales Order Item", "Delivery Note Item"],
+		 	["Sales Taxes and Charges", "Sales Taxes and Charges"], 
+			["Sales Team", "Sales Team"]], this.frm.doc.name);
+	},
+	
+	make_sales_invoice: function() {
+		wn.model.map_doclist([["Sales Order", "Sales Invoice"], 
+			["Sales Order Item", "Sales Invoice Item"],
+		 	["Sales Taxes and Charges", "Sales Taxes and Charges"], 
+			["Sales Team", "Sales Team"]], this.frm.doc.name);
+	},
+	
+	make_purchae_request: function() {
+		wn.model.map_doclist([["Sales Order", "Purchase Request"],
+			["Sales Order Item", "Purchase Request Item"]], this.frm.doc.name);
+	},
 
-
-cur_frm.cscript['Unstop Sales Order'] = function() {
-	var doc = cur_frm.doc;
-
-	var check = confirm("Are you sure you want to UNSTOP " + doc.name);
-
-	if (check) {
-		$c('runserverobj', args={'method':'unstop_sales_order', 'docs': wn.model.compress(wn.model.get_doclist(doc.doctype, doc.name))}, function(r,rt) {
-			cur_frm.refresh();
+	make_maintenance_schedule: function() {
+		var me = this;
+		wn.call({
+			doc: me.frm.doc,
+			method: "check_maintenance_schedule",
+			callback: function(r, rt) {
+				if (r.message) {
+					msgprint("You have already created Maintenance Schedule \
+							against this Sales Order");
+				} else {
+					wn.model.map_doclist([["Sales Order", "Maintenance Schedule"],
+						["Sales Order Item", "Maintenance Schedule Item"]], this.frm.doc.name);
+				}
+			}
 		});
-	}
-}
+	},
+	
+	make_maintenance_visit: function() {
+		var me = this;
+		wn.call({
+			doc: me.frm.doc,
+			method: "check_maintenance_visit",
+			callback: function(r, rt) {
+				if (r.message) {
+					msgprint("You have already created Maintenance Visit \
+						against this Sales Order");
+				} else {
+					wn.model.map_doclist([["Sales Order", "Maintenance Schedule"],
+						["Sales Order Item", "Maintenance Schedule Item"]], this.frm.doc.name);
+				}
+			}
+		});
+	},
+	
+	setup_get_query: function() {
+		this._super();
+		var me = this;
+		
+		// quotation
+		this.frm.fields_dict['quotation'].get_query = function() {
+			var condition = '';
+			if (this.frm.doc.order_type) 
+				condition = ' and ifnull(order_type, "") = "' + this.frm.doc.order_type + '"';
+			if(this.frm.doc.customer) 
+				condition += ' and  ifnull(customer, "") = "' + this.frm.doc.customer + '"';
+
+			return repl('SELECT DISTINCT name, customer, posting_date \
+				FROM `tabQuotation` WHERE company = "' + this.frm.doc.company + 
+				'" and docstatus = 1 and status != "Order Lost" \
+				and %(key)s LIKE \"%s\" %(cond)s ORDER BY name DESC LIMIT 50'
+				, { condition: condition});
+		}
+	},
+})
 
 
-cur_frm.fields_dict['territory'].get_query = function(doc,cdt,cdn) {
-	return 'SELECT `tabTerritory`.`name`,`tabTerritory`.`parent_territory` FROM `tabTerritory` WHERE `tabTerritory`.`is_group` = "No" AND `tabTerritory`.`docstatus`!= 2 AND `tabTerritory`.%(key)s LIKE "%s"	ORDER BY	`tabTerritory`.`name` ASC LIMIT 50';
-}
-
-cur_frm.cscript.on_submit = function(doc, cdt, cdn) {
-	var args = {
-		type: 'Sales Order',
-		doctype: 'Sales Order'
-	}
-	cur_frm.cscript.notify(doc, args);
-}
+cur_frm.cscript = new erpnext.selling.SalesOrder({
+	frm: cur_frm, item_table_field: "sales_order_items"});

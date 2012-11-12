@@ -22,18 +22,19 @@ erpnext.selling.Quotation = erpnext.Selling.extend({
 		this._super();
 		this.make_communication_body();
 	},
+	
 	refresh: function() {
 		this._super();
 		this.add_buttons();
 		this.toggle_fields();
-		
-		if (!this.is_onload) this.hide_price_list_currency(); 
 		if (!doc.__islocal) this.render_communication_list();
 	},
+	
 	validate: function() {
 		this._super()
 		this.validate_quotation_to();
 	},
+	
 	validate_quotation_to: function() {
 		if(this.frm.doc.quotation_to == "Lead" && !this.frm.doc.lead) {
 			msgprint("Lead is mandatory");
@@ -43,21 +44,15 @@ erpnext.selling.Quotation = erpnext.Selling.extend({
 			validated = false;
 		}
 	},
-	on_submit: function() {
-		this.notify(this.frm.doc, {type: 'Quotation', doctype: 'Quotation'});
-	},
+	
 	toggle_fields: function() {
-		var customer_fields = ['customer_address', 'contact_person', 'customer_name',
-		 	'address_display', 'contact_display', 'customer_group', 'territory'];
+		this._super();
 		var lead_fields = ['lead_name', 'organization', 'territory'];
 		this.frm.toggle_display("customer", this.frm.doc.quotation_to == "Customer");
 		this.frm.toggle_display("lead", this.frm.doc.quotation_to == "Lead");
-		this.frm.toggle_display(customer_fields, this.frm.doc.customer);
 		this.frm.toggle_display(lead_fields, this.frm.doc.lead);
-		
-		display_contact_section = (this.frm.doc.customer || this.frm.doc.lead) ? true : false;
-		this.frm.toggle_display("contact_section", display_contact_section);
 	},
+	
 	quotation_to: function() {
 		related_fields = ['lead', 'lead_name','customer', 'customer_address', 
 			'contact_person', 'customer_name', 'address_display', 'contact_display',
@@ -67,22 +62,25 @@ erpnext.selling.Quotation = erpnext.Selling.extend({
 		}
 		this.toggle_fields();
 	},
+	
 	add_buttons: function() {
 		var me = this;
 		if(this.frm.doc.docstatus == 1 && this.frm.doc.status != "Order Lost") {
 			this.frm.add_custom_button("Make Sales Order", 
 				function() { me.make_sales_order(this); });
-			this.frmcur_frm.add_custom_button("Set as Lost", 
+			this.frm.add_custom_button("Set as Lost", 
 				function() { me.set_as_lost(this); });
-			this.frmcur_frm.add_custom_button("Send SMS", this.send_sms); // to-do
+			this.frm.add_custom_button("Send SMS", this.send_sms); // to-do
 		}
 	},
+	
 	make_sales_order: function() {
 		wn.model.map_doclist([["Quotation", "Sales Order"], 
 			["Quotation Item", "Sales Order Item"],
 		 	["Sales Taxes and Charges", "Sales Taxes and Charges"], 
 			["Sales Team", "Sales Team"]], this.frm.doc.name);
 	},
+	
 	set_as_lost: function() {
 		var lost_reason_dialog;
 		if(!lost_reason_dialog) {
@@ -91,46 +89,25 @@ erpnext.selling.Quotation = erpnext.Selling.extend({
 		}
 		lost_reason_dialog.show();
 	},
+	
 	lead: function() {
 		if(this.frm.doc.lead) {
 			get_server_fields('get_lead_details', this.frm.doc.lead, '', this.frm.doc, 
 				this.frm.doc.doctype, this.frm.doc.name, 1);
 		}
 	},
-	customer: function() {
-		var me = this;
-		var old_price_list = self.frm.doc.price_list_name;
-		wn.call({
-			method: "runserverobj",
-			args: {
-				docs: wn.model.compress(wn.model.get_doclist(me.frm.doc.doctype,
-					me.frm.doc.name)),
-				method: "get_default_customer_address",
-				args: ""
-			},
-			callback: function(r, rt) {
-				$.extend(locals[this.frm.doc.doctype][this.frm.doc.name], r.message);
-				this.refresh();
-				if (old_price_list != this.frm.doc.price_list_name) 
-					this.price_list_name(this.frm.doc, this.frm.doctype, this.frm.name);
-			}
-		});
-	},
+	
 	pull_opportunity_items: function(){
+		var me = this;
 		wn.call({
-			method: "runserverobj",
-			args: {
-				docs: wn.model.compress(wn.model.get_doclist(me.frm.doc.doctype,
-					me.frm.doc.name)),
-				method: "pull_opportunity_items",
-				args: ""
-			},
+			doc: me.frm.doc,
+			method: "pull_opportunity_items",
 			callback: function(r, rt) {
-				$.extend(locals[this.frm.doc.doctype][this.frm.doc.name], r.message);
-				this.refresh();
+				me.refresh();
 			}
 		});
 	},
+	
 	setup_get_query: function() {
 		this._super();
 		var me = this;
@@ -207,7 +184,7 @@ erpnext.selling.Quotation = erpnext.Selling.extend({
 				var query = repl("\
 					SELECT name, item_name, description \
 					FROM `tabItem` item \
-					WHERE %(condition)s and item.%(key)s LIKE '%s' 
+					WHERE %(condition)s and item.%(key)s LIKE '%s' \
 					ORDER BY item.item_code DESC LIMIT 50", {condition: condition});
 			}
 			return query;

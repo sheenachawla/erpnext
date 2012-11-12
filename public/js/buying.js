@@ -93,7 +93,7 @@ erpnext.Buying = erpnext.Transaction.extend({
 			wn.call({
 				doc: this.frm.doc,
 				method: "get_supplier_details",
-				args: { supplier: this.frm.doc.supplier },
+				args: { supplier: me.frm.doc.supplier },
 				callback: function(r) {
 					me.frm.refresh();
 				}
@@ -102,13 +102,14 @@ erpnext.Buying = erpnext.Transaction.extend({
 	},
 	
 	supplier_address: function() {
-		if(this.frm.doc.supplier && this.frm.doc.supplier_address) {
-			this.get_address();
+		if(this.frm.doc.supplier_address) {
+			args = {"name": this.frm.doc.supplier_address};
+			this.get_address(args);
 		}
 	},
 	
 	contact_person: function() {
-		if(this.frm.doc.supplier && this.frm.doc.contact_person) {
+		if(this.frm.doc.contact_person) {
 			this.get_contact();
 		}
 	},

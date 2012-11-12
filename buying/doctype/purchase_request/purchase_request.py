@@ -27,11 +27,7 @@ class DocType(BuyingController):
 		
 	def validate(self):
 		super(DocType, self).validate()
-		self.validate_schedule_date()
-		
-		if self.doc.docstatus == 1:
-			self.stop_resume_transaction()
-			
+		self.validate_schedule_date()			
 		self.validate_qty_against_sales_order()
 		
 	def on_submit(self):
@@ -182,4 +178,3 @@ class DocType(BuyingController):
 	def validate_prevdoclist(self):
 		from webnotes.model.mapper import validate_prev_doclist
 		validate_prev_doclist("Sales Order", "Purchase Request", self.doclist)
-

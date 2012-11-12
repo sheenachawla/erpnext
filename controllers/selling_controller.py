@@ -36,7 +36,7 @@ class SellingController(TransactionController):
 		self.get_sales_team_contribution()
 				
 	def validate_order_type(self):
-		if self.doc.order_type in ['Maintenance', 'Service']:
+		if self.doc.order_type in ["Maintenance", "Service"]:
 			item_type = "service item"
 			item_type_field = "is_service_item"
 		elif sself.doc.order_type == "Sales":
@@ -77,13 +77,13 @@ class SellingController(TransactionController):
 				'Project', self.doc.project_name, 'customer'):
 			msgprint("Project: %s does not associate with customer: %s" 
 				% (self.doc.project_name, self.doc.customer), raise_exception=1)
-				
+	
 	def get_sales_team_contribution(self):
 		total_contribution = sum([d.allocated_percentage for d in 
 			self.doclist.get({'parentfield': 'sales_team'})])
 		for d in self.doclist.get({"parentfield": 'sales_team'}):
 			d.allocated_percentage = d.allocated_percentage*100/total_contribution
-			
+	
 	def append_default_taxes(self):
 		"""called in on_map to add rows in tax table when they are missing"""
 		if not (self.doc.customer or 
@@ -94,11 +94,38 @@ class SellingController(TransactionController):
 			if not self.doc.taxes_and_charges_master: return
 			self.append_taxes()
 	
+	def get_customer_details(self):
+		# set primary address
+		self.set_address(args)
+		
+		# set shipping address
+		args.update({"is_shipping_address": 1})
+		self.set_address(args)
+		
+		# set contact
+		self.set_contact(args)
+	
+		res = webnotes.conn.sql("""select customer_name, default_currency
+			from `tabCustomer` where name=%s and docstatus < 2""", (args.get("customer"),))
+	
+		if res:
+			self.doc.customer_name = res[0][0]
+			self.doc.currency = res[0][1]
+			
+	
+	def pull_project_customer(self):
+		if webnotes.conn.get_value("Project", self.doc.project_name, "customer"):
+			mapper = webnotes.get_controller("DocType Mapper", "Project-%s" % self.doc.doctype)
+
+			import json
+			mapper.dt_map("Project", self.doc.doctype, self.doc.project_name,
+				self.doc, self.doclist, json.dumps([["Project", self.doc.doctype]]))
+		
 	def get_item_details(self, args, item=None):
 		args, item = self.process_args(args, item)
 		
 		ret = super(SellingController, self).get_item_details(args, item)
-
+		
 		# set default income account and cost center
 		ret.income_account: item.doc.default_income_account or args.income_account,
 		ret.cost_center: item.doc.default_sales_cost_center or args.cost_center,
@@ -114,7 +141,7 @@ class SellingController(TransactionController):
 			
 		# get actual qty
 		if ret.warehouse:
-			ret.available_qty = self.get_actual_qty({
+			ret.available_qty = stock.get_actual_qty({
 				'item_code': args.item_code, 'warehouse': ret.warehouse, 
 				"posting_date": self.doc.posting_date, "posting_time": self.doc.posting_time or ""
 			})
@@ -158,3 +185,11 @@ class SellingController(TransactionController):
 			'total_commission': (commission_rate * 
 				flt(self.doc.net_total, self.precision.main.net_total)) / 100.0
 		}
+	def get_price_list_currency(self, args):
+		""" Get all currencies in which price list is maintained"""
+		plc = webnotes.conn.sql("""select distinct ref_currency from `tabItem Price` 
+			where price_list_name = %s""", args.get("price_list_name"))
+		plc = [d[0] for d in plc]
+		import setup
+		default_currency = setup.get_currency(args.get("company"))
+		return plc, default_currency

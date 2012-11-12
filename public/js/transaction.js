@@ -50,6 +50,9 @@ erpnext.Transaction = Class.extend({
 			is_subcontracted: "No",
 			
 			// for selling
+			price_list_name: sys_defaults.price_list_name,
+			price_list_currency: sys_defaults.price_list_currency,
+			plc_exchange_rate: 1,
 		}
 		$.each(default_values, function(key, value) {
 			if(!me.frm.doc[key] && wn.meta.get_docfield(me.frm.doc.doctype, key)) {
@@ -63,39 +66,48 @@ erpnext.Transaction = Class.extend({
 		var item = locals[cdt][cdn];
 		if(item.item_code) {
 			wn.call({
-				method: "runserverobj",
+				doc: me.frm.doc,
+				method: "get_item_details",
 				args: {
-					docs: wn.model.compress(wn.model.get_doclist(me.frm.doc.doctype,
-						me.frm.doc.name)),
-					method: "get_item_details",
-					args: {
-						item_code: item.item_code,
-						warehouse: item.warehouse,
-						income_account: item.income_account,
-						expense_account: item.expense_account,
-						cost_center: item.cost_center
-					},
+					item_code: item.item_code,
+					warehouse: item.warehouse,
+					income_account: item.income_account,
+					expense_account: item.expense_account,
+					cost_center: item.cost_center
 				},
-				callback: function(r) {
+				callback: function() {
 					// update item doc
 					$.extend(locals[cdt][cdn], r.message);
+					if(this.custom_item_code) {
+						this.custom_item_code(doc, cdt, cdn);
+					}
 					refresh_field(me.item_table_field);
 				}
 			});
-		}
-		if(this.custom_item_code){
-			this.custom_item_code(doc, cdt, cdn);
 		}
 	},
 
 	barcode: function(doc, cdt, cdn) {
 		var me = this;
 		var item = locals[cdt][cdn];
-		get_server_fields("get_barcode_details", item.barcode, this.item_table_field, 
-			doc, cdt, cdn, 1, function(r, rt) {
-				this.item_code(doc, cdt, cdn);
-			}
-		);
+		if (item.barcode) {
+			wn.call({
+				doc: me.frm.doc,
+				method: "get_barcode_details",
+				args: {
+					barcode: item.barcode,
+					warehouse: item.warehouse,
+					income_account: item.income_account,
+					expense_account: item.expense_account,
+					cost_center: item.cost_center
+				}
+				callback: function(r, rt) {
+					// update item doc
+					$.extend(locals[cdt][cdn], r.message);
+					refresh_field(me.item_table_field);
+				}
+			});
+		}
 	},
 
 	setup_get_query: function() {
@@ -116,9 +128,10 @@ erpnext.Transaction = Class.extend({
 	},
 	
 	get_address: function(args) {
+		var me = this;
 		wn.call({
-			doc: this.frm.doc,
-			method: 'get_address',
+			doc: me.frm.doc,
+			method: 'set_address',
 			args: args || {},
 			callback: function(r) {
 				me.frm.refresh();
@@ -129,12 +142,22 @@ erpnext.Transaction = Class.extend({
 	get_contact: function(args) {
 		wn.call({
 			doc: this.frm.doc,
-			method: 'get_contact',
+			method: 'set_contact',
 			args: args || {},
 			callback: function(r) {
 				me.frm.refresh();
 			}
 		});
+	},
+	
+	stop_transaction: function(btn) {
+		this.frm.doc.is_stopped = 1;
+		this.frm.save(null, btn);
+	},
+	
+	resume_transaction: function(btn) {
+		this.frm.doc.is_stopped = 0;
+		this.frm.save(null, btn);
 	},
 	
 });

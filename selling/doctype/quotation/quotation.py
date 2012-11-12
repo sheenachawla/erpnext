@@ -130,19 +130,3 @@ class DocType(SellingController):
 			"territory": lead["territory"] or ""
 		}
 		return ret
-		
-
-	# def get_contact_details(self):
-	# 	return get_obj('Sales Common').get_contact_details(self,0)
-
-	# def get_adj_percent(self, arg=''):
-	# 	get_obj('Sales Common').get_adj_percent(self)
-	# 
-	# def get_rate(self,arg):
-	# 	return get_obj('Sales Common').get_rate(arg)
-	# 
-	# def load_default_taxes(self):
-	# 	self.doclist = get_obj('Sales Common').load_default_taxes(self)
-	# 
-	# def get_taxes_and_charges(self):
-	# 	self.doclist = get_obj('Sales Common').get_taxes_and_charges(self)	

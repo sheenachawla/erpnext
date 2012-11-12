@@ -14,132 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
-var set_dynamic_label_par = function(doc, cdt, cdn, base_curr) {
-	//parent flds
-	par_cols_base = {'net_total': 'Net Total', 'taxes_and_charges_total': 'Taxes and Charges Total', 
-		'grand_total':	'Grand Total', 'rounded_total': 'Rounded Total', 'rounded_total_in_words': 'In Words'}
-	par_cols_export = {'grand_total_print': 'Grand Total', 'rounded_total_print':	'Rounded Total', 'rounded_total_in_words_print':	'In Words'};
-
-	for (d in par_cols_base) cur_frm.fields_dict[d].label_span.innerHTML = par_cols_base[d]+' (' + base_curr + ')';
-	for (d in par_cols_export) cur_frm.fields_dict[d].label_span.innerHTML = par_cols_export[d]+' (' + doc.currency + ')';
-	cur_frm.fields_dict['exchange_rate'].label_span.innerHTML = "Conversion Rate (" + doc.currency +' -> '+ base_curr + ')';
-	cur_frm.fields_dict['plc_exchange_rate'].label_span.innerHTML = 'Price List Currency Conversion Rate (' + doc.price_list_currency +' -> '+ base_curr + ')';
-
-	if (doc.doctype == 'Sales Invoice') {
-		si_cols = {'total_advance': 'Total Advance', 'outstanding_amount': 'Outstanding Amount', 'paid_amount': 'Paid Amount', 'write_off_amount': 'Write Off Amount'}
-		for (d in si_cols) cur_frm.fields_dict[d].label_span.innerHTML = si_cols[d] + ' (' + base_curr + ')';
-	}
-}
-
-
-var set_dynamic_label_child = function(doc, cdt, cdn, base_curr) {
-	// item table flds
-	item_cols_base = {'rate': 'Basic Rate', 'ref_rate': 'Price List Rate', 'amount': 'Amount'};
-	item_cols_export = {'print_rate': 'Basic Rate', 'print_ref_rate': 'Price List Rate', 'print_amount': 'Amount'};
-		
-	for (d in item_cols_base) $('[data-grid-fieldname="'+cur_frm.cscript.tname+'-'+d+'"]').html(item_cols_base[d]+' ('+base_curr+')');
-	for (d in item_cols_export) $('[data-grid-fieldname="'+cur_frm.cscript.tname+'-'+d+'"]').html(item_cols_export[d]+' ('+doc.currency+')');	
-
-	var hide = (doc.currency == sys_defaults['currency']) ? false : true;
-	for (f in item_cols_base) {
-		cur_frm.fields_dict[cur_frm.cscript.fname].grid.set_column_disp(f, hide);
-	}
-
-	//tax table flds
-	tax_cols = {'tax_amount': 'Amount', 'total': 'Total'};
-	for (d in tax_cols) $('[data-grid-fieldname="Sales Taxes and Charges-'+d+'"]').html(tax_cols[d]+' ('+base_curr+')');
-		
-	if (doc.doctype == 'Sales Invoice') {
-		// advance table flds
-		adv_cols = {'advance_amount': 'Advance Amount', 'allocated_amount': 'Allocated Amount'}
-		for (d in adv_cols) $('[data-grid-fieldname="Sales Invoice Advance-'+d+'"]').html(adv_cols[d]+' ('+base_curr+')');	
-	}
-}
-
-// Change label dynamically based on currency
-//------------------------------------------------------------------
-
-cur_frm.cscript.dynamic_label = function(doc, cdt, cdn, base_curr, callback) {
-	cur_frm.cscript.base_currency = base_curr;
-	set_dynamic_label_par(doc, cdt, cdn, base_curr);
-	set_dynamic_label_child(doc, cdt, cdn, base_curr);
-	set_sales_bom_help(doc);
-
-	if (callback) callback(doc, cdt, cdn);
-}
-
-// Help for Sales BOM items
-var set_sales_bom_help = function(doc) {
-	if(!cur_frm.fields_dict.packing_list) return;
-	if (getchildren('Delivery Note Packing Item', doc.name, 'delivery_note_packing_items').length) {
-		$(cur_frm.fields_dict.packing_list.row.wrapper).toggle(true);
-		
-		if (inList(['Delivery Note', 'Sales Invoice'], doc.doctype)) {
-			help_msg = "<div class='alert'> \
-				For 'Sales BOM' items, warehouse, serial no and batch no \
-				will be considered from the 'Packing List' table. \
-				If warehouse and batch no are same for all packing items for any 'Sales BOM' item, \
-				those values can be entered in the main item table, values will be copied to 'Packing List' table. \
-			</div>";
-			wn.meta.get_docfield(doc.doctype, 'sales_bom_help', doc.name).options = help_msg;
-		} 
-	} else {
-		$(cur_frm.fields_dict.packing_list.row.wrapper).toggle(false);
-		if (inList(['Delivery Note', 'Sales Invoice'], doc.doctype)) {
-			wn.meta.get_docfield(doc.doctype, 'sales_bom_help', doc.name).options = '';
-		}
-	}
-	refresh_field('sales_bom_help');
-}
-
-
-cur_frm.cscript.hide_price_list_currency = function(doc, cdt, cdn, callback1) {
-	if (doc.price_list_name && doc.currency) {
-		wn.call({
-			method: 'selling.doctype.sales_common.sales_common.get_price_list_currency',
-			args: {'price_list':doc.price_list_name, 'company': doc.company},
-			callback: function(r, rt) {
-				pl_currency = r.message[0]?r.message[0]:[];
-				unhide_field(['price_list_currency', 'plc_exchange_rate']);
-				
-				if (pl_currency.length==1) {
-					if (doc.price_list_currency != pl_currency[0]) set_multiple(cdt, cdn, {price_list_currency:pl_currency[0]});
-					if (pl_currency[0] == doc.currency) {
-						if(doc.plc_exchange_rate != doc.exchange_rate) set_multiple(cdt, cdn, {plc_exchange_rate:doc.exchange_rate});
-						hide_field(['price_list_currency', 'plc_exchange_rate']);
-					} else if (pl_currency[0] == r.message[1]) {
-						if (doc.plc_exchange_rate != 1) set_multiple(cdt, cdn, {plc_exchange_rate:1})
-						hide_field(['price_list_currency', 'plc_exchange_rate']);
-					}					
-				}
-
-				if (r.message[1] == doc.currency) {
-					if (doc.exchange_rate != 1) set_multiple(cdt, cdn, {exchange_rate:1});
-					hide_field(['exchange_rate', 'grand_total_print', 'rounded_total_in_words_print', 'rounded_total_print']);
-				} else unhide_field(['exchange_rate', 'grand_total_print', 'rounded_total_in_words_print', 'rounded_total_print']);
-
-				if (r.message[1] == doc.price_list_currency) {
-					if (doc.plc_exchange_rate != 1) set_multiple(cdt, cdn, {plc_exchange_rate:1});
-					hide_field('plc_exchange_rate');
-				} else unhide_field('plc_exchange_rate');
-				
-				cur_frm.cscript.dynamic_label(doc, cdt, cdn, r.message[1], callback1);	
-			}
-		})
-	}
-}
-
-
-
-
-// *********************** QUANTITY ***************************
 cur_frm.cscript.qty = function(doc, cdt, cdn) { cur_frm.cscript.recalc(doc, 1); }
 	
-// ************************ DISCOUNT (%) ***********************
 cur_frm.cscript.discount = function(doc, cdt, cdn) { cur_frm.cscript.recalc(doc, 1); }
 
-// ************************ REF RATE ****************************
 cur_frm.cscript.print_ref_rate = function(doc, cdt, cdn){
 	var d = locals[cdt][cdn];
 	var consider_incl_rate = cur_frm.cscript.consider_incl_rate(doc, cur_frm.cscript.other_fname);
@@ -149,7 +27,6 @@ cur_frm.cscript.print_ref_rate = function(doc, cdt, cdn){
 	cur_frm.cscript.recalc(doc, 1);
 }
 
-// *********************** BASIC RATE **************************
 cur_frm.cscript.rate = function(doc, cdt, cdn) { 
 	var fname = cur_frm.cscript.fname;
 	var d = locals[cdt][cdn];
@@ -178,7 +55,6 @@ cur_frm.cscript.rate = function(doc, cdt, cdn) {
 	}
 }
 
-// ************************ EXPORT RATE *************************
 cur_frm.cscript.print_rate = function(doc,cdt,cdn) {
 	var cur_rec = locals[cdt][cdn];
 	var fname = cur_frm.cscript.fname;
@@ -192,9 +68,6 @@ cur_frm.cscript.print_rate = function(doc,cdt,cdn) {
 }
 
 
-
-// CALCULATION OF TOTAL AMOUNTS
-// ======================================================================================================== 
 cur_frm.cscript.recalc = function(doc, n) {
 	if(!n)n=0;
 	doc = locals[doc.doctype][doc.name];
@@ -231,7 +104,6 @@ cur_frm.cscript.recalc = function(doc, n) {
 	}
 	cur_frm.cscript.calc_doc_values(doc, null, null, tname, fname, other_fname); // calculates total amounts
 
-	// ******************* calculate allocated amount of sales person ************************
 	cl = getchildren('Sales Team', doc.name, sales_team);
 	for(var i=0;i<cl.length;i++) {
 		if (cl[i].allocated_percentage) {
@@ -245,7 +117,6 @@ cur_frm.cscript.recalc = function(doc, n) {
 	if(cur_frm.cscript.custom_recalc)cur_frm.cscript.custom_recalc(doc);
 }
 
-// ******* Calculation of total amounts of document (item amount + other charges)****************
 cur_frm.cscript.calc_doc_values = function(doc, cdt, cdn, tname, fname, other_fname) {
 	doc = locals[doc.doctype][doc.name];
 	var net_total = 0; var taxes_and_charges_total = 0;
@@ -404,7 +275,6 @@ cur_frm.cscript.check_charge_type_and_get_tax_amount = function( doc, tax, t, cl
 	}
 }
 
-// ********************** Functions for inclusive value calc ******************************
 cur_frm.cscript.consider_incl_rate = function(doc, other_fname) {
 	var tax_list = getchildren('Sales Taxes and Charges', doc.name, other_fname, doc.doctype);
 	for(var i=0; i<tax_list.length; i++) {
@@ -455,9 +325,6 @@ cur_frm.cscript.back_calc_rate = function(doc, tname, fname, child, other_fname)
 		};
 	}
 	var rate = (child.print_rate * flt(doc.exchange_rate)) / total;
-	//console.log(temp_tax_list);
-	//console.log('in basic rate back calc');
-	//console.log(rate);
 	return rate;
 }
 
@@ -477,7 +344,7 @@ cur_frm.cscript.included_in_print_rate = function(doc, cdt, cdn) {
 	}
 }
 
-// ********************** Update values in table ******************************
+
 cur_frm.cscript.update_fname_table = function(doc , tname , fname , n, other_fname) {
 	doc = locals[doc.doctype][doc.name] 
 	var net_total = 0
@@ -496,11 +363,7 @@ cur_frm.cscript.update_fname_table = function(doc , tname , fname , n, other_fna
 					'rate': flt(flt(cl[i].print_rate) * flt(doc.exchange_rate)),
 					'amount': roundNumber(flt((flt(cl[i].print_rate) * flt(doc.exchange_rate)) * flt(cl[i].qty)), 2)
 				}, fname);
-				//var ref_rate = flt(cl[i].rate) + flt(flt(cl[i].rate) * flt(cl[i].discount) / 100);
-				//set_multiple(tname, cl[i].name, {
-				//	'ref_rate': flt(ref_rate)
-				//}, fname);
-
+			
 		} else if(consider_incl_rate) {
 			if(flt(cl[i].print_rate) > 0) {
 				// calculate basic rate based on taxes
@@ -530,12 +393,7 @@ cur_frm.cscript.update_fname_table = function(doc , tname , fname , n, other_fna
 				set_multiple(tname, cl[i].name, {'discount': 100 - flt(flt(cl[i].rate)	* 100 / (flt(cl[i].print_ref_rate) * flt(doc.exchange_rate)))}, fname);
 			set_multiple(tname, cl[i].name, {'amount': flt(flt(cl[i].qty) * flt(cl[i].rate)), 'print_rate': flt(flt(cl[i].rate) / flt(doc.exchange_rate)), 'print_amount': flt((flt(cl[i].rate) / flt(doc.exchange_rate)) * flt(cl[i].qty)) }, fname);
 		}
-		/*else if(n == 3){
-			set_multiple(tname, cl[i].name, {'rate': flt(flt(cl[i].print_rate) * flt(doc.exchange_rate))}, fname);
-			set_multiple(tname, cl[i].name, {'amount' : flt(flt(cl[i].rate) * flt(cl[i].qty)), 'print_amount': flt(flt(cl[i].print_rate) * flt(cl[i].qty))}, fname);
-			if(cl[i].print_ref_rate > 0)
-		set_multiple(tname, cl[i].name, {'discount': 100 - flt(flt(cl[i].print_rate) * 100 / flt(cl[i].print_ref_rate)), 'ref_rate': flt(flt(cl[i].print_ref_rate) * flt(doc.exchange_rate)) }, fname);
-		}*/
+		
 		net_total += flt(flt(cl[i].qty) * flt(cl[i].rate));
 	}
 	doc.net_total = net_total;
@@ -548,8 +406,6 @@ cur_frm.cscript.get_item_wise_tax_detail = function( doc, rate, cl, i, tax, t) {
 	detail = cl[i].item_code + " : " + cstr(rate) + NEWLINE;
 	return detail;
 }
-
-// **************** RE-CALCULATE VALUES ***************************
 
 cur_frm.cscript.recalculate_values = function(doc, cdt, cdn) {	
 	cur_frm.cscript.calculate_charges(doc,cdt,cdn);
@@ -595,18 +451,7 @@ cur_frm.cscript.calculate_charges = function(doc, cdt, cdn) {
 	cur_frm.cscript.recalc(doc, 1);
 }
 
-
-// Client Side Validation
-// =================================================================================
 cur_frm.cscript.validate = function(doc, cdt, cdn) {
-	cur_frm.cscript.validate_items(doc);
-	var cl = getchildren('Sales Taxes and Charges Master', doc.name, 'taxes_and_charges');
-	for(var i =0;i<cl.length;i++) {
-		if(!cl[i].amount) {
-			alert("Please Enter Amount in Row no. "+cl[i].idx+" in Taxes and Charges table");
-			validated = false;
-		}
-	}
 	cur_frm.cscript.calculate_charges (doc, cdt, cdn);
 	if (cur_frm.cscript.calc_adjustment_amount) cur_frm.cscript.calc_adjustment_amount(doc);
 }

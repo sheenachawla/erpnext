@@ -1,116 +1,77 @@
-# DocType Mapper, Customer Issue-Maintenance Visit
 [
-
-	# These values are common in all dictionaries
-	{
-		u'creation': '2010-09-20 12:33:33',
-		u'docstatus': 0,
-		u'modified': '2012-10-24 14:34:08',
-		u'modified_by': u'Administrator',
-		u'owner': u'ashwini@webnotestech.com'
-	},
-
-	# These values are common for all Table Mapper Detail
-	{
-		u'doctype': u'Table Mapper Detail',
-		'from_table': u'Customer Issue',
-		u'name': u'__common__',
-		'parent': u'Customer Issue-Maintenance Visit',
-		'parentfield': u'table_mapper_details',
-		'parenttype': u'DocType Mapper',
-		'reference_key': u'prevdoc_docname',
-		'validation_logic': u'docstatus=1'
-	},
-
-	# These values are common for all Field Mapper Detail
-	{
-		u'doctype': u'Field Mapper Detail',
-		'map': u'Yes',
-		u'name': u'__common__',
-		'parent': u'Customer Issue-Maintenance Visit',
-		'parentfield': u'field_mapper_details',
-		'parenttype': u'DocType Mapper'
-	},
-
-	# These values are common for all DocType Mapper
-	{
-		u'doctype': u'DocType Mapper',
-		'from_doctype': u'Customer Issue',
-		'module': u'Support',
-		u'name': u'__common__',
-		'ref_doc_submitted': 1,
-		'to_doctype': u'Maintenance Visit'
-	},
-
-	# DocType Mapper, Customer Issue-Maintenance Visit
-	{
-		u'doctype': u'DocType Mapper',
-		u'name': u'Customer Issue-Maintenance Visit'
-	},
-
-	# Field Mapper Detail
-	{
-		'checking_operator': u'=',
-		u'doctype': u'Field Mapper Detail',
-		'from_field': u'customer',
-		'match_id': 0,
-		'to_field': u'customer'
-	},
-
-	# Field Mapper Detail
-	{
-		u'doctype': u'Field Mapper Detail',
-		'from_field': u'name',
-		'match_id': 0,
-		'to_field': u'customer_issue_no'
-	},
-
-	# Field Mapper Detail
-	{
-		u'doctype': u'Field Mapper Detail',
-		'from_field': u'name',
-		'match_id': 0,
-		'to_field': u'customer_issue'
-	},
-
-	# Field Mapper Detail
-	{
-		'checking_operator': u'=',
-		u'doctype': u'Field Mapper Detail',
-		'from_field': u'complaint',
-		'match_id': 1,
-		'to_field': u'description'
-	},
-
-	# Field Mapper Detail
-	{
-		u'doctype': u'Field Mapper Detail',
-		'from_field': u'doctype',
-		'match_id': 1,
-		'to_field': u'prevdoc_doctype'
-	},
-
-	# Field Mapper Detail
-	{
-		u'doctype': u'Field Mapper Detail',
-		'from_field': u'name',
-		'match_id': 1,
-		'to_field': u'prevdoc_docname'
-	},
-
-	# Table Mapper Detail
-	{
-		u'doctype': u'Table Mapper Detail',
-		'match_id': 1,
-		'reference_doctype_key': u'prevdoc_doctype',
-		'to_field': u'maintenance_visit_details',
-		'to_table': u'Maintenance Visit Purpose'
-	},
-
-	# Table Mapper Detail
-	{
-		u'doctype': u'Table Mapper Detail',
-		'match_id': 0,
-		'to_table': u'Maintenance Visit'
-	}
+ {
+  "owner": "ashwini@webnotestech.com", 
+  "docstatus": 0, 
+  "creation": "2010-09-20 12:33:33", 
+  "modified_by": "Administrator", 
+  "modified": "2012-11-08 15:54:20"
+ }, 
+ {
+  "reference_key": "prevdoc_docname", 
+  "name": "__common__", 
+  "parent": "Customer Issue-Maintenance Visit", 
+  "doctype": "Table Mapper Detail", 
+  "parenttype": "DocType Mapper", 
+  "from_table": "Customer Issue", 
+  "validation_logic": "docstatus=1", 
+  "parentfield": "table_mapper_details"
+ }, 
+ {
+  "map": "Yes", 
+  "name": "__common__", 
+  "parent": "Customer Issue-Maintenance Visit", 
+  "doctype": "Field Mapper Detail", 
+  "parenttype": "DocType Mapper", 
+  "parentfield": "field_mapper_details"
+ }, 
+ {
+  "name": "__common__", 
+  "to_doctype": "Maintenance Visit", 
+  "module": "Support", 
+  "doctype": "DocType Mapper", 
+  "ref_doc_submitted": 1, 
+  "from_doctype": "Customer Issue"
+ }, 
+ {
+  "name": "Customer Issue-Maintenance Visit", 
+  "doctype": "DocType Mapper"
+ }, 
+ {
+  "to_field": "customer", 
+  "doctype": "Field Mapper Detail", 
+  "from_field": "customer", 
+  "checking_operator": "=", 
+  "match_id": 0
+ }, 
+ {
+  "match_id": 0, 
+  "to_field": "customer_issue", 
+  "doctype": "Field Mapper Detail", 
+  "from_field": "name"
+ }, 
+ {
+  "to_field": "description", 
+  "doctype": "Field Mapper Detail", 
+  "from_field": "complaint", 
+  "checking_operator": "=", 
+  "match_id": 1
+ }, 
+ {
+  "match_id": 1, 
+  "to_field": "customer_issue", 
+  "doctype": "Field Mapper Detail", 
+  "from_field": "parent"
+ }, 
+ {
+  "reference_doctype_key": "prevdoc_doctype", 
+  "to_field": "maintenance_visit_details", 
+  "doctype": "Table Mapper Detail", 
+  "to_table": "Maintenance Visit Purpose", 
+  "match_id": 1
+ }, 
+ {
+  "to_table": "Maintenance Visit", 
+  "doctype": "Table Mapper Detail", 
+  "match_id": 0
+ }
 ]

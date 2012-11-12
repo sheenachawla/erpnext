@@ -45,3 +45,19 @@ class DocType():
 
 	def autoname(self):
 		self.doc.name = make_autoname(self.doc.naming_series+'.#####')
+
+@webnotes.whitelist()
+def get_communication(category=None, thread=None, lead=None, contact=None, 
+	limit_start=0, limit_page_length=20):
+	conditions = ["docstatus < 2"]
+	if thread:
+		conditions.append('ifnull(thread, "") = "%s" or name="%s"' % (thread, thread))
+	else:
+		conditions.append('ifnull(thread, "") = ""')
+	
+	return webnotes.conn.sql("""select name, subject, category, modified, status, `from`
+		from tabCommunication 
+		where %s
+		order by modified desc limit %s, %s""" % \
+			(" and ".join(conditions), limit_start, limit_page_length), as_dict=1)
+	

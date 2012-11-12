@@ -111,4 +111,3 @@ cur_frm.cscript = new erpnext.buying.SupplierQuotation({
 // 			where `tabProject`.status not in (\"Completed\", \"Cancelled\") \
 // 			and `tabProject`.name like \"%s\" \
 // 			order by `tabProject`.name ASC LIMIT 50";
-// >>>>>>> 282a97f954fcde11cc97a028b19301beef324a94
