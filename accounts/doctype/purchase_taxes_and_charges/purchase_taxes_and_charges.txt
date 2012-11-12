@@ -1,192 +1,167 @@
-# DocType, Purchase Taxes and Charges
 [
-
-	# These values are common in all dictionaries
-	{
-		u'creation': '2012-10-02 16:20:25',
-		u'docstatus': 0,
-		u'modified': '2012-10-18 17:53:27',
-		u'modified_by': u'Administrator',
-		u'owner': u'wasim@webnotestech.com'
-	},
-
-	# These values are common for all DocType
-	{
-		'_last_update': u'1322549700',
-		'autoname': u'PVTD.######',
-		'colour': u'White:FFF',
-		'default_print_format': u'Standard',
-		u'doctype': u'DocType',
-		'hide_heading': 1,
-		'istable': 1,
-		'module': u'Accounts',
-		u'name': u'__common__',
-		'section_style': u'Tray',
-		'server_code_error': u' ',
-		'show_in_menu': 0,
-		'version': 1
-	},
-
-	# These values are common for all DocField
-	{
-		u'doctype': u'DocField',
-		u'name': u'__common__',
-		'parent': u'Purchase Taxes and Charges',
-		'parentfield': u'fields',
-		'parenttype': u'DocType'
-	},
-
-	# DocType, Purchase Taxes and Charges
-	{
-		u'doctype': u'DocType',
-		u'name': u'Purchase Taxes and Charges'
-	},
-
-	# DocField
-	{
-		u'doctype': u'DocField',
-		'fieldname': u'charge_type',
-		'fieldtype': u'Select',
-		'label': u'Type',
-		'oldfieldname': u'charge_type',
-		'oldfieldtype': u'Select',
-		'options': u'\nActual\nOn Net Total\nOn Previous Row Amount\nOn Previous Row Total',
-		'permlevel': 0,
-		'reqd': 1,
-		'trigger': u'Client'
-	},
-
-	# DocField
-	{
-		u'doctype': u'DocField',
-		'fieldname': u'account_head',
-		'fieldtype': u'Link',
-		'label': u'Account Head',
-		'oldfieldname': u'account_head',
-		'oldfieldtype': u'Link',
-		'options': u'Account',
-		'permlevel': 0,
-		'reqd': 1,
-		'trigger': u'Client'
-	},
-
-	# DocField
-	{
-		u'doctype': u'DocField',
-		'fieldname': u'cost_center',
-		'fieldtype': u'Link',
-		'label': u'Cost Center',
-		'oldfieldname': u'cost_center',
-		'oldfieldtype': u'Link',
-		'options': u'Cost Center',
-		'permlevel': 0,
-		'trigger': u'Client'
-	},
-
-	# DocField
-	{
-		u'doctype': u'DocField',
-		'fieldname': u'description',
-		'fieldtype': u'Small Text',
-		'label': u'Description',
-		'oldfieldname': u'description',
-		'oldfieldtype': u'Small Text',
-		'permlevel': 0,
-		'reqd': 1,
-		'width': u'300px'
-	},
-
-	# DocField
-	{
-		u'doctype': u'DocField',
-		'fieldname': u'rate',
-		'fieldtype': u'Currency',
-		'label': u'Rate',
-		'oldfieldname': u'rate',
-		'oldfieldtype': u'Currency',
-		'permlevel': 0,
-		'reqd': 0,
-		'trigger': u'Client'
-	},
-
-	# DocField
-	{
-		u'doctype': u'DocField',
-		'fieldname': u'tax_amount',
-		'fieldtype': u'Currency',
-		'label': u'Amount',
-		'oldfieldname': u'tax_amount',
-		'oldfieldtype': u'Currency',
-		'permlevel': 0,
-		'reqd': 0,
-		'trigger': u'Client'
-	},
-
-	# DocField
-	{
-		u'doctype': u'DocField',
-		'fieldname': u'total',
-		'fieldtype': u'Currency',
-		'label': u'Total',
-		'oldfieldname': u'total',
-		'oldfieldtype': u'Currency',
-		'permlevel': 1
-	},
-
-	# DocField
-	{
-		u'doctype': u'DocField',
-		'fieldname': u'row_id',
-		'fieldtype': u'Data',
-		'hidden': 0,
-		'label': u'Enter Row No.',
-		'oldfieldname': u'row_id',
-		'oldfieldtype': u'Data',
-		'permlevel': 0,
-		'trigger': u'Client'
-	},
-
-	# DocField
-	{
-		'colour': u'White:FFF',
-		'default': u'Valuation and Total',
-		u'doctype': u'DocField',
-		'fieldname': u'category',
-		'fieldtype': u'Select',
-		'label': u'Consider Tax or Charge for',
-		'oldfieldname': u'category',
-		'oldfieldtype': u'Select',
-		'options': u'Valuation and Total\nValuation\nTotal',
-		'permlevel': 0,
-		'reqd': 1
-	},
-
-	# DocField
-	{
-		'colour': u'White:FFF',
-		u'doctype': u'DocField',
-		'fieldname': u'item_wise_tax_detail',
-		'fieldtype': u'Small Text',
-		'hidden': 1,
-		'label': u'Item Wise Tax Detail ',
-		'oldfieldname': u'item_wise_tax_detail',
-		'oldfieldtype': u'Small Text',
-		'permlevel': 1,
-		'print_hide': 1
-	},
-
-	# DocField
-	{
-		u'doctype': u'DocField',
-		'fieldname': u'parenttype',
-		'fieldtype': u'Data',
-		'hidden': 1,
-		'in_filter': 1,
-		'label': u'Parent Type',
-		'oldfieldname': u'parenttype',
-		'oldfieldtype': u'Data',
-		'permlevel': 0,
-		'print_hide': 1,
-		'search_index': 0
-	}
+ {
+  "owner": "wasim@webnotestech.com", 
+  "docstatus": 0, 
+  "creation": "2012-11-06 20:06:20", 
+  "modified_by": "Administrator", 
+  "modified": "2012-11-08 18:46:46"
+ }, 
+ {
+  "hide_heading": 1, 
+  "autoname": "PVTD.######", 
+  "name": "__common__", 
+  "default_print_format": "Standard", 
+  "doctype": "DocType", 
+  "module": "Accounts", 
+  "istable": 1
+ }, 
+ {
+  "name": "__common__", 
+  "parent": "Purchase Taxes and Charges", 
+  "doctype": "DocField", 
+  "parenttype": "DocType", 
+  "parentfield": "fields"
+ }, 
+ {
+  "name": "Purchase Taxes and Charges", 
+  "doctype": "DocType"
+ }, 
+ {
+  "oldfieldtype": "Select", 
+  "doctype": "DocField", 
+  "label": "Type", 
+  "oldfieldname": "charge_type", 
+  "trigger": "Client", 
+  "fieldname": "charge_type", 
+  "fieldtype": "Select", 
+  "reqd": 1, 
+  "options": "\nActual\nOn Net Total\nOn Previous Row Amount\nOn Previous Row Total", 
+  "permlevel": 0
+ }, 
+ {
+  "oldfieldtype": "Link", 
+  "doctype": "DocField", 
+  "label": "Account Head", 
+  "oldfieldname": "account_head", 
+  "trigger": "Client", 
+  "fieldname": "account_head", 
+  "fieldtype": "Link", 
+  "reqd": 1, 
+  "options": "Account", 
+  "permlevel": 0
+ }, 
+ {
+  "oldfieldtype": "Link", 
+  "doctype": "DocField", 
+  "label": "Cost Center", 
+  "oldfieldname": "cost_center", 
+  "trigger": "Client", 
+  "fieldname": "cost_center", 
+  "fieldtype": "Link", 
+  "options": "Cost Center", 
+  "permlevel": 0
+ }, 
+ {
+  "oldfieldtype": "Small Text", 
+  "doctype": "DocField", 
+  "label": "Description", 
+  "oldfieldname": "description", 
+  "width": "300px", 
+  "fieldname": "description", 
+  "fieldtype": "Small Text", 
+  "reqd": 1, 
+  "permlevel": 0
+ }, 
+ {
+  "oldfieldtype": "Currency", 
+  "doctype": "DocField", 
+  "label": "Rate", 
+  "oldfieldname": "rate", 
+  "trigger": "Client", 
+  "fieldname": "rate", 
+  "fieldtype": "Currency", 
+  "reqd": 0, 
+  "permlevel": 0
+ }, 
+ {
+  "oldfieldtype": "Currency", 
+  "doctype": "DocField", 
+  "label": "Amount", 
+  "oldfieldname": "tax_amount", 
+  "trigger": "Client", 
+  "fieldname": "tax_amount", 
+  "fieldtype": "Currency", 
+  "reqd": 0, 
+  "permlevel": 1
+ }, 
+ {
+  "oldfieldtype": "Currency", 
+  "doctype": "DocField", 
+  "label": "Total", 
+  "oldfieldname": "total", 
+  "fieldname": "total", 
+  "fieldtype": "Currency", 
+  "permlevel": 1
+ }, 
+ {
+  "oldfieldtype": "Data", 
+  "doctype": "DocField", 
+  "label": "Enter Row No.", 
+  "oldfieldname": "row_id", 
+  "trigger": "Client", 
+  "fieldname": "row_id", 
+  "fieldtype": "Data", 
+  "hidden": 0, 
+  "permlevel": 0
+ }, 
+ {
+  "default": "Valuation and Total", 
+  "oldfieldtype": "Select", 
+  "doctype": "DocField", 
+  "label": "Consider Tax or Charge for", 
+  "oldfieldname": "category", 
+  "options": "Valuation and Total\nValuation\nTotal", 
+  "fieldname": "category", 
+  "fieldtype": "Select", 
+  "reqd": 1, 
+  "permlevel": 0
+ }, 
+ {
+  "doctype": "DocField", 
+  "label": "Amount (Import)", 
+  "fieldname": "tax_amount_print", 
+  "fieldtype": "Currency", 
+  "permlevel": 1
+ }, 
+ {
+  "doctype": "DocField", 
+  "label": "Total (Import)", 
+  "fieldname": "total_print", 
+  "fieldtype": "Currency", 
+  "permlevel": 1
+ }, 
+ {
+  "print_hide": 1, 
+  "oldfieldtype": "Small Text", 
+  "doctype": "DocField", 
+  "label": "Item Wise Tax Detail ", 
+  "oldfieldname": "item_wise_tax_detail", 
+  "fieldname": "item_wise_tax_detail", 
+  "fieldtype": "Small Text", 
+  "hidden": 1, 
+  "permlevel": 1
+ }, 
+ {
+  "print_hide": 1, 
+  "oldfieldtype": "Data", 
+  "doctype": "DocField", 
+  "label": "Parent Type", 
+  "oldfieldname": "parenttype", 
+  "fieldname": "parenttype", 
+  "fieldtype": "Data", 
+  "search_index": 0, 
+  "hidden": 1, 
+  "permlevel": 0, 
+  "in_filter": 1
+ }
 ]

@@ -74,14 +74,14 @@ purchase_invoice_doclist = [
 	# items
 	{
 		"doctype": "Purchase Invoice Item", 
-		"item_code": "Home Desktop 100", "qty": 10, "rate": 50,
-		"amount": 500, "parentfield": "purchase_invoice_items", "conversion_factor": 1, 
+		"item_code": "Home Desktop 100", "qty": 10, "print_rate": 50,
+		"parentfield": "purchase_invoice_items", "conversion_factor": 1, 
 		"uom": "Nos", "item_tax_rate": json.dumps({"Excise Duty - %s" % abbr: 10})
 	},
 	{
 		"doctype": "Purchase Invoice Item", 
-		"item_code": "Home Desktop 200", "qty": 5, "rate": 150,
-		"amount": 750, "parentfield": "purchase_invoice_items", "conversion_factor": 1, 
+		"item_code": "Home Desktop 200", "qty": 5, "print_rate": 150,
+		"parentfield": "purchase_invoice_items", "conversion_factor": 1, 
 		"uom": "Nos"
 	},
 	# taxes
@@ -177,10 +177,8 @@ class TestPurchaseReceipt(unittest.TestCase):
 		sample_purchase_invoice_doclist = [] + purchase_invoice_doclist
 		
 		# set rate and amount as 0
-		sample_purchase_invoice_doclist[1]["rate"] = 0
-		sample_purchase_invoice_doclist[1]["amount"] = 0
-		sample_purchase_invoice_doclist[2]["rate"] = 0
-		sample_purchase_invoice_doclist[2]["amount"] = 0
+		sample_purchase_invoice_doclist[1]["print_rate"] = 0
+		sample_purchase_invoice_doclist[2]["print_rate"] = 0
 		
 		
 		controller = webnotes.insert(DocList(sample_purchase_invoice_doclist))
