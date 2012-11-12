@@ -96,7 +96,7 @@ erpnext.buying.SupplierQuotation = erpnext.Buying.extend({
 		// this.frm.precision.main = wn.model.get_precision_map("Purchase Request");
 		// this.frm.precision.item = wn.model.get_precision_map("Purchase Request Item");
 	}
-})
+});
 
 cur_frm.cscript = new erpnext.buying.SupplierQuotation({
 	frm: cur_frm, item_table_field: "supplier_quotation_items"});
@@ -111,4 +111,3 @@ cur_frm.cscript = new erpnext.buying.SupplierQuotation({
 // 			where `tabProject`.status not in (\"Completed\", \"Cancelled\") \
 // 			and `tabProject`.name like \"%s\" \
 // 			order by `tabProject`.name ASC LIMIT 50";
-// >>>>>>> 282a97f954fcde11cc97a028b19301beef324a94

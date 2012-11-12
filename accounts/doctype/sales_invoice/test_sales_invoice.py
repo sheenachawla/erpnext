@@ -84,14 +84,14 @@ sales_invoice_doclist = [
 	# items
 	{
 		"doctype": "Sales Invoice Item", "warehouse": "Default Warehouse",
-		"item_code": "Home Desktop 100", "qty": 10, "rate": 50,
-		"amount": 500, "parentfield": "sales_invoice_items",
+		"item_code": "Home Desktop 100", "qty": 10, "print_rate": 50,
+		"parentfield": "sales_invoice_items",
 		"uom": "Nos", "item_tax_rate": json.dumps({"Excise Duty - %s" % abbr: 10})
 	},
 	{
 		"doctype": "Sales Invoice Item", "warehouse": "Default Warehouse",
-		"item_code": "Home Desktop 200", "qty": 5, "rate": 150,
-		"amount": 750, "parentfield": "sales_invoice_items",
+		"item_code": "Home Desktop 200", "qty": 5, "print_rate": 150,
+		"parentfield": "sales_invoice_items",
 		"uom": "Nos"
 	},
 	# taxes
@@ -141,7 +141,7 @@ sales_invoice_doclist = [
 	},
 ]
 
-class TestPurchaseReceipt(unittest.TestCase):
+class TestSalesInvoice(unittest.TestCase):
 	def setUp(self):
 		webnotes.conn.begin()
 		load_data()
@@ -155,6 +155,31 @@ class TestPurchaseReceipt(unittest.TestCase):
 
 		# test net total
 		self.assertEqual(dl[0].net_total, 1250)
+		
+		# test item values calculation
+		expected_values = [
+			{
+				"item_code": "Home Desktop 100",
+				"print_ref_rate": 50,
+				"discount": 0,
+				"print_amount": 500,
+				"ref_rate": 50,
+				"rate": 50,
+				"amount": 500
+			},
+			{
+				"item_code": "Home Desktop 200",
+				"print_ref_rate": 150,
+				"discount": 0,
+				"print_amount": 750,
+				"ref_rate": 150,
+				"rate": 150,
+				"amount": 750
+			},
+		]
+		for i, item in enumerate(dl.get({"parentfield": "sales_invoice_items"})):
+			for key, val in expected_values[i].items():
+				self.assertEqual(item.fields.get(key), val)
 		
 		# test tax amounts and totals
 		expected_values = [
@@ -172,7 +197,73 @@ class TestPurchaseReceipt(unittest.TestCase):
 			self.assertEqual(tax.account_head, expected_values[i][0])
 			self.assertEqual(tax.tax_amount, expected_values[i][1])
 			self.assertEqual(tax.total, expected_values[i][2])
+	
+	def test_purchase_invoice_with_inclusive_tax(self):
+		sales_invoice_doclist[1]["print_rate"] = 62.683
+		sales_invoice_doclist[2]["print_rate"] = 191
+		for i in [3, 5, 6, 7, 8, 9]:
+			sales_invoice_doclist[i]["included_in_print_rate"] = 1
 		
+		from webnotes.model.doclist import DocList
+		controller = webnotes.insert(DocList(sales_invoice_doclist))
+		controller.load_from_db()
+		dl = controller.doclist
+
+		# test item values calculation
+		expected_values = [
+			{
+				"item_code": "Home Desktop 100",
+				"print_ref_rate": 62.683,
+				"discount": 0,
+				"print_amount": 626.83,
+				"ref_rate": 50,
+				"rate": 50,
+				"amount": 500
+			},
+			{
+				"item_code": "Home Desktop 200",
+				"print_ref_rate": 191,
+				"discount": 0,
+				"print_amount": 956,
+				"ref_rate": 150,
+				"rate": 150,
+				"amount": 750
+			},
+		]
+		for i, item in enumerate(dl.get({"parentfield": "sales_invoice_items"})):
+			for key, val in expected_values[i].items():
+				self.assertEqual(item.fields.get(key), val)
+		
+		# test tax amounts and totals
+		expected_values = [
+			["Shipping Charges - %s" % abbr, 100, 1350, 100, 1682.83],
+			["Customs Duty - %s" % abbr, 125, 1475, 125, 1807.83],
+			["Excise Duty - %s" % abbr, 140, 1615, 0, 1807.83],
+			["Education Cess - %s" % abbr, 2.8, 1617.8, 0, 1807.83],
+			["S&H Education Cess - %s" % abbr, 1.4, 1619.2, 0, 1807.83],
+			["CST - %s" % abbr, 32.38, 1651.58, 0, 1807.83],
+			["VAT - Test - %s" % abbr, 156.25, 1807.83, 0, 1807.83],
+			["Discount - %s" % abbr, -180.78, 1627.05, -180.78, 1627.05],
+		]		
+		for i, tax in enumerate(dl.get({"parentfield": "taxes_and_charges"})):
+			print tax.account_head, tax.tax_amount, tax.total, tax.tax_amount_print, tax.total_print
+			self.assertEqual(tax.account_head, expected_values[i][0])
+			self.assertEqual(tax.tax_amount, expected_values[i][1])
+			self.assertEqual(tax.total, expected_values[i][2])
+			self.assertEqual(tax.tax_amount_print, expected_values[i][3])
+			self.assertEqual(tax.total_print, expected_values[i][4])
+			
+		# test net total
+		self.assertEqual(dl[0].net_total, 1250)
+		self.assertEqual(dl[0].net_total_print, 1582.83)
+
+		# # test grand total
+		self.assertEqual(dl[0].grand_total, 1627.05)
+		self.assertEqual(dl[0].grand_total_print, 1627.05)
+	
+	
+	
+	
 	# 		
 	# def test_purchase_invoice_having_zero_amount_items(self):
 	# 	from webnotes.model.doclist import DocList
