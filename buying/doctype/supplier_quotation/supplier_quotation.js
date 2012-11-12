@@ -96,7 +96,7 @@ erpnext.buying.SupplierQuotation = erpnext.Buying.extend({
 		// this.frm.precision.main = wn.model.get_precision_map("Purchase Request");
 		// this.frm.precision.item = wn.model.get_precision_map("Purchase Request Item");
 	}
-})
+});
 
 cur_frm.cscript = new erpnext.buying.SupplierQuotation({
 	frm: cur_frm, item_table_field: "supplier_quotation_items"});

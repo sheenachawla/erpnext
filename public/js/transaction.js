@@ -100,7 +100,7 @@ erpnext.Transaction = Class.extend({
 					income_account: item.income_account,
 					expense_account: item.expense_account,
 					cost_center: item.cost_center
-				}
+				},
 				callback: function(r, rt) {
 					// update item doc
 					$.extend(locals[cdt][cdn], r.message);
