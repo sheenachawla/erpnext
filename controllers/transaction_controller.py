@@ -476,8 +476,8 @@ class TransactionController(DocListController):
 			tax.tax_amount = tax.total = tax.tax_amount_print = tax.total_print = 0
 			tax.grand_total_for_current_item = tax.tax_amount_for_current_item = 0
 			
-			if tax.charge_type in ["On Previous Row Amount", "On Previous Row Total"]:
-				self.validate_on_previous_row(tax)
+			self.validate_on_previous_row(tax)
+			self.validate_included_tax(tax)
 			
 			# round relevant values
 			round_doc(tax, self.precision.tax)
@@ -487,16 +487,22 @@ class TransactionController(DocListController):
 			validate if a valid row id is mentioned in case of
 			On Previous Row Amount and On Previous Row Total
 		"""
-		if not tax.row_id or tax.row_id >= tax.idx:
-			msgprint((_("Row") + " # %(idx)s [%(taxes_doctype)s]: " + \
-				_("Please specify a valid") + " %(row_id_label)s") % {
-					"idx": tax.idx,
-					"taxes_doctype": self.meta.get_options("taxes_and_charges"),
-					"row_id_label": self.meta.get_label("row_id",
-						parentfield="taxes_and_charges")
-				}, raise_exception=True)
-				
+		if tax.charge_type in ["On Previous Row Amount", "On Previous Row Total"] and \
+					not tax.row_id or tax.row_id >= tax.idx:
+				msgprint((_("Row") + " # %(idx)s [%(taxes_doctype)s]: " + \
+					_("Please specify a valid") + " %(row_id_label)s") % {
+						"idx": tax.idx,
+						"taxes_doctype": self.meta.get_options("taxes_and_charges"),
+						"row_id_label": self.meta.get_label("row_id",
+							parentfield="taxes_and_charges")
+					}, raise_exception=True)
+	
+	def validate_included_tax(self, tax):
+		"""
+			validate conditions related to "Is this Tax Included in Rate?"
+		"""
 		if cint(tax.included_in_print_rate):
+			print tax.idx, tax.charge_type
 			if tax.charge_type == "Actual":
 				# now inclusive rate for type 'Actual'
 				msgprint((_("Row") + " # %(idx)s [%(taxes_doctype)s]: " + \
@@ -508,6 +514,10 @@ class TransactionController(DocListController):
 							parentfield="taxes_and_charges"),
 						"charge_type": tax.charge_type,
 					}, raise_exception=True)
+					
+			elif tax.charge_type == "On Previous Row Amount":
+				pass
+				
 			
 			elif tax.charge_type == "On Previous Row Total" and \
 					not all([cint(t.included_in_print_rate) \

@@ -202,7 +202,6 @@ class TestSalesInvoice(unittest.TestCase):
 		sales_invoice_doclist[1]["print_rate"] = 62.683
 		sales_invoice_doclist[2]["print_rate"] = 191
 		for i in [3, 5, 6, 7, 8, 9]:
-			print sales_invoice_doclist[i]["charge_type"]
 			sales_invoice_doclist[i]["included_in_print_rate"] = 1
 		
 		from webnotes.model.doclist import DocList
