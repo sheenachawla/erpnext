@@ -155,7 +155,7 @@ erpnext.Selling = erpnext.Transaction.extend({
 		if (item.warehouse) {
 			wn.call({
 				doc: me.frm.doc,
-				method: "stock.get_actual_qty"
+				method: "stock.utils.get_actual_qty"
 				args: {
 					"item_code": item.item_code,
 					"warehouse": item.warehouse,

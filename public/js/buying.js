@@ -47,7 +47,7 @@ erpnext.Buying = erpnext.Transaction.extend({
 		var item = locals[cdt][cdn];
 		if(item.item_code && item.warehouse) {
 			wn.call({
-				method: "stock.get_projected_qty",
+				method: "stock.utils.get_projected_qty",
 				args: {item_code: item.item_code, warehouse: item.warehouse},
 				callback: function(r) {
 					// TODO: how to refresh only a single grid cell

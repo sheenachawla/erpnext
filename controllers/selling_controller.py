@@ -21,7 +21,7 @@ from webnotes import _, msgprint, DictObj
 from webnotes.utils import add_days, getdate, flt, cint
 from webnotes.model.code import get_obj
 
-import stock
+import stock.utils
 from controllers.transaction_controller import TransactionController
 
 class SellingController(TransactionController):
@@ -141,7 +141,7 @@ class SellingController(TransactionController):
 			
 		# get actual qty
 		if ret.warehouse:
-			ret.available_qty = stock.get_actual_qty({
+			ret.available_qty = stock.utils.get_actual_qty({
 				'item_code': args.item_code, 'warehouse': ret.warehouse, 
 				"posting_date": self.doc.posting_date, "posting_time": self.doc.posting_time or ""
 			})

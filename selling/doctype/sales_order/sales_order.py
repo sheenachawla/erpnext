@@ -143,7 +143,7 @@ class DocType(SellingController):
 	def set_item_actual_qty(self):
 		for item in self.doclist.get({"parentfield": self.item_table_field}):
 			if item.item_code and item.warehouse and item.item_code in self.stock_items:
-				qty = stock.get_actual_qty({"item_code": item.item_code, 
+				qty = stock.utils.get_actual_qty({"item_code": item.item_code, 
 					"warehouse": item.warehouse, "posting_date": self.doc.posting_date,
 					"posting_time": self.doc.posting_time or ""})
 				item.actual_qty = qty["actual_qty"]

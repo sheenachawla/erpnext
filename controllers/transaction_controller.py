@@ -39,12 +39,14 @@ class TransactionController(TaxController):
 		self.validate_fiscal_year()
 		self.validate_mandatory()
 		self.validate_items()
+		
 		if self.doc.docstatus == 1 and self.cur_docstatus == 0:
 			# a doc getting submitted should not be stopped
 			self.doc.is_stopped = 0
 		
 		if self.doc.docstatus == 1:
-			self.stop_resume_transaction()
+			if self.meta.get_field("is_stopped"):
+				self.stop_resume_transaction()
 			
 		if self.meta.get_field("taxes_and_charges"):
 			self.calculate_taxes_and_totals()
@@ -53,13 +55,6 @@ class TransactionController(TaxController):
 		self.set_item_values()
 		self.append_default_taxes()
 
-	def set_item_values(self):
-		for item in self.doclist.get({"parentfield": self.item_table_field}):
-			item_values = self.get_item_details({"item_code": item.item_code})
-			for k in item_values:
-				if not item.fields.get(k):
-					item.fields[k] = item_values[k]
-	
 	def on_update(self):
 		pass
 		
@@ -79,8 +74,26 @@ class TransactionController(TaxController):
 			if self.meta.get_field("taxes_and_charges"):
 				self._precision.tax = self.meta.get_precision_map(parentfield = \
 					"taxes_and_charges")
-					
 		return self._precision
+		
+	@property
+	def item_doclist(self):
+		if not hasattr(self, "_item_doclist"):
+			self._item_doclist = self.doclist.get({"parentfield": self.item_table_field})
+		return self._item_doclist
+
+	@property
+	def tax_doclist(self):
+		if not hasattr(self, "_tax_doclist"):
+			self._tax_doclist = self.doclist.get({"parentfield": "taxes_and_charges"})
+		return self._tax_doclist
+	
+	def set_item_values(self):
+		for item in self.doclist.get({"parentfield": self.item_table_field}):
+			item_values = self.get_item_details({"item_code": item.item_code})
+			for k in item_values:
+				if not item.fields.get(k):
+					item.fields[k] = item_values[k]
 	
 	def stop_resume_transaction(self):
 		"""stop/resume a transaction if there is a change in is_stopped"""
@@ -121,15 +134,12 @@ class TransactionController(TaxController):
 			* duplicate rows
 			* mapping with previous doclist
 		"""
-		import stock
 		from webnotes.model.utils import validate_condition
-		
-		item_doclist = self.doclist.get({"parentfield": self.item_table_field})
 		
 		stock_items = []
 		non_stock_items = []
 		
-		for item in item_doclist:
+		for item in self.item_doclist:
 			# validate qty
 			validate_condition(item, "qty", ">=", 0)
 			
@@ -144,13 +154,13 @@ class TransactionController(TaxController):
 			else:
 				non_stock_items.append(item_controller.doc.name)
 		
-		self.check_duplicate(item_doclist, stock_items, non_stock_items)
+		self.check_duplicate(self.item_doclist, stock_items, non_stock_items)
 		
 		# to be overridden in each controller
 		self.validate_prevdoclist()
 		
 	def validate_stock_item(self, item, child):
-		stock.validate_end_of_life(item.name, item.end_of_life)
+		stock.utils.validate_end_of_life(item.name, item.end_of_life)
 		
 		# get warehouse field
 		warehouse_field = webnotes.get_field(child.parenttype, "warehouse",
@@ -164,7 +174,7 @@ class TransactionController(TaxController):
 			
 	def get_item_details(self, args, item=None):
 		# validate end of life
-		stock.validate_end_of_life(item.doc.item_code, item.doc.end_of_life)
+		stock.utils.validate_end_of_life(item.doc.item_code, item.doc.end_of_life)
 
 		ret = DictObj({
 			"item_name": item.doc.item_name,
@@ -201,9 +211,6 @@ class TransactionController(TaxController):
 	@property
 	def stock_items(self):
 		if not hasattr(self, "_stock_items"):
-			if not self.item_doclist:
-				self.item_doclist = self.doclist.get({"parentfield": self.item_table_field})
-			
 			item_codes = list(set(item.item_code for item in self.item_doclist))
 			self._stock_items = [r[0] for r in webnotes.conn.sql("""select name
 				from `tabItem` where name in (%s) and is_stock_item='Yes'""" % \
@@ -220,25 +227,25 @@ class TransactionController(TaxController):
 		return ret
 		
 	def get_item_code(self, barcode):
-		item = webnotes.conn.sql("""select name, end_of_life, is_sales_item, is_service_item 
-			from `tabItem` where barcode = %s""", barcode, as_dict=1)
-			
+		item = webnotes.conn.sql("""select name, end_of_life, is_sales_item,
+			is_service_item from `tabItem` where barcode = %s""", barcode, as_dict=1)
+		
+		# perform validations
 		if not item:
 			msgprint(_("No item found for this barcode") + ": " + barcode + ". " + 
-				_("May be barcode not updated in item master. Please check"))
-
-		elif item[0]['end_of_life'] and getdate(cstr(item[0]['end_of_life'])) < nowdate():
-			msgprint(_("Item") + ": " + item[0]['name'] + _(" has been expired.") +  
-				_("Please check 'End of Life' field in item master"))
-
-		elif item[0]['is_sales_item'] == 'No' and item[0]['is_service_item'] == 'No':
-			msgprint(_("Item") + ": "+ item[0]['name'] +_(" is not a sales or service item"))
-
+				_("May be barcode not updated in item master. Please check"),
+				raise_exception=True)
 		elif len(item) > 1:
 			msgprint(_("""There are multiple item for this barcode. 
-				Please select item code manually"""))
-		else:
-			return item[0]["name"]
+				Please select item code manually"""), raise_exception=True)
+
+		stock.utils.validate_end_of_life(item[0].name, item[0].end_of_life)
+		
+		if item[0]['is_sales_item'] == 'No' and item[0]['is_service_item'] == 'No':
+			msgprint(_("Item") + ": "+ item[0]['name'] + \
+				_(" is not a sales or service item"), raise_exception=True)
+		
+		return item[0]["name"]
 	
 	def get_uom_details(self, args=None):
 		"""get last purchase rate based on conversion factor"""
