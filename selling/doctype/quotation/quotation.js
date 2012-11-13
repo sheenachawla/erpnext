@@ -20,14 +20,12 @@ wn.provide("erpnext.selling");
 erpnext.selling.Quotation = erpnext.Selling.extend({
 	onload: function() {
 		this._super();
-		this.make_communication_body();
 	},
 	
 	refresh: function() {
 		this._super();
 		this.add_buttons();
 		this.toggle_fields();
-		if (!doc.__islocal) this.render_communication_list();
 	},
 	
 	validate: function() {
