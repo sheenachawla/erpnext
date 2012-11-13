@@ -21,7 +21,7 @@ from webnotes import _, msgprint, DictObj
 from webnotes.utils import add_days, getdate, flt, cint
 from webnotes.model.controller import get_obj
 
-import stock
+import stock.utils
 from controllers.accounts_controller import AccountsController
 
 class BuyingController(AccountsController):
@@ -37,7 +37,7 @@ class BuyingController(AccountsController):
 		ret.min_order_qty = flt(item.doc.min_order_qty, self.precision.item.min_order_qty)
 		
 		if ret.warehouse:
-			ret.projected_qty = stock.get_projected_qty(args.item_code,
+			ret.projected_qty = stock.utils.get_projected_qty(args.item_code,
 				ret.warehouse)["projected_qty"]
 		
 		if self.doc.posting_date and item.doc.lead_time_days:
@@ -100,7 +100,7 @@ class BuyingController(AccountsController):
 	def set_item_values(self):
 		for item in self.doclist.get({"parentfield": self.item_table_field}):
 			# set projected qty
-			item.projected_qty = stock.get_projected_qty(item.item_code,
+			item.projected_qty = stock.utils.get_projected_qty(item.item_code,
 				item.warehouse).get("projected_qty")
 		
 	def get_last_purchase_details(self, item_code, doc_name):
