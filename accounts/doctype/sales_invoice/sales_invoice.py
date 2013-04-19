@@ -651,7 +651,7 @@ class DocType(BuyingController):
 				}, is_cancel)
 			)
 			# write off entries, applicable if only pos
-			if self.doc.write_off_account and self.dco.write_off_amount:
+			if self.doc.write_off_account and self.doc.write_off_amount:
 				gl_entries.append(
 					self.get_gl_dict({
 						"account": self.doc.debit_to,
