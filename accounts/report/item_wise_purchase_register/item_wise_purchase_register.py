@@ -26,7 +26,7 @@ def execute(filters=None):
 	data = []
 	for d in item_list:
 		expense_head = d.expense_head or aii_account_map.get(d.company)
-		data.append([d.item_code, d.item_name, d.item_group, d.name, d.posting_date, 
+		data.append([d.item_code, d.item_name, d.item_group, d.name, d.posting_date, d.supplier,
 			d.supplier_name, d.credit_to, d.project_name, d.company, d.purchase_order, 
 			d.purchase_receipt, expense_head, d.qty, d.rate, d.amount])
 	
@@ -35,11 +35,11 @@ def execute(filters=None):
 	
 def get_columns():
 	return ["Item Code:Link/Item:120", "Item Name::120", "Item Group:Link/Item Group:100", 
-		"Invoice:Link/Purchase Invoice:120", "Posting Date:Date:80", "Supplier:Link/Customer:120", 
-		"Supplier Account:Link/Account:120", "Project:Link/Project:80", "Company:Link/Company:100", 
-		"Purchase Order:Link/Purchase Order:100", "Purchase Receipt:Link/Purchase Receipt:100", 
-		"Expense Account:Link/Account:140", "Qty:Float:120", "Rate:Currency:120", 
-		"Amount:Currency:120"]
+		"Invoice:Link/Purchase Invoice:120", "Posting Date:Date:80", "Supplier:Link/Supplier:120", 
+		"Supplier Name::120", "Supplier Account:Link/Account:120", "Project:Link/Project:80", 
+		"Company:Link/Company:100", "Purchase Order:Link/Purchase Order:100", 
+		"Purchase Receipt:Link/Purchase Receipt:100", "Expense Account:Link/Account:140", 
+		"Qty:Float:120", "Rate:Currency:120", "Amount:Currency:120"]
 	
 	
 def get_conditions(filters):

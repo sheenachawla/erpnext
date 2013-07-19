@@ -25,7 +25,7 @@ def execute(filters=None):
 	
 	data = []
 	for d in item_list:
-		data.append([d.item_code, d.item_name, d.item_group, d.name, d.posting_date, 
+		data.append([d.item_code, d.item_name, d.item_group, d.name, d.posting_date, d.customer,
 			d.customer_name, d.debit_to, d.territory, d.project_name, d.company, d.sales_order, 
 			d.delivery_note, d.income_account, d.qty, d.basic_rate, d.amount])
 	
@@ -36,7 +36,7 @@ def get_columns():
 	return [
 		"Item Code:Link/Item:120", "Item Name::120", "Item Group:Link/Item Group:100", 
 		"Invoice:Link/Sales Invoice:120", "Posting Date:Date:80", "Customer:Link/Customer:120", 
-		"Customer Account:Link/Account:120", "Territory:Link/Territory:80",
+		"Customer Name::120", "Customer Account:Link/Account:120", "Territory:Link/Territory:80",
 		"Project:Link/Project:80", "Company:Link/Company:100", "Sales Order:Link/Sales Order:100", 
 		"Delivery Note:Link/Delivery Note:100", "Income Account:Link/Account:140", 
 		"Qty:Float:120", "Rate:Currency:120", "Amount:Currency:120"
