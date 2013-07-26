@@ -30,7 +30,8 @@ def execute(filters=None):
 		return columns, invoice_list
 	
 	invoice_income_map = get_invoice_income_map(invoice_list)
-	invoice_income_map, invoice_tax_map = get_invoice_tax_map(invoice_list, invoice_income_map)
+	invoice_income_map, invoice_tax_map = get_invoice_tax_map(invoice_list, 
+		invoice_income_map, income_accounts)
 	
 	invoice_so_dn_map = get_invoice_so_dn_map(invoice_list)
 	customer_map = get_customer_deatils(invoice_list)
@@ -42,7 +43,7 @@ def execute(filters=None):
 		sales_order = list(set(invoice_so_dn_map.get(inv.name, {}).get("sales_order", [])))
 		delivery_note = list(set(invoice_so_dn_map.get(inv.name, {}).get("delivery_note", [])))
 
-		row = [inv.name, inv.posting_date, inv.customer, inv.customer_name, inv.debit_to, 
+		row = [inv.name, inv.posting_date, inv.customer_name, inv.debit_to, 
 			account_map.get(inv.debit_to), customer_map.get(inv.customer), inv.project_name, 
 			inv.remarks, ", ".join(sales_order), ", ".join(delivery_note)]
 		
@@ -75,8 +76,8 @@ def execute(filters=None):
 def get_columns(invoice_list):
 	"""return columns based on filters"""
 	columns = [
-		"Invoice:Link/Sales Invoice:120", "Posting Date:Date:80", "Customer:Link/Customer:120", 
-		"Customer Name::120", "Customer Account:Link/Account:120", "Account Group:LInk/Account:120",
+		"Invoice:Link/Sales Invoice:120", "Posting Date:Date:80", "Customer::120", 
+		"Customer Account:Link/Account:120", "Account Group:LInk/Account:120",
 		"Territory:Link/Territory:80", "Project:Link/Project:80", 
 		"Remarks::150", "Sales Order:Link/Sales Order:100", "Delivery Note:Link/Delivery Note:100"
 	]
@@ -137,15 +138,18 @@ def get_invoice_income_map(invoice_list):
 	
 	return invoice_income_map
 	
-def get_invoice_tax_map(invoice_list, invoice_income_map):
+def get_invoice_tax_map(invoice_list, invoice_income_map, income_accounts):
 	tax_details = webnotes.conn.sql("""select parent, account_head, sum(tax_amount) as tax_amount
 		from `tabSales Taxes and Charges` where parent in (%s) group by parent, account_head""" % 
 		', '.join(['%s']*len(invoice_list)), tuple([inv.name for inv in invoice_list]), as_dict=1)
 	
 	invoice_tax_map = {}
 	for d in tax_details:
-		if d.account_head in invoice_income_map.get(d.parent):
-			invoice_income_map[d.parent][d.account_head] += flt(d.tax_amount)
+		if d.account_head in income_accounts:
+			if invoice_income_map[d.parent].has_key(d.account_head):
+				invoice_income_map[d.parent][d.account_head] += flt(d.tax_amount)
+			else:
+				invoice_income_map[d.parent][d.account_head] = flt(d.tax_amount)
 		else:
 			invoice_tax_map.setdefault(d.parent, webnotes._dict()).setdefault(d.account_head, [])
 			invoice_tax_map[d.parent][d.account_head] = flt(d.tax_amount)
