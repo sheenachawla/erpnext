@@ -10,11 +10,8 @@ from website.doctype.shopping_cart_settings.shopping_cart_settings import Shoppi
 
 class TestShoppingCartSettings(unittest.TestCase):
 	def setUp(self):
-		webnotes.conn.sql("""delete from `tabSingles` where doctype="Shipping Cart Settings" """)
-		webnotes.conn.sql("""delete from `tabShopping Cart Price List`""")
-		webnotes.conn.sql("""delete from `tabShopping Cart Taxes and Charges Master`""")
-		webnotes.conn.sql("""delete from `tabShopping Cart Shipping Rule`""")
-		
+		webnotes.delete_doc("Shopping Cart Settings", "Shopping Cart Settings")
+
 	def get_cart_settings(self):
 		return webnotes.bean({"doctype": "Shopping Cart Settings",
 			"company": "_Test Company"})
@@ -79,3 +76,44 @@ class TestShoppingCartSettings(unittest.TestCase):
 		webnotes.bean(currency_exchange_records[0]).insert()
 		controller.validate_exchange_rates_exist()
 		
+test_records = [
+	[
+		{
+			"doctype": "Shopping Cart Settings",
+			"company": "_Test Company",
+			"default_territory": "_Test Territory Rest of the World",
+			"default_customer_group": "_Test Customer Group",
+			"quotation_series": "_T-Quotation-"
+		},
+		{
+			"doctype": "Shopping Cart Price List",
+			"parentfield": "price_lists",
+			"selling_price_list": "_Test Price List Rest of the World"
+		},
+		{
+			"doctype": "Shopping Cart Price List",
+			"parentfield": "price_lists",
+			"selling_price_list": "_Test Price List India"
+		},
+		{
+			"doctype": "Shopping Cart Price List",
+			"parentfield": "price_lists",
+			"selling_price_list": "_Test Price List"
+		},
+		{
+			"doctype": "Shopping Cart Shipping Rule",
+			"parentfield": "shipping_rules",
+			"shipping_rule": "_Test Shipping Rule - _Test Territory"
+		},
+		{
+			"doctype": "Shopping Cart Taxes and Charges Master",
+			"parentfield": "sales_taxes_and_charges_masters",
+			"sales_taxes_and_charges_master": "_Test Sales Taxes and Charges Master"
+		},
+		{
+			"doctype": "Shopping Cart Taxes and Charges Master",
+			"parentfield": "sales_taxes_and_charges_masters",
+			"sales_taxes_and_charges_master": "_Test India Tax Master"
+		}
+	]
+]

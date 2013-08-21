@@ -69,7 +69,7 @@ class SellingController(StockController):
 				"description": shipping_rule.doc.label,
 				"rate": shipping_amount
 			})
-		
+			
 	def set_total_in_words(self):
 		from webnotes.utils import money_in_words
 		company_currency = get_company_currency(self.doc.company)

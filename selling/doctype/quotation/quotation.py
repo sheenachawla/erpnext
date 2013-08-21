@@ -211,6 +211,10 @@ class DocType(SellingController):
 		sql("delete from `tabCommunication Log` where parent = '%s'"%self.doc.name)
 		for d in getlist(self.doclist, 'follow_up'):
 			d.save()
+			
+	def apply_cart_settings(self):
+		settings = webnotes.bean("Shopping Cart Settings")
+		
 
 @webnotes.whitelist()
 def make_sales_order(source_name, target_doclist=None):

@@ -23,7 +23,6 @@ class DocType(DocListController):
 			
 	def on_update(self):
 		webnotes.conn.set_default("shopping_cart_enabled", self.doc.fields.get("enabled") or 0)
-		webnotes.conn.set_default("shopping_cart_quotation_series", self.doc.fields.get("quotation_series"))
 			
 	def validate_overlapping_territories(self, parentfield, fieldname):
 		# for displaying message

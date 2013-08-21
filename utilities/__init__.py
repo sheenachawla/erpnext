@@ -31,3 +31,17 @@ def build_filter_conditions(filters):
 
 	conditions = conditions and " and " + " and ".join(conditions) or ""
 	return conditions, filter_values
+	
+def guess_address_territory(address_name):
+	"""Tries to match city, state and country of address to existing territory"""
+	territory = None
+
+	if address_name:
+		address_fields = webnotes.conn.get_value("Address", address_name, 
+			["city", "state", "country"])
+		for value in address_fields:
+			territory = webnotes.conn.get_value("Territory", value)
+			if territory:
+				break
+	
+	return territory

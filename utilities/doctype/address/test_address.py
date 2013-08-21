@@ -14,4 +14,15 @@ test_records = [
 		"phone": "+91 0000000000",
 		"is_primary_address": 1
 	}],
+	[{
+		"doctype": "Address",
+		"lead": "_T-Lead-00001",
+		"lead_name": "_Test Lead",
+		"address_type": "Office",
+		"address_line1": "_Test Address Line 1",
+		"city": "_Test City",
+		"country": "United States",
+		"phone": "+1 0000000000",
+		"is_primary_address": 1
+	}]
 ]

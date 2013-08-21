@@ -35,6 +35,7 @@ test_records = [
 	[
 		{
 			"doctype": "Shipping Rule",
+			"name": "_Test Shipping Rule - _Test Territory",
 			"label": "_Test Shipping Rule",
 			"calculate_based_on": "Net Total",
 			"company": "_Test Company",
