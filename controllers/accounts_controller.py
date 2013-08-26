@@ -129,6 +129,40 @@ class AccountsController(TransactionBase):
 				})
 				
 				self.doclist.append(tax)
+				
+	def get_billing_territory(self):
+		"""Note: can be called for buying or selling"""
+		if not hasattr(self, "_billing_territory"):
+			from utilities import guess_address_territory
+			billing_territory = None
+			party_type, party_name = self.get_party_type_and_name()
+		
+			if party_type in ("Lead", "Customer"):
+				# guess territory from address
+				billing_territory = guess_address_territory(self.doc.customer_address)
+				if not billing_territory:
+					# get party's territory
+					billing_territory = webnotes.conn.get_value(party_type, party_name, "territory")
+			else:
+				# guess territory from address
+				billing_territory = guess_address_territory(self.doc.supplier_address)
+		
+			self._billing_territory = billing_territory
+		
+		return self._billing_territory
+		
+	def get_shipping_territory(self):
+		"""Note: can only be called for selling"""
+		if not hasattr(self, "_shipping_territory"):
+			from utilities import guess_address_territory
+			party_type, party_name = self.get_party_type_and_name()
+			shipping_territory = guess_address_territory(self.doc.shipping_address_name)
+			if not shipping_territory:
+				shipping_territory = webnotes.conn.get_value(party_type, party_name, "territory")
+			
+			self._shipping_territory = shipping_territory
+			
+		return self._shipping_territory
 					
 	def calculate_taxes_and_totals(self):
 		# validate conversion rate

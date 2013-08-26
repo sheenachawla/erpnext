@@ -65,7 +65,7 @@ test_records = [
 		{
 			"doctype": "For Territory",
 			"parentfield": "valid_for_territories",
-			"territory": "_Test Territory"
+			"territory": "All Territories"
 		}
 	]
 ]

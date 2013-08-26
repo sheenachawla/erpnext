@@ -6,7 +6,7 @@ from __future__ import unicode_literals
 import webnotes
 from webnotes.utils import cstr, cint, fmt_money
 from webnotes.webutils import build_html, delete_page_cache
-from website.helpers.cart import _get_cart_quotation
+from website.helpers.cart import get_quotation
 
 @webnotes.whitelist(allow_guest=True)
 def get_product_info(item_code):
@@ -14,7 +14,7 @@ def get_product_info(item_code):
 	if not webnotes.conn.get_default("shopping_cart_enabled"):
 		return {}
 	
-	cart_quotation = _get_cart_quotation()
+	cart_quotation = get_quotation()
 	
 	price_list = webnotes.cookies.get("selling_price_list").value
 

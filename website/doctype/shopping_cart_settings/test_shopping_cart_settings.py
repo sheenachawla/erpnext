@@ -26,8 +26,7 @@ class TestShoppingCartSettings(unittest.TestCase):
 				"selling_price_list": price_list
 			})
 		
-		for price_list in ("_Test Price List Rest of the World", "_Test Price List India",
-			"_Test Price List"):
+		for price_list in ("_Test Price List Rest of the World", "_Test Price List India"):
 			_add_price_list(price_list)
 		
 		controller = cart_settings.make_controller()
@@ -80,6 +79,7 @@ test_records = [
 	[
 		{
 			"doctype": "Shopping Cart Settings",
+			"name": "Shopping Cart Settings",
 			"company": "_Test Company",
 			"default_territory": "_Test Territory Rest of the World",
 			"default_customer_group": "_Test Customer Group",
@@ -94,11 +94,6 @@ test_records = [
 			"doctype": "Shopping Cart Price List",
 			"parentfield": "price_lists",
 			"selling_price_list": "_Test Price List India"
-		},
-		{
-			"doctype": "Shopping Cart Price List",
-			"parentfield": "price_lists",
-			"selling_price_list": "_Test Price List"
 		},
 		{
 			"doctype": "Shopping Cart Shipping Rule",

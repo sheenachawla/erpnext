@@ -314,7 +314,7 @@ class TransactionBase(StatusUpdater):
 				for field, condition in fields:
 					if prevdoc_values[field] is not None:
 						self.validate_value(field, condition, prevdoc_values[field], doc)
-
+						
 def get_default_address_and_contact(party_field, party_name, fetch_shipping_address=False):
 	out = {}
 	

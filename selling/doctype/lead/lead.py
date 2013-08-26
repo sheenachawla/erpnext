@@ -48,8 +48,7 @@ class DocType(SellingController):
 		
 		if self.doc.email_id:
 			if not validate_email_add(self.doc.email_id):
-				msgprint('Please enter valid email id.')
-				raise Exception
+				webnotes.throw('Please enter valid email id.')
 				
 	def on_update(self):
 		self.check_email_id_is_unique()

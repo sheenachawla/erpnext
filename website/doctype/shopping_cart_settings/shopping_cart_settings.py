@@ -74,13 +74,13 @@ class DocType(DocListController):
 				from `tabFor Territory`
 				where `parenttype`=%s and `parent` in (%s)""" %
 				("%s", ", ".join(["%s"]*len(names))), tuple([parenttype] + names))
-		
+				
 			for territory, name in territory_name:
 				territory_name_map.setdefault(territory, []).append(name)
 				
 				if len(territory_name_map[territory]) > 1:
 					territory_name_map[territory].sort(key=lambda val: names.index(val))
-		
+					
 		return territory_name_map
 					
 	def validate_exchange_rates_exist(self):
